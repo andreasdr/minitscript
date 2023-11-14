@@ -102,7 +102,7 @@ $(MAINS):$(BIN)/%:$(SRC)/%-main.cpp $(OBJS) $(EXT_SHA256_OBJS)
 	@mkdir -p $(dir $@);
 	@scripts/windows-mingw-create-executable-rc.sh "$<" $@.rc
 	@windres $@.rc -o coff -o $@.rc.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $@.rc.o $< $(MAIN_LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $@.rc.o $< $(OBJS) $(EXT_SHA256_OBJS) $(MAIN_LDFLAGS)
 	@rm $@.rc
 	@rm $@.rc.o
 else
