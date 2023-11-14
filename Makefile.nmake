@@ -56,7 +56,7 @@ EXT_SRCS = \
 	$(EXT_SHA256_SRCS)
 
 all: \
-	init \ 
+	init \
 	compile \
 	miniscript \
 	miniscript-documentation \
