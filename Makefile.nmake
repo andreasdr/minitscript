@@ -61,7 +61,7 @@ all: \
 	compile \
 	compile-ext \
 	miniscript \
-	miniscript-documentation \
+	miniscriptdocumentation \
 	miniscriptmakefile \
 	miniscriptnmakefile \
 	miniscripttranspiler \
@@ -93,10 +93,10 @@ miniscript:
 	rc $(MSCBIN)\miniscript.exe.rc
 	cl /Fe$(MSCBIN)\miniscript /Fo$(MSCOBJ)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscript-main.cpp $(MSCBIN)\miniscript.exe.res $(MSCOBJ)\*.obj $(MSCOBJEXT)\*.obj /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
-miniscript-documentation:
-	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscript-documentation.exe $(MSCBIN)\miniscript-documentation.exe.rc
-	rc $(MSCBIN)\miniscript-documentation.exe.rc
-	cl /Fe$(MSCBIN)\miniscript-documentation /Fo$(MSCOBJ)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscript-documentation-main.cpp $(MSCBIN)\miniscript-documentation.exe.res $(MSCOBJ)\*.obj $(MSCOBJEXT)\*.obj /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+miniscriptdocumentation:
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptdocumentation.exe $(MSCBIN)\miniscriptdocumentation.exe.rc
+	rc $(MSCBIN)\miniscriptdocumentation.exe.rc
+	cl /Fe$(MSCBIN)\miniscriptdocumentation /Fo$(MSCOBJ)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptdocumentation-main.cpp $(MSCBIN)\miniscriptdocumentation.exe.res $(MSCOBJ)\*.obj $(MSCOBJEXT)\*.obj /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
 miniscriptmakefile:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptmakefile.exe $(MSCBIN)\miniscriptmakefile.exe.rc
