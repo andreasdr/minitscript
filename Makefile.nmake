@@ -56,16 +56,19 @@ EXT_SRCS = \
 	$(EXT_SHA256_SRCS)
 
 all: \
-	init-bin \
-	init compile \
-	AudioTest \
+	init \ 
+	compile \
+	miniscript \
+	miniscript-documentation \
+	miniscriptmakefile \
+	miniscriptnmakefile \
+	miniscripttranspiler \
+	miniscriptuntranspiler \
 	copy-executables \
 	clean
 
-init-bin:
-	mkdir $(MSCBIN)
-
 init:
+	mkdir $(MSCBIN)
 	mkdir $(MSCOBJ) 
 
 compile: $(SRCS)
