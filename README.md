@@ -1,4 +1,4 @@
-This is the documentation of MiniScript language. This document and repository is WIP. Expect a BETA release around 2023-12-01.
+This is the home of the MiniScript language. This document and repository is WIP. Expect a BETA release around 2023-12-01.
 
 # 1. Introduction
 
@@ -977,3 +977,6 @@ end
 | \|\|| or($a: Boolean, $b: Boolean): Boolean                                                      |
 | ^  | bitwiseXor($a: Integer, $b: Integer): Integer                                               |
 | ~  | bitwiseNot($value: Integer): Integer                                                        |
+
+# 9. Donation 
+- I have to pay my bills, beer and stuff, so if you have any use for this open source project, like educational, productive or fun, ..., consider a donation here https://www.paypal.me/andreasdrewke, here https://github.com/sponsors/andreasdr or via https://www.amazon.de/hz/wishlist/ls/250IBUL4JSZVR?ref_=wl_share
