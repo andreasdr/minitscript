@@ -1,0 +1,131 @@
+MSCOBJ = mscobj
+MSCBIN = mscbin
+
+INCLUDES = \
+	/I "." \
+	/I "src" \
+	/I "ext"
+
+# For some reason this works only once LOL
+# WINDOWS_SDK_DIR = %WindowsSdkDir%Lib\%WindowsSDKLibVersion%
+WINDOWS_SDK_DIR = C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0
+
+MAIN_LDFLAGS =
+LIBS_LDFLAGS =
+
+FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi
+# /NODEFAULTLIB:msvcrt
+
+LD_FLAGS =
+
+SRC = src
+
+SRCS = \
+	src/miniscript/utilities/Base64.cpp \
+	src/miniscript/utilities/Console.cpp \
+	src/miniscript/utilities/ExceptionBase.cpp \
+	src/miniscript/utilities/FileSystem.cpp \
+	src/miniscript/utilities/Float.cpp \
+	src/miniscript/utilities/Hex.cpp \
+	src/miniscript/utilities/Integer.cpp \
+	src/miniscript/utilities/Properties.cpp \
+	src/miniscript/utilities/SHA256.cpp \
+	src/miniscript/utilities/StringTools.cpp \
+	src/miniscript/utilities/StringTokenizer.cpp \
+	src/miniscript/miniscript/MiniScript.cpp \
+	src/miniscript/miniscript/MiniScriptArray.cpp \
+	src/miniscript/miniscript/MiniScriptBase.cpp \
+	src/miniscript/miniscript/MiniScriptConsole.cpp \
+	src/miniscript/miniscript/MiniScriptJSON.cpp \
+	src/miniscript/miniscript/MiniScriptMap.cpp \
+	src/miniscript/miniscript/MiniScriptMath.cpp \
+	src/miniscript/miniscript/MiniScriptScript.cpp \
+	src/miniscript/miniscript/MiniScriptSet.cpp \
+	src/miniscript/miniscript/MiniScriptString.cpp \
+	src/miniscript/miniscript/MiniScriptTranspiler.cpp \
+	src/miniscript/miniscript/MiniScriptTime.cpp \
+	src/miniscript/miniscript/MiniScriptXML.cpp \
+	src/miniscript/miniscript/Version.cpp
+
+EXT_SRCS = \
+
+EXT_SHA256_SRCS = \
+    ext/sha256/sha256.cpp
+
+EXT_SRCS = \
+	$(EXT_SHA256_SRCS)
+
+all: \
+	init-bin \
+	init compile \
+	AudioTest \
+	copy-executables \
+	clean
+
+init-bin:
+	mkdir $(MSCBIN)
+
+init:
+	mkdir $(MSCOBJ) 
+
+compile: $(SRCS)
+	cl /Fo$(MSCOBJ)/ /c $(FLAGS) $(INCLUDES) $**
+
+clean: 
+	del /S /Q $(MSCOBJ) >nul 2>&1
+	if exist $(MSCOBJ) rmdir $(MSCOBJ)
+	del /S /Q $(MSCBIN) >nul 2>&1
+	if exist $(MSCBIN) rmdir $(MSCBIN)
+
+clean-obj: 
+	del /S /Q $(MSCOBJ) >nul 2>&1
+	if exist $(MSCOBJ) rmdir $(MSCOBJ)
+
+miniscript:
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscript.exe $(MSCBIN)\miniscript.exe.rc
+	rc $(MSCBIN)\miniscript.exe.rc
+	cl /D TDME2_DLL_IMPORT /Fe$(MSCBIN)\miniscript /Fo$(MSCOBJ)/ $(FLAGS) $(INCLUDES) src/tdme/tests/miniscript-main.cpp $(MSCBIN)\miniscript.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+
+miniscript-documentation:
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscript-documentation.exe $(MSCBIN)\miniscript-documentation.exe.rc
+	rc $(MSCBIN)\miniscript-documentation.exe.rc
+	cl /Fe$(MSCBIN)\miniscript-documentation /Fo$(MSCOBJ)/ $(FLAGS) $(INCLUDES) src/tdme/tests/miniscript-documentation-main.cpp $(MSCBIN)\miniscript-documentation.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+
+miniscriptmakefile:
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptmakefile.exe $(MSCBIN)\miniscriptmakefile.exe.rc
+	rc $(MSCBIN)\miniscriptmakefile.exe.rc
+	cl /Fe$(MSCBIN)\miniscriptmakefile /Fo$(MSCOBJ)/ $(FLAGS) $(INCLUDES) src/tdme/tests/miniscriptmakefile-main.cpp $(MSCBIN)\miniscriptmakefile.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+
+miniscriptnmakefile:
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptnmakefile.exe $(MSCBIN)\miniscriptnmakefile.exe.rc
+	rc $(MSCBIN)\miniscriptnmakefile.exe.rc
+	cl /Fe$(MSCBIN)\miniscriptnmakefile /Fo$(MSCOBJ)/ $(FLAGS) $(INCLUDES) src/tdme/tests/miniscriptnmakefile-main.cpp $(MSCBIN)\miniscriptnmakefile.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+
+miniscripttranspiler:
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscripttranspiler.exe $(MSCBIN)\miniscripttranspiler.exe.rc
+	rc $(MSCBIN)\miniscripttranspiler.exe.rc
+	cl /Fe$(MSCBIN)\miniscripttranspiler /Fo$(MSCOBJ)/ $(FLAGS) $(INCLUDES) src/tdme/tests/miniscripttranspiler-main.cpp $(MSCBIN)\miniscripttranspiler.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+
+miniscriptuntranspiler:
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptuntranspiler.exe $(MSCBIN)\miniscriptuntranspiler.exe.rc
+	rc $(MSCBIN)\miniscriptuntranspiler.exe.rc
+	cl /Fe$(MSCBIN)\miniscriptuntranspiler /Fo$(MSCOBJ)/ $(FLAGS) $(INCLUDES) src/tdme/tests/miniscriptuntranspiler-main.cpp $(MSCBIN)\miniscriptuntranspiler.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+
+copy-executables:
+	if exist bin\miniscript\tools del /S /Q bin\miniscript\tools >nul 2>&1
+	if exist bin\miniscript\tools rmdir bin\miniscript\tools 
+	if exist bin\miniscript del /S /Q bin\miniscript >nul 2>&1
+	if exist bin\miniscript rmdir bin\miniscript 
+	if exist bin del /S /Q bin >nul 2>&1
+	if exist bin rmdir bin 
+
+	mkdir bin
+	mkdir bin\miniscript
+	mkdir bin\miniscript\tools
+
+	copy $(MSCBIN)\miniscript.exe bin\miniscript\tools\.
+	copy $(MSCBIN)\miniscriptdocumentation.exe bin\miniscript\tools\.
+	copy $(MSCBIN)\miniscriptmakefile.exe bin\miniscript\tools\.
+	copy $(MSCBIN)\miniscriptnmakefile.exe bin\miniscript\tools\.
+	copy $(MSCBIN)\miniscripttranspiler.exe bin\miniscript\tools\.
+	copy $(MSCBIN)\miniscriptuntranspiler.exe bin\miniscript\tools\.
