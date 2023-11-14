@@ -192,18 +192,11 @@ end
 
 # 4. Data types and variables
 
-MiniScript works with the following data types:
+Default MiniScript works with the following data types:
 - boolean
 - integer
 - float
 - string
-- vector2
-- vector3
-- vector4
-- quaternion
-- matrix3x3
-- matrix4x4
-- transform
 - array
 - map
 - set  
