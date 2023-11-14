@@ -4,7 +4,7 @@ This is the home of the MiniScript language. This document and repository is WIP
 
 Introduction to MiniScript language features:
 - very small implementation of a scripting language
-- runs on every CPU, OS, ... due to its simplicity, so its highly portable just like TDME2 is
+- runs on every CPU, OS, ... due to its simplicity, so its highly portable
 - can be easily extended by writing state machine machine states and script methods in C++ as well as custom data types
 - built-in data types: null, boolean, integer, float, string, array, map and set
 - when calling script C++ methods or script functions with arguments it does optionally use references or value by copy
