@@ -977,4 +977,4 @@ end
 | ~  | bitwiseNot($value: Integer): Integer                                                        |
 
 # 9. Donation 
-- I have to pay my bills, beer and stuff, so if you have any use for this open source project, like educational, productive or fun, ..., consider a donation here https://www.paypal.me/andreasdrewke, here https://github.com/sponsors/andreasdr or via https://www.amazon.de/hz/wishlist/ls/250IBUL4JSZVR?ref_=wl_share
+- I have to pay my bills, beer and stuff, so if you have any use for this open source project, like educational, productive or fun, ..., consider a donation here [PayPal](https://www.paypal.me/andreasdrewke), here [GitHub Sponsors](https://github.com/sponsors/andreasdr) or via [Amazon Wishlist](https://www.amazon.de/hz/wishlist/ls/250IBUL4JSZVR?ref_=wl_share)
