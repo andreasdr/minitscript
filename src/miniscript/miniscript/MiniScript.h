@@ -697,9 +697,7 @@ public:
 		 */
 		inline ScriptVariable(const ScriptVariable& variable) {
 			if (variable.isReference() == true) {
-				typeAndReference|= REFERENCE_BIT_VALUE;
-				ir.reference = variable.ir.reference;
-				variable.ir.reference->acquireReference();
+				setReference(variable.ir.reference);
 			} else {
 				copyScriptVariable(*this, variable);
 			}
@@ -725,11 +723,10 @@ public:
 		 */
 		inline ScriptVariable& operator=(const ScriptVariable& variable) {
 			if (variable.isReference() == true) {
+				typeAndReference = TYPE_NULL;
 				referenceCounter = 1;
 				valuePtr = 0ll;
-				typeAndReference = REFERENCE_BIT_VALUE;
-				ir.reference = variable.ir.reference;
-				variable.ir.reference->acquireReference();
+				setReference(variable.ir.reference);
 			} else {
 				copyScriptVariable(*this, variable);
 			}
