@@ -6,7 +6,7 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript JSON functions
+ * MiniScript script JSON methods
  * @author Andreas Drewke
  */
 class miniscript::miniscript::JSONMethods {

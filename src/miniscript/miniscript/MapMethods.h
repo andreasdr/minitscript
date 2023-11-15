@@ -6,7 +6,7 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript script map class
+ * MiniScript script map methods
  * @author Andreas Drewke
  */
 class miniscript::miniscript::MapMethods {

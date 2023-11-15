@@ -6,7 +6,7 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript time functions
+ * MiniScript script time methods
  * @author Andreas Drewke
  */
 class miniscript::miniscript::TimeMethods {

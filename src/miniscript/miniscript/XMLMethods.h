@@ -6,7 +6,7 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript xml functions
+ * MiniScript script xml methods
  * @author Andreas Drewke
  */
 class miniscript::miniscript::XMLMethods {

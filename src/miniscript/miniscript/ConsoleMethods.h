@@ -6,7 +6,7 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript console functions
+ * MiniScript script console methods
  * @author Andreas Drewke
  */
 class miniscript::miniscript::ConsoleMethods {

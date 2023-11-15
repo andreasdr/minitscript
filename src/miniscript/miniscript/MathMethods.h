@@ -11,7 +11,7 @@ using miniscript::math::Math;
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript math functions
+ * MiniScript math methods
  * @author Andreas Drewke
  */
 class miniscript::miniscript::MathMethods {

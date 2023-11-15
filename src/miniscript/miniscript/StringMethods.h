@@ -6,7 +6,7 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript script string class
+ * MiniScript script string methods
  * @author Andreas Drewke
  */
 class miniscript::miniscript::StringMethods {

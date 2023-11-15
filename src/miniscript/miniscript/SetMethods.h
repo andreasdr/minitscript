@@ -6,7 +6,7 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript script set class
+ * MiniScript script set methods
  * @author Andreas Drewke
  */
 class miniscript::miniscript::SetMethods {

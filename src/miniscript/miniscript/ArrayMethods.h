@@ -6,7 +6,7 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript script array class
+ * MiniScript script array methods
  * @author Andreas Drewke
  */
 class miniscript::miniscript::ArrayMethods {
