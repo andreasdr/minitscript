@@ -1,8 +1,8 @@
 #include <span>
 
 #include <miniscript/miniscript.h>
-#include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/MapMethods.h>
+#include <miniscript/miniscript/MiniScript.h>
 
 using std::span;
 

@@ -3,11 +3,10 @@
 #include <span>
 
 #include <miniscript/miniscript.h>
-#include <miniscript/utilities/fwd-miniscript.h>
+#include <miniscript/miniscript/MiniScript.h>
 
 using std::span;
 
-using miniscript::math::Math;
 using miniscript::miniscript::MiniScript;
 
 /**

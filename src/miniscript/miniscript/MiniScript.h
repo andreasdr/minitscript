@@ -7,9 +7,9 @@
 #include <stack>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <miniscript/miniscript.h>
@@ -24,15 +24,15 @@
 
 using std::array;
 using std::exchange;
-using std::remove;
 using std::make_unique;
 using std::move;
+using std::remove;
 using std::sort;
 using std::span;
 using std::stack;
-using std::swap;
 using std::string;
 using std::string_view;
+using std::swap;
 using std::to_string;
 using std::unique_ptr;
 using std::unordered_map;

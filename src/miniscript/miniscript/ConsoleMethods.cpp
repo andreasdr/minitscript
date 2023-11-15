@@ -1,9 +1,9 @@
 #include <span>
 
 #include <miniscript/miniscript.h>
-#include <miniscript/utilities/Console.h>
-#include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/ConsoleMethods.h>
+#include <miniscript/miniscript/MiniScript.h>
+#include <miniscript/utilities/Console.h>
 
 using std::span;
 

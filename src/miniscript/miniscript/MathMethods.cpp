@@ -2,14 +2,14 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/math/Math.h>
-#include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/MathMethods.h>
+#include <miniscript/miniscript/MiniScript.h>
 
 using std::span;
 
 using miniscript::math::Math;
-using miniscript::miniscript::MiniScript;
 using miniscript::miniscript::MathMethods;
+using miniscript::miniscript::MiniScript;
 
 void MathMethods::registerDataType(MiniScript::ScriptDataType* scriptDataType) {
 	scriptDataTypes.push_back(scriptDataType);

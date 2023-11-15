@@ -11,12 +11,12 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
+#include <miniscript/miniscript/Transpiler.h>
 #include <miniscript/miniscript/Version.h>
-#include <miniscript/utilities/FileSystem.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Exception.h>
+#include <miniscript/utilities/FileSystem.h>
 #include <miniscript/utilities/Integer.h>
-#include <miniscript/miniscript/Transpiler.h>
 #include <miniscript/utilities/StringTools.h>
 
 using std::exit;
@@ -32,12 +32,12 @@ using std::unordered_set;
 using std::vector;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::miniscript::Transpiler;
 using miniscript::miniscript::Version;
-using miniscript::utilities::FileSystem;
 using miniscript::utilities::Console;
 using miniscript::utilities::Exception;
+using miniscript::utilities::FileSystem;
 using miniscript::utilities::Integer;
-using miniscript::miniscript::Transpiler;
 using miniscript::utilities::StringTools;
 
 namespace miniscript {
