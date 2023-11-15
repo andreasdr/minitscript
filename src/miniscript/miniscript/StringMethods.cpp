@@ -9,11 +9,12 @@
 
 using std::span;
 
+using miniscript::utilities::StringTools;
+
 using miniscript::miniscript::MiniScript;
 using miniscript::miniscript::StringMethods;
 using miniscript::utilities::Float;
 using miniscript::utilities::Integer;
-using miniscript::utilities::StringTools;
 
 void StringMethods::registerMethods(MiniScript* miniScript) {
 	// string functions

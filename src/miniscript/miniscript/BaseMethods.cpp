@@ -7,6 +7,7 @@
 using std::span;
 
 using miniscript::miniscript::BaseMethods;
+
 using miniscript::miniscript::MiniScript;
 
 void BaseMethods::registerMethods(MiniScript* miniScript) {

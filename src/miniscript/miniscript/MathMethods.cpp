@@ -7,8 +7,9 @@
 
 using std::span;
 
-using miniscript::math::Math;
 using miniscript::miniscript::MathMethods;
+
+using miniscript::math::Math;
 using miniscript::miniscript::MiniScript;
 
 void MathMethods::registerDataType(MiniScript::ScriptDataType* scriptDataType) {
