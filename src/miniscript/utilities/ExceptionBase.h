@@ -7,7 +7,7 @@
 #include <string>
 
 #include <miniscript/miniscript.h>
-#include <miniscript/utilities/fwd-tdme.h>
+#include <miniscript/utilities/fwd-miniscript.h>
 
 using std::runtime_error;
 using std::string;

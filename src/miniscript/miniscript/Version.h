@@ -3,7 +3,7 @@
 #include <string>
 
 #include <miniscript/miniscript.h>
-#include <miniscript/miniscript/fwd-tdme.h>
+#include <miniscript/miniscript/fwd-miniscript.h>
 
 using std::string;
 

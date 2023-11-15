@@ -5,7 +5,7 @@
 #include <vector>
 
 #include <miniscript/miniscript.h>
-#include <miniscript/utilities/fwd-tdme.h>
+#include <miniscript/utilities/fwd-miniscript.h>
 #include <miniscript/utilities/UTF8CharacterIterator.h>
 
 using std::string;

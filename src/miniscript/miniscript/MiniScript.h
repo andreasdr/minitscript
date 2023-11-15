@@ -13,7 +13,7 @@
 #include <vector>
 
 #include <miniscript/miniscript.h>
-#include <miniscript/miniscript/fwd-tdme.h>
+#include <miniscript/miniscript/fwd-miniscript.h>
 #include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Exception.h>

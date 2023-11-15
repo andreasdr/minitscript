@@ -3,7 +3,7 @@
 #include <cmath>
 
 #include <miniscript/miniscript.h>
-#include <miniscript/math/fwd-tdme.h>
+#include <miniscript/math/fwd-miniscript.h>
 
 #if defined(_WIN32) && defined(_MSC_VER)
 	#define NOMINMAX

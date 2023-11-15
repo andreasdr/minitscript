@@ -5,7 +5,7 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/math/Math.h>
-#include <miniscript/utilities/fwd-tdme.h>
+#include <miniscript/utilities/fwd-miniscript.h>
 #include <miniscript/utilities/Console.h>
 
 using std::string;
