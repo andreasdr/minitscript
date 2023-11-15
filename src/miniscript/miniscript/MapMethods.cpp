@@ -2,15 +2,15 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptMap.h>
+#include <miniscript/miniscript/MapMethods.h>
 
 using std::span;
 
-using miniscript::miniscript::MiniScriptMap;
+using miniscript::miniscript::MapMethods;
 
 using miniscript::miniscript::MiniScript;
 
-void MiniScriptMap::registerMethods(MiniScript* miniScript) {
+void MapMethods::registerMethods(MiniScript* miniScript) {
 	// map
 	{
 		//

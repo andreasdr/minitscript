@@ -23,17 +23,17 @@
 #include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Integer.h>
-#include <miniscript/miniscript/MiniScriptArray.h>
-#include <miniscript/miniscript/MiniScriptBase.h>
-#include <miniscript/miniscript/MiniScriptConsole.h>
-#include <miniscript/miniscript/MiniScriptJSON.h>
-#include <miniscript/miniscript/MiniScriptMap.h>
-#include <miniscript/miniscript/MiniScriptMath.h>
-#include <miniscript/miniscript/MiniScriptScript.h>
-#include <miniscript/miniscript/MiniScriptSet.h>
-#include <miniscript/miniscript/MiniScriptString.h>
-#include <miniscript/miniscript/MiniScriptTime.h>
-#include <miniscript/miniscript/MiniScriptXML.h>
+#include <miniscript/miniscript/ArrayMethods.h>
+#include <miniscript/miniscript/BaseMethods.h>
+#include <miniscript/miniscript/ConsoleMethods.h>
+#include <miniscript/miniscript/JSONMethods.h>
+#include <miniscript/miniscript/MapMethods.h>
+#include <miniscript/miniscript/MathMethods.h>
+#include <miniscript/miniscript/ScriptMethods.h>
+#include <miniscript/miniscript/SetMethods.h>
+#include <miniscript/miniscript/StringMethods.h>
+#include <miniscript/miniscript/TimeMethods.h>
+#include <miniscript/miniscript/XMLMethods.h>
 #include <miniscript/utilities/FileSystem.h>
 #include <miniscript/utilities/StringTokenizer.h>
 #include <miniscript/utilities/StringTools.h>
@@ -66,17 +66,17 @@ using miniscript::math::Math;
 using miniscript::utilities::Character;
 using miniscript::utilities::Console;
 using miniscript::utilities::Integer;
-using miniscript::miniscript::MiniScriptArray;
-using miniscript::miniscript::MiniScriptBase;
-using miniscript::miniscript::MiniScriptConsole;
-using miniscript::miniscript::MiniScriptJSON;
-using miniscript::miniscript::MiniScriptMap;
-using miniscript::miniscript::MiniScriptMath;
-using miniscript::miniscript::MiniScriptScript;
-using miniscript::miniscript::MiniScriptSet;
-using miniscript::miniscript::MiniScriptString;
-using miniscript::miniscript::MiniScriptTime;
-using miniscript::miniscript::MiniScriptXML;
+using miniscript::miniscript::ArrayMethods;
+using miniscript::miniscript::BaseMethods;
+using miniscript::miniscript::ConsoleMethods;
+using miniscript::miniscript::JSONMethods;
+using miniscript::miniscript::MapMethods;
+using miniscript::miniscript::MathMethods;
+using miniscript::miniscript::ScriptMethods;
+using miniscript::miniscript::SetMethods;
+using miniscript::miniscript::StringMethods;
+using miniscript::miniscript::TimeMethods;
+using miniscript::miniscript::XMLMethods;
 using miniscript::utilities::FileSystem;
 using miniscript::utilities::StringTokenizer;
 using miniscript::utilities::StringTools;
@@ -114,7 +114,7 @@ const string MiniScript::getBaseClass() {
 const vector<string> MiniScript::getTranspilationUnits() {
 	return {
 		"src/miniscript/miniscript/MiniScript.cpp",
-		"src/miniscript/miniscript/MiniScriptMath.cpp"
+		"src/miniscript/miniscript/MathMethods.cpp"
 	};
 }
 
@@ -2733,39 +2733,39 @@ void MiniScript::registerMethods() {
 		registerMethod(new ScriptMethodInternalEvaluateMemberAccess(this));
 	}
 
-	// register math functions
-	miniScriptMath = make_unique<MiniScriptMath>(this);
+	// register math methods
+	miniScriptMath = make_unique<MathMethods>(this);
 	miniScriptMath->registerMethods();
 
-	// register base functions
-	MiniScriptBase::registerMethods(this);
+	// register base methods
+	BaseMethods::registerMethods(this);
 
-	// register string functions
-	MiniScriptString::registerMethods(this);
+	// register string methods
+	StringMethods::registerMethods(this);
 
-	// register array functions
-	MiniScriptArray::registerMethods(this);
+	// register array methods
+	ArrayMethods::registerMethods(this);
 
-	// register map functions
-	MiniScriptMap::registerMethods(this);
+	// register map methods
+	MapMethods::registerMethods(this);
 
-	// register set functions
-	MiniScriptSet::registerMethods(this);
+	// register set methods
+	SetMethods::registerMethods(this);
 
-	// register script functions
-	MiniScriptScript::registerMethods(this);
+	// register script methods
+	ScriptMethods::registerMethods(this);
 
-	// register script functions
-	MiniScriptTime::registerMethods(this);
+	// register script methods
+	TimeMethods::registerMethods(this);
 
-	// register JSON functions
-	MiniScriptJSON::registerMethods(this);
+	// register JSON methods
+	JSONMethods::registerMethods(this);
 
-	// register XML functions
-	MiniScriptXML::registerMethods(this);
+	// register XML methods
+	XMLMethods::registerMethods(this);
 
-	// register console functions
-	MiniScriptConsole::registerMethods(this);
+	// register console methods
+	ConsoleMethods::registerMethods(this);
 
 	//
 	for (const auto scriptDataType: scriptDataTypes) {

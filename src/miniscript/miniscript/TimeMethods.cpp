@@ -2,17 +2,17 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptTime.h>
+#include <miniscript/miniscript/TimeMethods.h>
 #include <miniscript/utilities/Time.h>
 
 using std::span;
 
-using miniscript::miniscript::MiniScriptTime;
+using miniscript::miniscript::TimeMethods;
 
 using miniscript::miniscript::MiniScript;
 using miniscript::utilities::Time;
 
-void MiniScriptTime::registerMethods(MiniScript* miniScript) {
+void TimeMethods::registerMethods(MiniScript* miniScript) {
 	// time
 	{
 		//

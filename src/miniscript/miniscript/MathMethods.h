@@ -14,13 +14,13 @@ using miniscript::miniscript::MiniScript;
  * MiniScript math functions
  * @author Andreas Drewke
  */
-class miniscript::miniscript::MiniScriptMath {
+class miniscript::miniscript::MathMethods {
 public:
 	/**
 	 * Constructor
 	 * @param miniScript miniScript
 	 */
-	MiniScriptMath(MiniScript* miniScript): miniScript(miniScript) {}
+	MathMethods(MiniScript* miniScript): miniScript(miniScript) {}
 
 	/**
 	 * Register script data type

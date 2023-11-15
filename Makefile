@@ -44,19 +44,19 @@ SRCS = \
 	src/miniscript/utilities/SHA256.cpp \
 	src/miniscript/utilities/StringTools.cpp \
 	src/miniscript/utilities/StringTokenizer.cpp \
+	src/miniscript/miniscript/ArrayMethods.cpp \
+	src/miniscript/miniscript/BaseMethods.cpp \
+	src/miniscript/miniscript/ConsoleMethods.cpp \
+	src/miniscript/miniscript/JSONMethods.cpp \
+	src/miniscript/miniscript/MapMethods.cpp \
+	src/miniscript/miniscript/MathMethods.cpp \
 	src/miniscript/miniscript/MiniScript.cpp \
-	src/miniscript/miniscript/MiniScriptArray.cpp \
-	src/miniscript/miniscript/MiniScriptBase.cpp \
-	src/miniscript/miniscript/MiniScriptConsole.cpp \
-	src/miniscript/miniscript/MiniScriptJSON.cpp \
-	src/miniscript/miniscript/MiniScriptMap.cpp \
-	src/miniscript/miniscript/MiniScriptMath.cpp \
-	src/miniscript/miniscript/MiniScriptScript.cpp \
-	src/miniscript/miniscript/MiniScriptSet.cpp \
-	src/miniscript/miniscript/MiniScriptString.cpp \
-	src/miniscript/miniscript/MiniScriptTranspiler.cpp \
-	src/miniscript/miniscript/MiniScriptTime.cpp \
-	src/miniscript/miniscript/MiniScriptXML.cpp \
+	src/miniscript/miniscript/ScriptMethods.cpp \
+	src/miniscript/miniscript/SetMethods.cpp \
+	src/miniscript/miniscript/StringMethods.cpp \
+	src/miniscript/miniscript/TimeMethods.cpp \
+	src/miniscript/miniscript/Transpiler.cpp \
+	src/miniscript/miniscript/XMLMethods.cpp \
 	src/miniscript/miniscript/Version.cpp
 
 EXT_SHA256_SRCS = \

@@ -6,10 +6,10 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript script script functions
+ * MiniScript time functions
  * @author Andreas Drewke
  */
-class miniscript::miniscript::MiniScriptScript {
+class miniscript::miniscript::TimeMethods {
 public:
 	/**
 	 * Register methods

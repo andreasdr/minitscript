@@ -2,14 +2,14 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptBase.h>
+#include <miniscript/miniscript/BaseMethods.h>
 
 using std::span;
 
 using miniscript::miniscript::MiniScript;
-using miniscript::miniscript::MiniScriptBase;
+using miniscript::miniscript::BaseMethods;
 
-void MiniScriptBase::registerMethods(MiniScript* miniScript) {
+void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// base methods
 	{
 		//

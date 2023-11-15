@@ -18,7 +18,7 @@ using miniscript::miniscript::MiniScript;
  * MiniScript transpiler tool set
  * @author Andreas Drewke
  */
-class miniscript::miniscript::MiniScriptTranspiler {
+class miniscript::miniscript::Transpiler {
 public:
 
 	/**

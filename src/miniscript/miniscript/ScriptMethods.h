@@ -6,10 +6,10 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript script set class
+ * MiniScript script script functions
  * @author Andreas Drewke
  */
-class miniscript::miniscript::MiniScriptSet {
+class miniscript::miniscript::ScriptMethods {
 public:
 	/**
 	 * Register methods

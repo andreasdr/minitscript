@@ -3,19 +3,19 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/math/Math.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptMath.h>
+#include <miniscript/miniscript/MathMethods.h>
 
 using std::span;
 
 using miniscript::math::Math;
 using miniscript::miniscript::MiniScript;
-using miniscript::miniscript::MiniScriptMath;
+using miniscript::miniscript::MathMethods;
 
-void MiniScriptMath::registerDataType(MiniScript::ScriptDataType* scriptDataType) {
+void MathMethods::registerDataType(MiniScript::ScriptDataType* scriptDataType) {
 	scriptDataTypes.push_back(scriptDataType);
 }
 
-void MiniScriptMath::registerMethods() {
+void MathMethods::registerMethods() {
 	// operator methods
 	{
 		//
@@ -36,7 +36,7 @@ void MiniScriptMath::registerMethods() {
 				return "add";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				miniScript->getMiniScriptMath()->add(argumentValues, returnValue, statement);
+				miniScript->getMathMethods()->add(argumentValues, returnValue, statement);
 			}
 			MiniScript::ScriptOperator getOperator() const override {
 				return MiniScript::OPERATOR_ADDITION;
@@ -63,7 +63,7 @@ void MiniScriptMath::registerMethods() {
 				return "sub";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				miniScript->getMiniScriptMath()->sub(argumentValues, returnValue, statement);
+				miniScript->getMathMethods()->sub(argumentValues, returnValue, statement);
 			}
 			MiniScript::ScriptOperator getOperator() const override {
 				return MiniScript::OPERATOR_SUBTRACTION;
@@ -90,7 +90,7 @@ void MiniScriptMath::registerMethods() {
 				return "mul";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				miniScript->getMiniScriptMath()->mul(argumentValues, returnValue, statement);
+				miniScript->getMathMethods()->mul(argumentValues, returnValue, statement);
 			}
 			MiniScript::ScriptOperator getOperator() const override {
 				return MiniScript::OPERATOR_MULTIPLICATION;
@@ -117,7 +117,7 @@ void MiniScriptMath::registerMethods() {
 				return "div";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				miniScript->getMiniScriptMath()->div(argumentValues, returnValue, statement);
+				miniScript->getMathMethods()->div(argumentValues, returnValue, statement);
 			}
 			MiniScript::ScriptOperator getOperator() const override {
 				return MiniScript::OPERATOR_DIVISION;
@@ -940,7 +940,7 @@ void MiniScriptMath::registerMethods() {
 	}
 }
 
-void MiniScriptMath::mul(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) {
+void MathMethods::mul(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) {
 	if (argumentValues.size() != 2) {
 		Console::println("mul(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("mul"));
 		miniScript->startErrorScript();
@@ -977,7 +977,7 @@ void MiniScriptMath::mul(const span<MiniScript::ScriptVariable>& argumentValues,
 	}
 }
 
-void MiniScriptMath::div(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) {
+void MathMethods::div(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) {
 	if (argumentValues.size() != 2) {
 		Console::println("div(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("div"));
 		miniScript->startErrorScript();
@@ -1014,7 +1014,7 @@ void MiniScriptMath::div(const span<MiniScript::ScriptVariable>& argumentValues,
 	}
 }
 
-void MiniScriptMath::add(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) {
+void MathMethods::add(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) {
 	if (argumentValues.size() != 2) {
 		Console::println(miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("add"));
 		miniScript->startErrorScript();
@@ -1059,7 +1059,7 @@ void MiniScriptMath::add(const span<MiniScript::ScriptVariable>& argumentValues,
 	}
 }
 
-void MiniScriptMath::sub(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) {
+void MathMethods::sub(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) {
 	if (argumentValues.size() != 2) {
 		Console::println("sub(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("sub"));
 		miniScript->startErrorScript();

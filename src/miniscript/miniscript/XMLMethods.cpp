@@ -2,17 +2,17 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptXML.h>
+#include <miniscript/miniscript/XMLMethods.h>
 #include <miniscript/utilities/StringTools.h>
 
 using std::span;
 
-using miniscript::miniscript::MiniScriptXML;
+using miniscript::miniscript::XMLMethods;
 
 using miniscript::miniscript::MiniScript;
 using miniscript::utilities::StringTools;
 
-void MiniScriptXML::registerMethods(MiniScript* miniScript) {
+void XMLMethods::registerMethods(MiniScript* miniScript) {
 	// xml
 	{
 		//
@@ -65,7 +65,7 @@ void MiniScriptXML::registerMethods(MiniScript* miniScript) {
 	}
 }
 
-inline const string MiniScriptXML::escape(const string& str) {
+inline const string XMLMethods::escape(const string& str) {
 	string result;
 	result = StringTools::replace(str, "&", "&amp;");
 	result = StringTools::replace(result, "\"", "&quot;");

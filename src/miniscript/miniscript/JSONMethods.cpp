@@ -2,15 +2,15 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptJSON.h>
+#include <miniscript/miniscript/JSONMethods.h>
 
 using std::span;
 
-using miniscript::miniscript::MiniScriptJSON;
+using miniscript::miniscript::JSONMethods;
 
 using miniscript::miniscript::MiniScript;
 
-void MiniScriptJSON::registerMethods(MiniScript* miniScript) {
+void JSONMethods::registerMethods(MiniScript* miniScript) {
 	// json
 	{
 		//

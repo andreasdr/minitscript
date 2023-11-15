@@ -6,22 +6,15 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript xml functions
+ * MiniScript script string class
  * @author Andreas Drewke
  */
-class miniscript::miniscript::MiniScriptXML {
+class miniscript::miniscript::StringMethods {
 public:
 	/**
 	 * Register methods
 	 * @param miniScript miniScript
 	 */
 	static void registerMethods(MiniScript* miniScript);
-
-private:
-	/**
-	 * Escape given string in terms of XML
-	 * @param str string
-	 */
-	static const string escape(const string& str);
 
 };

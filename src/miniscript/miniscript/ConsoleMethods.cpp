@@ -3,16 +3,16 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptConsole.h>
+#include <miniscript/miniscript/ConsoleMethods.h>
 
 using std::span;
 
-using miniscript::miniscript::MiniScriptConsole;
+using miniscript::miniscript::ConsoleMethods;
 
 using miniscript::miniscript::MiniScript;
 using miniscript::utilities::Console;
 
-void MiniScriptConsole::registerMethods(MiniScript* miniScript) {
+void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 	// console
 	{
 		//

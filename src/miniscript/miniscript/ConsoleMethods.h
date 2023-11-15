@@ -6,10 +6,10 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript script map class
+ * MiniScript console functions
  * @author Andreas Drewke
  */
-class miniscript::miniscript::MiniScriptMap {
+class miniscript::miniscript::ConsoleMethods {
 public:
 	/**
 	 * Register methods

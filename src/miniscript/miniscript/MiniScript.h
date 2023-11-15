@@ -49,7 +49,7 @@ using miniscript::utilities::Time;
 
 namespace miniscript {
 namespace tools {
-	class MiniScriptTranspilerTool;
+	class TranspilerTool;
 }
 }
 
@@ -58,11 +58,11 @@ namespace tools {
  * @author Andreas Drewke
  */
 class miniscript::miniscript::MiniScript {
-	friend class ::miniscript::tools::MiniScriptTranspilerTool;
-	friend class MiniScriptBase;
-	friend class MiniScriptJSON;
-	friend class MiniScriptScript;
-	friend class MiniScriptTranspiler;
+	friend class ::miniscript::tools::TranspilerTool;
+	friend class BaseMethods;
+	friend class JSONMethods;
+	friend class ScriptMethods;
+	friend class Transpiler;
 
 public:
 	enum ScriptOperator {
@@ -162,7 +162,7 @@ public:
 	 */
 	class ScriptDataType {
 		friend class MiniScript;
-		friend class MiniScriptMath;
+		friend class MathMethods;
 
 	protected:
 		bool mathDataType { false };
@@ -2151,7 +2151,7 @@ protected:
 
 	int inlineFunctionIdx { 0 };
 
-	unique_ptr<MiniScriptMath> miniScriptMath;
+	unique_ptr<MathMethods> miniScriptMath;
 
 	/**
 	 * Initialize native mini script
@@ -2823,7 +2823,7 @@ public:
 	/**
 	 * @return mini script math
 	 */
-	inline MiniScriptMath* getMiniScriptMath() {
+	inline MathMethods* getMathMethods() {
 		return miniScriptMath.get();
 	}
 

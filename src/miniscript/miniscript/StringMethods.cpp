@@ -4,7 +4,7 @@
 #include <miniscript/utilities/Float.h>
 #include <miniscript/utilities/Integer.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptString.h>
+#include <miniscript/miniscript/StringMethods.h>
 #include <miniscript/utilities/StringTools.h>
 
 using std::span;
@@ -12,10 +12,10 @@ using std::span;
 using miniscript::utilities::Float;
 using miniscript::utilities::Integer;
 using miniscript::miniscript::MiniScript;
-using miniscript::miniscript::MiniScriptString;
+using miniscript::miniscript::StringMethods;
 using miniscript::utilities::StringTools;
 
-void MiniScriptString::registerMethods(MiniScript* miniScript) {
+void StringMethods::registerMethods(MiniScript* miniScript) {
 	// string functions
 	{
 		//

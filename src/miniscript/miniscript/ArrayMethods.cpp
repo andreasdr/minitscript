@@ -2,15 +2,15 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptArray.h>
+#include <miniscript/miniscript/ArrayMethods.h>
 
 using std::span;
 
-using miniscript::miniscript::MiniScriptArray;
+using miniscript::miniscript::ArrayMethods;
 
 using miniscript::miniscript::MiniScript;
 
-void MiniScriptArray::registerMethods(MiniScript* miniScript) {
+void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	// array methods
 	{
 		//

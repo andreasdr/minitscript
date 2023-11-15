@@ -6,10 +6,10 @@
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript script string class
+ * MiniScript JSON functions
  * @author Andreas Drewke
  */
-class miniscript::miniscript::MiniScriptString {
+class miniscript::miniscript::JSONMethods {
 public:
 	/**
 	 * Register methods

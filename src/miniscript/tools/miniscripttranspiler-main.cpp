@@ -16,7 +16,7 @@
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Exception.h>
 #include <miniscript/utilities/Integer.h>
-#include <miniscript/miniscript/MiniScriptTranspiler.h>
+#include <miniscript/miniscript/Transpiler.h>
 #include <miniscript/utilities/StringTools.h>
 
 using std::exit;
@@ -37,12 +37,12 @@ using miniscript::utilities::FileSystem;
 using miniscript::utilities::Console;
 using miniscript::utilities::Exception;
 using miniscript::utilities::Integer;
-using miniscript::miniscript::MiniScriptTranspiler;
+using miniscript::miniscript::Transpiler;
 using miniscript::utilities::StringTools;
 
 namespace miniscript {
 namespace tools {
-class MiniScriptTranspilerTool {
+class TranspilerTool {
 public:
 
 static void processFile(const string& scriptFileName, const string& miniscriptTranspilationFileName, const vector<string>& miniScriptExtensionFileNames) {
@@ -62,7 +62,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 
 	//
 	unordered_map<string, vector<string>> methodCodeMap;
-	auto allMethods = MiniScriptTranspiler::getAllMethodNames(miniScript.get());
+	auto allMethods = Transpiler::getAllMethodNames(miniScript.get());
 
 	//
 	vector<string> transpilationUnits;
@@ -88,7 +88,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 						if (c == ' ') continue;
 						className+= c;
 					}
-					MiniScriptTranspiler::gatherMethodCode(transpilationUnitCode, className, i, methodCodeMap);
+					Transpiler::gatherMethodCode(transpilationUnitCode, className, i, methodCodeMap);
 				}
 			}
 		}
@@ -142,7 +142,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 	// member access evaluation
 	vector<string> memberAccessEvaluationDeclarations;
 	vector<string> memberAccessEvaluationDefinitions;
-	MiniScriptTranspiler::generateMiniScriptEvaluateMemberAccessArrays(miniScript.get(), memberAccessEvaluationDeclarations, memberAccessEvaluationDefinitions);
+	Transpiler::generateMiniScriptEvaluateMemberAccessArrays(miniScript.get(), memberAccessEvaluationDeclarations, memberAccessEvaluationDefinitions);
 
 	//
 	string miniScriptClassName = FileSystem::removeFileExtension(FileSystem::getFileName(miniscriptTranspilationFileName));
@@ -333,7 +333,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 			// transpile definition
 			generatedDefinitions+= "void " + miniScriptClassName + "::" + methodName + "(int miniScriptGotoStatementIdx) {" + "\n";
 			string generatedSubCode;
-			MiniScriptTranspiler::transpile(miniScript.get(), generatedSubCode, scriptIdx, methodCodeMap, allMethods);
+			Transpiler::transpile(miniScript.get(), generatedSubCode, scriptIdx, methodCodeMap, allMethods);
 			generatedDefinitions+= generatedSubCode;
 			generatedDefinitions+= string() + "}" + "\n\n";
 
@@ -344,7 +344,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "// next statements belong to tested enabled named condition with name \"" + script.name + "\"" + "\n";
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "if (enabledNamedCondition == \"" + script.name + "\")" + "\n";
 				}
-				MiniScriptTranspiler::transpileScriptCondition(
+				Transpiler::transpileScriptCondition(
 					miniScript.get(),
 					script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?generatedDetermineScriptIdxToStartDefinition:generatedDetermineNamedScriptIdxToStartDefinition,
 					scriptIdx,
@@ -404,7 +404,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 						to_string(scriptIdx)
 					)
 				);
-			MiniScriptTranspiler::generateArrayMapSetInitializer(
+			Transpiler::generateArrayMapSetInitializer(
 				miniScript.get(),
 				arrayMapSetInitializerDeclarations,
 				arrayMapSetInitializerDefinitions,
@@ -416,7 +416,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 				allMethods,
 				true
 			);
-			MiniScriptTranspiler::generateArrayAccessMethods(
+			Transpiler::generateArrayAccessMethods(
 				miniScript.get(),
 				arrayAccessMethodsDeclarations,
 				arrayAccessMethodsDefinitions,
@@ -429,7 +429,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 				true
 			);
 			for (auto statementIdx = 0; statementIdx < script.statements.size(); statementIdx++) {
-				MiniScriptTranspiler::generateArrayMapSetInitializer(
+				Transpiler::generateArrayMapSetInitializer(
 					miniScript.get(),
 					arrayMapSetInitializerDeclarations,
 					arrayMapSetInitializerDefinitions,
@@ -441,7 +441,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 					allMethods,
 					false
 				);
-				MiniScriptTranspiler::generateArrayAccessMethods(
+				Transpiler::generateArrayAccessMethods(
 					miniScript.get(),
 					arrayAccessMethodsDeclarations,
 					arrayAccessMethodsDefinitions,
@@ -587,7 +587,7 @@ int main(int argc, char** argv)
 	// MiniScript::registerDataTypes();
 
 	//
-	miniscript::tools::MiniScriptTranspilerTool::processFile(argv[1], argv[2], miniScriptExtensionFileNames);
+	miniscript::tools::TranspilerTool::processFile(argv[1], argv[2], miniScriptExtensionFileNames);
 
 	//
 	exit(EXIT_SUCCESS);

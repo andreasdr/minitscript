@@ -2,15 +2,15 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/MiniScriptSet.h>
+#include <miniscript/miniscript/SetMethods.h>
 
 using std::span;
 
-using miniscript::miniscript::MiniScriptSet;
+using miniscript::miniscript::SetMethods;
 
 using miniscript::miniscript::MiniScript;
 
-void MiniScriptSet::registerMethods(MiniScript* miniScript) {
+void SetMethods::registerMethods(MiniScript* miniScript) {
 	// sets
 	{
 		//

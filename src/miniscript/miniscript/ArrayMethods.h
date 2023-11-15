@@ -9,7 +9,7 @@ using miniscript::miniscript::MiniScript;
  * MiniScript script array class
  * @author Andreas Drewke
  */
-class miniscript::miniscript::MiniScriptArray {
+class miniscript::miniscript::ArrayMethods {
 public:
 	/**
 	 * Register methods

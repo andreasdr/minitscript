@@ -4,25 +4,25 @@
 namespace miniscript {
 namespace miniscript {
 	class MiniScript;
-	class MiniScriptArray;
-	class MiniScriptBase;
-	class MiniScriptConsole;
-	class MiniScriptJSON;
-	class MiniScriptMath;
-	class MiniScriptMap;
-	class MiniScriptScript;
-	class MiniScriptSet;
-	class MiniScriptString;
+	class ArrayMethods;
+	class BaseMethods;
+	class ConsoleMethods;
+	class JSONMethods;
+	class MathMethods;
+	class MapMethods;
+	class ScriptMethods;
+	class SetMethods;
+	class StringMethods;
 	class MiniScriptTransform;
-	class MiniScriptTranspiler;
+	class Transpiler;
 	class MiniScriptMatrix3x3;
 	class MiniScriptMatrix4x4;
 	class MiniScriptQuaternion;
 	class MiniScriptVector2;
 	class MiniScriptVector3;
 	class MiniScriptVector4;
-	class MiniScriptTime;
-	class MiniScriptXML;
+	class TimeMethods;
+	class XMLMethods;
 	class Version;
 }  // namespace miniscript
 }  // namespace miniscript
