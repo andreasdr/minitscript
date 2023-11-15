@@ -1,14 +1,17 @@
 #include <span>
 
+#include <miniscript/miniscript/SetMethods.h>
+
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/SetMethods.h>
+#include <miniscript/utilities/Console.h>
 
 using std::span;
 
 using miniscript::miniscript::SetMethods;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::utilities::Console;
 
 void SetMethods::registerMethods(MiniScript* miniScript) {
 	// sets

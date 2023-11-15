@@ -39,13 +39,13 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using miniscript::utilities::Character;
-using miniscript::utilities::Console;
-using miniscript::utilities::Exception;
-using miniscript::utilities::Float;
-using miniscript::utilities::Integer;
-using miniscript::utilities::StringTools;
-using miniscript::utilities::Time;
+using _Character = miniscript::utilities::Character;
+using _Console = miniscript::utilities::Console;
+using _Exception = miniscript::utilities::Exception;
+using _Float = miniscript::utilities::Float;
+using _Integer = miniscript::utilities::Integer;
+using _StringTools = miniscript::utilities::StringTools;
+using _Time = miniscript::utilities::Time;
 
 namespace miniscript {
 namespace tools {
@@ -620,7 +620,7 @@ public:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(from.getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
-						Console::println("ScriptVariable::copyScriptVariable(): unknown custom data type with id " + to_string(dataTypeIdx));
+						_Console::println("ScriptVariable::copyScriptVariable(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
 					}
 					MiniScript::scriptDataTypes[dataTypeIdx]->copyScriptVariable(to, from);
@@ -838,7 +838,7 @@ public:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
-						Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
+						_Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
 					}
 					MiniScript::scriptDataTypes[dataTypeIdx]->unsetScriptVariableValue(*this);
@@ -887,7 +887,7 @@ public:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
-						Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
+						_Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
 					}
 					MiniScript::scriptDataTypes[dataTypeIdx]->setScriptVariableValue(*this, nullptr);
@@ -942,7 +942,7 @@ public:
 				case TYPE_STRING:
 					{
 						const auto& stringValue = getStringValueReference();
-						auto lowerCaseString = StringTools::toLowerCase(stringValue);
+						auto lowerCaseString = _StringTools::toLowerCase(stringValue);
 						if (lowerCaseString != "false" && lowerCaseString != "true" && lowerCaseString != "1" && lowerCaseString != "0") return optional;
 						value = lowerCaseString == "true" || lowerCaseString == "1";
 						return true;
@@ -969,19 +969,19 @@ public:
 					value = getIntegerValueReference();
 					return true;
 				case TYPE_FLOAT:
-					Console::println("MiniScript::getIntegerValue(): converting float to integer: precision loss");
+					_Console::println("MiniScript::getIntegerValue(): converting float to integer: precision loss");
 					value = getFloatValueReference();
 					return true;
 				case TYPE_STRING:
 					{
 						const auto& stringValue = getStringValueReference();
-						if (Integer::is(stringValue) == true) {
-							value = Integer::parse(stringValue);
+						if (_Integer::is(stringValue) == true) {
+							value = _Integer::parse(stringValue);
 							return true;
 						} else
-						if (Float::is(stringValue) == true) {
-							Console::println("MiniScript::getIntegerValue(): converting float to integer: precision loss");
-							value = static_cast<int64_t>(Float::parse(stringValue));
+						if (_Float::is(stringValue) == true) {
+							_Console::println("MiniScript::getIntegerValue(): converting float to integer: precision loss");
+							value = static_cast<int64_t>(_Float::parse(stringValue));
 							return true;
 						} else {
 							return optional;
@@ -1014,8 +1014,8 @@ public:
 				case TYPE_STRING:
 					{
 						const auto& stringValue = getStringValueReference();
-						if (Float::is(stringValue) == false) return optional;
-						value = Float::parse(stringValue);
+						if (_Float::is(stringValue) == false) return optional;
+						value = _Float::parse(stringValue);
 					}
 					return true;
 				default:
@@ -1136,7 +1136,7 @@ public:
 			// custom data type
 			auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 			if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
-				Console::println("ScriptVariable::setValue(): unknown custom data type with id " + to_string(dataTypeIdx));
+				_Console::println("ScriptVariable::setValue(): unknown custom data type with id " + to_string(dataTypeIdx));
 				return;
 			}
 			MiniScript::scriptDataTypes[dataTypeIdx]->setScriptVariableValue(*this, value);
@@ -1443,31 +1443,34 @@ public:
 			if (value == "false") {
 				setValue(false);
 			} else
-			if (Integer::viewIs(value) == true) {
-				setValue(static_cast<int64_t>(Integer::viewParse(value)));
+			if (_Integer::viewIs(value) == true) {
+				setValue(static_cast<int64_t>(_Integer::viewParse(value)));
 			} else
-			if (Float::viewIs(value) == true) {
-				setValue(Float::viewParse(value));
+			if (_Float::viewIs(value) == true) {
+				setValue(_Float::viewParse(value));
 			} else
-			if (StringTools::viewStartsWith(value, "{") == true &&
-				StringTools::viewEndsWith(value, "}") == true) {
+			if (_StringTools::viewStartsWith(value, "{") == true &&
+				_StringTools::viewEndsWith(value, "}") == true) {
 				*this = initializeMapSet(value, miniScript, statement);
 			} else
-			if (StringTools::viewStartsWith(value, "[") == true &&
-				StringTools::viewEndsWith(value, "]") == true) {
+			if (_StringTools::viewStartsWith(value, "[") == true &&
+				_StringTools::viewEndsWith(value, "]") == true) {
 				*this = initializeArray(value, miniScript, statement);
 			} else
 			if (viewIsFunctionAssignment(value, function) == true) {
 				setFunctionAssignment(string(function));
 			} else
 			// function call
+			//	TODO: improve me
 			if (value.find('(') != string::npos &&
 				value.find(')') != string::npos) {
-				setFunctionCallStatement(string(value), miniScript, statement);
+				setFunctionCallStatement(miniScript->doStatementPreProcessing(string(value), statement), miniScript, statement);
+				_Console::println("Function Call Statement: " + miniScript->doStatementPreProcessing(string(value), statement));
 			} else
 			// variable
 			if (viewIsVariableAccess(value) == true) {
 				setFunctionCallStatement("getVariable(\"" + string(value) + "\")", miniScript, statement);
+				_Console::println("Variable Access: " + string(value));
 			} else {
 				setValue(string(value));
 			}
@@ -1521,7 +1524,7 @@ public:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
-						Console::println("ScriptVariable::getClassName(): unknown custom data type with id " + to_string(dataTypeIdx));
+						_Console::println("ScriptVariable::getClassName(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return CLASSNAME_NONE;
 					}
 					return MiniScript::scriptDataTypes[dataTypeIdx]->getClassName();
@@ -1551,7 +1554,7 @@ public:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
-						Console::println("ScriptVariable::getTypeAsString(): unknown custom data type with id " + to_string(dataTypeIdx));
+						_Console::println("ScriptVariable::getTypeAsString(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return CLASSNAME_NONE;
 					}
 					return MiniScript::scriptDataTypes[dataTypeIdx]->getTypeAsString();
@@ -1646,7 +1649,7 @@ public:
 						vector<string> values;
 						for (const auto arrayEntry: arrayValue) {
 							if (arrayEntry->getType() == TYPE_STRING) {
-								values.push_back("\"" + StringTools::replace(StringTools::replace(arrayEntry->getValueAsString(formatted, jsonCompatible, depth + 1), "\\", "\\\\"), "\"", "\\\"") + "\"" );
+								values.push_back("\"" + _StringTools::replace(_StringTools::replace(arrayEntry->getValueAsString(formatted, jsonCompatible, depth + 1), "\\", "\\\\"), "\"", "\\\"") + "\"" );
 							} else {
 								values.push_back(arrayEntry->getValueAsString(formatted, jsonCompatible, depth + 1));
 							}
@@ -1658,11 +1661,11 @@ public:
 								i++;
 							}
 							for (const auto& valueString: values) {
-								result+= StringTools::indent(valueString, "\t" , depth + 1);
+								result+= _StringTools::indent(valueString, "\t" , depth + 1);
 								result+= "\n";
 							}
-							result = (depth == 0?StringTools::indent("[", "\t", depth):"[") + "\n" + result;
-							result+= StringTools::indent("]", "\t", depth) + (depth == 0?"\n":"");
+							result = (depth == 0?_StringTools::indent("[", "\t", depth):"[") + "\n" + result;
+							result+= _StringTools::indent("]", "\t", depth) + (depth == 0?"\n":"");
 						} else {
 							auto i = 0;
 							for (const auto& valueString: values) {
@@ -1680,10 +1683,10 @@ public:
 						vector<string> values;
 						for (const auto& [mapEntryName, mapEntryValue]: mapValue) {
 							string value;
-							value+= "\"" + StringTools::replace(StringTools::replace(mapEntryName, "\\", "\\\\"), "\"", "\\\"") +  "\": ";
+							value+= "\"" + _StringTools::replace(_StringTools::replace(mapEntryName, "\\", "\\\\"), "\"", "\\\"") +  "\": ";
 							if (mapEntryValue->getType() == TYPE_STRING) {
 								value+= "\"";
-								value+= StringTools::replace(StringTools::replace(mapEntryValue->getValueAsString(formatted, jsonCompatible, depth + 1), "\\", "\\\\"), "\"", "\\\"");
+								value+= _StringTools::replace(_StringTools::replace(mapEntryValue->getValueAsString(formatted, jsonCompatible, depth + 1), "\\", "\\\\"), "\"", "\\\"");
 								value+= "\"";
 							} else {
 								value+= mapEntryValue->getValueAsString(formatted, jsonCompatible, depth + 1);
@@ -1698,11 +1701,11 @@ public:
 								i++;
 							}
 							for (const auto& valueString: values) {
-								result+= StringTools::indent(valueString, "\t" , depth + 1);
+								result+= _StringTools::indent(valueString, "\t" , depth + 1);
 								result+= "\n";
 							}
-							result = (depth == 0?StringTools::indent("{", "\t", depth):"{") + "\n" + result;
-							result+= StringTools::indent("}", "\t", depth) + (depth == 0?"\n":"");
+							result = (depth == 0?_StringTools::indent("{", "\t", depth):"{") + "\n" + result;
+							result+= _StringTools::indent("}", "\t", depth) + (depth == 0?"\n":"");
 						} else {
 							auto i = 0;
 							for (const auto& valueString: values) {
@@ -1720,7 +1723,7 @@ public:
 						vector<string> values;
 						for (const auto& key: setValue) {
 							values.push_back(
-								"\"" + StringTools::replace(StringTools::replace(key, "\\", "\\\\"), "\"", "\\\"") + "\""
+								"\"" + _StringTools::replace(_StringTools::replace(key, "\\", "\\\\"), "\"", "\\\"") + "\""
 							);
 							if (jsonCompatible == true) {
 								values.back() += ": true";
@@ -1734,11 +1737,11 @@ public:
 								i++;
 							}
 							for (const auto& valueString: values) {
-								result+= StringTools::indent(valueString, "\t" , depth + 1);
+								result+= _StringTools::indent(valueString, "\t" , depth + 1);
 								result+= "\n";
 							}
-							result = (depth == 0?StringTools::indent("{", "\t", depth):"{") + "\n" + result;
-							result+= StringTools::indent("}", "\t", depth) + (depth == 0?"\n":"");
+							result = (depth == 0?_StringTools::indent("{", "\t", depth):"{") + "\n" + result;
+							result+= _StringTools::indent("}", "\t", depth) + (depth == 0?"\n":"");
 						} else {
 							auto i = 0;
 							for (const auto& valueString: values) {
@@ -1754,7 +1757,7 @@ public:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
-						Console::println("ScriptVariable::getValueAsString(): unknown custom data type with id " + to_string(dataTypeIdx));
+						_Console::println("ScriptVariable::getValueAsString(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return result;
 					}
 					return MiniScript::scriptDataTypes[dataTypeIdx]->getValueAsString(*this);
@@ -1932,11 +1935,11 @@ public:
 		}
 
 	protected:
-		static const vector<string> CONTEXTFUNCTIONS_ALL;
-		static const vector<string> CONTEXTFUNCTIONS_ENGINE;
-		static const vector<string> CONTEXTFUNCTIONS_LOGIC;
-		static const vector<string> CONTEXTFUNCTIONS_ENGINELOGIC;
-		static const vector<string> CONTEXTFUNCTION_GUI;
+		STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ALL;
+		STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ENGINE;
+		STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_LOGIC;
+		STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ENGINELOGIC;
+		STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTION_GUI;
 
 	private:
 		vector<ArgumentType> argumentTypes;
@@ -2226,7 +2229,7 @@ protected:
 		scriptState.scriptIdx = scriptIdx;
 		scriptState.statementIdx = STATEMENTIDX_FIRST;
 		scriptState.gotoStatementIdx = STATEMENTIDX_NONE;
-		scriptState.timeWaitStarted = Time::getCurrentMillis();
+		scriptState.timeWaitStarted = _Time::getCurrentMillis();
 		scriptState.timeWaitTime = 0LL;
 		setScriptStateState(stateMachineState);
 	}
@@ -2551,7 +2554,7 @@ private:
 		// )
 		if (candidate[i++] != ')') return false;
 		// spaces
-		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
 		//
@@ -2559,12 +2562,12 @@ private:
 		// >
 		if (candidate[i++] != '>') return false;
 		// spaces
-		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
 		//
 		auto functionStartIdx = i;
 		for (; i < candidate.size(); i++) {
 			auto c = candidate[i];
-			if (Character::isAlphaNumeric(c) == false && c != '_') {
+			if (_Character::isAlphaNumeric(c) == false && c != '_') {
 				return false;
 			}
 		}
@@ -2588,7 +2591,7 @@ private:
 		// (
 		if (candidate[i++] != '(') return false;
 		// spaces
-		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
 		//
 		auto argumentStartIdx = string::npos;
 		auto argumentEndIdx = string::npos;
@@ -2629,14 +2632,14 @@ private:
 					break;
 				}
 			} else
-			if (argumentStartIdx != string::npos && Character::isAlphaNumeric(candidate[i]) == false && c != '_') {
+			if (argumentStartIdx != string::npos && _Character::isAlphaNumeric(candidate[i]) == false && c != '_') {
 				return false;
 			}
 		}
 		//
 		if (i >= candidate.size()) return false;
 		// spaces
-		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
 		//
@@ -2644,7 +2647,7 @@ private:
 		// >
 		if (candidate[i++] != '>') return false;
 		// spaces
-		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
 		//
 		if (candidate[i++] != '{') return false;
 		//
@@ -2656,7 +2659,7 @@ private:
 				scriptCodeEndIdx = j;
 				break;
 			} else
-			if (Character::isSpace(candidate[j]) == false) {
+			if (_Character::isSpace(candidate[j]) == false) {
 				return false;
 			}
 		}
@@ -2685,7 +2688,7 @@ private:
 			if (c == ']') {
 				squareBracketCount--;
 			} else
-			if (squareBracketCount == 0 && Character::isAlphaNumeric(c) == false && c != '_' && c != '.') {
+			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.') {
 				return false;
 			}
 		}
@@ -2884,7 +2887,7 @@ public:
 	inline const string getArgumentInformation(const string& methodName) {
 		auto scriptMethod = getMethod(methodName);
 		if (scriptMethod == nullptr) {
-			Console::println("MiniScript::getArgumentInformation(): method not found: " + methodName);
+			_Console::println("MiniScript::getArgumentInformation(): method not found: " + methodName);
 			return "No information available";
 		}
 		return scriptMethod->getArgumentsInformation();
@@ -3020,7 +3023,7 @@ public:
 			if (c == ']') {
 				squareBracketCount--;
 			} else
-			if (squareBracketCount == 0 && Character::isAlphaNumeric(c) == false && c != '_' && c != '.') {
+			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.') {
 				return false;
 			}
 		}
@@ -3037,8 +3040,8 @@ public:
 	inline const ScriptVariable getVariable(const string& name, const ScriptStatement* statement = nullptr, bool createReference = false) {
 		// global accessor
 		string globalVariableName;
-		if (StringTools::startsWith(name, "$GLOBAL.") == true) {
-			globalVariableName = "$" + StringTools::trim(StringTools::substring(name, 8));
+		if (_StringTools::startsWith(name, "$GLOBAL.") == true) {
+			globalVariableName = "$" + _StringTools::trim(_StringTools::substring(name, 8));
 		}
 
 		//
@@ -3067,8 +3070,8 @@ public:
 	inline void setVariable(const string& name, const ScriptVariable& variable, const ScriptStatement* statement = nullptr, bool createReference = false) {
 		// global accessor
 		string globalVariableName;
-		if (StringTools::startsWith(name, "$GLOBAL.") == true) {
-			globalVariableName = "$" + StringTools::trim(StringTools::substring(name, 8));
+		if (_StringTools::startsWith(name, "$GLOBAL.") == true) {
+			globalVariableName = "$" + _StringTools::trim(_StringTools::substring(name, 8));
 		}
 
 		//
@@ -3087,9 +3090,9 @@ public:
 			if (parentVariable == nullptr) {
 				string callerMethod = __FUNCTION__;
 				if (statement != nullptr) {
-					Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': map access operator without map: '" + key + "'");
+					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': map access operator without map: '" + key + "'");
 				} else {
-					Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': map access operator without map: '" + key + "'");
+					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': map access operator without map: '" + key + "'");
 				}
 			} else
 			// all checks passed, push to map
@@ -3106,14 +3109,14 @@ public:
 					}
 				} else {
 					string callerMethod = __FUNCTION__;
-					Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': set access operator: expected boolean variable to remove/insert key in set, but got " + variable.getTypeAsString());
+					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': set access operator: expected boolean variable to remove/insert key in set, but got " + variable.getTypeAsString());
 				}
 			} else {
 				string callerMethod = __FUNCTION__;
 				if (statement != nullptr) {
-					Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
+					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
 				} else {
-					Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
+					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
 				}
 			}
 			//
@@ -3123,17 +3126,17 @@ public:
 			if (parentVariable == nullptr) {
 				string callerMethod = __FUNCTION__;
 				if (statement != nullptr) {
-					Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': [] array push operator without array");
+					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': [] array push operator without array");
 				} else {
-					Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': [] array push operator without array");
+					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': [] array push operator without array");
 				}
 			} else
 			if (parentVariable->getType() != MiniScript::TYPE_ARRAY) {
 				string callerMethod = __FUNCTION__;
 				if (statement != nullptr) {
-					Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': [] array push operator: expected array , but got " + parentVariable->getTypeAsString());
+					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': [] array push operator: expected array , but got " + parentVariable->getTypeAsString());
 				} else {
-					Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': [] array push operator: expected array, but got " + parentVariable->getTypeAsString());
+					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': [] array push operator: expected array, but got " + parentVariable->getTypeAsString());
 				}
 			} else {
 				// all checks passed, push variable to array
@@ -3247,7 +3250,7 @@ public:
 		// lookup function
 		auto scriptFunctionsIt = scriptFunctions.find(function);
 		if (scriptFunctionsIt == scriptFunctions.end()) {
-			// Console::println("MiniScript::call(): Script user function not found: " + function);
+			// _Console::println("MiniScript::call(): Script user function not found: " + function);
 			return false;
 		}
 		//
@@ -3266,8 +3269,8 @@ public:
 		ScriptStatement evaluateScriptStatement(
 			LINE_NONE,
 			STATEMENTIDX_FIRST,
-			"internal.script.evaluate(" + StringTools::replace(StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
-			"internal.script.evaluate(" + StringTools::replace(StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
+			"internal.script.evaluate(" + _StringTools::replace(_StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
+			"internal.script.evaluate(" + _StringTools::replace(_StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
 			STATEMENTIDX_NONE
 		);
 		return evaluateInternal(evaluateStatement, doStatementPreProcessing(evaluateStatement, evaluateScriptStatement), returnValue);

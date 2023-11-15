@@ -3,6 +3,7 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/StringMethods.h>
+#include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Float.h>
 #include <miniscript/utilities/Integer.h>
 #include <miniscript/utilities/StringTools.h>
@@ -13,6 +14,7 @@ using miniscript::utilities::StringTools;
 
 using miniscript::miniscript::MiniScript;
 using miniscript::miniscript::StringMethods;
+using miniscript::utilities::Console;
 using miniscript::utilities::Float;
 using miniscript::utilities::Integer;
 

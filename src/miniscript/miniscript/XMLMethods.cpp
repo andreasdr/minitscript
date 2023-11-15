@@ -3,6 +3,7 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/XMLMethods.h>
+#include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/StringTools.h>
 
 using std::span;
@@ -10,6 +11,7 @@ using std::span;
 using miniscript::miniscript::XMLMethods;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::utilities::Console;
 using miniscript::utilities::StringTools;
 
 void XMLMethods::registerMethods(MiniScript* miniScript) {

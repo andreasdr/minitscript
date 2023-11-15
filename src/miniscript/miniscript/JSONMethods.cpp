@@ -3,12 +3,16 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/JSONMethods.h>
 #include <miniscript/miniscript/MiniScript.h>
+#include <miniscript/utilities/Console.h>
+#include <miniscript/utilities/StringTools.h>
 
 using std::span;
 
 using miniscript::miniscript::JSONMethods;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::utilities::Console;
+using miniscript::utilities::StringTools;
 
 void JSONMethods::registerMethods(MiniScript* miniScript) {
 	// json

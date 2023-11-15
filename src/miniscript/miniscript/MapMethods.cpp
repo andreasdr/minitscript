@@ -3,12 +3,14 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MapMethods.h>
 #include <miniscript/miniscript/MiniScript.h>
+#include <miniscript/utilities/Console.h>
 
 using std::span;
 
 using miniscript::miniscript::MapMethods;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::utilities::Console;
 
 void MapMethods::registerMethods(MiniScript* miniScript) {
 	// map

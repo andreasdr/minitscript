@@ -12,8 +12,6 @@ using std::string;
 using std::string_view;
 using std::vector;
 
-using miniscript::utilities::UTF8CharacterIterator;
-
 /**
  * String tools class
  * @author Andreas Drewke
@@ -303,7 +301,7 @@ public:
 	 * @return utf8 string length
 	 */
 	inline static int getUtf8Length(const string& str) {
-		UTF8CharacterIterator u8It(str);
+		::miniscript::utilities::UTF8CharacterIterator u8It(str);
 		while (u8It.hasNext() == true) u8It.next();
 		return u8It.getCharacterPosition();
 	}
@@ -315,7 +313,7 @@ public:
 	 * @return UTF binary buffer position from given character/code point index
 	 */
 	inline static int getUtf8BinaryIndex(const string& str, int charIdx) {
-		UTF8CharacterIterator u8It(str);
+		::miniscript::utilities::UTF8CharacterIterator u8It(str);
 		u8It.seekCharacterPosition(charIdx);
 		return u8It.getBinaryPosition();
 	}

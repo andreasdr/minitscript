@@ -6,15 +6,10 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/math/Math.h>
 #include <miniscript/utilities/fwd-miniscript.h>
-#include <miniscript/utilities/Console.h>
 
 using std::string;
 using std::to_string;
 using std::vector;
-
-using miniscript::math::Math;
-
-using miniscript::utilities::Console;
 
 /**
  * UTF8 string character iterator
@@ -76,7 +71,7 @@ public:
 		reset();
 		// seeking in cache first
 		if (position >= UTF8PositionCache::CACHE_ENTRY_SIZE && cache != nullptr && cache->binaryCache.empty() == false) {
-			auto cacheIdx = Math::min((position / UTF8PositionCache::CACHE_ENTRY_SIZE) - 1, cache->binaryCache.size() - 1);
+			auto cacheIdx = ::miniscript::math::Math::min((position / UTF8PositionCache::CACHE_ENTRY_SIZE) - 1, cache->binaryCache.size() - 1);
 			const auto& cacheEntry = cache->binaryCache[cacheIdx];
 			binaryPosition = cacheEntry.binaryPosition;
 			characterPosition = cacheEntry.characterPosition;
@@ -102,7 +97,7 @@ public:
 		reset();
 		// seeking in cache first
 		if (position >= UTF8PositionCache::CACHE_ENTRY_SIZE && cache != nullptr && cache->characterCache.empty() == false) {
-			auto cacheIdx = Math::min((position / UTF8PositionCache::CACHE_ENTRY_SIZE) - 1, cache->characterCache.size() - 1);
+			auto cacheIdx = ::miniscript::math::Math::min((position / UTF8PositionCache::CACHE_ENTRY_SIZE) - 1, cache->characterCache.size() - 1);
 			const auto& cacheEntry = cache->characterCache[cacheIdx];
 			binaryPosition = cacheEntry.binaryPosition;
 			characterPosition = cacheEntry.characterPosition;

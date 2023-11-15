@@ -9,6 +9,7 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/math/Math.h>
 #include <miniscript/utilities/Console.h>
+#include <miniscript/utilities/Integer.h>
 #include <miniscript/utilities/StringTools.h>
 
 using miniscript::miniscript::Transpiler;
@@ -23,6 +24,7 @@ using std::vector;
 
 using miniscript::math::Math;
 using miniscript::utilities::Console;
+using miniscript::utilities::Integer;
 using miniscript::utilities::StringTools;
 
 const unordered_set<string> Transpiler::getAllMethodNames(MiniScript* miniScript) {

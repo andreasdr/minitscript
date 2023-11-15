@@ -3,6 +3,7 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/TimeMethods.h>
+#include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Time.h>
 
 using std::span;
@@ -10,6 +11,7 @@ using std::span;
 using miniscript::miniscript::TimeMethods;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::utilities::Console;
 using miniscript::utilities::Time;
 
 void TimeMethods::registerMethods(MiniScript* miniScript) {

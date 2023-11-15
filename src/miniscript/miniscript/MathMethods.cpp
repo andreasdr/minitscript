@@ -4,6 +4,7 @@
 #include <miniscript/math/Math.h>
 #include <miniscript/miniscript/MathMethods.h>
 #include <miniscript/miniscript/MiniScript.h>
+#include <miniscript/utilities/Console.h>
 
 using std::span;
 
@@ -11,6 +12,7 @@ using miniscript::miniscript::MathMethods;
 
 using miniscript::math::Math;
 using miniscript::miniscript::MiniScript;
+using miniscript::utilities::Console;
 
 void MathMethods::registerDataType(MiniScript::ScriptDataType* scriptDataType) {
 	scriptDataTypes.push_back(scriptDataType);
@@ -945,6 +947,7 @@ void MathMethods::mul(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 	if (argumentValues.size() != 2) {
 		Console::println("mul(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("mul"));
 		miniScript->startErrorScript();
+		//
 		return;
 	}
 	// custom data types
@@ -958,9 +961,12 @@ void MathMethods::mul(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 		if (MiniScript::getFloatValue(argumentValues, 0, a, false) == true &&
 			MiniScript::getFloatValue(argumentValues, 1, b, false) == true) {
 			returnValue.setValue(a * b);
+			//
+			return;
 		} else  {
 			Console::println("mul(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("mul"));
 			miniScript->startErrorScript();
+			//
 			return;
 		}
 	} else {
@@ -970,9 +976,12 @@ void MathMethods::mul(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 		if (MiniScript::getIntegerValue(argumentValues, 0, a, false) == true &&
 			MiniScript::getIntegerValue(argumentValues, 1, b, false) == true) {
 			returnValue.setValue(a * b);
+			//
+			return;
 		} else  {
 			Console::println("mul(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("mul"));
 			miniScript->startErrorScript();
+			//
 			return;
 		}
 	}
@@ -982,6 +991,7 @@ void MathMethods::div(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 	if (argumentValues.size() != 2) {
 		Console::println("div(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("div"));
 		miniScript->startErrorScript();
+		//
 		return;
 	}
 	// custom data types
@@ -995,9 +1005,12 @@ void MathMethods::div(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 		if (MiniScript::getFloatValue(argumentValues, 0, a, false) == true &&
 			MiniScript::getFloatValue(argumentValues, 1, b, false) == true) {
 			returnValue.setValue(a / b);
+			//
+			return;
 		} else  {
 			Console::println("div(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("div"));
 			miniScript->startErrorScript();
+			//
 			return;
 		}
 	} else {
@@ -1007,9 +1020,12 @@ void MathMethods::div(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 		if (MiniScript::getIntegerValue(argumentValues, 0, a, false) == true &&
 			MiniScript::getIntegerValue(argumentValues, 1, b, false) == true) {
 			returnValue.setValue(a / b);
+			//
+			return;
 		} else  {
 			Console::println("div(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("div"));
 			miniScript->startErrorScript();
+			//
 			return;
 		}
 	}
@@ -1021,10 +1037,6 @@ void MathMethods::add(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 		miniScript->startErrorScript();
 		return;
 	}
-	// custom data types
-	for (const auto scriptDataType: scriptDataTypes) {
-		if (scriptDataType->add(miniScript, argumentValues, returnValue, statement) == true) return;
-	}
 	// string concatenation
 	if (MiniScript::hasType(argumentValues, MiniScript::TYPE_STRING) == true) {
 		string result;
@@ -1032,7 +1044,13 @@ void MathMethods::add(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 			result+= argumentValues[i].getValueAsString();
 		}
 		returnValue.setValue(result);
-	} else
+		//
+		return;
+	}
+	// custom data types
+	for (const auto scriptDataType: scriptDataTypes) {
+		if (scriptDataType->add(miniScript, argumentValues, returnValue, statement) == true) return;
+	}
 	// float
 	if (MiniScript::hasType(argumentValues, MiniScript::TYPE_FLOAT) == true) {
 		float a;
@@ -1040,9 +1058,12 @@ void MathMethods::add(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 		if (MiniScript::getFloatValue(argumentValues, 0, a, false) == true &&
 			MiniScript::getFloatValue(argumentValues, 1, b, false) == true) {
 			returnValue.setValue(a + b);
+			//
+			return;
 		} else  {
 			Console::println("add(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("add"));
 			miniScript->startErrorScript();
+			//
 			return;
 		}
 	} else {
@@ -1052,18 +1073,23 @@ void MathMethods::add(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 		if (MiniScript::getIntegerValue(argumentValues, 0, a, false) == true &&
 			MiniScript::getIntegerValue(argumentValues, 1, b, false) == true) {
 			returnValue.setValue(a + b);
+			//
+			return;
 		} else  {
 			Console::println("add(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("add"));
 			miniScript->startErrorScript();
+			//
 			return;
 		}
 	}
+
 }
 
 void MathMethods::sub(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) {
 	if (argumentValues.size() != 2) {
 		Console::println("sub(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("sub"));
 		miniScript->startErrorScript();
+		//
 		return;
 	}
 	// custom data types
@@ -1077,9 +1103,12 @@ void MathMethods::sub(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 		if (MiniScript::getFloatValue(argumentValues, 0, a, false) == true &&
 			MiniScript::getFloatValue(argumentValues, 1, b, false) == true) {
 			returnValue.setValue(a - b);
+			//
+			return;
 		} else  {
 			Console::println("sub(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("sub"));
 			miniScript->startErrorScript();
+			//
 			return;
 		}
 	} else {
@@ -1089,9 +1118,12 @@ void MathMethods::sub(const span<MiniScript::ScriptVariable>& argumentValues, Mi
 		if (MiniScript::getIntegerValue(argumentValues, 0, a, false) == true &&
 			MiniScript::getIntegerValue(argumentValues, 1, b, false) == true) {
 			returnValue.setValue(a - b);
+			//
+			return;
 		} else  {
 			Console::println("sub(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation("sub"));
 			miniScript->startErrorScript();
+			//
 			return;
 		}
 	}

@@ -16,8 +16,6 @@ using std::numeric_limits;
 using std::string;
 using std::string_view;
 
-using miniscript::math::Math;
-
 /**
  * Float class
  * @author Andreas Drewke
@@ -99,7 +97,7 @@ public:
 	 * @return f1 and f2 are equals
 	 */
 	inline static bool equals(float f1, float f2) {
-		return Math::abs(f2 - f1) < Math::EPSILON;
+		return ::miniscript::math::Math::abs(f2 - f1) < ::miniscript::math::Math::EPSILON;
 	}
 
 };

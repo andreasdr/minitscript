@@ -3,12 +3,16 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/BaseMethods.h>
 #include <miniscript/miniscript/MiniScript.h>
+#include <miniscript/utilities/Console.h>
+#include <miniscript/utilities/Time.h>
 
 using std::span;
 
 using miniscript::miniscript::BaseMethods;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::utilities::Console;
+using miniscript::utilities::Time;
 
 void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// base methods
