@@ -377,16 +377,16 @@ public:
 		static constexpr uint16_t TYPE_BITS_VALUE { 32767 };
 
 		//
-		union ir {									// 8
+		union ir {
 			Initializer* initializer;
 			ScriptVariable* reference;
 		};
 
-		// 24
-		uint16_t typeAndReference { TYPE_NULL };	// 4
-		int16_t referenceCounter { 1 };				// 4
-		uint64_t valuePtr { 0LL };					// 8
-		ir ir {};
+		// 24 bytes
+		uint16_t typeAndReference { TYPE_NULL };	// 4 bytes
+		int16_t referenceCounter { 1 };				// 4 bytes
+		uint64_t valuePtr { 0LL };					// 8 bytes
+		ir ir {};									// 8 bytes
 
 		/**
 		 * @return is reference
@@ -409,7 +409,7 @@ public:
 		 */
 		inline void setReference(ScriptVariable* variable) {
 			typeAndReference|= REFERENCE_BIT_VALUE;
-			ir.reference = (ScriptVariable*)variable; // TODO: improve me!
+			ir.reference = (ScriptVariable*)variable;
 			ir.reference->acquireReference();
 		}
 
@@ -722,10 +722,16 @@ public:
 		 * @return this variable
 		 */
 		inline ScriptVariable& operator=(const ScriptVariable& variable) {
+			// set up new variable
 			if (variable.isReference() == true) {
-				typeAndReference = TYPE_NULL;
-				referenceCounter = 1;
-				valuePtr = 0ll;
+				// release current reference
+				if (isReference() == true) {
+					ir.reference->releaseReference();
+					unsetReference();
+				}
+				//
+				setType(TYPE_NULL);
+				//
 				setReference(variable.ir.reference);
 			} else {
 				copyScriptVariable(*this, variable);
