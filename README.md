@@ -2,6 +2,11 @@ This is the home of the MiniScript language. This document and repository is WIP
 
 # 1. Introduction
 
+MiniScript is open source
+- please check the [license](https://github.com/Mindty-Kollektiv/miniscript/blob/master/LICENSE)
+- you find the source code at [https://github.com/Mindty-Kollektiv/miniscript](https://github.com/Mindty-Kollektiv/miniscript) 
+- here you find developer [documentation including collaboration graphs and API](https://www.mindty.com/products/miniscript/documentation/1.0.0-BETA/)
+
 Introduction to MiniScript language features:
 - very small implementation of a scripting language
 - runs on every CPU, OS, ... due to its simplicity, so its highly portable
@@ -17,8 +22,6 @@ Introduction to MiniScript language features:
   - for custom data types
 - supports event like programming
 - can be transpiled to C++
-
-Also see https://www.mindty.com/products/miniscript/documentation/1.0.0-BETA/ for complete documentation.
 
 # 2. Flow control
 
