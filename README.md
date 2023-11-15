@@ -1,4 +1,4 @@
-This is the home of the MiniScript language. This document and repository is WIP. Expect a BETA release around 2023-12-01.
+This is the home of the MiniScript language. This document and repository is WIP. Expect a BETA release around 2023-12-01. 
 
 # 1. Introduction
 
@@ -17,6 +17,8 @@ Introduction to MiniScript language features:
   - for custom data types
 - supports event like programming
 - can be transpiled to C++
+
+Also see https://www.mindty.com/products/miniscript/documentation/1.0.0-BETA/ for complete documentation.
 
 # 2. Flow control
 

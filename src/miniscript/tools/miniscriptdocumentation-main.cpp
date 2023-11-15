@@ -244,7 +244,7 @@ int main(int argc, char** argv)
 
 	//
 	Properties descriptions;
-	descriptions.load("resources/engine/code-completion", "tscript-methods.properties");
+	descriptions.load("resources/engine/code-completion", "method-descriptions.properties");
 
 	//
 	// MiniScript::registerDataTypes();
