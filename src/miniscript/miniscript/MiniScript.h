@@ -373,8 +373,8 @@ public:
 		};
 
 		//
-		static constexpr uint16_t REFERENCE_BIT_VALUE { 32768 };
-		static constexpr uint16_t TYPE_BITS_VALUE { 32767 };
+		static constexpr uint32_t REFERENCE_BIT_VALUE { 2147483648 }; // 2 ^ 31
+		static constexpr uint32_t TYPE_BITS_VALUE { 2147483647 }; // 2 ^ 31 - 1
 
 		//
 		union ir {
@@ -383,8 +383,8 @@ public:
 		};
 
 		// 24 bytes
-		uint16_t typeAndReference { TYPE_NULL };	// 4 bytes
-		int16_t referenceCounter { 1 };				// 4 bytes
+		uint32_t typeAndReference { TYPE_NULL };	// 4 bytes
+		int32_t referenceCounter { 1 };				// 4 bytes
 		uint64_t valuePtr { 0LL };					// 8 bytes
 		ir ir {};									// 8 bytes
 
@@ -558,11 +558,11 @@ public:
 
 	public:
 		// class names
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_NONE;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_STRING;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_ARRAY;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_MAP;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_SET;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_NONE;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_STRING;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_ARRAY;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_MAP;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_SET;
 
 		/**
 		 * Create reference variable
@@ -1972,11 +1972,11 @@ public:
 		}
 
 	protected:
-		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ALL;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ENGINE;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_LOGIC;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ENGINELOGIC;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTION_GUI;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ALL;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ENGINE;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_LOGIC;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ENGINELOGIC;
+		MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTION_GUI;
 
 	private:
 		vector<ArgumentType> argumentTypes;
@@ -2080,9 +2080,9 @@ public:
 	static constexpr int STATEMENTIDX_FIRST { 0 };
 	static constexpr int ARGUMENTIDX_NONE { -1 };
 
-	MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALL;
-	MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_ENABLENAMEDCONDITION;
-	MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_DISABLENAMEDCONDITION;
+	MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALL;
+	MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_ENABLENAMEDCONDITION;
+	MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_DISABLENAMEDCONDITION;
 
 	/**
 	 * Returns arguments as string placed in a vector of string_views
@@ -2361,8 +2361,8 @@ private:
 	static constexpr bool VERBOSE { false };
 
 	//
-	MINISCRIPT_STATIC_DLL_IMPEXT static const string OPERATOR_CHARS;
-	MINISCRIPT_STATIC_DLL_IMPEXT static vector<ScriptDataType*> scriptDataTypes;
+	MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static const string OPERATOR_CHARS;
+	MINISCRIPT_MINISCRIPT_STATIC_DLL_IMPEXT static vector<ScriptDataType*> scriptDataTypes;
 
 	// TODO: maybe we need a better naming for this
 	// script functions defined by script itself
