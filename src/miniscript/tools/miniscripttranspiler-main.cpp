@@ -145,7 +145,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 	Transpiler::generateMiniScriptEvaluateMemberAccessArrays(miniScript.get(), memberAccessEvaluationDeclarations, memberAccessEvaluationDefinitions);
 
 	//
-	string miniScriptClassName = FileSystem::removeFileExtension(FileSystem::getFileName(miniscriptTranspilationFileName));
+	string miniScriptClassName = FileSystem::getFileName(miniscriptTranspilationFileName);
 	string generatedDeclarations = "\n";
 	generatedDeclarations+= string() + "public:" + "\n";
 	generatedDeclarations+= headerIndent + "// overridden methods" + "\n";
@@ -477,13 +477,21 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 
 	// inject C++ definition code
 	{
-		vector<string> miniScriptClass;
+		vector<string> miniScriptCPP;
 		vector<string> miniScriptClassNew;
-		FileSystem::getContentAsStringArray(FileSystem::getPathName(miniscriptTranspilationFileName), FileSystem::getFileName(miniscriptTranspilationFileName), miniScriptClass);
+		auto miniscriptTranspilationCPPFileName = FileSystem::getPathName(miniscriptTranspilationFileName) + "/" + FileSystem::getFileName(miniscriptTranspilationFileName) + ".cpp";
+		if (FileSystem::fileExists(miniscriptTranspilationCPPFileName) == false) {
+			auto miniScriptCPPString = FileSystem::getContentAsString("./resources/templates/transpilation", "Transpilation.cpp");
+			miniScriptCPPString = StringTools::replace(miniScriptCPPString, "{$class-name}", miniScriptClassName);
+			miniScriptCPPString = StringTools::replace(miniScriptCPPString, "{$base-class}", miniScript->getBaseClass());
+			miniScriptCPP = StringTools::tokenize(miniScriptCPPString, "\n", true);
+		} else {
+			FileSystem::getContentAsStringArray(FileSystem::getPathName(miniscriptTranspilationCPPFileName), FileSystem::getFileName(miniscriptTranspilationCPPFileName), miniScriptCPP);
+		}
 		auto reject = false;
 		auto injectedGeneratedCode = false;
-		for (auto i = 0; i < miniScriptClass.size(); i++) {
-			const auto& line = miniScriptClass[i];
+		for (auto i = 0; i < miniScriptCPP.size(); i++) {
+			const auto& line = miniScriptCPP[i];
 			auto trimmedLine = StringTools::trim(line);
 			if (StringTools::startsWith(trimmedLine, "//") == true) {
 				if (reject == false) miniScriptClassNew.push_back(line);
@@ -509,8 +517,8 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 		} else {
 			//
 			FileSystem::setContentFromStringArray(
-				FileSystem::getPathName(miniscriptTranspilationFileName),
-				FileSystem::getFileName(miniscriptTranspilationFileName),
+				FileSystem::getPathName(miniscriptTranspilationCPPFileName),
+				FileSystem::getFileName(miniscriptTranspilationCPPFileName),
 				miniScriptClassNew
 			);
 			//
@@ -523,8 +531,15 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 	{
 		vector<string> miniScriptClassHeader;
 		vector<string> miniScriptClassHeaderNew;
-		auto miniscriptTranspilationHeaderFileName = FileSystem::getPathName(miniscriptTranspilationFileName) + "/" + FileSystem::removeFileExtension(FileSystem::getFileName(miniscriptTranspilationFileName)) + ".h";
-		FileSystem::getContentAsStringArray(FileSystem::getPathName(miniscriptTranspilationHeaderFileName), FileSystem::getFileName(miniscriptTranspilationHeaderFileName), miniScriptClassHeader);
+		auto miniscriptTranspilationHeaderFileName = FileSystem::getPathName(miniscriptTranspilationFileName) + "/" + FileSystem::getFileName(miniscriptTranspilationFileName) + ".h";
+		if (FileSystem::fileExists(miniscriptTranspilationHeaderFileName) == false) {
+			auto miniScriptHeaderString = FileSystem::getContentAsString("./resources/templates/transpilation", "Transpilation.h");
+			miniScriptHeaderString = StringTools::replace(miniScriptHeaderString, "{$class-name}", miniScriptClassName);
+			miniScriptHeaderString = StringTools::replace(miniScriptHeaderString, "{$base-class}", miniScript->getBaseClass());
+			miniScriptClassHeader = StringTools::tokenize(miniScriptHeaderString, "\n", true);
+		} else {
+			FileSystem::getContentAsStringArray(FileSystem::getPathName(miniscriptTranspilationHeaderFileName), FileSystem::getFileName(miniscriptTranspilationHeaderFileName), miniScriptClassHeader);
+		}
 		auto reject = false;
 		auto injectedGeneratedCode = false;
 		for (auto i = 0; i < miniScriptClassHeader.size(); i++) {
@@ -576,7 +591,7 @@ int main(int argc, char** argv)
 
 	//
 	if (argc < 3) {
-		Console::println("Usage: miniscripttranspiler path_to_script_file path_to_cpp_miniscript_transpilation_file [path_to_cpp_miniscript_extension_file1] [path_to_cpp_miniscript_extension_fileN]");
+		Console::println("Usage: miniscripttranspiler script_filename transpilation_filename [miniscript_extension_file1] [miniscript_extension_fileN]");
 		exit(EXIT_FAILURE);
 	}
 
