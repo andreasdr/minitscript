@@ -1,5 +1,4 @@
 MSCOBJ = mscobj
-MSCOBJEXT = mscobjext
 MSCOBJMAIN = mscobjmain
 MSCBIN = mscbin
 
@@ -12,7 +11,7 @@ INCLUDES = \
 # WINDOWS_SDK_DIR = %WindowsSdkDir%Lib\%WindowsSDKLibVersion%
 WINDOWS_SDK_DIR = C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0
 
-MAIN_LDFLAGS =
+MAIN_LDFLAGS = /LIBPATH $(MSCBIN)\libminiscript.lib
 LIBS_LDFLAGS =
 
 FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi
@@ -51,8 +50,10 @@ SRCS = \
 
 EXT_SRCS = \
 
+# workaround: ext-sha256.cpp was sha256.cpp, but ext/miniscript also comes with SHA256.cpp,
+#	which collides on Windows as we dont have subfolders for ext objects
 EXT_SHA256_SRCS = \
-    ext/sha256/sha256.cpp
+    ext/sha256/ext-sha256.cpp
 
 EXT_SRCS = \
 	$(EXT_SHA256_SRCS)
@@ -61,6 +62,8 @@ all: \
 	init \
 	compile \
 	compile-ext \
+	link1 \
+	link2 \
 	miniscript \
 	miniscriptdocumentation \
 	miniscriptmakefile \
@@ -73,20 +76,30 @@ all: \
 init:
 	mkdir $(MSCBIN)
 	mkdir $(MSCOBJ) 
-	mkdir $(MSCOBJEXT)
 	mkdir $(MSCOBJMAIN)
 
 compile: $(SRCS)
 	cl /Fo$(MSCOBJ)/ /c $(FLAGS) $(INCLUDES) $**
 
 compile-ext: $(EXT_SRCS)
-	cl /Fo$(MSCOBJEXT)/ /c $(FLAGS) $(INCLUDES) $**
+	cl /Fo$(MSCOBJ)/ /c $(FLAGS) $(INCLUDES) $**
+
+link1: $(MSCOBJ)/*.obj
+	lib $(LD_FLAGS) /OUT:$(MSCBIN)\libminiscript.lib $**
+	dumpbin /LINKERMEMBER $(MSCBIN)\libminiscript.lib > $(MSCBIN)\libminiscript.def.dumpbin.linkermember
+	.\ext\windows-msc\tools\msclib2dll.exe $(MSCBIN)\libminiscript.def.dumpbin.linkermember
+	del $(MSCBIN)\libminiscript.lib
+
+link2: $(MSCOBJ)/*.obj
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/lib.rc libminiscript.dll $(MSCBIN)\libminiscript.dll.rc
+	rc $(MSCBIN)\libminiscript.dll.rc
+	echo LIBRARY $(MSCBIN)\libminiscript.dll > $(MSCBIN)\libminiscript.def
+	type $(MSCBIN)\libminiscript.def.dumpbin.linkermember.def >> $(MSCBIN)\libminiscript.def
+	link $(LD_FLAGS) /DLL /DEF:$(MSCBIN)\libminiscript.def /IGNORE:4197 /IGNORE:4102 $** $(MSCBIN)\libminiscript.dll.res $(LIBS_LDFLAGS) /OUT:$(MSCBIN)\libminiscript.dll
 
 clean: 
 	del /S /Q $(MSCOBJ) >nul 2>&1
 	if exist $(MSCOBJ) rmdir $(MSCOBJ)
-	del /S /Q $(MSCOBJEXT) >nul 2>&1
-	if exist $(MSCOBJEXT) rmdir $(MSCOBJEXT)
 	del /S /Q $(MSCOBJMAIN) >nul 2>&1
 	if exist $(MSCOBJMAIN) rmdir $(MSCOBJMAIN)
 	del /S /Q $(MSCBIN) >nul 2>&1
@@ -95,32 +108,32 @@ clean:
 miniscript:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscript.exe $(MSCBIN)\miniscript.exe.rc
 	rc $(MSCBIN)\miniscript.exe.rc
-	cl /Fe$(MSCBIN)\miniscript /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscript-main.cpp $(MSCBIN)\miniscript.exe.res $(MSCOBJ)\*.obj $(MSCOBJEXT)\*.obj /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+	cl /D MINISCRIPT_DLL_IMPORT /Fe$(MSCBIN)\miniscript /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscript-main.cpp $(MSCBIN)\miniscript.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
 miniscriptdocumentation:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptdocumentation.exe $(MSCBIN)\miniscriptdocumentation.exe.rc
 	rc $(MSCBIN)\miniscriptdocumentation.exe.rc
-	cl /Fe$(MSCBIN)\miniscriptdocumentation /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptdocumentation-main.cpp $(MSCBIN)\miniscriptdocumentation.exe.res $(MSCOBJ)\*.obj $(MSCOBJEXT)\*.obj /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+	cl /D MINISCRIPT_DLL_IMPORT /Fe$(MSCBIN)\miniscriptdocumentation /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptdocumentation-main.cpp $(MSCBIN)\miniscriptdocumentation.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
 miniscriptmakefile:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptmakefile.exe $(MSCBIN)\miniscriptmakefile.exe.rc
 	rc $(MSCBIN)\miniscriptmakefile.exe.rc
-	cl /Fe$(MSCBIN)\miniscriptmakefile /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptmakefile-main.cpp $(MSCBIN)\miniscriptmakefile.exe.res $(MSCOBJ)\*.obj $(MSCOBJEXT)\*.obj /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+	cl /D MINISCRIPT_DLL_IMPORT /Fe$(MSCBIN)\miniscriptmakefile /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptmakefile-main.cpp $(MSCBIN)\miniscriptmakefile.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
 miniscriptnmakefile:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptnmakefile.exe $(MSCBIN)\miniscriptnmakefile.exe.rc
 	rc $(MSCBIN)\miniscriptnmakefile.exe.rc
-	cl /Fe$(MSCBIN)\miniscriptnmakefile /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptnmakefile-main.cpp $(MSCBIN)\miniscriptnmakefile.exe.res $(MSCOBJ)\*.obj $(MSCOBJEXT)\*.obj /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+	cl /D MINISCRIPT_DLL_IMPORT /Fe$(MSCBIN)\miniscriptnmakefile /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptnmakefile-main.cpp $(MSCBIN)\miniscriptnmakefile.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
 miniscripttranspiler:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscripttranspiler.exe $(MSCBIN)\miniscripttranspiler.exe.rc
 	rc $(MSCBIN)\miniscripttranspiler.exe.rc
-	cl /Fe$(MSCBIN)\miniscripttranspiler /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscripttranspiler-main.cpp $(MSCBIN)\miniscripttranspiler.exe.res $(MSCOBJ)\*.obj $(MSCOBJEXT)\*.obj /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+	cl /D MINISCRIPT_DLL_IMPORT /Fe$(MSCBIN)\miniscripttranspiler /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscripttranspiler-main.cpp $(MSCBIN)\miniscripttranspiler.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
 miniscriptuntranspiler:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptuntranspiler.exe $(MSCBIN)\miniscriptuntranspiler.exe.rc
 	rc $(MSCBIN)\miniscriptuntranspiler.exe.rc
-	cl /Fe$(MSCBIN)\miniscriptuntranspiler /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptuntranspiler-main.cpp $(MSCBIN)\miniscriptuntranspiler.exe.res $(MSCOBJ)\*.obj $(MSCOBJEXT)\*.obj /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+	cl /D MINISCRIPT_DLL_IMPORT /Fe$(MSCBIN)\miniscriptuntranspiler /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptuntranspiler-main.cpp $(MSCBIN)\miniscriptuntranspiler.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
 copy-executables:
 	if exist bin\miniscript\tools del /S /Q bin\miniscript\tools >nul 2>&1
@@ -129,6 +142,14 @@ copy-executables:
 	if exist bin\miniscript rmdir bin\miniscript 
 	if exist bin del /S /Q bin >nul 2>&1
 	if exist bin rmdir bin 
+
+	if exist lib del /S /Q lib >nul 2>&1
+	if exist lib rmdir lib
+
+	mkdir lib
+	if exist vc140.pdb move vc140.pdb $(MSCBIN)\. 
+	copy $(MSCBIN)\*.dll lib\.
+	copy $(MSCBIN)\*.lib lib\.
 
 	mkdir bin
 	mkdir bin\miniscript
