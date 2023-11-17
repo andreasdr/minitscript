@@ -61,12 +61,13 @@ int main(int argc, char** argv)
 	Console::println(Version::getCopyright());
 	Console::println();
 
-	if (argc != 2) {
-		Console::println("Usage: miniscriptnmakefile path_to_source");
+	if (argc != 3) {
+		Console::println("Usage: miniscriptnmakefile makefile_filename source_pathname");
 		exit(EXIT_FAILURE);
 	}
 
-	auto pathToSource = string(argv[1]);
+	auto pathToMakefile = string(argv[1]);
+	auto pathToSource = string(argv[2]);
 
 	try {
 		Console::println("Scanning source files");
@@ -108,7 +109,7 @@ int main(int argc, char** argv)
 		}
 
 		//
-		FileSystem::setContentFromString(".", "Makefile.nmake", makefileSource);
+		FileSystem::setContentFromString(FileSystem::getPathName(pathToMakefile), FileSystem::getFileName(pathToMakefile), makefileSource);
 	} catch (Exception& exception) {
 		Console::println("An error occurred: " + string(exception.what()));
 	}

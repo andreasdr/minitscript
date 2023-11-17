@@ -13,7 +13,7 @@ LD_FLAGS =
 MAIN_LDFLAGS = \
 	/LIBPATH libminiscript.lib
 
-FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi /F 8388608 /D GLFW_DLL
+FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi /D GLFW_DLL
 # /NODEFAULTLIB:msvcrt
 
 SRCS = {$source-files}
