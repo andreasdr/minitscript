@@ -1,7 +1,7 @@
 #
 BIN = bin
+LIB_DIR = lib
 OBJ := obj
-OBJ_DEBUG = obj-debug
 
 # determine platform
 OSSHORT := $(shell sh -c 'uname -o 2>/dev/null')
@@ -10,7 +10,16 @@ MACHINE := $(shell sh -c 'uname -m 2>/dev/null')
 
 #
 NAME = miniscript
+ifeq ($(OS), Darwin)
+	LIB_EXT = .dylib
+else ifeq ($(OSSHORT), Msys)
+	LIB_EXT = .dll
+else
+	LIB_EXT = .so
+endif
+LIB := lib$(NAME)$(LIB_EXT)
 MAIN_LDFLAGS =
+LDFLAG_LIB := $(NAME)
 
 #
 CPPVERSION = -std=c++2a
@@ -18,19 +27,16 @@ OFLAGS = -O3
 EXTRAFLAGS = 
 INCLUDES = -Isrc -Iext -I.
 
+#
+CXX := $(CXX) -fPIC
+
+#
 CPPFLAGS := $(INCLUDES)
 CFLAGS := -g $(OFLAGS) $(EXTRAFLAGS) -pipe -MMD -MP -DNDEBUG
-#CFLAGS := -g $(OFLAGS) $(EXTRAFLAGS) -pipe -MMD -MP
-#CFLAGS := $(OFLAGS) $(EXTRAFLAGS) -pipe -MMD -MP -DNDEBUG
-CFLAGS_DEBUG := -g -pipe -MMD -MP
 CXXFLAGS := $(CFLAGS) $(CPPVERSION)
-CXXFLAGS_DEBUG := $(CFLAGS_DEBUG) $(CPPVERSION)
-CXXFLAGS_EXT_RP3D = $(CFLAGS_EXT_RP3D) $(CPPVERSION)
 
 SRC = src
 SHA256 = sha256
-
-SRCS_DEBUG =
 
 SRCS = \
 	src/miniscript/utilities/Base64.cpp \
@@ -79,17 +85,7 @@ define cpp-command
 @echo Compile $<; $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 endef
 
-define cpp-command-debug
-@mkdir -p $(dir $@);
-@echo Compile $<; $(CXX) $(CPPFLAGS) $(CXXFLAGS_DEBUG) -c -o $@ $<
-endef
-
-define c-command
-@mkdir -p $(dir $@);
-@echo Compile $<; $(CXX) -x c $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-endef
-
-mains: $(MAINS)
+$(LIB_DIR)/$(LIB): $(OBJS)
 
 $(OBJS):$(OBJ)/%.o: $(SRC)/%.cpp | print-opts
 	$(cpp-command)
@@ -97,19 +93,36 @@ $(OBJS):$(OBJ)/%.o: $(SRC)/%.cpp | print-opts
 $(EXT_SHA256_OBJS):$(OBJ)/%.o: ext/$(SHA256)/%.cpp | print-opts
 	$(cpp-command)
 
+$(LIB_DIR)/$(LIB): $(OBJS) $(EXT_SHA256_OBJS)
+	@echo Creating shared library $@
+	@mkdir -p $(dir $@)
+	@rm -f $@
 ifeq ($(OSSHORT), Msys)
-$(MAINS):$(BIN)/%:$(SRC)/%-main.cpp $(OBJS) $(EXT_SHA256_OBJS)
-	@mkdir -p $(dir $@);
-	@scripts/windows-mingw-create-executable-rc.sh "$<" $@.rc
+	@scripts/windows-mingw-create-library-rc.sh $@ $@.rc
 	@windres $@.rc -o coff -o $@.rc.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $@.rc.o $< $(OBJS) $(EXT_SHA256_OBJS) $(MAIN_LDFLAGS)
+	$(CXX) -shared $(patsubst %$(LIB_EXT),,$^) -o $@ $@.rc.o $(LIBS_LDFLAGS) -Wl,--out-implib,$(LIB_DIR)/$(LIB).a
 	@rm $@.rc
 	@rm $@.rc.o
 else
-$(MAINS):$(BIN)/%:$(SRC)/%-main.cpp $(OBJS) $(EXT_SHA256_OBJS) $(EXT_SHA256_OBJS)
-	@mkdir -p $(dir $@);
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $< $(OBJS) $(EXT_SHA256_OBJS) $(MAIN_LDFLAGS)
+	$(CXX) -shared $(patsubst %$(LIB_EXT),,$^) -o $@ $(LIBS_LDFLAGS)
 endif
+	@echo Done $@
+
+ifeq ($(OSSHORT), Msys)
+$(MAINS):$(BIN)/%:$(SRC)/%-main.cpp $(LIB_DIR)/$(LIB)
+	@mkdir -p $(dir $@);
+	@scripts/windows-mingw-create-executable-rc.sh "$<" $@.rc
+	@windres $@.rc -o coff -o $@.rc.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $@.rc.o $< -L $(LIB_DIR) -l$(LDFLAG_LIB) $(MAIN_LDFLAGS)
+	@rm $@.rc
+	@rm $@.rc.o
+else
+$(MAINS):$(BIN)/%:$(SRC)/%-main.cpp $(LIB_DIR)/$(LIB)
+	@mkdir -p $(dir $@);
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $< -L $(LIB_DIR) -l$(LDFLAG_LIB) $(MAIN_LDFLAGS)
+endif
+
+mains: $(MAINS)
 
 all: mains
 
