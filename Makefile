@@ -65,8 +65,10 @@ SRCS = \
 	src/miniscript/miniscript/XMLMethods.cpp \
 	src/miniscript/miniscript/Version.cpp
 
+# workaround: ext-sha256.cpp was sha256.cpp, but miniscript also comes with SHA256.cpp,
+#	which collides on Windows as we dont have subfolders for ext objects
 EXT_SHA256_SRCS = \
-	ext/sha256/sha256.cpp
+	ext/sha256/ext-sha256.cpp
 
 MAIN_SRCS = \
 	src/miniscript/tools/miniscriptdocumentation-main.cpp \
