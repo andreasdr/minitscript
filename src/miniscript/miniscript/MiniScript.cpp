@@ -113,8 +113,21 @@ const string MiniScript::getBaseClass() {
 
 const vector<string> MiniScript::getTranspilationUnits() {
 	return {
+		"src/miniscript/miniscript/ArrayMethods.cpp",
+		"src/miniscript/miniscript/BaseMethods.cpp",
+		"src/miniscript/miniscript/ConsoleMethods.cpp",
+		"src/miniscript/miniscript/JSONMethods.cpp",
+		"src/miniscript/miniscript/MapMethods.cpp",
+		"src/miniscript/miniscript/MathMethods.cpp",
 		"src/miniscript/miniscript/MiniScript.cpp",
-		"src/miniscript/miniscript/MathMethods.cpp"
+		"src/miniscript/miniscript/ScriptMethods.cpp",
+		"src/miniscript/miniscript/ScriptMethods.h",
+		"src/miniscript/miniscript/SetMethods.cpp",
+		"src/miniscript/miniscript/StringMethods.cpp",
+		"src/miniscript/miniscript/TimeMethods.cpp",
+		"src/miniscript/miniscript/Transpiler.cpp",
+		"src/miniscript/miniscript/Version.cpp",
+		"src/miniscript/miniscript/XMLMethods.cpp"
 	};
 }
 
