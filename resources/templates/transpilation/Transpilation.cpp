@@ -1,7 +1,7 @@
 #include "{$class-name}.h"
 
 #include <miniscript/miniscript.h>
-#include <miniscript/miniscript/Miniscript.h>
+#include <miniscript/miniscript/MiniScript.h>
 
 /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_START__*/
 /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_END__*/

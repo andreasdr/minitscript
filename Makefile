@@ -18,7 +18,7 @@ else
 	LIB_EXT = .so
 endif
 LIB := lib$(NAME)$(LIB_EXT)
-MAIN_LDFLAGS = -l $(NAME)
+MAIN_LDFLAGS = -L $(LIB_DIR) -l $(NAME)
 
 #
 CPPVERSION = -std=c++2a
@@ -114,13 +114,13 @@ $(MAINS):$(BIN)/%:$(SRC)/%-main.cpp $(LIB_DIR)/$(LIB)
 	@mkdir -p $(dir $@);
 	@scripts/windows-mingw-create-executable-rc.sh "$<" $@.rc
 	@windres $@.rc -o coff -o $@.rc.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $@.rc.o $< -L $(LIB_DIR) $(MAIN_LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $@.rc.o $< $(MAIN_LDFLAGS)
 	@rm $@.rc
 	@rm $@.rc.o
 else
 $(MAINS):$(BIN)/%:$(SRC)/%-main.cpp $(LIB_DIR)/$(LIB)
 	@mkdir -p $(dir $@);
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $< -L $(LIB_DIR) $(MAIN_LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $< $(MAIN_LDFLAGS)
 endif
 
 mains: $(MAINS)

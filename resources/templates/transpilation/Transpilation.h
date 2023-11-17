@@ -1,7 +1,7 @@
 #pragma once
 
 #include <miniscript/miniscript.h>
-#include <miniscript/miniscript/Miniscript.h>
+#include <miniscript/miniscript/MiniScript.h>
 
 /**
  * MiniScript -> C++ transpilation of {$script}
