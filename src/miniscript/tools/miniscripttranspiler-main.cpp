@@ -104,7 +104,7 @@ static bool replace(const vector<string> input, const string& startTag, const st
 	return replaceSuccess;
 }
 
-static void processFile(const string& scriptFileName, const string& miniscriptTranspilationFileName, const vector<string>& miniScriptExtensionFileNames) {
+static void processFile(const string& scriptFileName, const string& transpilationFileName, const vector<string>& miniScriptExtensionFileNames) {
 	Console::println("Processing script: " + scriptFileName);
 
 
@@ -223,7 +223,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 	Transpiler::generateMiniScriptEvaluateMemberAccessArrays(miniScript.get(), memberAccessEvaluationDeclarations, memberAccessEvaluationDefinitions);
 
 	//
-	string miniScriptClassName = FileSystem::getFileName(miniscriptTranspilationFileName);
+	string miniScriptClassName = FileSystem::getFileName(transpilationFileName);
 	string generatedDeclarations = "\n";
 	generatedDeclarations+= string() + "public:" + "\n";
 	generatedDeclarations+= headerIndent + "// overridden methods" + "\n";
@@ -560,7 +560,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 		//
 		vector<string> miniScriptCPP;
 		vector<string> generatedMiniScriptCPP;
-		auto miniscriptTranspilationCPPFileName = FileSystem::getPathName(miniscriptTranspilationFileName) + "/" + FileSystem::getFileName(miniscriptTranspilationFileName) + ".cpp";
+		auto miniscriptTranspilationCPPFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".cpp";
 		if (FileSystem::fileExists(miniscriptTranspilationCPPFileName) == false) {
 			auto miniScriptCPPString = FileSystem::getContentAsString("./resources/templates/transpilation", "Transpilation.cpp");
 			miniScriptCPPString = StringTools::replace(miniScriptCPPString, "{$script}", scriptFileName);
@@ -584,7 +584,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 				generatedMiniScriptCPP
 			);
 			if (injectedGeneratedCode == false) {
-				Console::println(scriptFileName + ": Could not inject generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_END__*/ tags in file " + miniscriptTranspilationFileName + "?");
+				Console::println(scriptFileName + ": Could not inject generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_END__*/ tags in file " + transpilationFileName + "?");
 			} else {
 				miniScriptCPP = generatedMiniScriptCPP;
 				generatedMiniScriptCPP.clear();
@@ -604,7 +604,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 				generatedMiniScriptCPP
 			);
 			if (injectedGeneratedCode == false) {
-				Console::println(scriptFileName + ": Could not inject generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_USINGS_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_USINGS_END__*/ tags in file " + miniscriptTranspilationFileName + "?");
+				Console::println(scriptFileName + ": Could not inject generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_USINGS_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_USINGS_END__*/ tags in file " + transpilationFileName + "?");
 			} else {
 				miniScriptCPP = generatedMiniScriptCPP;
 				generatedMiniScriptCPP.clear();
@@ -620,7 +620,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 				generatedMiniScriptCPP
 			);
 			if (injectedGeneratedCode == false) {
-				Console::println(scriptFileName + ": Could not inject generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DEFINITIONS_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DEFINITIONS_END__*/ tags in file " + miniscriptTranspilationFileName + "?");
+				Console::println(scriptFileName + ": Could not inject generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DEFINITIONS_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DEFINITIONS_END__*/ tags in file " + transpilationFileName + "?");
 			} else {
 				miniScriptCPP.clear();
 			}
@@ -642,7 +642,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 	{
 		vector<string> miniScriptClassHeader;
 		vector<string> generatedMiniScriptClassHeader;
-		auto miniscriptTranspilationHeaderFileName = FileSystem::getPathName(miniscriptTranspilationFileName) + "/" + FileSystem::getFileName(miniscriptTranspilationFileName) + ".h";
+		auto miniscriptTranspilationHeaderFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".h";
 		if (FileSystem::fileExists(miniscriptTranspilationHeaderFileName) == false) {
 			auto miniScriptHeaderString = FileSystem::getContentAsString("./resources/templates/transpilation", "Transpilation.h");
 			miniScriptHeaderString = StringTools::replace(miniScriptHeaderString, "{$script}", scriptFileName);
@@ -662,7 +662,7 @@ static void processFile(const string& scriptFileName, const string& miniscriptTr
 		);
 		//
 		if (injectedGeneratedCode == false) {
-			Console::println(scriptFileName + ": Could not inject generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DECLARATIONS_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DECLARATIONS_END__*/ tags in file " + miniscriptTranspilationFileName + "?");
+			Console::println(scriptFileName + ": Could not inject generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DECLARATIONS_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DECLARATIONS_END__*/ tags in file " + transpilationFileName + "?");
 		} else {
 			//
 			FileSystem::setContentFromStringArray(

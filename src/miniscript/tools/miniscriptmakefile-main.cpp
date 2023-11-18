@@ -63,13 +63,13 @@ int main(int argc, char** argv)
 
 	//
 	if (argc != 3) {
-		Console::println("Usage: miniscriptmakefile makefile_filename source_pathname");
+		Console::println("Usage: miniscriptmakefile source_pathname makefile_filename");
 		exit(EXIT_FAILURE);
 	}
 
 	//
-	auto pathToMakefile = string(argv[1]);
-	auto pathToSource = string(argv[2]);
+	auto pathToSource = string(argv[1]);
+	auto pathToMakefile = string(argv[2]);
 
 	//
 	try {

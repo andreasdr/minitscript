@@ -9,7 +9,7 @@ OS := $(shell sh -c 'uname -s 2>/dev/null')
 MACHINE := $(shell sh -c 'uname -m 2>/dev/null')
 
 #
-MAIN_LDFLAGS = -l miniscript
+MAIN_LDFLAGS = -L lib -l miniscript
 
 #
 CPPVERSION = -std=c++2a
