@@ -114,7 +114,7 @@ miniscript:
 miniscriptmain:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptmain.exe $(MSCBIN)\miniscriptmain.exe.rc
 	rc $(MSCBIN)\miniscriptmain.exe.rc
-	cl /D MINISCRIPT_DLL_IMPORT /Fe$(MSCBIN)\miniscriptmain /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscriptmain/tools/miniscriptmain-main.cpp $(MSCBIN)\miniscriptmain.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+	cl /D MINISCRIPT_DLL_IMPORT /Fe$(MSCBIN)\miniscriptmain /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/miniscript/tools/miniscriptmain-main.cpp $(MSCBIN)\miniscriptmain.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
 miniscriptdocumentation:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc miniscriptdocumentation.exe $(MSCBIN)\miniscriptdocumentation.exe.rc
