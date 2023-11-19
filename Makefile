@@ -70,8 +70,8 @@ EXT_SHA256_SRCS = \
 	ext/sha256/ext-sha256.cpp
 
 MAIN_SRCS = \
-	src/miniscript/tools/miniscriptdocumentation-main.cpp \
 	src/miniscript/tools/miniscript-main.cpp \
+	src/miniscript/tools/miniscriptdocumentation-main.cpp \
 	src/miniscript/tools/miniscriptmain-main.cpp \
 	src/miniscript/tools/miniscriptmakefile-main.cpp \
 	src/miniscript/tools/miniscriptnmakefile-main.cpp \
