@@ -108,6 +108,16 @@ bool FileSystem::fileExists(const string& fileName) {
 	return false;
 }
 
+uint64_t FileSystem::getFileSize(const string& pathName, const string& fileName) {
+	try {
+		return std::filesystem::file_size(std::filesystem::u8path(pathName + "/" + fileName));
+	} catch (Exception& exception) {
+		throw FileSystemException("Unable to determine file size: " + fileName + ": " + string(exception.what()));
+	}
+	//
+	return false;
+}
+
 const string FileSystem::getContentAsString(const string& pathName, const string& fileName) {
 	ifstream ifs(std::filesystem::u8path(getFileName(pathName, fileName)));
 	if (ifs.is_open() == false) {
@@ -127,6 +137,29 @@ void FileSystem::setContentFromString(const string& pathName, const string& file
 	ofs << (content);
 	ofs.close();
 	return;
+}
+
+void FileSystem::getContent(const string& pathName, const string& fileName, vector<uint8_t>& content)
+{
+	ifstream ifs(std::filesystem::u8path(getFileName(pathName, fileName)), ifstream::binary);
+	if (ifs.is_open() == false) {
+		throw FileSystemException("Unable to open file for reading(" + to_string(errno) + "): " + pathName + "/" + fileName);
+	}
+	ifs.seekg( 0, ios::end );
+	size_t size = ifs.tellg();
+	content.resize(size);
+	ifs.seekg(0, ios::beg);
+	ifs.read((char*)content.data(), size);
+	ifs.close();
+}
+
+void FileSystem::setContent(const string& pathName, const string& fileName, const vector<uint8_t>& content) {
+	ofstream ofs(std::filesystem::u8path(getFileName(pathName, fileName)), ofstream::binary);
+	if (ofs.is_open() == false) {
+		throw FileSystemException("Unable to open file for writing(" + to_string(errno) + "): " + pathName + "/" + fileName);
+	}
+	ofs.write((char*)content.data(), content.size());
+	ofs.close();
 }
 
 void FileSystem::getContentAsStringArray(const string& pathName, const string& fileName, vector<string>& content)
@@ -159,6 +192,88 @@ void FileSystem::setContentFromStringArray(const string& pathName, const string&
 	return;
 }
 
+const string FileSystem::getCanonicalPath(const string& pathName, const string& fileName) {
+	string unixPathName = StringTools::replace(pathName, "\\", "/");
+	string unixFileName = StringTools::replace(fileName, "\\", "/");
+
+	//
+	auto pathString = getFileName(unixPathName, unixFileName);
+
+	// separate into path components
+	vector<string> pathComponents;
+	StringTokenizer t;
+	t.tokenize(pathString, "/");
+	while (t.hasMoreTokens()) {
+		pathComponents.push_back(t.nextToken());
+	}
+
+	// process path components
+	for (auto i = 0; i < pathComponents.size(); i++) {
+		auto pathComponent = pathComponents[i];
+		if (pathComponent == ".") {
+			pathComponents[i].clear();
+		} else
+		if (pathComponent == "..") {
+			pathComponents[i].clear();
+			int j = i - 1;
+			for (int pathComponentReplaced = 0; pathComponentReplaced < 1 && j >= 0; ) {
+				if (pathComponents[j].empty() == false) {
+					pathComponents[j].clear();
+					pathComponentReplaced++;
+				}
+				j--;
+			}
+		}
+	}
+
+	// process path components
+	string canonicalPath = "";
+	bool slash = StringTools::startsWith(pathString, "/");
+	for (auto i = 0; i < pathComponents.size(); i++) {
+		auto pathComponent = pathComponents[i];
+		if (pathComponent.empty() == true) {
+			// no op
+		} else {
+			canonicalPath = canonicalPath + (slash == true?"/":"") + pathComponent;
+			slash = true;
+		}
+	}
+
+	// add cwd if required
+	auto canonicalPathString = canonicalPath.empty() == true?"/":canonicalPath;
+	/*
+	if (canonicalPathString.length() == 0 ||
+		(StringTools::startsWith(canonicalPathString, "/") == false &&
+		StringTools::regexMatch(canonicalPathString, "^[a-zA-Z]\\:.*$") == false)) {
+		canonicalPathString = getCurrentWorkingPathName() + "/" + canonicalPathString;
+	}
+	*/
+
+	//
+	return canonicalPathString;
+}
+
+const string FileSystem::getCurrentWorkingPathName() {
+	try {
+		auto u8Cwd = std::filesystem::current_path().u8string();
+		string cwd(u8Cwd.size(), 0);
+		for (auto i = 0; i < u8Cwd.size(); i++) cwd[i] = u8Cwd[i];
+		return cwd;
+	} catch (Exception& exception) {
+		throw FileSystemException("Unable to get current path: " + string(exception.what()));
+	}
+	//
+	return string(".");
+}
+
+void FileSystem::changePath(const string& pathName) {
+	try {
+		return std::filesystem::current_path(std::filesystem::u8path(pathName));
+	} catch (Exception& exception) {
+		throw FileSystemException("Unable to change path: " + pathName + ": " + string(exception.what()));
+	}
+}
+
 const string FileSystem::getPathName(const string& fileName) {
 	auto unixFileName = StringTools::replace(fileName, '\\', '/');
 	auto lastPathSeparator = StringTools::lastIndexOf(unixFileName, '/');
@@ -173,12 +288,47 @@ const string FileSystem::getFileName(const string& fileName) {
 	return StringTools::substring(unixFileName, lastPathSeparator + 1, unixFileName.length());
 }
 
-const string FileSystem::removeFileExtension(const string& fileName)
-{
+const string FileSystem::removeFileExtension(const string& fileName) {
 	auto idx = fileName.rfind('.');
 	if (idx == string::npos) {
 		return fileName;
 	} else {
 		return fileName.substr(0, idx);
+	}
+}
+
+void FileSystem::createPath(const string& pathName) {
+	try {
+		std::filesystem::create_directory(std::filesystem::u8path(pathName));
+	} catch (Exception& exception) {
+		throw FileSystemException("Unable to create path: " + pathName + ": " + string(exception.what()));
+	}
+}
+
+void FileSystem::removePath(const string& pathName, bool recursive) {
+	try {
+		if (recursive == false) {
+			std::filesystem::remove(std::filesystem::u8path(pathName));
+		} else {
+			std::filesystem::remove_all(std::filesystem::u8path(pathName));
+		}
+	} catch (Exception& exception) {
+		throw FileSystemException("Unable to remove path: " + pathName + ": " + string(exception.what()));
+	}
+}
+
+void FileSystem::removeFile(const string& pathName, const string& fileName) {
+	try {
+		std::filesystem::remove(std::filesystem::u8path(getFileName(pathName, fileName)));
+	} catch (Exception& exception) {
+		throw FileSystemException("Unable to remove file: " + pathName + "/" + fileName + ": " + string(exception.what()));
+	}
+}
+
+void FileSystem::rename(const string& fileNameFrom, const string& fileNameTo) {
+	try {
+		std::filesystem::rename(std::filesystem::u8path(fileNameFrom), std::filesystem::u8path(fileNameTo));
+	} catch (Exception& exception) {
+		throw FileSystemException("Unable to rename file: " + fileNameFrom + " -> " + fileNameTo + ": " + string(exception.what()));
 	}
 }

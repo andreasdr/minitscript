@@ -66,6 +66,14 @@ public:
 	static const string getFileName(const string& pathName, const string& fileName);
 
 	/**
+	 * Return file size of given file
+	 * @param pathName path name
+	 * @param fileName file name
+	 * @return file size
+	 */
+	static uint64_t getFileSize(const string& pathName, const string& fileName);
+
+	/**
 	 * Get content as string
 	 * @param pathName path name
 	 * @param fileName file name
@@ -82,6 +90,24 @@ public:
 	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static void setContentFromString(const string& pathName, const string& fileName, const string& content);
+
+	/**
+	 * Get file content
+	 * @param pathName path name
+	 * @param fileName file name
+	 * @param content content vector
+	 * @throws tdme::os::filesystem::FileSystemException
+	 */
+	static void getContent(const string& pathName, const string& fileName, vector<uint8_t>& content);
+
+	/**
+	 * Set file content
+	 * @param pathName path name
+	 * @param fileName file name
+	 * @param content content vector
+	 * @throws tdme::os::filesystem::FileSystemException
+	 */
+	static void setContent(const string& pathName, const string& fileName, const vector<uint8_t>& content);
 
 	/**
 	 * Get file content as string array
@@ -134,6 +160,26 @@ public:
 	static bool fileExists(const string& fileName);
 
 	/**
+	 * Get canonical path name
+	 * @param pathName path name
+	 * @param fileName file name
+	 * @return canonical path
+	 */
+	static const string getCanonicalPath(const string& pathName, const string& fileName);
+
+	/**
+	 * Get current working path name
+	 * @return current working path
+	 */
+	static const string getCurrentWorkingPathName();
+
+	/**
+	 * Change path
+	 * @param pathName path name
+	 */
+	static void changePath(const string& pathName);
+
+	/**
 	 * Get path name
 	 * @param fileName file name
 	 * @return canonical path
@@ -153,5 +199,34 @@ public:
 	 * @return file name
 	 */
 	static const string removeFileExtension(const string& fileName);
+
+	/**
+	 * Create path
+	 * @param pathName path name
+	 */
+	static void createPath(const string& pathName);
+
+	/**
+	 * Remove path
+	 * @param pathName path name
+	 * @param recursive remove recursive
+	 * @return success
+	 */
+	static void removePath(const string& pathName, bool recursive);
+
+	/**
+	 * Remove file
+	 * @param pathName path name
+	 * @param fileName file name
+	 * @return success
+	 */
+	static void removeFile(const string& pathName, const string& fileName);
+
+	/**
+	 * Rename file
+	 * @param fileNameFrom file name from
+	 * @param fileNameTo file name to
+	 */
+	static void rename(const string& fileNameFrom, const string& fileNameTo);
 
 };
