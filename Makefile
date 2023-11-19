@@ -52,6 +52,7 @@ SRCS = \
 	src/miniscript/miniscript/ArrayMethods.cpp \
 	src/miniscript/miniscript/BaseMethods.cpp \
 	src/miniscript/miniscript/ConsoleMethods.cpp \
+	src/miniscript/miniscript/FileSystemMethods.cpp \
 	src/miniscript/miniscript/JSONMethods.cpp \
 	src/miniscript/miniscript/MapMethods.cpp \
 	src/miniscript/miniscript/MathMethods.cpp \
