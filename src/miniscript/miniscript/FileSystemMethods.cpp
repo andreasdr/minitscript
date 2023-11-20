@@ -386,7 +386,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				//
 			}
 			const string getMethodName() override {
-				return "filesystem.getCanonicalPath";
+				return "filesystem.getCanonicalURI";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string pathName;
