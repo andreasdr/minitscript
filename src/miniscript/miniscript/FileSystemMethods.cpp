@@ -601,4 +601,44 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new ScriptFileSystemCreatePath(miniScript));
 	}
+	{
+		//
+		class ScriptFileSystemRemovePath: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemRemovePath(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "recursive", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.removePath";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string pathName;
+				bool recursive;
+				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
+					MiniScript::getBooleanValue(argumentValues, 1, recursive, false) == true) {
+					try {
+						FileSystem::removePath(pathName, recursive);
+						returnValue.setValue(true);
+					} catch (Exception& exception) {
+						returnValue.setValue(false);
+						Console::println("An error occurred: " + string(exception.what()));
+					}
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemRemovePath(miniScript));
+	}
 }
