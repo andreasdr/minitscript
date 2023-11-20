@@ -533,4 +533,35 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new ScriptFileSystemGetPathName(miniScript));
 	}
+	{
+		//
+		class ScriptFileSystemRemoveFileExtension: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemRemoveFileExtension(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_STRING
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.removeFileExtension";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string fileName;
+				if (MiniScript::getStringValue(argumentValues, 0, fileName, false) == true) {
+					returnValue.setValue(FileSystem::removeFileExtension(fileName));
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemRemoveFileExtension(miniScript));
+	}
 }
