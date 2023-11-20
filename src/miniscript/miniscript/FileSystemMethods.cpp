@@ -20,11 +20,11 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	// file system methods
 	{
 		//
-		class ScriptFileSystemGetFileName: public MiniScript::ScriptMethod {
+		class ScriptFileSystemComposeFileName: public MiniScript::ScriptMethod {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptFileSystemGetFileName(MiniScript* miniScript):
+			ScriptFileSystemComposeFileName(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
@@ -36,7 +36,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				//
 			}
 			const string getMethodName() override {
-				return "filesystem.getFileName";
+				return "filesystem.composeFileName";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string pathName;
@@ -50,7 +50,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptFileSystemGetFileName(miniScript));
+		miniScript->registerMethod(new ScriptFileSystemComposeFileName(miniScript));
 	}
 	{
 		//
@@ -470,5 +470,67 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 		};
 		miniScript->registerMethod(new ScriptFileSystemChangePath(miniScript));
+	}
+	{
+		//
+		class ScriptFileSystemGetFileName: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemGetFileName(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_STRING
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.getFileName";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string fileName;
+				if (MiniScript::getStringValue(argumentValues, 0, fileName, false) == true) {
+					returnValue.setValue(FileSystem::getFileName(fileName));
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemGetFileName(miniScript));
+	}
+	{
+		//
+		class ScriptFileSystemGetPathName: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemGetPathName(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_STRING
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.getPathName";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string fileName;
+				if (MiniScript::getStringValue(argumentValues, 0, fileName, false) == true) {
+					returnValue.setValue(FileSystem::getPathName(fileName));
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemGetPathName(miniScript));
 	}
 }
