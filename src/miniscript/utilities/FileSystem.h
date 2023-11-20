@@ -61,7 +61,6 @@ public:
 	 * @param pathName path name
 	 * @param fileName file name
 	 * @return complete file URI with path name and file name
-	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static const string composeURI(const string& pathName, const string& fileName);
 
@@ -70,6 +69,7 @@ public:
 	 * @param pathName path name
 	 * @param fileName file name
 	 * @return file size
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static uint64_t getFileSize(const string& pathName, const string& fileName);
 
@@ -135,6 +135,7 @@ public:
 	 * @param filter filter or null, this filter can be created on stack as ownership will not be taken over
 	 * @param addDrives add drives to list(applies to Microsoft Windows only)
 	 * @return file names
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static void list(const string& pathName, vector<string>& files, FileNameFilter* filter = nullptr, bool addDrives = false);
 
@@ -142,6 +143,7 @@ public:
 	 * Check if file is a path
 	 * @param uri uniform resource identifier
 	 * @return if file is a path
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static bool isPath(const string& uri);
 
@@ -156,26 +158,29 @@ public:
 	 * Check if file exists
 	 * @param uri uniform resource identifier
 	 * @return bool if file exists
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static bool exists(const string& uri);
 
 	/**
-	 * Get canonical path name
+	 * Get canonical URI from given path name and file name
 	 * @param pathName path name
 	 * @param fileName file name
-	 * @return canonical path
+	 * @return canonical URI
 	 */
-	static const string getCanonicalPath(const string& pathName, const string& fileName);
+	static const string getCanonicalURI(const string& pathName, const string& fileName);
 
 	/**
 	 * Get current working path name
 	 * @return current working path
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static const string getCurrentWorkingPathName();
 
 	/**
 	 * Change path
 	 * @param pathName path name
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static void changePath(const string& pathName);
 
@@ -203,6 +208,7 @@ public:
 	/**
 	 * Create path
 	 * @param pathName path name
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static void createPath(const string& pathName);
 
@@ -211,6 +217,7 @@ public:
 	 * @param pathName path name
 	 * @param recursive remove recursive
 	 * @return success
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static void removePath(const string& pathName, bool recursive);
 
@@ -219,6 +226,7 @@ public:
 	 * @param pathName path name
 	 * @param fileName file name
 	 * @return success
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static void removeFile(const string& pathName, const string& fileName);
 
@@ -226,6 +234,7 @@ public:
 	 * Rename file
 	 * @param fileNameFrom file name from
 	 * @param fileNameTo file name to
+	 * @throws tdme::os::filesystem::FileSystemException
 	 */
 	static void rename(const string& fileNameFrom, const string& fileNameTo);
 

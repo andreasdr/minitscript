@@ -192,7 +192,7 @@ void FileSystem::setContentFromStringArray(const string& pathName, const string&
 	return;
 }
 
-const string FileSystem::getCanonicalPath(const string& pathName, const string& fileName) {
+const string FileSystem::getCanonicalURI(const string& pathName, const string& fileName) {
 	string unixPathName = StringTools::replace(pathName, "\\", "/");
 	string unixFileName = StringTools::replace(fileName, "\\", "/");
 

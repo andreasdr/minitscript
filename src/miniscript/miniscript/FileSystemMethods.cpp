@@ -394,7 +394,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
 					MiniScript::getStringValue(argumentValues, 1, fileName, false) == true) {
 					try {
-						returnValue.setValue(FileSystem::getCanonicalPath(pathName, fileName));
+						returnValue.setValue(FileSystem::getCanonicalURI(pathName, fileName));
 					} catch (Exception& exception) {
 						Console::println("An error occurred: " + string(exception.what()));
 					}
