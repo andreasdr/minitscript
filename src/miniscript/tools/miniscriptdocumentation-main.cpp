@@ -260,7 +260,7 @@ int main(int argc, char** argv)
 	// classes
 	miniscript::tools::cli::MiniscriptDocumentation::generateMiniScriptClassesDocumentation("MiniScript Classes", 6, miniScript.get(), descriptions, "miniscript.basemethod.", allClassMethods);
 	// base methods
-	miniscript::tools::cli::MiniscriptDocumentation::generateMiniScriptMethodsDocumentation("MiniScript Base Methods", 7, miniScript.get(), descriptions, "miniscript.basemethod.", baseMethodCategories, allClassMethods);
+	miniscript::tools::cli::MiniscriptDocumentation::generateMiniScriptMethodsDocumentation("MiniScript Methods", 7, miniScript.get(), descriptions, "miniscript.basemethod.", baseMethodCategories, allClassMethods);
 
 	// operators
 	auto scriptOperatorMethods = miniScript->getOperatorMethods();

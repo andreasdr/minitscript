@@ -311,8 +311,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false },
 					},
-					MiniScript::TYPE_BOOLEAN,
-					true
+					MiniScript::TYPE_BOOLEAN
 				),
 				miniScript(miniScript) {
 				//
@@ -444,7 +443,8 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::ScriptMethod(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
-					}
+					},
+					MiniScript::TYPE_BOOLEAN
 				),
 				miniScript(miniScript) {
 				//
@@ -457,7 +457,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
 					try {
 						FileSystem::changePath(pathName);
+						returnValue.setValue(true);
 					} catch (Exception& exception) {
+						returnValue.setValue(false);
 						Console::println("An error occurred: " + string(exception.what()));
 					}
 				} else {

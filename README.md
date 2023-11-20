@@ -759,7 +759,7 @@ end
 | Remove key from set                                                                              |
 | <sub>remove($key: String): Null</sub>                                                            |
 
-# 7. MiniScript Base Methods
+# 7. MiniScript Methods
 
 ## 7.1. Base methods
 
@@ -858,7 +858,7 @@ end
 | Get current working path name                                                                    |
 | <sub>filesystem.getCurrentWorkingPathName(): ?String</sub>                                       |
 | Returns if given URI is a drive name(applies to Microsoft Windows only)                          |
-| <sub>filesystem.isDrive($uri: String): ?Boolean</sub>                                            |
+| <sub>filesystem.isDrive($uri: String): Boolean</sub>                                             |
 | Extracts file name from given URI                                                                |
 | <sub>filesystem.getFileName($uri: String): String</sub>                                          |
 | Returns file size from file                                                                      |
@@ -868,7 +868,7 @@ end
 | Extracts path name from given URI                                                                |
 | <sub>filesystem.getPathName($uri: String): String</sub>                                          |
 | Change current working path                                                                      |
-| <sub>filesystem.changePath($pathName: String): Null</sub>                                        |
+| <sub>filesystem.changePath($pathName: String): Boolean</sub>                                     |
 | Compose URI from given path name and file name                                                   |
 | <sub>filesystem.composeURI($pathName: String, $fileName: String): String</sub>                   |
 | Create path                                                                                      |
