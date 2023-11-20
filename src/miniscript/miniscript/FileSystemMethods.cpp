@@ -64,7 +64,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
 					},
-					MiniScript::TYPE_STRING,
+					MiniScript::TYPE_INTEGER,
 					true
 				),
 				miniScript(miniScript) {
@@ -172,5 +172,160 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 		};
 		miniScript->registerMethod(new ScriptFileSystemSetContentFromString(miniScript));
+	}
+	{
+		//
+		class ScriptFileSystemGetContentAsStringArray: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemGetContentAsStringArray(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_ARRAY,
+					true
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.getContentAsStringArray";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string pathName;
+				string fileName;
+				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
+					MiniScript::getStringValue(argumentValues, 1, fileName, false) == true) {
+					vector<string> contentAsStringArray;
+					try {
+						FileSystem::getContentAsStringArray(pathName, fileName, contentAsStringArray);
+						//
+						returnValue.setType(MiniScript::TYPE_ARRAY);
+						for (const auto& contentAsStringArrayEntry: contentAsStringArray) {
+							returnValue.pushArrayEntry(contentAsStringArrayEntry);
+						}
+					} catch (Exception& exception) {
+						Console::println("An error occurred: " + string(exception.what()));
+					}
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemGetContentAsStringArray(miniScript));
+	}
+	{
+		//
+		class ScriptFileSystemSetContentFromStringArray: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemSetContentFromStringArray(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_ARRAY, .name = "content", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.setContentFromStringArray";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string pathName;
+				string fileName;
+				if (argumentValues.size() == 3 &&
+					MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
+					MiniScript::getStringValue(argumentValues, 1, fileName, false) == true &&
+					argumentValues[2].getType() == MiniScript::TYPE_ARRAY) {
+					vector<string> contentAsStringArray;
+					auto arrayPointer = argumentValues[2].getArrayPointer();
+					if (arrayPointer != nullptr) for (const auto arrayEntry: *arrayPointer) contentAsStringArray.push_back(arrayEntry->getValueAsString());
+					try {
+						FileSystem::setContentFromStringArray(pathName, fileName, contentAsStringArray);
+						returnValue.setValue(true);
+					} catch (Exception& exception) {
+						returnValue.setValue(false);
+						Console::println("An error occurred: " + string(exception.what()));
+					}
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemSetContentFromStringArray(miniScript));
+	}
+	{
+		//
+		class ScriptFileSystemIsPath: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemIsPath(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_BOOLEAN,
+					true
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.isPath";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string pathName;
+				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
+					returnValue.setValue(FileSystem::isPath(pathName));
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemIsPath(miniScript));
+	}
+	{
+		//
+		class ScriptFileSystemIsDrive: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemIsDrive(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_BOOLEAN,
+					true
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.isDrive";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string pathName;
+				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
+					returnValue.setValue(FileSystem::isDrive(pathName));
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemIsDrive(miniScript));
 	}
 }
