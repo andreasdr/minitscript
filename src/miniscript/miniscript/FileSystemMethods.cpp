@@ -287,7 +287,11 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string pathName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
-					returnValue.setValue(FileSystem::isPath(pathName));
+					try {
+						returnValue.setValue(FileSystem::isPath(pathName));
+					} catch (Exception& exception) {
+						Console::println("An error occurred: " + string(exception.what()));
+					}
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -353,7 +357,11 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, fileName, false) == true) {
-					returnValue.setValue(FileSystem::fileExists(fileName));
+					try {
+						returnValue.setValue(FileSystem::fileExists(fileName));
+					} catch (Exception& exception) {
+						Console::println("An error occurred: " + string(exception.what()));
+					}
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -420,7 +428,11 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				return "filesystem.getCurrentWorkingPathName";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				returnValue.setValue(FileSystem::getCurrentWorkingPathName());
+				try {
+					returnValue.setValue(FileSystem::getCurrentWorkingPathName());
+				} catch (Exception& exception) {
+					Console::println("An error occurred: " + string(exception.what()));
+				}
 			}
 		};
 		miniScript->registerMethod(new ScriptFileSystemGetCurrentWorkingPathName(miniScript));
@@ -446,7 +458,11 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string pathName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
-					FileSystem::changePath(pathName);
+					try {
+						FileSystem::changePath(pathName);
+					} catch (Exception& exception) {
+						Console::println("An error occurred: " + string(exception.what()));
+					}
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
