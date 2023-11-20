@@ -23,6 +23,7 @@
 #include <miniscript/miniscript/ArrayMethods.h>
 #include <miniscript/miniscript/BaseMethods.h>
 #include <miniscript/miniscript/ConsoleMethods.h>
+#include <miniscript/miniscript/FileSystemMethods.h>
 #include <miniscript/miniscript/JSONMethods.h>
 #include <miniscript/miniscript/MapMethods.h>
 #include <miniscript/miniscript/MathMethods.h>
@@ -66,6 +67,7 @@ using miniscript::math::Math;
 using miniscript::miniscript::ArrayMethods;
 using miniscript::miniscript::BaseMethods;
 using miniscript::miniscript::ConsoleMethods;
+using miniscript::miniscript::FileSystemMethods;
 using miniscript::miniscript::JSONMethods;
 using miniscript::miniscript::MapMethods;
 using miniscript::miniscript::MathMethods;
@@ -116,6 +118,7 @@ const vector<string> MiniScript::getTranspilationUnits() {
 		"src/miniscript/miniscript/ArrayMethods.cpp",
 		"src/miniscript/miniscript/BaseMethods.cpp",
 		"src/miniscript/miniscript/ConsoleMethods.cpp",
+		"src/miniscript/miniscript/FileSystemMethods.cpp",
 		"src/miniscript/miniscript/JSONMethods.cpp",
 		"src/miniscript/miniscript/MapMethods.cpp",
 		"src/miniscript/miniscript/MathMethods.cpp",
@@ -2768,7 +2771,10 @@ void MiniScript::registerMethods() {
 	// register script methods
 	ScriptMethods::registerMethods(this);
 
-	// register script methods
+	// register file system methods
+	FileSystemMethods::registerMethods(this);
+
+	// register time methods
 	TimeMethods::registerMethods(this);
 
 	// register JSON methods
