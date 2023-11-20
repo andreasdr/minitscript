@@ -36,14 +36,14 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				//
 			}
 			const string getMethodName() override {
-				return "filesystem.composeFileName";
+				return "filesystem.composeURI";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string pathName;
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
 					MiniScript::getStringValue(argumentValues, 1, fileName, false) == true) {
-					returnValue.setValue(FileSystem::getFileName(pathName, fileName));
+					returnValue.setValue(FileSystem::composeURI(pathName, fileName));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -273,7 +273,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			ScriptFileSystemIsPath(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
-						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false },
 					},
 					MiniScript::TYPE_BOOLEAN,
 					true
@@ -285,10 +285,10 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				return "filesystem.isPath";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				string pathName;
-				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
+				string uri;
+				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
 					try {
-						returnValue.setValue(FileSystem::isPath(pathName));
+						returnValue.setValue(FileSystem::isPath(uri));
 					} catch (Exception& exception) {
 						Console::println("An error occurred: " + string(exception.what()));
 					}
@@ -309,7 +309,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			ScriptFileSystemIsDrive(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
-						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false },
 					},
 					MiniScript::TYPE_BOOLEAN,
 					true
@@ -321,9 +321,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				return "filesystem.isDrive";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				string pathName;
-				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
-					returnValue.setValue(FileSystem::isDrive(pathName));
+				string uri;
+				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
+					returnValue.setValue(FileSystem::isDrive(uri));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -333,9 +333,6 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 		miniScript->registerMethod(new ScriptFileSystemIsDrive(miniScript));
 	}
 	{
-		// TODO:
-		//	fileExists -> doesFileExist + doesFolderExist?
-		//	fileExists -> exists(pathName, fileName) + exists(pathName)?
 		class ScriptFileSystemFileExists: public MiniScript::ScriptMethod {
 		private:
 			MiniScript* miniScript { nullptr };
@@ -343,7 +340,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			ScriptFileSystemFileExists(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
-						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false },
 					},
 					MiniScript::TYPE_BOOLEAN,
 					true
@@ -352,13 +349,13 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				//
 			}
 			const string getMethodName() override {
-				return "filesystem.fileExists";
+				return "filesystem.exists";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				string fileName;
-				if (MiniScript::getStringValue(argumentValues, 0, fileName, false) == true) {
+				string uri;
+				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
 					try {
-						returnValue.setValue(FileSystem::fileExists(fileName));
+						returnValue.setValue(FileSystem::exists(uri));
 					} catch (Exception& exception) {
 						Console::println("An error occurred: " + string(exception.what()));
 					}
@@ -480,7 +477,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			ScriptFileSystemGetFileName(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
-						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_STRING
 				),
@@ -491,9 +488,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				return "filesystem.getFileName";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				string fileName;
-				if (MiniScript::getStringValue(argumentValues, 0, fileName, false) == true) {
-					returnValue.setValue(FileSystem::getFileName(fileName));
+				string uri;
+				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
+					returnValue.setValue(FileSystem::getFileName(uri));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -511,7 +508,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			ScriptFileSystemGetPathName(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
-						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_STRING
 				),
@@ -522,9 +519,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				return "filesystem.getPathName";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				string fileName;
-				if (MiniScript::getStringValue(argumentValues, 0, fileName, false) == true) {
-					returnValue.setValue(FileSystem::getPathName(fileName));
+				string uri;
+				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
+					returnValue.setValue(FileSystem::getPathName(uri));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -690,8 +687,8 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			ScriptFileSystemMove(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
-						{ .type = MiniScript::TYPE_STRING, .name = "fileNameFrom", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_STRING, .name = "fileNameTo", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "uriFrom", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "uriTo", .optional = false, .reference = false, .nullable = false },
 					},
 					MiniScript::TYPE_BOOLEAN
 				),

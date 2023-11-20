@@ -33,7 +33,7 @@ using miniscript::utilities::Exception;
 using miniscript::utilities::StringTokenizer;
 using miniscript::utilities::StringTools;
 
-const string FileSystem::getFileName(const string& pathName, const string& fileName) {
+const string FileSystem::composeURI(const string& pathName, const string& fileName) {
 	return pathName + "/" + fileName;
 }
 
@@ -74,7 +74,7 @@ void FileSystem::list(const string& pathName, vector<string>& files, FileNameFil
 				fileName+= drive;
 				fileName+= ":";
 				try {
-					if (fileExists(fileName + "/") == true) files.insert(files.begin() + (drive - 'C'), fileName);
+					if (exists(fileName + "/") == true) files.insert(files.begin() + (drive - 'C'), fileName);
 				} catch (Exception& exception) {
 					Console::println("FileSystem::list(): fileExists(): " + pathName + "/" + fileName + ": " + string(exception.what()));
 				}
@@ -98,11 +98,11 @@ bool FileSystem::isDrive(const string& pathName) {
 	return StringTools::regexMatch(pathName, "^[a-zA-Z]\\:[\\/\\\\]?$");
 }
 
-bool FileSystem::fileExists(const string& fileName) {
+bool FileSystem::exists(const string& uri) {
 	try {
-		return std::filesystem::exists(std::filesystem::u8path(fileName));
+		return std::filesystem::exists(std::filesystem::u8path(uri));
 	} catch (Exception& exception) {
-		throw FileSystemException("Unable to check if file exists: " + fileName + ": " + string(exception.what()));
+		throw FileSystemException("Unable to check if file exists: " + uri + ": " + string(exception.what()));
 	}
 	//
 	return false;
@@ -119,7 +119,7 @@ uint64_t FileSystem::getFileSize(const string& pathName, const string& fileName)
 }
 
 const string FileSystem::getContentAsString(const string& pathName, const string& fileName) {
-	ifstream ifs(std::filesystem::u8path(getFileName(pathName, fileName)));
+	ifstream ifs(std::filesystem::u8path(composeURI(pathName, fileName)));
 	if (ifs.is_open() == false) {
 		throw FileSystemException("Unable to open file for reading(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -130,7 +130,7 @@ const string FileSystem::getContentAsString(const string& pathName, const string
 }
 
 void FileSystem::setContentFromString(const string& pathName, const string& fileName, const string& content) {
-	ofstream ofs(std::filesystem::u8path(getFileName(pathName, fileName)));
+	ofstream ofs(std::filesystem::u8path(composeURI(pathName, fileName)));
 	if (ofs.is_open() == false) {
 		throw FileSystemException("Unable to open file for writing(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -141,7 +141,7 @@ void FileSystem::setContentFromString(const string& pathName, const string& file
 
 void FileSystem::getContent(const string& pathName, const string& fileName, vector<uint8_t>& content)
 {
-	ifstream ifs(std::filesystem::u8path(getFileName(pathName, fileName)), ifstream::binary);
+	ifstream ifs(std::filesystem::u8path(composeURI(pathName, fileName)), ifstream::binary);
 	if (ifs.is_open() == false) {
 		throw FileSystemException("Unable to open file for reading(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -154,7 +154,7 @@ void FileSystem::getContent(const string& pathName, const string& fileName, vect
 }
 
 void FileSystem::setContent(const string& pathName, const string& fileName, const vector<uint8_t>& content) {
-	ofstream ofs(std::filesystem::u8path(getFileName(pathName, fileName)), ofstream::binary);
+	ofstream ofs(std::filesystem::u8path(composeURI(pathName, fileName)), ofstream::binary);
 	if (ofs.is_open() == false) {
 		throw FileSystemException("Unable to open file for writing(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -164,7 +164,7 @@ void FileSystem::setContent(const string& pathName, const string& fileName, cons
 
 void FileSystem::getContentAsStringArray(const string& pathName, const string& fileName, vector<string>& content)
 {
-	ifstream ifs(std::filesystem::u8path(getFileName(pathName, fileName)));
+	ifstream ifs(std::filesystem::u8path(composeURI(pathName, fileName)));
 	if(ifs.is_open() == false) {
 		throw FileSystemException("Unable to open file for reading(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -179,7 +179,7 @@ void FileSystem::getContentAsStringArray(const string& pathName, const string& f
 
 void FileSystem::setContentFromStringArray(const string& pathName, const string& fileName, const vector<string>& content)
 {
-	ofstream ofs(std::filesystem::u8path(getFileName(pathName, fileName)), ofstream::binary);
+	ofstream ofs(std::filesystem::u8path(composeURI(pathName, fileName)), ofstream::binary);
 	if(ofs.is_open() == false) {
 		throw FileSystemException("Unable to open file for writing(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -197,7 +197,7 @@ const string FileSystem::getCanonicalPath(const string& pathName, const string& 
 	string unixFileName = StringTools::replace(fileName, "\\", "/");
 
 	//
-	auto pathString = getFileName(unixPathName, unixFileName);
+	auto pathString = composeURI(unixPathName, unixFileName);
 
 	// separate into path components
 	vector<string> pathComponents;
@@ -274,17 +274,17 @@ void FileSystem::changePath(const string& pathName) {
 	}
 }
 
-const string FileSystem::getPathName(const string& fileName) {
-	auto unixFileName = StringTools::replace(fileName, '\\', '/');
+const string FileSystem::getPathName(const string& uri) {
+	auto unixFileName = StringTools::replace(uri, '\\', '/');
 	auto lastPathSeparator = StringTools::lastIndexOf(unixFileName, '/');
 	if (lastPathSeparator == -1) return ".";
 	return StringTools::substring(unixFileName, 0, lastPathSeparator);
 }
 
-const string FileSystem::getFileName(const string& fileName) {
-	auto unixFileName = StringTools::replace(fileName, '\\', '/');
+const string FileSystem::getFileName(const string& uri) {
+	auto unixFileName = StringTools::replace(uri, '\\', '/');
 	auto lastPathSeparator = StringTools::lastIndexOf(unixFileName, '/');
-	if (lastPathSeparator == -1) return fileName;
+	if (lastPathSeparator == -1) return uri;
 	return StringTools::substring(unixFileName, lastPathSeparator + 1, unixFileName.length());
 }
 
@@ -319,7 +319,7 @@ void FileSystem::removePath(const string& pathName, bool recursive) {
 
 void FileSystem::removeFile(const string& pathName, const string& fileName) {
 	try {
-		std::filesystem::remove(std::filesystem::u8path(getFileName(pathName, fileName)));
+		std::filesystem::remove(std::filesystem::u8path(composeURI(pathName, fileName)));
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to remove file: " + pathName + "/" + fileName + ": " + string(exception.what()));
 	}

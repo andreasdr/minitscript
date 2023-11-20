@@ -105,7 +105,7 @@ static void generateMiniScriptMethodsDocumentation(const string& heading, int ma
 	for (const auto& [category, methodsMarkup]: methodMarkupByCategory2) {
 		auto categoryName = descriptions.get(descriptionPrefix + "group." + (category.empty() == true?"uncategorized":category), "Not documented");
 		Console::println();
-		Console::println("## " + to_string(mainHeadingIdx) + "." + to_string(categoryIdx++) + " " + categoryName);
+		Console::println("## " + to_string(mainHeadingIdx) + "." + to_string(categoryIdx++) + ". " + categoryName);
 		Console::println();
 		Console::println("| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |");
 		Console::println("|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|");
@@ -207,7 +207,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		auto classNameDescription = descriptions.get("miniscript.baseclass." + (className.empty() == true?"No class":className), "Not documented");
 		//
 		Console::println();
-		Console::println("## " + to_string(mainHeadingIdx) + "." + to_string(classIdx++) + " " + classNameDescription);
+		Console::println("## " + to_string(mainHeadingIdx) + "." + to_string(classIdx++) + ". " + classNameDescription);
 		Console::println();
 		//
 		for (auto staticIdx = 0; staticIdx < 2; staticIdx++) {
@@ -244,7 +244,7 @@ int main(int argc, char** argv)
 
 	//
 	Properties descriptions;
-	descriptions.load("resources/engine/code-completion", "method-descriptions.properties");
+	descriptions.load("resources/documentation", "method-descriptions.properties");
 
 	//
 	// MiniScript::registerDataTypes();

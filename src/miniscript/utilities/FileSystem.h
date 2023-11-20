@@ -57,13 +57,13 @@ public:
 	};
 
 	/**
-	 * Get file name
+	 * Compose URI from path name and file name
 	 * @param pathName path name
 	 * @param fileName file name
-	 * @return complete filename with path and file
+	 * @return complete file URI with path name and file name
 	 * @throws tdme::os::filesystem::FileSystemException
 	 */
-	static const string getFileName(const string& pathName, const string& fileName);
+	static const string composeURI(const string& pathName, const string& fileName);
 
 	/**
 	 * Return file size of given file
@@ -140,24 +140,24 @@ public:
 
 	/**
 	 * Check if file is a path
-	 * @param pathName path name
+	 * @param uri uniform resource identifier
 	 * @return if file is a path
 	 */
-	static bool isPath(const string& pathName);
+	static bool isPath(const string& uri);
 
 	/**
 	 * Check if file is a drive (applies to Microsoft Windows only)
-	 * @param pathName path name
+	 * @param uri uniform resource identifier
 	 * @return if file is a drive
 	 */
-	static bool isDrive(const string& pathName);
+	static bool isDrive(const string& uri);
 
 	/**
 	 * Check if file exists
-	 * @param fileName file name
+	 * @param uri uniform resource identifier
 	 * @return bool if file exists
 	 */
-	static bool fileExists(const string& fileName);
+	static bool exists(const string& uri);
 
 	/**
 	 * Get canonical path name
@@ -181,17 +181,17 @@ public:
 
 	/**
 	 * Get path name
-	 * @param fileName file name
+	 * @param uri uniform resource identifier
 	 * @return canonical path
 	 */
-	static const string getPathName(const string& fileName);
+	static const string getPathName(const string& uri);
 
 	/**
 	 * Get file name
-	 * @param fileName file name
+	 * @param uri uniform resource identifier
 	 * @return canonical path
 	 */
-	static const string getFileName(const string& fileName);
+	static const string getFileName(const string& uri);
 
 	/**
 	 * Remove file extension, e.g. .dae, .fbx, ...
