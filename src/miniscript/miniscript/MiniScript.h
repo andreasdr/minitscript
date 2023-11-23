@@ -661,7 +661,7 @@ public:
 		 */
 		inline static void copyScriptVariable(ScriptVariable& to, const ScriptVariable& from) {
 			// initial setup
-			to.setNullValue();
+			to.setType(from.getType());
 			// do the copy
 			switch(from.getType()) {
 				case TYPE_NULL:

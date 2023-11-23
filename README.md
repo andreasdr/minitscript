@@ -21,6 +21,7 @@ This is the home of the MiniScript language. This document and repository is WIP
     - for script classes/objects
     - for custom data types
   - supports event like programming
+  - unicode support via UTF8
   - can be transpiled to C++
 
 # 2. Flow control

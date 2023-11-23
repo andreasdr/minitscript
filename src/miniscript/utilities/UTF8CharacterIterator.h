@@ -147,7 +147,8 @@ public:
 		//
 		auto seekCount = position - characterPosition;
 		for (auto i = 0; i < seekCount; i++) {
-			if (hasNext() == true) next();
+			if (hasNext() == false) break;
+			next();
 		}
 	}
 

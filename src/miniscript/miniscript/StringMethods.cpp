@@ -1,22 +1,78 @@
 #include <span>
 
 #include <miniscript/miniscript.h>
+#include <miniscript/math/Math.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/StringMethods.h>
+#include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Float.h>
 #include <miniscript/utilities/Integer.h>
 #include <miniscript/utilities/StringTools.h>
+#include <miniscript/utilities/UTF8CharacterIterator.h>
 
 using std::span;
 
 using miniscript::utilities::StringTools;
 
+using miniscript::math::Math;
 using miniscript::miniscript::MiniScript;
 using miniscript::miniscript::StringMethods;
+using miniscript::utilities::Character;
 using miniscript::utilities::Console;
 using miniscript::utilities::Float;
 using miniscript::utilities::Integer;
+using miniscript::utilities::UTF8CharacterIterator;
+
+inline static int getLength(const string& stringValue) {
+	UTF8CharacterIterator u8It(stringValue);
+	u8It.seekCharacterPosition(2147483647); // 2 ^ 31 - 1
+	//
+	return u8It.getCharacterPosition();
+}
+
+inline static vector<string> tokenize(const string& stringValue, const string& delimiters, bool emptyTokens = false) {
+	vector<string> tokens;
+	//
+	string token;
+	//
+	UTF8CharacterIterator u8It(stringValue);
+	UTF8CharacterIterator delimiterU8It(delimiters);
+	// iterate string value
+	for (; u8It.hasNext(); ) {
+		auto c = u8It.next();
+		// iterate delimiters
+		delimiterU8It.reset();
+		//
+		auto foundDelimiter = false;
+		for (; delimiterU8It.hasNext(); ) {
+			// check if delimiter character is our current string value char
+			auto dc = delimiterU8It.next();
+			// got a delimiter?
+			if (c == dc) {
+				foundDelimiter = true;
+				// yep, add token to elements if we have any
+				if (emptyTokens == true || token.empty() == false) {
+					tokens.push_back(token);
+					token.clear();
+				}
+				//
+				break;
+			}
+		}
+		//
+		if (foundDelimiter == false) {
+			// no delimiter, add char to token
+			token+= Character::toString(c);
+		}
+	}
+	// do we have a token still? add it to elements
+	if (emptyTokens == true || token.empty() == false) {
+		tokens.push_back(token);
+	}
+	//
+	return tokens;
+}
 
 void StringMethods::registerMethods(MiniScript* miniScript) {
 	// string functions
@@ -69,7 +125,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == true) {
-					returnValue.setValue(static_cast<int64_t>(stringValue.size()));
+					// utf8 character iterator
+					UTF8CharacterIterator u8It(stringValue, argumentValues[0].getStringValueCache());
+					u8It.seekCharacterPosition(2147483647); // 2 ^ 31 - 1
+					//
+					returnValue.setValue(static_cast<int64_t>(u8It.getCharacterPosition()));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -104,7 +164,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(index >= 0 && index < stringValue.size()?string(&stringValue[index], 1):string());
+					// utf8 character iterator
+					UTF8CharacterIterator u8It(stringValue, argumentValues[0].getStringValueCache());
+					u8It.seekCharacterPosition(index);
+					//
+					returnValue.setValue(u8It.hasNext() == true?Character::toString(u8It.next()):string());
 				}
 			}
 		};
@@ -206,7 +270,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(StringTools::replace(stringValue, what, by, beginIndex));
+					// utf8 character iterator
+					UTF8CharacterIterator u8It(stringValue, argumentValues[0].getStringValueCache());
+					u8It.seekCharacterPosition(beginIndex);
+					//
+					returnValue.setValue(StringTools::replace(stringValue, what, by, u8It.getBinaryPosition()));
 				}
 			}
 		};
@@ -241,7 +309,17 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(static_cast<int64_t>(StringTools::indexOf(stringValue, what, beginIndex)));
+					// utf8 character iterator
+					UTF8CharacterIterator u8It(stringValue, argumentValues[0].getStringValueCache());
+					u8It.seekCharacterPosition(beginIndex);
+					//
+					auto index = StringTools::indexOf(stringValue, what, u8It.getBinaryPosition());
+					if (index == string::npos) {
+						returnValue.setValue(static_cast<int64_t>(-1));
+					} else {
+						u8It.seekBinaryPosition(index);
+						returnValue.setValue(static_cast<int64_t>(u8It.getCharacterPosition()));
+					}
 				}
 			}
 		};
@@ -276,7 +354,25 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(static_cast<int64_t>(StringTools::firstIndexOf(stringValue, what, beginIndex)));
+					// utf8 character iterator
+					UTF8CharacterIterator u8It(stringValue, argumentValues[0].getStringValueCache());
+					u8It.seekCharacterPosition(beginIndex);
+					// utf8 character iterator
+					UTF8CharacterIterator whatU8It(what, argumentValues[1].getStringValueCache());
+					//
+					auto index = Integer::MAX_VALUE;
+					while (whatU8It.hasNext() == true) {
+						auto whatChar = Character::toString(whatU8It.next());
+						auto whatIndex = StringTools::indexOf(stringValue, whatChar, u8It.getBinaryPosition());
+						if (whatIndex != string::npos) index = Math::min(index, whatIndex);
+					}
+					//
+					if (index == string::npos) {
+						returnValue.setValue(static_cast<int64_t>(-1));
+					} else {
+						u8It.seekBinaryPosition(index);
+						returnValue.setValue(static_cast<int64_t>(u8It.getCharacterPosition()));
+					}
 				}
 			}
 		};
@@ -311,7 +407,25 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(static_cast<int64_t>(StringTools::lastIndexOf(stringValue, what, beginIndex)));
+					// utf8 character iterator
+					UTF8CharacterIterator u8It(stringValue, argumentValues[0].getStringValueCache());
+					u8It.seekCharacterPosition(beginIndex);
+					// utf8 character iterator
+					UTF8CharacterIterator whatU8It(what, argumentValues[1].getStringValueCache());
+					//
+					auto index = Integer::MIN_VALUE;
+					while (whatU8It.hasNext() == true) {
+						auto whatChar = Character::toString(whatU8It.next());
+						auto whatIndex = StringTools::indexOf(stringValue, whatChar, u8It.getBinaryPosition());
+						if (whatIndex != string::npos) index = Math::max(index, whatIndex);
+					}
+					//
+					if (index == string::npos) {
+						returnValue.setValue(static_cast<int64_t>(-1));
+					} else {
+						u8It.seekBinaryPosition(index);
+						returnValue.setValue(static_cast<int64_t>(u8It.getCharacterPosition()));
+					}
 				}
 			}
 		};
@@ -346,10 +460,19 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
+					// utf8 character iterator
+					UTF8CharacterIterator u8It(stringValue, argumentValues[0].getStringValueCache());
+					u8It.seekCharacterPosition(beginIndex);
+					//
 					if (endIndex == -1) {
-						returnValue.setValue(StringTools::substring(stringValue, beginIndex));
+						auto u8BeginIndex = u8It.getBinaryPosition();
+						returnValue.setValue(StringTools::substring(stringValue, u8BeginIndex));
 					} else {
-						returnValue.setValue(StringTools::substring(stringValue, beginIndex, endIndex));
+						auto u8BeginIndex = u8It.getBinaryPosition();
+						u8It.seekCharacterPosition(endIndex);
+						auto u8EndIndex = u8It.getBinaryPosition();
+						//
+						returnValue.setValue(StringTools::substring(stringValue, u8BeginIndex, u8EndIndex));
 					}
 				}
 			}
@@ -510,7 +633,8 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto tokenizedStringVector = StringTools::tokenize(stringValue, delimiters);
+					// TODO: UTF8
+					auto tokenizedStringVector = tokenize(stringValue, delimiters);
 					//
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto& tokenizedString: tokenizedStringVector) {
@@ -749,7 +873,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(StringTools::padLeft(stringValue, by, toSize));
+					//
+					auto result = stringValue;
+					while (getLength(result) < toSize) result = by + result;
+					//
+					returnValue.setValue(result);
 				}
 			}
 		};
@@ -784,7 +912,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(StringTools::padRight(stringValue, by, toSize));
+					//
+					auto result = stringValue;
+					while (getLength(result) < toSize) result = result + by;
+					//
+					returnValue.setValue(result);
 				}
 			}
 		};
