@@ -727,6 +727,8 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 		if (argument.empty() == false &&
 			StringTools::viewStartsWith(argument, "\"") == false &&
 			StringTools::viewEndsWith(argument, "\"") == false &&
+			StringTools::viewStartsWith(argument, "'") == false &&
+			StringTools::viewEndsWith(argument, "'") == false &&
 			StringTools::viewStartsWith(argument, "[") == false &&
 			StringTools::viewEndsWith(argument, "]") == false &&
 			StringTools::viewStartsWith(argument, "}") == false &&
@@ -750,8 +752,10 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 		} else {
 			// string literal
 			ScriptVariable argumentValue;
-			if (StringTools::viewStartsWith(argument, "\"") == true &&
-				StringTools::viewEndsWith(argument, "\"") == true) {
+			if ((StringTools::viewStartsWith(argument, "\"") == true &&
+				StringTools::viewEndsWith(argument, "\"") == true) ||
+				(StringTools::viewStartsWith(argument, "'") == true &&
+				StringTools::viewEndsWith(argument, "'") == true)) {
 				//
 				ScriptVariable value;
 				value.setValue(string(StringTools::viewSubstring(argument, 1, argument.size() - 1)));

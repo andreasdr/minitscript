@@ -12,6 +12,8 @@ on: nothing
 	console.log("filesystem-test: Nothing")
 	console.log("--------------------------")
 	console.log()
+	# compose URI
+	console.log("filesystem.composeURI('filesystem-test', 'test.txt'): " + filesystem.composeURI('filesystem-test', 'test.txt')) 
 	# create folder
 	console.log("Creating path: filesystem-test")
 	if (filesystem.createPath("filesystem-test") == false)
