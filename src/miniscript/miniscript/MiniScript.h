@@ -21,6 +21,7 @@
 #include <miniscript/utilities/Integer.h>
 #include <miniscript/utilities/StringTools.h>
 #include <miniscript/utilities/Time.h>
+#include <miniscript/utilities/UTF8CharacterIterator.h>
 
 using std::array;
 using std::exchange;
@@ -46,6 +47,7 @@ using _Float = miniscript::utilities::Float;
 using _Integer = miniscript::utilities::Integer;
 using _StringTools = miniscript::utilities::StringTools;
 using _Time = miniscript::utilities::Time;
+using _UTF8CharacterIterator = miniscript::utilities::UTF8CharacterIterator;
 
 namespace miniscript {
 namespace tools {
@@ -382,6 +384,59 @@ public:
 			ScriptVariable* reference;
 		};
 
+		/**
+		 * String value
+		 */
+		class StringValue {
+			friend class ScriptVariable;
+		public:
+			/**
+			 * Constructor
+			 */
+			StringValue(): cache(_UTF8CharacterIterator::UTF8PositionCache()), u8It(this->value, &cache) {}
+
+			/**
+			 * Constructor
+			 * @param value value
+			 */
+			StringValue(const string& value): value(value), cache(_UTF8CharacterIterator::UTF8PositionCache()), u8It(this->value, &cache) {}
+
+			/**
+			 * @return value
+			 */
+			const string& getValue() const {
+				return value;
+			}
+
+			/**
+			 * Set value
+			 * @param value value
+			 */
+			void setValue(const string& value) {
+				this->value = value;
+				cache.removeCache();
+			}
+
+			/**
+			 * @return cache
+			 */
+			_UTF8CharacterIterator::UTF8PositionCache& getCache() {
+				return cache;
+			}
+
+			/**
+			 * @return iterator
+			 */
+			const _UTF8CharacterIterator& getIterator() const {
+				return u8It;
+			}
+
+		private:
+			string value;
+			_UTF8CharacterIterator::UTF8PositionCache cache;
+			_UTF8CharacterIterator u8It;
+		};
+
 		// 24 bytes
 		uint32_t typeAndReference { TYPE_NULL };	// 4 bytes
 		int32_t referenceCounter { 1 };				// 4 bytes
@@ -503,15 +558,15 @@ public:
 		/**
 		 * @return string value reference
 		 */
-		inline string& getStringValueReference() {
-			return *static_cast<string*>((void*)getValuePtrReference());
+		inline StringValue& getStringValueReference() {
+			return *static_cast<StringValue*>((void*)getValuePtrReference());
 		}
 
 		/**
 		 * @return const string value reference
 		 */
-		inline const string& getStringValueReference() const {
-			return *static_cast<string*>((void*)getValuePtrReference());
+		inline const StringValue& getStringValueReference() const {
+			return *static_cast<StringValue*>((void*)getValuePtrReference());
 		}
 
 		/**
@@ -616,18 +671,18 @@ public:
 					break;
 				case TYPE_FUNCTION_CALL:
 					to.setType(TYPE_FUNCTION_CALL);
-					to.getStringValueReference() = from.getStringValueReference();
+					to.getStringValueReference().setValue(from.getStringValueReference().getValue());
 					// copy initializer if we have any
 					to.getInitializer()->copy(from.getInitializer());
 					//
 					break;
 				case TYPE_FUNCTION_ASSIGNMENT:
-					to.setFunctionAssignment(from.getStringValueReference());
+					to.setFunctionAssignment(from.getStringValueReference().getValue());
 					break;
 				case TYPE_PSEUDO_NUMBER: break;
 				case TYPE_PSEUDO_MIXED: break;
 				case TYPE_STRING:
-					to.setValue(from.getStringValueReference());
+					to.setValue(from.getStringValueReference().getValue());
 					break;
 				case TYPE_ARRAY:
 					to.setValue(from.getArrayValueReference());
@@ -844,7 +899,7 @@ public:
 				case TYPE_FLOAT:
 					break;
 				case TYPE_FUNCTION_CALL:
-					delete static_cast<string*>((void*)getValuePtrReference());
+					delete static_cast<StringValue*>((void*)getValuePtrReference());
 					delete getInitializerReference();
 					getInitializerReference() = nullptr;
 					break;
@@ -852,7 +907,7 @@ public:
 				case TYPE_PSEUDO_MIXED: break;
 				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
-					delete static_cast<string*>((void*)getValuePtrReference());
+					delete static_cast<StringValue*>((void*)getValuePtrReference());
 					break;
 				case TYPE_ARRAY:
 					for (auto arrayValue: getArrayValueReference()) arrayValue->releaseReference();
@@ -902,7 +957,7 @@ public:
 				case TYPE_PSEUDO_MIXED: break;
 				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
-					getValuePtrReference() = (uint64_t)(new string());
+					getValuePtrReference() = (uint64_t)(new StringValue());
 					break;
 				case TYPE_ARRAY:
 					getValuePtrReference() = (uint64_t)(new vector<ScriptVariable*>());
@@ -917,7 +972,7 @@ public:
 					getInitializerReference() = new Initializer();
 					break;
 				case TYPE_FUNCTION_CALL:
-					getValuePtrReference() = (uint64_t)(new string());
+					getValuePtrReference() = (uint64_t)(new StringValue());
 					getInitializerReference() = new Initializer();
 					break;
 				default:
@@ -978,8 +1033,7 @@ public:
 					return true;
 				case TYPE_STRING:
 					{
-						const auto& stringValue = getStringValueReference();
-						auto lowerCaseString = _StringTools::toLowerCase(stringValue);
+						auto lowerCaseString = _StringTools::toLowerCase(getStringValueReference().getValue());
 						if (lowerCaseString != "false" && lowerCaseString != "true" && lowerCaseString != "1" && lowerCaseString != "0") return optional;
 						value = lowerCaseString == "true" || lowerCaseString == "1";
 						return true;
@@ -1011,7 +1065,7 @@ public:
 					return true;
 				case TYPE_STRING:
 					{
-						const auto& stringValue = getStringValueReference();
+						const auto& stringValue = getStringValueReference().getValue();
 						if (_Integer::is(stringValue) == true) {
 							value = _Integer::parse(stringValue);
 							return true;
@@ -1050,7 +1104,7 @@ public:
 					return true;
 				case TYPE_STRING:
 					{
-						const auto& stringValue = getStringValueReference();
+						const auto& stringValue = getStringValueReference().getValue();
 						if (_Float::is(stringValue) == false) return optional;
 						value = _Float::parse(stringValue);
 					}
@@ -1080,7 +1134,7 @@ public:
 					return true;
 				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
-					value = getStringValueReference();
+					value = getStringValueReference().getValue();
 					return true;
 				default:
 					return false;
@@ -1129,7 +1183,7 @@ public:
 		 */
 		inline void setValue(const string& value) {
 			setType(TYPE_STRING);
-			getStringValueReference() = value;
+			getStringValueReference().setValue(value);
 		}
 
 		/**
@@ -1449,7 +1503,7 @@ public:
 		 */
 		inline void setFunctionAssignment(const string& value) {
 			setType(TYPE_FUNCTION_ASSIGNMENT);
-			getStringValueReference() = value;
+			getStringValueReference().setValue(value);
 		}
 
 		/**
@@ -1666,10 +1720,10 @@ public:
 					result+= to_string(getFloatValueReference());
 					break;
 				case TYPE_FUNCTION_CALL:
-					result+= "{" + getStringValueReference() + "}";
+					result+= "{" + getStringValueReference().getValue() + "}";
 					break;
 				case TYPE_FUNCTION_ASSIGNMENT:
-					result+= "() -> " + getStringValueReference();
+					result+= "() -> " + getStringValueReference().getValue();
 					break;
 				case TYPE_PSEUDO_NUMBER:
 					result+= "Number";
@@ -1678,7 +1732,7 @@ public:
 					result+= "Mixed";
 					break;
 				case TYPE_STRING:
-					result+= getStringValueReference();
+					result+= getStringValueReference().getValue();
 					break;
 				case TYPE_ARRAY:
 					{

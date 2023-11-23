@@ -3350,7 +3350,7 @@ const MiniScript::ScriptVariable MiniScript::initializeMapSet(const string_view&
 
 void MiniScript::ScriptVariable::setFunctionCallStatement(const string& initializerStatement, MiniScript* miniScript, const ScriptStatement& statement) {
 	setType(TYPE_FUNCTION_CALL);
-	getStringValueReference() = initializerStatement;
+	getStringValueReference().setValue(initializerStatement);
 	//
 	ScriptStatement initializerScriptStatement(
 		statement.line,
