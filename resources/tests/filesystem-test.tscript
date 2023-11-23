@@ -41,6 +41,9 @@ on: nothing
 		console.log("Could not change path " + $cwd + ". Exiting.")
 		script.stop()
 	end
+	# exists
+	console.log("filesystem.exists('filesystem-test'): " + filesystem.exists('filesystem-test'))
+	console.log("filesystem.exists('filesystem-test-123'): " + filesystem.exists('filesystem-test-123')) 
 	# list folder
 	console.log("Listing path: filesystem-test")
 	$files = filesystem.list("filesystem-test")
