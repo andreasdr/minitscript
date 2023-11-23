@@ -853,7 +853,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "by", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_INTEGER, .name = "toSize", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_INTEGER, .name = "toLength", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_STRING
 				),
@@ -864,16 +864,16 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string stringValue;
 				string by;
-				int64_t toSize;
+				int64_t toLength;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false ||
 					MiniScript::getStringValue(argumentValues, 1, by, false) == false ||
-					MiniScript::getIntegerValue(argumentValues, 2, toSize, false) == false) {
+					MiniScript::getIntegerValue(argumentValues, 2, toLength, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
 					//
 					auto result = stringValue;
-					while (getLength(result) < toSize) result = by + result;
+					while (getLength(result) < toLength) result = by + result;
 					//
 					returnValue.setValue(result);
 				}
@@ -892,7 +892,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "by", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_INTEGER, .name = "toSize", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_INTEGER, .name = "toLength", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_STRING
 				),
@@ -903,16 +903,16 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string stringValue;
 				string by;
-				int64_t toSize;
+				int64_t toLength;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false ||
 					MiniScript::getStringValue(argumentValues, 1, by, false) == false ||
-					MiniScript::getIntegerValue(argumentValues, 2, toSize, false) == false) {
+					MiniScript::getIntegerValue(argumentValues, 2, toLength, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
 					//
 					auto result = stringValue;
-					while (getLength(result) < toSize) result = result + by;
+					while (getLength(result) < toLength) result = result + by;
 					//
 					returnValue.setValue(result);
 				}

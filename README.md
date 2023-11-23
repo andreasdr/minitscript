@@ -667,9 +667,9 @@ end
 | Return string length                                                                             |
 | <sub>length(): Integer</sub>                                                                     |
 | Pad string left                                                                                  |
-| <sub>padLeft($by: String, $toSize: Integer): String</sub>                                        |
+| <sub>padLeft($by: String, $toLength: Integer): String</sub>                                      |
 | Pad string right                                                                                 |
-| <sub>padRight($by: String, $toSize: Integer): String</sub>                                       |
+| <sub>padRight($by: String, $toLength: Integer): String</sub>                                     |
 | RegEx match                                                                                      |
 | <sub>regexMatch($pattern: String): Boolean</sub>                                                 |
 | RegEx replace                                                                                    |
