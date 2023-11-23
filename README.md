@@ -5,7 +5,7 @@ This is the home of the MiniScript language. This document and repository is WIP
 - MiniScript is open source
   - please check the [license](https://github.com/Mindty-Kollektiv/miniscript/blob/master/LICENSE)
   - you find the source code at [https://github.com/Mindty-Kollektiv/miniscript](https://github.com/Mindty-Kollektiv/miniscript) 
-  - here you find developer [documentation including collaboration graphs and API](https://www.mindty.com/products/miniscript/documentation/1.0.0-BETA/)
+  - here you find developer [documentation including collaboration graphs and API](https://www.mindty.com/products/miniscript/documentation/)
 
 - Introduction to MiniScript language features:
   - very small implementation of a scripting language
