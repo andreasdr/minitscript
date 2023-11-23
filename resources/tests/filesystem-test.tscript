@@ -13,7 +13,13 @@ on: nothing
 	console.log("--------------------------")
 	console.log()
 	# compose URI
-	console.log("filesystem.composeURI('filesystem-test', 'test.txt'): " + filesystem.composeURI('filesystem-test', 'test.txt')) 
+	console.log("filesystem.composeURI('filesystem-test', 'test.txt'): " + filesystem.composeURI('filesystem-test', 'test.txt'))
+	# canonical URI
+	console.log("filesystem.getCanonicalURI('filesystem-test/abc/123/../..', 'test.txt'): " + filesystem.getCanonicalURI('filesystem-test/abc/123/../..', 'test.txt'))
+	# get filename
+	console.log("filesystem.getFileName('filesystem-test/abc/123/test.txt'): " + filesystem.getFileName('filesystem-test/abc/123/test.txt'))
+	# get pathname
+	console.log("filesystem.getPathName('filesystem-test/abc/123/test.txt'): " + filesystem.getPathName('filesystem-test/abc/123/test.txt'))
 	# create folder
 	console.log("Creating path: filesystem-test")
 	if (filesystem.createPath("filesystem-test") == false)
