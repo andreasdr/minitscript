@@ -19,7 +19,7 @@ using miniscript::miniscript::MiniScript;
 using miniscript::utilities::Console;
 using miniscript::utilities::StringTools;
 
-static string execute(const string& command) {
+const string ApplicationMethods::execute(const string& command) {
 	// see: https://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
 	array<char, 128> buffer;
 	string result;
@@ -58,7 +58,7 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string command;
 				if (MiniScript::getStringValue(argumentValues, 0, command, false) == true) {
-					returnValue.setValue(::execute(command));
+					returnValue.setValue(ApplicationMethods::execute(command));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
