@@ -24,14 +24,7 @@ using miniscript::utilities::Float;
 using miniscript::utilities::Integer;
 using miniscript::utilities::UTF8CharacterIterator;
 
-inline static int getLength(const string& stringValue) {
-	UTF8CharacterIterator u8It(stringValue);
-	u8It.seekCharacterPosition(2147483647); // 2 ^ 31 - 1
-	//
-	return u8It.getCharacterPosition();
-}
-
-inline static vector<string> tokenize(const string& stringValue, const string& delimiters, bool emptyTokens = false) {
+inline vector<string> StringMethods::tokenize(const string& stringValue, const string& delimiters, bool emptyTokens) {
 	vector<string> tokens;
 	//
 	string token;
@@ -632,7 +625,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto tokenizedStringVector = tokenize(stringValue, delimiters);
+					auto tokenizedStringVector = StringMethods::tokenize(stringValue, delimiters);
 					//
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto& tokenizedString: tokenizedStringVector) {
@@ -873,7 +866,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				} else {
 					//
 					auto result = stringValue;
-					while (getLength(result) < toLength) result = by + result;
+					while (StringMethods::getLength(result) < toLength) result = by + result;
 					//
 					returnValue.setValue(result);
 				}
@@ -912,7 +905,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				} else {
 					//
 					auto result = stringValue;
-					while (getLength(result) < toLength) result = result + by;
+					while (StringMethods::getLength(result) < toLength) result = result + by;
 					//
 					returnValue.setValue(result);
 				}
