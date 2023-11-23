@@ -20,6 +20,8 @@ on: nothing
 	console.log("filesystem.getFileName('filesystem-test/abc/123/test.txt'): " + filesystem.getFileName('filesystem-test/abc/123/test.txt'))
 	# get pathname
 	console.log("filesystem.getPathName('filesystem-test/abc/123/test.txt'): " + filesystem.getPathName('filesystem-test/abc/123/test.txt'))
+	# remove file extension
+	console.log("filesystem.removeFileExtension('filesystem-test/abc/123/test.txt'): " + filesystem.removeFileExtension('filesystem-test/abc/123/test.txt'))
 	# is path
 	console.log("filesystem.isPath('.'): " + filesystem.isPath('.'))
 	console.log("filesystem.isPath('filesystem-test'): " + filesystem.isPath('filesystem-test'))
@@ -77,6 +79,8 @@ on: nothing
 		console.log("Could not create file filesystem-test/test.txt. Exiting.")
 		script.stop()
 	end
+	# file size
+	console.log("Reading file size of filesystem-test/test.txt: " + filesystem.getFileSize("filesystem-test", "test.txt"))
 	# reading file
 	console.log("Reading file: filesystem-test/test.txt")
 	$fileContent = filesystem.getContentAsString("filesystem-test", "test.txt");
@@ -98,6 +102,8 @@ on: nothing
 		console.log("Could not create file filesystem-test/test.txt. Exiting.")
 		script.stop()
 	end
+	# file size
+	console.log("Reading file size of filesystem-test/test.txt: " + filesystem.getFileSize("filesystem-test", "test.txt"))
 	# reading file
 	console.log("Reading file: filesystem-test/test.txt")
 	$fileContent = filesystem.getContentAsStringArray("filesystem-test", "test.txt");
@@ -107,10 +113,27 @@ on: nothing
 	else
 		console.log("filesystem-test/test.txt: " + $fileContent)
 	end
+	# rename file and move: they work internally the same
+	if (filesystem.rename("filesystem-test/test.txt", "filesystem-test/test-renamed.txt") == false)
+		console.log("Could not create rename filesystem-test/test.txt to filesystem-test/test-renamed.txt. Exiting.")
+	end 
+	# list folder
+	console.log("Listing path: filesystem-test")
+	$files = filesystem.list("filesystem-test")
+	if ($files == null)
+		console.log("Could not list path filesystem-test. Exiting.")
+		script.stop()
+	else
+		$i = 0
+		forCondition ($i < $files->length())
+			console.log("File@" + $i + ": " + $files[$i])
+			++$i
+		end
+	end 
 	# remove file
-	console.log("Removing file: filesystem-test/test.txt")
-	if (filesystem.removeFile("filesystem-test", "test.txt") == false)
-		console.log("Could not remove file filesystem-test/test.txt. Exiting.")
+	console.log("Removing file: filesystem-test/test-renamed.txt")
+	if (filesystem.removeFile("filesystem-test", "test-renamed.txt") == false)
+		console.log("Could not remove file filesystem-test/test-renamed.txt. Exiting.")
 		script.stop()
 	end
 	# remove folder

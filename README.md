@@ -863,7 +863,7 @@ end
 | <sub>filesystem.getFileName($uri: String): String</sub>                                          |
 | Returns file size from file                                                                      |
 | <sub>filesystem.getFileSize($pathName: String, $fileName: String): ?Integer</sub>                |
-| Returns if given URI is a path name(applies to Microsoft Windows only)                           |
+| Returns if given URI is a path                                                                   |
 | <sub>filesystem.isPath($uri: String): ?Boolean</sub>                                             |
 | Extracts path name from given URI                                                                |
 | <sub>filesystem.getPathName($uri: String): String</sub>                                          |
