@@ -1,0 +1,93 @@
+# initialize
+on: initialize
+	console.log("-----------------------------")
+	console.log("filesystem-test: Initialize")
+	console.log("-----------------------------")
+	console.log()
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.log("--------------------------")
+	console.log("filesystem-test: Nothing")
+	console.log("--------------------------")
+	console.log()
+	# create folder
+	console.log("Creating path: filesystem-test")
+	if (filesystem.createPath("filesystem-test") == false)
+		console.log("Could not create path filesystem-test. Exiting.")
+		script.stop()
+	end
+	# list folder
+	console.log("Listing path: filesystem-test")
+	$files = filesystem.list("filesystem-test")
+	if ($files == null)
+		console.log("Could not list path filesystem-test. Exiting.")
+		script.stop()
+	else
+		$i = 0
+		forCondition ($i < $files->length())
+			console.log("File@" + $i + ": " + $files[$i])
+			++$i
+		end
+	end 
+	# create file
+	console.log("Creating file: filesystem-test/test.txt")
+	if (filesystem.setContentFromString("filesystem-test", "test.txt", "Arrr. I am a mighty pirate.") == false)
+		console.log("Could not create file filesystem-test/test.txt. Exiting.")
+		script.stop()
+	end
+	# reading file
+	console.log("Reading file: filesystem-test/test.txt")
+	$fileContent = filesystem.getContentAsString("filesystem-test", "test.txt");
+	if ($fileContent == null)
+		console.log("Could not read file filesystem-test/test.txt. Exiting.")
+		script.stop()
+	else
+		console.log("filesystem-test/test.txt: " + $fileContent)
+	end
+	# remove file
+	console.log("Removing file: filesystem-test/test.txt")
+	if (filesystem.removeFile("filesystem-test", "test.txt") == false)
+		console.log("Could not remove file filesystem-test/test.txt. Exiting.")
+		script.stop()
+	end
+	# create file
+	console.log("Creating file: filesystem-test/test.txt")
+	if (filesystem.setContentFromStringArray("filesystem-test", "test.txt", ["Line 1", "Line 2", "Line 3"]) == false)
+		console.log("Could not create file filesystem-test/test.txt. Exiting.")
+		script.stop()
+	end
+	# reading file
+	console.log("Reading file: filesystem-test/test.txt")
+	$fileContent = filesystem.getContentAsStringArray("filesystem-test", "test.txt");
+	if ($fileContent == null)
+		console.log("Could not read file filesystem-test/test.txt. Exiting.")
+		script.stop()
+	else
+		console.log("filesystem-test/test.txt: " + $fileContent)
+	end
+	# remove file
+	console.log("Removing file: filesystem-test/test.txt")
+	if (filesystem.removeFile("filesystem-test", "test.txt") == false)
+		console.log("Could not remove file filesystem-test/test.txt. Exiting.")
+		script.stop()
+	end
+	# remove folder
+	console.log("Removing path: filesystem-test")
+	if (filesystem.removePath("filesystem-test", false) == false)
+		console.log("Could not remove  path filesystem-test. Exiting.")
+		script.stop()
+	end
+	#
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.log("------------------------")
+	console.log("filesystem-test: Error")
+	console.log("-----------------------")
+	console.log("An error occurred")
+	script.wait(1000)
+end

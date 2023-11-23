@@ -299,7 +299,9 @@ const string FileSystem::removeFileExtension(const string& fileName) {
 
 void FileSystem::createPath(const string& pathName) {
 	try {
-		std::filesystem::create_directory(std::filesystem::u8path(pathName));
+		if (std::filesystem::create_directory(std::filesystem::u8path(pathName)) == false) {
+			throw FileSystemException("Unable to create path: " + pathName);
+		}
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to create path: " + pathName + ": " + string(exception.what()));
 	}
@@ -308,9 +310,13 @@ void FileSystem::createPath(const string& pathName) {
 void FileSystem::removePath(const string& pathName, bool recursive) {
 	try {
 		if (recursive == false) {
-			std::filesystem::remove(std::filesystem::u8path(pathName));
+			if (std::filesystem::remove(std::filesystem::u8path(pathName)) == false) {
+				throw FileSystemException("Unable to remove path: " + pathName);
+			}
 		} else {
-			std::filesystem::remove_all(std::filesystem::u8path(pathName));
+			if (std::filesystem::remove_all(std::filesystem::u8path(pathName)) == false) {
+				throw FileSystemException("Unable to remove path recursively: " + pathName);
+			}
 		}
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to remove path: " + pathName + ": " + string(exception.what()));
@@ -319,7 +325,9 @@ void FileSystem::removePath(const string& pathName, bool recursive) {
 
 void FileSystem::removeFile(const string& pathName, const string& fileName) {
 	try {
-		std::filesystem::remove(std::filesystem::u8path(composeURI(pathName, fileName)));
+		if (std::filesystem::remove(std::filesystem::u8path(composeURI(pathName, fileName))) == false) {
+			throw FileSystemException("Unable to remove file: " + pathName + "/" + fileName);
+		}
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to remove file: " + pathName + "/" + fileName + ": " + string(exception.what()));
 	}

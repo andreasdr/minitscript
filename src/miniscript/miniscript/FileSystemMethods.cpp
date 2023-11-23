@@ -565,6 +565,46 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
+		class ScriptFileSystemRemoveFile: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemRemoveFile(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.removeFile";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string pathName;
+				string fileName;
+				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
+					MiniScript::getStringValue(argumentValues, 1, fileName, false) == true) {
+					try {
+						FileSystem::removeFile(pathName, fileName);
+						returnValue.setValue(true);
+					} catch (Exception& exception) {
+						returnValue.setValue(false);
+						Console::println("An error occurred: " + string(exception.what()));
+					}
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemRemoveFile(miniScript));
+	}
+	{
+		//
 		class ScriptFileSystemCreatePath: public MiniScript::ScriptMethod {
 		private:
 			MiniScript* miniScript { nullptr };
@@ -719,5 +759,47 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 		};
 		miniScript->registerMethod(new ScriptFileSystemMove(miniScript));
+	}
+	{
+		//
+		class ScriptFileSystemList: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemList(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_ARRAY,
+					true
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.list";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string pathName;
+				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
+					try {
+						vector<string> files;
+						FileSystem::list(pathName, files);
+						//
+						returnValue.setType(MiniScript::TYPE_ARRAY);
+						for (const auto& file: files) {
+							returnValue.pushArrayEntry(file);
+						}
+					} catch (Exception& exception) {
+						Console::println("An error occurred: " + string(exception.what()));
+					}
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemList(miniScript));
 	}
 }

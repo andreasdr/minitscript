@@ -875,8 +875,12 @@ end
 | <sub>filesystem.createPath($pathName: String): Boolean</sub>                                     |
 | Returns if URI does exist                                                                        |
 | <sub>filesystem.exists($uri: String): ?Boolean</sub>                                             |
+| List folder                                                                                      |
+| <sub>filesystem.list($pathName: String): ?Array</sub>                                            |
 | Move file/folder from a location to another location                                             |
 | <sub>filesystem.move($uriFrom: String, $uriTo: String): Boolean</sub>                            |
+| Removes a file with given file name                                                              |
+| <sub>filesystem.removeFile($pathName: String, $fileName: String): Boolean</sub>                  |
 | Removes a file extension from given file name                                                    |
 | <sub>filesystem.removeFileExtension($fileName: String): String</sub>                             |
 | Removes a path from file system                                                                  |
