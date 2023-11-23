@@ -463,12 +463,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					// utf8 character iterator
 					UTF8CharacterIterator u8It(stringValue, argumentValues[0].getStringValueCache());
 					u8It.seekCharacterPosition(beginIndex);
+					auto u8BeginIndex = u8It.getBinaryPosition();
 					//
 					if (endIndex == -1) {
-						auto u8BeginIndex = u8It.getBinaryPosition();
 						returnValue.setValue(StringTools::substring(stringValue, u8BeginIndex));
 					} else {
-						auto u8BeginIndex = u8It.getBinaryPosition();
 						u8It.seekCharacterPosition(endIndex);
 						auto u8EndIndex = u8It.getBinaryPosition();
 						//
@@ -633,7 +632,6 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					// TODO: UTF8
 					auto tokenizedStringVector = tokenize(stringValue, delimiters);
 					//
 					returnValue.setType(MiniScript::TYPE_ARRAY);
