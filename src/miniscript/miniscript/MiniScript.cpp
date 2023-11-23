@@ -22,6 +22,7 @@
 #include <miniscript/math/Math.h>
 #include <miniscript/miniscript/ArrayMethods.h>
 #include <miniscript/miniscript/BaseMethods.h>
+#include <miniscript/miniscript/CryptographyMethods.h>
 #include <miniscript/miniscript/ConsoleMethods.h>
 #include <miniscript/miniscript/FileSystemMethods.h>
 #include <miniscript/miniscript/JSONMethods.h>
@@ -66,6 +67,7 @@ using miniscript::miniscript::MiniScript;
 using miniscript::math::Math;
 using miniscript::miniscript::ArrayMethods;
 using miniscript::miniscript::BaseMethods;
+using miniscript::miniscript::CryptographyMethods;
 using miniscript::miniscript::ConsoleMethods;
 using miniscript::miniscript::FileSystemMethods;
 using miniscript::miniscript::JSONMethods;
@@ -2780,6 +2782,9 @@ void MiniScript::registerMethods() {
 
 	// register time methods
 	TimeMethods::registerMethods(this);
+
+	// register cryptography methods
+	CryptographyMethods::registerMethods(this);
 
 	// register JSON methods
 	JSONMethods::registerMethods(this);

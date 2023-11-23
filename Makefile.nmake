@@ -35,6 +35,7 @@ SRCS = \
 	src/miniscript/utilities/StringTokenizer.cpp \
 	src/miniscript/miniscript/ArrayMethods.cpp \
 	src/miniscript/miniscript/BaseMethods.cpp \
+	src/miniscript/miniscript/CryptographyMethods.cpp \
 	src/miniscript/miniscript/ConsoleMethods.cpp \
 	src/miniscript/miniscript/FileSystemMethods.cpp \
 	src/miniscript/miniscript/JSONMethods.cpp \
