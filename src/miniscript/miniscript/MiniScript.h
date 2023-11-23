@@ -393,13 +393,13 @@ public:
 			/**
 			 * Constructor
 			 */
-			StringValue(): cache(_UTF8CharacterIterator::UTF8PositionCache()), u8It(this->value, &cache) {}
+			StringValue(): cache(_UTF8CharacterIterator::UTF8PositionCache()) {}
 
 			/**
 			 * Constructor
 			 * @param value value
 			 */
-			StringValue(const string& value): value(value), cache(_UTF8CharacterIterator::UTF8PositionCache()), u8It(this->value, &cache) {}
+			StringValue(const string& value): value(value) {}
 
 			/**
 			 * @return value
@@ -418,6 +418,13 @@ public:
 			}
 
 			/**
+			 * @return const cache
+			 */
+			const _UTF8CharacterIterator::UTF8PositionCache& getCache() const {
+				return cache;
+			}
+
+			/**
 			 * @return cache
 			 */
 			_UTF8CharacterIterator::UTF8PositionCache& getCache() {
@@ -425,16 +432,16 @@ public:
 			}
 
 			/**
-			 * @return iterator
+			 * Set cache
+			 * @param cache cache
 			 */
-			const _UTF8CharacterIterator& getIterator() const {
-				return u8It;
+			void setCache(const _UTF8CharacterIterator::UTF8PositionCache& cache) {
+				this->cache = cache;
 			}
 
 		private:
 			string value;
 			_UTF8CharacterIterator::UTF8PositionCache cache;
-			_UTF8CharacterIterator u8It;
 		};
 
 		// 24 bytes
@@ -682,7 +689,8 @@ public:
 				case TYPE_PSEUDO_NUMBER: break;
 				case TYPE_PSEUDO_MIXED: break;
 				case TYPE_STRING:
-					to.setValue(from.getStringValueReference().getValue());
+					to.getStringValueReference().setValue(from.getStringValueReference().getValue());
+					to.getStringValueReference().setCache(from.getStringValueReference().getCache());
 					break;
 				case TYPE_ARRAY:
 					to.setValue(from.getArrayValueReference());
@@ -1140,6 +1148,20 @@ public:
 					return false;
 			}
 			return false;
+		}
+
+		/**
+		 * Get string value UTF8 position cache from given variable
+		 * @return UTF8 position cache or nullptr if not available
+		 */
+		inline _UTF8CharacterIterator::UTF8PositionCache* getStringValueCache() {
+			switch(getType()) {
+				case TYPE_STRING:
+				case TYPE_FUNCTION_ASSIGNMENT:
+					return &getStringValueReference().getCache();
+				default:
+					return nullptr;
+			}
 		}
 
 		/**
