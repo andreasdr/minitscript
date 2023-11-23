@@ -49,6 +49,7 @@ SRCS = \
 	src/miniscript/utilities/SHA256.cpp \
 	src/miniscript/utilities/StringTools.cpp \
 	src/miniscript/utilities/StringTokenizer.cpp \
+	src/miniscript/miniscript/ApplicationMethods.cpp \
 	src/miniscript/miniscript/ArrayMethods.cpp \
 	src/miniscript/miniscript/BaseMethods.cpp \
 	src/miniscript/miniscript/CryptographyMethods.cpp \

@@ -20,6 +20,7 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/math/Math.h>
+#include <miniscript/miniscript/ApplicationMethods.h>
 #include <miniscript/miniscript/ArrayMethods.h>
 #include <miniscript/miniscript/BaseMethods.h>
 #include <miniscript/miniscript/CryptographyMethods.h>
@@ -65,6 +66,7 @@ using std::vector;
 using miniscript::miniscript::MiniScript;
 
 using miniscript::math::Math;
+using miniscript::miniscript::ApplicationMethods;
 using miniscript::miniscript::ArrayMethods;
 using miniscript::miniscript::BaseMethods;
 using miniscript::miniscript::CryptographyMethods;
@@ -2779,6 +2781,9 @@ void MiniScript::registerMethods() {
 
 	// register file system methods
 	FileSystemMethods::registerMethods(this);
+
+	// register application methods
+	ApplicationMethods::registerMethods(this);
 
 	// register time methods
 	TimeMethods::registerMethods(this);

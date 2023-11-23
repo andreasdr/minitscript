@@ -3,6 +3,7 @@
 
 namespace miniscript {
 namespace miniscript {
+	class ApplicationMethods;
 	class ArrayMethods;
 	class BaseMethods;
 	class ConsoleMethods;
