@@ -20,6 +20,14 @@ on: nothing
 	console.log("filesystem.getFileName('filesystem-test/abc/123/test.txt'): " + filesystem.getFileName('filesystem-test/abc/123/test.txt'))
 	# get pathname
 	console.log("filesystem.getPathName('filesystem-test/abc/123/test.txt'): " + filesystem.getPathName('filesystem-test/abc/123/test.txt'))
+	# is path
+	console.log("filesystem.isPath('.'): " + filesystem.isPath('.'))
+	console.log("filesystem.isPath('filesystem-test'): " + filesystem.isPath('filesystem-test'))
+	# is drive
+	console.log("filesystem.isDrive('filesystem-test'): " + filesystem.isPath('filesystem-test'))
+	console.log("filesystem.isDrive('C:'): " + filesystem.isDrive('C:'))
+	console.log("filesystem.isDrive('C:/'): " + filesystem.isDrive('C:/'))
+	# TODO: backslash
 	# create folder
 	console.log("Creating path: filesystem-test")
 	if (filesystem.createPath("filesystem-test") == false)

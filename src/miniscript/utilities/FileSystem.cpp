@@ -95,7 +95,7 @@ bool FileSystem::isPath(const string& pathName) {
 }
 
 bool FileSystem::isDrive(const string& pathName) {
-	return StringTools::regexMatch(pathName, "^[a-zA-Z]\\:[\\/\\\\]?$");
+	return StringTools::regexMatch(pathName, "^[a-zA-Z]{1}\\:.*$");
 }
 
 bool FileSystem::exists(const string& uri) {
