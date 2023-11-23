@@ -20,6 +20,27 @@ on: nothing
 		console.log("Could not create path filesystem-test. Exiting.")
 		script.stop()
 	end
+	# get current working dir
+	$cwd = filesystem.getCurrentWorkingPathName()
+	console.log("filesystem.getCurrentWorkingPathName(): " + filesystem.getCurrentWorkingPathName())
+	# change path
+	console.log("Changing path: filesystem-test")
+	if (filesystem.changePath("filesystem-test") == false)
+		console.log("Could not change path filesystem-test. Exiting.")
+		script.stop()
+	end
+	console.log("filesystem.getCurrentWorkingPathName(): " + filesystem.getCurrentWorkingPathName())
+	# change path
+	if (filesystem.changePath($cwd + "/filesystem-test") == false)
+		console.log("Could not change path filesystem-test. Exiting.")
+		script.stop()
+	end
+	# change path back
+	console.log("Changing path: " + $cwd)
+	if (filesystem.changePath($cwd) == false)
+		console.log("Could not change path " + $cwd + ". Exiting.")
+		script.stop()
+	end
 	# list folder
 	console.log("Listing path: filesystem-test")
 	$files = filesystem.list("filesystem-test")
