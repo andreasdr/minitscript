@@ -1,0 +1,30 @@
+# initialize
+on: initialize
+	console.log("-------------------------------")
+	console.log("cryptography-test: Initialize")
+	console.log("-------------------------------")
+	console.log()
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.log("----------------------------")
+	console.log("cryptography-test: Nothing")
+	console.log("----------------------------")
+	console.log()
+	#
+	$base64String = cryptography.base64.encode('Andreas is a very good boy')
+	console.log("cryptography.base64.encode('Andreas is a very good boy'): " + $base64String)
+	console.log("cryptography.base64.decode($base64String): " + cryptography.base64.decode($base64String))
+	#
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.log("--------------------------")
+	console.log("cryptography-test: Error")
+	console.log("--------------------------")
+	console.log("An error occurred")
+	script.wait(1000)
+end
