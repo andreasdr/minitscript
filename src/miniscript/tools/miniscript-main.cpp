@@ -6,6 +6,7 @@
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/Version.h>
 #include <miniscript/os/filesystem/FileSystem.h>
+#include <miniscript/os/network/Network.h>
 #include <miniscript/utilities/Console.h>
 
 using std::exit;
@@ -16,6 +17,7 @@ using std::unique_ptr;
 using miniscript::miniscript::MiniScript;
 using miniscript::miniscript::Version;
 using miniscript::os::filesystem::FileSystem;
+using miniscript::os::network::Network;
 using miniscript::utilities::Console;
 
 static void printInformation() {
@@ -77,6 +79,8 @@ int main(int argc, char** argv)
 			if (script->isValid() == false) {
 				Console::println("Script not valid. Exiting");
 			} else {
+				// TODO: we need a MiniScript startup routine
+				Network::initialize();
 				while (script->isRunning() == true) {
 					script->execute();
 				}
