@@ -29,6 +29,16 @@ INCLUDES = -Isrc -Iext -I.
 #
 CXX := $(CXX) -fPIC
 
+# set platform specific flags
+ifeq ($(OS), Haiku)
+	# Haiku
+	INCLUDES := $(INCLUDES) -I/boot/system/develop/headers
+	LIBS_LDFLAGS := -lnetwork
+else ifeq ($(OS), "")
+	# Windows
+	LIBS_LDFLAGS := -L/mingw64/lib -lws2_32
+endif
+
 #
 CPPFLAGS := $(INCLUDES)
 CFLAGS := -g $(OFLAGS) $(EXTRAFLAGS) -pipe -MMD -MP -DNDEBUG
