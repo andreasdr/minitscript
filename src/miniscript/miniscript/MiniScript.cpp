@@ -30,6 +30,7 @@
 #include <miniscript/miniscript/JSONMethods.h>
 #include <miniscript/miniscript/MapMethods.h>
 #include <miniscript/miniscript/MathMethods.h>
+#include <miniscript/miniscript/NetworkMethods.h>
 #include <miniscript/miniscript/ScriptMethods.h>
 #include <miniscript/miniscript/SetMethods.h>
 #include <miniscript/miniscript/StringMethods.h>
@@ -75,6 +76,7 @@ using miniscript::miniscript::FileSystemMethods;
 using miniscript::miniscript::JSONMethods;
 using miniscript::miniscript::MapMethods;
 using miniscript::miniscript::MathMethods;
+using miniscript::miniscript::NetworkMethods;
 using miniscript::miniscript::ScriptMethods;
 using miniscript::miniscript::SetMethods;
 using miniscript::miniscript::StringMethods;
@@ -2799,6 +2801,9 @@ void MiniScript::registerMethods() {
 
 	// register console methods
 	ConsoleMethods::registerMethods(this);
+
+	// register network methods
+	NetworkMethods::registerMethods(this);
 
 	//
 	for (const auto scriptDataType: scriptDataTypes) {

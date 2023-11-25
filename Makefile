@@ -57,6 +57,7 @@ SRCS = \
 	src/miniscript/miniscript/MapMethods.cpp \
 	src/miniscript/miniscript/MathMethods.cpp \
 	src/miniscript/miniscript/MiniScript.cpp \
+	src/miniscript/miniscript/NetworkMethods.cpp \
 	src/miniscript/miniscript/ScriptMethods.cpp \
 	src/miniscript/miniscript/SetMethods.cpp \
 	src/miniscript/miniscript/StringMethods.cpp \

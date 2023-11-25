@@ -12,6 +12,7 @@ namespace miniscript {
 	class JSONMethods;
 	class MathMethods;
 	class MapMethods;
+	class NetworkMethods;
 	class MiniScript;
 	class ScriptMethods;
 	class SetMethods;
