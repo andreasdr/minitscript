@@ -34,7 +34,7 @@ ifeq ($(OS), Haiku)
 	# Haiku
 	INCLUDES := $(INCLUDES) -I/boot/system/develop/headers
 	LIBS_LDFLAGS := -lnetwork
-else ifeq ($(OS), "")
+else ifeq ($(OSSHORT), "Msys")
 	# Windows
 	LIBS_LDFLAGS := -L/mingw64/lib -lws2_32
 endif
@@ -119,8 +119,6 @@ $(EXT_SHA256_OBJS):$(OBJ)/%.o: ext/$(SHA256)/%.cpp | print-opts
 	$(cpp-command)
 
 $(LIB_DIR)/$(LIB): $(OBJS) $(EXT_SHA256_OBJS)
-	@echo $(OS)
-	@echo $(OSSHORT)
 	@echo Creating shared library $@
 	@mkdir -p $(dir $@)
 	@rm -f $@
