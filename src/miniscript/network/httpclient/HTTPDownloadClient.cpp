@@ -1,9 +1,12 @@
 #include <miniscript/network/httpclient/HTTPDownloadClient.h>
 
+#include <iomanip>
 #include <memory>
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <sstream>
+#include <unordered_map>
 #include <vector>
 
 #include <miniscript/miniscript.h>
@@ -23,13 +26,19 @@
 #include <miniscript/utilities/StringTokenizer.h>
 #include <miniscript/utilities/StringTools.h>
 
+using std::hex;
 using std::make_unique;
+using std::nouppercase;
 using std::ifstream;
 using std::ios;
 using std::ofstream;
+using std::ostringstream;
+using std::setw;
 using std::string;
 using std::to_string;
 using std::unique_ptr;
+using std::unordered_map;
+using std::uppercase;
 using std::vector;
 
 using miniscript::math::Math;
@@ -53,9 +62,39 @@ using miniscript::network::httpclient::HTTPDownloadClient;
 HTTPDownloadClient::HTTPDownloadClient(): downloadThreadMutex("downloadthread-mutex") {
 }
 
+string HTTPDownloadClient::urlEncode(const string &value) {
+	// TODO: put me into utilities
+	// see: https://stackoverflow.com/questions/154536/encode-decode-urls-in-c
+	ostringstream escaped;
+	escaped.fill('0');
+	escaped << hex;
+
+	for (string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
+		string::value_type c = (*i);
+
+		// Keep alphanumeric and other accepted characters intact
+		if (Character::isAlphaNumeric(c) == true || c == '-' || c == '_' || c == '.' || c == '~') {
+			escaped << c;
+			continue;
+		}
+
+		// Any other characters are percent-encoded
+		escaped << uppercase;
+		escaped << '%' << setw(2) << int((unsigned char) c);
+		escaped << nouppercase;
+	}
+
+	return escaped.str();
+}
+
 string HTTPDownloadClient::createHTTPRequestHeaders(const string& hostName, const string& relativeUrl) {
+	string query;
+	for (const auto& [parameterName, parameterValue]: getParameters) {
+		if (query.empty() == true) query+= "?"; else query+="&";
+		query+= urlEncode(parameterName) + "=" + urlEncode(parameterValue);
+	}
 	auto request =
-		string("GET " + relativeUrl + " HTTP/1.1\r\n") +
+		string("GET " + relativeUrl + query + " HTTP/1.1\r\n") +
 		string("User-Agent: tdme2-httpdownloadclient\r\n") +
 		string("Host: " + hostName + "\r\n") +
 		string("Connection: close\r\n");
@@ -64,16 +103,21 @@ string HTTPDownloadClient::createHTTPRequestHeaders(const string& hostName, cons
 		Base64::encode(username + ":" + password, base64Pass);
 		request+= "Authorization: Basic " + base64Pass + "\r\n";
 	}
+	for (const auto& [headerName, headerValue]: headers) {
+		request+= headerName + ": " + headerValue + "\r\n";
+	}
 	request+=
 		string("\r\n");
 	return request;
 }
 
-uint64_t HTTPDownloadClient::parseHTTPResponseHeaders(ifstream& rawResponse, int16_t& httpStatusCode, vector<string>& httpHeader) {
-	httpHeader.clear();
+uint64_t HTTPDownloadClient::parseHTTPResponseHeaders(ifstream& rawResponse) {
+	responseHeaders.clear();
+	auto headerSize = 0ll;
+	auto returnHeaderSize = 0ll;
+	int headerIdx = 0;
+	string statusHeader;
 	string line;
-	uint64_t headerSize = 0;
-	uint64_t returnHeaderSize = 0;
 	char lastChar = -1;
 	char currentChar;
 	while (rawResponse.eof() == false) {
@@ -81,7 +125,14 @@ uint64_t HTTPDownloadClient::parseHTTPResponseHeaders(ifstream& rawResponse, int
 		headerSize++;
 		if (lastChar == '\r' && currentChar == '\n') {
 			if (line.empty() == false) {
-				httpHeader.push_back(line);
+				if (headerIdx == 0) {
+					statusHeader = line;
+					headerIdx++;
+				} else {
+					auto headerNameValueSeparator = StringTools::indexOf(line, ':');
+					responseHeaders[StringTools::trim(StringTools::substring(line, 0, headerNameValueSeparator))] =
+						StringTools::trim(StringTools::substring(line, headerNameValueSeparator + 1));
+				}
 			} else {
 				returnHeaderSize = headerSize;
 				break;
@@ -93,24 +144,28 @@ uint64_t HTTPDownloadClient::parseHTTPResponseHeaders(ifstream& rawResponse, int
 		}
 		lastChar = currentChar;
 	}
-	if (httpHeader.size() > 0) {
+	if (statusHeader.empty() == false) {
 		StringTokenizer t;
-		t.tokenize(httpHeader[0], " ");
+		t.tokenize(statusHeader, " ");
 		for (auto i = 0; i < 3 && t.hasMoreTokens(); i++) {
 			auto token = t.nextToken();
 			if (i == 1) {
-				httpStatusCode = Integer::parse(token);
+				statusCode = Integer::parse(token);
 			}
 		}
 	}
+	//
 	return returnHeaderSize;
 }
 
 void HTTPDownloadClient::reset() {
 	url.clear();
 	file.clear();
-	httpStatusCode = -1;
-	httpHeader.clear();
+	headers.clear();
+	getParameters.clear();
+	statusCode = -1;
+	responseHeaders.clear();
+	//
 	haveHeaders = false;
 	haveContentSize = false;
 	headerSize = 0LL;
@@ -137,17 +192,12 @@ void HTTPDownloadClient::start() {
 					auto hostname = relativeUrl;
 					if (slashIdx != -1) hostname = StringTools::substring(relativeUrl, 0, slashIdx);
 					relativeUrl = StringTools::substring(relativeUrl, hostname.size());
-
-					Console::println("HTTPDownloadClient::execute(): hostname: " + hostname);
-					Console::println("HTTPDownloadClient::execute(): relative url: " + relativeUrl);
-					Console::print("HTTPDownloadClient::execute(): resolving hostname to IP: " + hostname + ": ");
+					//
 					auto ip = Network::getIpByHostname(hostname);
 					if (ip.empty() == true) {
 						Console::println("HTTPDownloadClient::execute(): failed");
 						throw HTTPClientException("Could not resolve host IP by hostname");
 					}
-					Console::println(ip);
-
 					// socket
 					TCPSocket::create(socket, TCPSocket::determineIpVersion(ip));
 					socket.connect(ip, 80);
@@ -178,14 +228,14 @@ void HTTPDownloadClient::start() {
 										throw HTTPClientException("Unable to open file for reading(" + to_string(errno) + "): " + (downloadClient->file + ".download"));
 									}
 									// try to read headers
-									downloadClient->httpHeader.clear();
-									if ((downloadClient->headerSize = downloadClient->parseHTTPResponseHeaders(ifs, downloadClient->httpStatusCode, downloadClient->httpHeader)) > 0) {
+									downloadClient->responseHeaders.clear();
+									if ((downloadClient->headerSize = downloadClient->parseHTTPResponseHeaders(ifs)) > 0) {
 										downloadClient->haveHeaders = true;
-										for (const auto& header: downloadClient->httpHeader) {
-											if (StringTools::startsWith(header, "Content-Length: ") == true) {
-												downloadClient->haveContentSize = true;
-												downloadClient->contentSize = Integer::parse(StringTools::substring(header, string("Content-Length: ").size()));
-											}
+										auto contentLengthHeaderIt = downloadClient->responseHeaders.find("Content-Length");
+										if (contentLengthHeaderIt != downloadClient->responseHeaders.end()) {
+											const auto& contentLengthHeader = contentLengthHeaderIt->second;
+											downloadClient->haveContentSize = true;
+											downloadClient->contentSize = Integer::parse(contentLengthHeader);
 										}
 									}
 									ifs.close();
@@ -204,7 +254,7 @@ void HTTPDownloadClient::start() {
 					}
 
 					// transfer to real file
-					if (downloadClient->httpStatusCode == 200 && isStopRequested() == false) {
+					if (downloadClient->statusCode == 200 && isStopRequested() == false) {
 						// input file stream
 						ifstream ifs(std::filesystem::u8path(downloadClient->file + ".download"), ofstream::binary);
 						if (ifs.is_open() == false) {
