@@ -29,8 +29,6 @@ INCLUDES = -Isrc -Iext -I.
 #
 CXX := $(CXX) -fPIC
 
-echo $(OS)
-
 # set platform specific flags
 ifeq ($(OS), Haiku)
 	# Haiku
@@ -121,6 +119,7 @@ $(EXT_SHA256_OBJS):$(OBJ)/%.o: ext/$(SHA256)/%.cpp | print-opts
 	$(cpp-command)
 
 $(LIB_DIR)/$(LIB): $(OBJS) $(EXT_SHA256_OBJS)
+	@echo $(OS)
 	@echo Creating shared library $@
 	@mkdir -p $(dir $@)
 	@rm -f $@
