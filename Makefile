@@ -6,7 +6,6 @@ OBJ := obj
 # determine platform
 OSSHORT := $(shell sh -c 'uname -o 2>/dev/null')
 OS := $(shell sh -c 'uname -s 2>/dev/null')
-MACHINE := $(shell sh -c 'uname -m 2>/dev/null')
 
 #
 NAME = miniscript
@@ -34,7 +33,7 @@ ifeq ($(OS), Haiku)
 	# Haiku
 	INCLUDES := $(INCLUDES) -I/boot/system/develop/headers
 	LIBS_LDFLAGS := -lnetwork
-else ifeq ($(OSSHORT), "Msys")
+else ifeq ($(OSSHORT), Msys)
 	# Windows
 	LIBS_LDFLAGS := -L/mingw64/lib -lws2_32
 endif
@@ -120,6 +119,9 @@ $(EXT_SHA256_OBJS):$(OBJ)/%.o: ext/$(SHA256)/%.cpp | print-opts
 
 $(LIB_DIR)/$(LIB): $(OBJS) $(EXT_SHA256_OBJS)
 	@echo Creating shared library $@
+	echo $(OS)
+	echo $(OSSHORT)
+	echo $(LIBS_LDFLAGS)
 	@mkdir -p $(dir $@)
 	@rm -f $@
 ifeq ($(OSSHORT), Msys)
