@@ -119,9 +119,6 @@ $(EXT_SHA256_OBJS):$(OBJ)/%.o: ext/$(SHA256)/%.cpp | print-opts
 
 $(LIB_DIR)/$(LIB): $(OBJS) $(EXT_SHA256_OBJS)
 	@echo Creating shared library $@
-	echo $(OS)
-	echo $(OSSHORT)
-	echo $(LIBS_LDFLAGS)
 	@mkdir -p $(dir $@)
 	@rm -f $@
 ifeq ($(OSSHORT), Msys)
