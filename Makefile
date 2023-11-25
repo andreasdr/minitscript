@@ -29,6 +29,8 @@ INCLUDES = -Isrc -Iext -I.
 #
 CXX := $(CXX) -fPIC
 
+echo $(OS)
+
 # set platform specific flags
 ifeq ($(OS), Haiku)
 	# Haiku
