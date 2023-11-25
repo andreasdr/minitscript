@@ -5,8 +5,8 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/Version.h>
+#include <miniscript/os/filesystem/FileSystem.h>
 #include <miniscript/utilities/Console.h>
-#include <miniscript/utilities/FileSystem.h>
 
 using std::exit;
 using std::make_unique;
@@ -15,8 +15,8 @@ using std::unique_ptr;
 
 using miniscript::miniscript::MiniScript;
 using miniscript::miniscript::Version;
+using miniscript::os::filesystem::FileSystem;
 using miniscript::utilities::Console;
-using miniscript::utilities::FileSystem;
 
 static void printInformation() {
 	Console::println(string("miniscript ") + Version::getVersion());

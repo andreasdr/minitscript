@@ -3,18 +3,18 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/FileSystemMethods.h>
 #include <miniscript/miniscript/MiniScript.h>
+#include <miniscript/os/filesystem/FileSystem.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Exception.h>
-#include <miniscript/utilities/FileSystem.h>
 
 using std::span;
 
 using miniscript::miniscript::FileSystemMethods;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::os::filesystem::FileSystem;
 using miniscript::utilities::Console;
 using miniscript::utilities::Exception;
-using miniscript::utilities::FileSystem;
 
 void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	// file system methods

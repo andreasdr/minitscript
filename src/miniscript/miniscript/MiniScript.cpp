@@ -20,6 +20,7 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/math/Math.h>
+#include <miniscript/os/filesystem/FileSystem.h>
 #include <miniscript/miniscript/ApplicationMethods.h>
 #include <miniscript/miniscript/ArrayMethods.h>
 #include <miniscript/miniscript/BaseMethods.h>
@@ -36,7 +37,6 @@
 #include <miniscript/miniscript/XMLMethods.h>
 #include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/Console.h>
-#include <miniscript/utilities/FileSystem.h>
 #include <miniscript/utilities/Integer.h>
 #include <miniscript/utilities/StringTokenizer.h>
 #include <miniscript/utilities/StringTools.h>
@@ -80,9 +80,9 @@ using miniscript::miniscript::SetMethods;
 using miniscript::miniscript::StringMethods;
 using miniscript::miniscript::TimeMethods;
 using miniscript::miniscript::XMLMethods;
+using miniscript::os::filesystem::FileSystem;
 using miniscript::utilities::Character;
 using miniscript::utilities::Console;
-using miniscript::utilities::FileSystem;
 using miniscript::utilities::Integer;
 using miniscript::utilities::StringTokenizer;
 using miniscript::utilities::StringTools;

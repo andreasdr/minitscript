@@ -11,13 +11,13 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/math/Math.h>
+#include <miniscript/os/filesystem/FileSystem.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/Transpiler.h>
 #include <miniscript/miniscript/Version.h>
 #include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Exception.h>
-#include <miniscript/utilities/FileSystem.h>
 #include <miniscript/utilities/Integer.h>
 #include <miniscript/utilities/StringTools.h>
 
@@ -38,10 +38,10 @@ using miniscript::math::Math;
 using miniscript::miniscript::MiniScript;
 using miniscript::miniscript::Transpiler;
 using miniscript::miniscript::Version;
+using miniscript::os::filesystem::FileSystem;
 using miniscript::utilities::Character;
 using miniscript::utilities::Console;
 using miniscript::utilities::Exception;
-using miniscript::utilities::FileSystem;
 using miniscript::utilities::Integer;
 using miniscript::utilities::StringTools;
 

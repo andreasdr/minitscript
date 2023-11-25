@@ -1,4 +1,4 @@
-#include <miniscript/utilities/FileSystem.h>
+#include <miniscript/os/filesystem/FileSystem.h>
 
 #include <algorithm>
 #include <array>
@@ -26,7 +26,7 @@ using std::stringstream;
 using std::to_string;
 using std::vector;
 
-using miniscript::utilities::FileSystem;
+using miniscript::os::filesystem::FileSystem;
 
 using miniscript::utilities::Console;
 using miniscript::utilities::Exception;

@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <miniscript/miniscript.h>
-#include <miniscript/utilities/fwd-miniscript.h>
+#include <miniscript/os/filesystem/fwd-miniscript.h>
 #include <miniscript/utilities/ExceptionBase.h>
 
 using std::string;
@@ -16,7 +16,7 @@ using miniscript::utilities::ExceptionBase;
  * File system
  * @author Andreas Drewke
  */
-class miniscript::utilities::FileSystem final
+class miniscript::os::filesystem::FileSystem final
 {
 
 public:

@@ -4,9 +4,9 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/Version.h>
+#include <miniscript/os/filesystem/FileSystem.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Exception.h>
-#include <miniscript/utilities/FileSystem.h>
 #include <miniscript/utilities/StringTools.h>
 
 using std::exit;
@@ -15,9 +15,9 @@ using std::to_string;
 using std::vector;
 
 using miniscript::miniscript::Version;
+using miniscript::os::filesystem::FileSystem;
 using miniscript::utilities::Console;
 using miniscript::utilities::Exception;
-using miniscript::utilities::FileSystem;
 using miniscript::utilities::StringTools;
 
 void scanDir(const string& folder, vector<string>& sourceFiles, vector<string>& mainSourceFiles) {

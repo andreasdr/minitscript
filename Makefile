@@ -38,17 +38,6 @@ SRC = src
 SHA256 = sha256
 
 SRCS = \
-	src/miniscript/utilities/Base64.cpp \
-	src/miniscript/utilities/Console.cpp \
-	src/miniscript/utilities/ExceptionBase.cpp \
-	src/miniscript/utilities/FileSystem.cpp \
-	src/miniscript/utilities/Float.cpp \
-	src/miniscript/utilities/Hex.cpp \
-	src/miniscript/utilities/Integer.cpp \
-	src/miniscript/utilities/Properties.cpp \
-	src/miniscript/utilities/SHA256.cpp \
-	src/miniscript/utilities/StringTools.cpp \
-	src/miniscript/utilities/StringTokenizer.cpp \
 	src/miniscript/miniscript/ApplicationMethods.cpp \
 	src/miniscript/miniscript/ArrayMethods.cpp \
 	src/miniscript/miniscript/BaseMethods.cpp \
@@ -65,7 +54,28 @@ SRCS = \
 	src/miniscript/miniscript/TimeMethods.cpp \
 	src/miniscript/miniscript/Transpiler.cpp \
 	src/miniscript/miniscript/XMLMethods.cpp \
-	src/miniscript/miniscript/Version.cpp
+	src/miniscript/miniscript/Version.cpp \
+	src/miniscript/network/httpclient/HTTPClient.cpp \
+	src/miniscript/network/httpclient/HTTPClientException.cpp \
+	src/miniscript/network/httpclient/HTTPDownloadClient.cpp \
+	src/miniscript/os/filesystem/FileSystem.cpp \
+	src/miniscript/os/network/Network.cpp \
+	src/miniscript/os/network/NetworkException.cpp \
+	src/miniscript/os/network/NetworkIOException.cpp \
+	src/miniscript/os/network/NetworkSocket.cpp \
+	src/miniscript/os/network/NetworkSocketClosedException.cpp \
+	src/miniscript/os/network/NetworkSocketException.cpp \
+	src/miniscript/os/network/TCPSocket.cpp \
+	src/miniscript/utilities/Base64.cpp \
+	src/miniscript/utilities/Console.cpp \
+	src/miniscript/utilities/ExceptionBase.cpp \
+	src/miniscript/utilities/Float.cpp \
+	src/miniscript/utilities/Hex.cpp \
+	src/miniscript/utilities/Integer.cpp \
+	src/miniscript/utilities/Properties.cpp \
+	src/miniscript/utilities/SHA256.cpp \
+	src/miniscript/utilities/StringTools.cpp \
+	src/miniscript/utilities/StringTokenizer.cpp
 
 # workaround: ext-sha256.cpp was sha256.cpp, but miniscript also comes with SHA256.cpp,
 #	which collides on Windows as we dont have subfolders for ext objects
