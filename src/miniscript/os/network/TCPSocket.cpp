@@ -93,7 +93,7 @@ void TCPSocket::connect(const std::string& ip, const unsigned int port) {
 	}
 	#if defined(__APPLE__)
 		int flag = 1;
-		if (setsockopt(socket.descriptor, SOL_SOCKET, SO_NOSIGPIPE, (void*)&flag, sizeof(flag)) == -1) {
+		if (setsockopt(descriptor, SOL_SOCKET, SO_NOSIGPIPE, (void*)&flag, sizeof(flag)) == -1) {
 			std::string msg = "Could not set no sig pipe on socket: ";
 			msg+= strerror(errno);
 			throw NetworkSocketException(msg);
@@ -156,7 +156,7 @@ TCPSocket* TCPSocket::createServerSocket(const std::string& ip, const unsigned i
 	}
 	#if defined(__APPLE__)
 		int flag = 1;
-		if (setsockopt(socket.descriptor, SOL_SOCKET, SO_NOSIGPIPE, (void*)&flag, sizeof(flag)) == -1) {
+		if (setsockopt(descriptor, SOL_SOCKET, SO_NOSIGPIPE, (void*)&flag, sizeof(flag)) == -1) {
 			std::string msg = "Could not set no sig pipe on socket: ";
 			msg+= strerror(errno);
 			throw NetworkSocketException(msg);
