@@ -12,28 +12,62 @@
 #endif
 
 #include <string>
+#include <vector>
 
 #include <miniscript/miniscript.h>
+#include <miniscript/os/threading/Mutex.h>
+#include <miniscript/os/threading/Thread.h>
 #include <miniscript/utilities/Console.h>
 
 using std::string;
 using std::to_string;
+using std::vector;
 
+using miniscript::os::threading::Mutex;
+using miniscript::os::threading::Thread;
 using miniscript::utilities::Console;
 
 #if (SSLEAY_VERSION_NUMBER >= 0x0907000L)
 #include <openssl/conf.h>
 #endif
 
-void init_openssl_library(void) {
+/* This array will store all of the mutexes available to OpenSSL. */
+vector<Mutex*> mutexList;
+int threadId = 1;
+
+static void locking_function(int mode, int n, const char* file, int line) {
+	if ((mode & CRYPTO_LOCK) == CRYPTO_LOCK) {
+		mutexList[n]->lock();
+	} else {
+		mutexList[n]->unlock();
+	}
+}
+
+static unsigned long id_function() {
+    return threadId++;
+}
+
+int thread_initialize()
+{
+    mutexList.resize(CRYPTO_num_locks());
+    for (auto i = 0; i < CRYPTO_num_locks(); i++) mutexList[i] = new Mutex("openssl-thread-mutex-" + to_string(i));
+    CRYPTO_set_id_callback(id_function);
+    CRYPTO_set_locking_callback(locking_function);
+    return 1;
+}
+
+int thread_dispose()
+{
+    for (auto i = 0; i < mutexList.size(); i++) delete mutexList[i];
+    mutexList.clear();
+    return 1;
+}
+
+void init_openssl_library() {
 	SSL_library_init();
 	SSL_load_error_strings();
 	ERR_load_crypto_strings();
 	OPENSSL_config(NULL);
-	/* Include <openssl/opensslconf.h> to get this define */
-	#if defined (OPENSSL_THREADS)
-		fprintf(stdout, "Warning: thread locking is not implemented\n");
-	#endif
 }
 
 int verify_callback(int preverify, X509_STORE_CTX *x509_ctx) {
@@ -78,6 +112,7 @@ int main(int argc, char *argv[]) {
 	#define HOST_RESOURCE "/tdme2/"
 
 	init_openssl_library();
+	thread_initialize();
 
 	long res = 1;
 
@@ -183,4 +218,7 @@ int main(int argc, char *argv[]) {
 
 	if (NULL != ctx)
 		SSL_CTX_free(ctx);
+
+	//
+	thread_dispose();
 }
