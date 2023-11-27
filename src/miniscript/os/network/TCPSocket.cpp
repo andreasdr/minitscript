@@ -1,5 +1,6 @@
 #include <miniscript/os/network/TCPSocket.h>
 
+#include <memory>
 #include <string>
 
 #include <miniscript/miniscript.h>
@@ -30,6 +31,7 @@
 
 using miniscript::os::network::TCPSocket;
 
+using std::make_unique;
 using std::to_string;
 
 using miniscript::os::network::NetworkIOException;
@@ -37,9 +39,9 @@ using miniscript::os::network::NetworkSocket;
 using miniscript::os::network::NetworkSocketClosedException;
 using miniscript::os::network::NetworkSocketException;
 
-/**
- * @brief public destructor
- */
+TCPSocket::TCPSocket(): NetworkSocket() {
+}
+
 TCPSocket::~TCPSocket() {
 }
 
@@ -78,10 +80,13 @@ size_t TCPSocket::write(void* buf, const size_t bytes) {
 	return (size_t)bytesWritten;
 }
 
-void TCPSocket::create(TCPSocket& socket, IpVersion ipVersion) {
-	socket.ipVersion = ipVersion;
-	socket.descriptor = ::socket(ipVersion == IPV6?PF_INET6:PF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (socket.descriptor == -1) {
+void TCPSocket::connect(const std::string& ip, const unsigned int port) {
+	// determine IP version
+	auto ipVersion = determineIpVersion(ip);
+
+	//
+	descriptor = ::socket(ipVersion == IPV6?PF_INET6:PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (descriptor == -1) {
 		std::string msg = "Could not create socket: ";
 		msg+= strerror(errno);
 		throw NetworkSocketException(msg);
@@ -94,11 +99,6 @@ void TCPSocket::create(TCPSocket& socket, IpVersion ipVersion) {
 			throw NetworkSocketException(msg);
 		}
 	#endif
-}
-
-void TCPSocket::connect(const std::string& ip, const unsigned int port) {
-	// determine IP version
-	ipVersion = determineIpVersion(ip);
 
 	// socket address in setup
 	socklen_t sinLen = 0;
@@ -143,27 +143,47 @@ void TCPSocket::connect(const std::string& ip, const unsigned int port) {
 	this->ip = ip;
 	this->port = port;
 }
-void TCPSocket::createServerSocket(TCPSocket& socket, const std::string& ip, const unsigned int port, const int backlog) {
-	// create socket
-	TCPSocket::create(socket, determineIpVersion(ip));
 
+TCPSocket* TCPSocket::createServerSocket(const std::string& ip, const unsigned int port, const int backlog) {
+	// create socket
+	auto socket = make_unique<TCPSocket>();
+	auto ipVersion = determineIpVersion(ip);
+	descriptor = ::socket(ipVersion == IPV6?PF_INET6:PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (descriptor == -1) {
+		std::string msg = "Could not create socket: ";
+		msg+= strerror(errno);
+		throw NetworkSocketException(msg);
+	}
+	#if defined(__APPLE__)
+		int flag = 1;
+		if (setsockopt(socket.descriptor, SOL_SOCKET, SO_NOSIGPIPE, (void*)&flag, sizeof(flag)) == -1) {
+			std::string msg = "Could not set no sig pipe on socket: ";
+			msg+= strerror(errno);
+			throw NetworkSocketException(msg);
+		}
+	#endif
+
+	//
 	try {
 		// set non blocked
-		socket.setNonBlocked();
+		socket->setNonBlocked();
 
 		// bind
-		socket.bind(ip, port);
+		socket->bind(ip, port);
 
 		// make socket listen, backlog is 10% of max CCU
-		if (listen(socket.descriptor, backlog) == -1) {
+		if (listen(socket->descriptor, backlog) == -1) {
 			std::string msg = "Could not set socket to listen: ";
 			msg+= strerror(errno);
 			throw NetworkSocketException(msg);
 		}
+		//
 	} catch (NetworkSocketException &exception) {
-		socket.close();
+		socket->close();
 		throw;
 	}
+	//
+	return socket.release();
 }
 
 void TCPSocket::setTCPNoDelay() {

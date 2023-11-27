@@ -11,6 +11,7 @@ namespace network {
 	class NetworkSocket;
 	class NetworkServerException;
 	class NetworkSocketException;
+	class SecureTCPSocket;
 	class TCPSocket;
 } // namespace network
 } // namespace os

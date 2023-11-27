@@ -1,6 +1,7 @@
 #include <miniscript/network/httpclient/HTTPClient.h>
 
 #include <iomanip>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -10,6 +11,7 @@
 #include <miniscript/network/httpclient/HTTPClientException.h>
 #include <miniscript/os/network/Network.h>
 #include <miniscript/os/network/NetworkSocketClosedException.h>
+#include <miniscript/os/network/SecureTCPSocket.h>
 #include <miniscript/os/network/TCPSocket.h>
 #include <miniscript/utilities/Base64.h>
 #include <miniscript/utilities/Character.h>
@@ -20,12 +22,14 @@
 #include <miniscript/utilities/StringTools.h>
 
 using std::hex;
+using std::make_unique;
 using std::nouppercase;
 using std::ostringstream;
 using std::setw;
 using std::string;
 using std::stringstream;
 using std::to_string;
+using std::unique_ptr;
 using std::unordered_map;
 using std::uppercase;
 using std::vector;
@@ -33,6 +37,7 @@ using std::vector;
 using miniscript::network::httpclient::HTTPClientException;
 using miniscript::os::network::Network;
 using miniscript::os::network::NetworkSocketClosedException;
+using miniscript::os::network::SecureTCPSocket;
 using miniscript::os::network::TCPSocket;
 using miniscript::utilities::Base64;
 using miniscript::utilities::Character;
@@ -173,32 +178,43 @@ void HTTPClient::reset() {
 
 void HTTPClient::execute() {
 	//
-	TCPSocket socket;
+	unique_ptr<TCPSocket> socket;
 	try {
-		if (StringTools::startsWith(url, "http://") == false) throw HTTPClientException("Invalid protocol");
-		auto relativeUrl = StringTools::substring(url, string("http://").size());
+		// TODO: we might need a class to determine protocol, hostname and port, yaaar
+		auto protocolSeparatorIdx = StringTools::indexOf(url, string("://"));
+		if (protocolSeparatorIdx == -1) throw HTTPClientException("Invalid URL");
+		auto relativeUrl = StringTools::substring(url, protocolSeparatorIdx + 3);
 		if (relativeUrl.empty() == true) throw HTTPClientException("No URL given");
 		auto slashIdx = relativeUrl.find('/');
 		auto hostname = relativeUrl;
 		if (slashIdx != -1) hostname = StringTools::substring(relativeUrl, 0, slashIdx);
 		relativeUrl = StringTools::substring(relativeUrl, hostname.size());
 		//
-		auto ip = Network::getIpByHostname(hostname);
-		if (ip.empty() == true) {
-			Console::println("HTTPClient::execute(): failed");
-			throw HTTPClientException("Could not resolve host IP by hostname");
+		if (StringTools::startsWith(url, "http://") == true) {
+			auto ip = Network::getIpByHostname(hostname);
+			if (ip.empty() == true) {
+				Console::println("HTTPClient::execute(): failed");
+				throw HTTPClientException("Could not resolve host IP by hostname");
+			}
+			//
+			socket = make_unique<TCPSocket>();
+			socket->connect(ip, 80);
+		} else
+		if (StringTools::startsWith(url, "https://") == true) {
+			socket = make_unique<SecureTCPSocket>();
+			socket->connect(hostname, 443);
+		} else {
+			throw HTTPClientException("Invalid protocol");
 		}
 		//
-		TCPSocket::create(socket, TCPSocket::determineIpVersion(ip));
-		socket.connect(ip, 80);
 		auto request = createHTTPRequestHeaders(hostname, relativeUrl, body);
-		socket.write((void*)request.data(), request.length());
+		socket->write((void*)request.data(), request.length());
 
 		char rawResponseBuf[16384];
 		auto rawResponseBytesRead = 0;
 		try {
 			for (;true;) {
-				auto rawResponseBytesRead = socket.read(rawResponseBuf, sizeof(rawResponseBuf));
+				auto rawResponseBytesRead = socket->read(rawResponseBuf, sizeof(rawResponseBuf));
 				rawResponse.write(rawResponseBuf, rawResponseBytesRead);
 			};
 		} catch (NetworkSocketClosedException& sce) {
@@ -209,9 +225,9 @@ void HTTPClient::execute() {
 		parseHTTPResponseHeaders(rawResponse);
 
 		//
-		socket.shutdown();
+		socket->shutdown();
 	} catch (Exception& exception) {
-		socket.shutdown();
+		socket->shutdown();
 		//
 		Console::println(string("HTTPClient::execute(): performed HTTP request: FAILED: ") + exception.what());
 		// rethrow

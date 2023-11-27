@@ -4,16 +4,22 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/os/network/fwd-miniscript.h>
-#include <miniscript/os/network/NetworkIOException.h>
 #include <miniscript/os/network/NetworkSocket.h>
-#include <miniscript/os/network/NetworkSocketException.h>
 
 /**
  * Class representing a TCP socket
  * @author Andreas Drewke
  */
-class miniscript::os::network::TCPSocket : public NetworkSocket {
+class miniscript::os::network::TCPSocket: public NetworkSocket {
 	public:
+		// forbid class copy
+		FORBID_CLASS_COPY(TCPSocket)
+
+		/**
+		 * Public no op TCP socket constructor
+		 */
+		TCPSocket();
+
 		/**
 		 * @brief Public destructor
 		 */
@@ -26,7 +32,7 @@ class miniscript::os::network::TCPSocket : public NetworkSocket {
 		 * @throws miniscript::os::network::NetworkIOException
 		 * @return bytes read
 		 */
-		size_t read(void* buf, const size_t bytes);
+		virtual size_t read(void* buf, const size_t bytes);
 
 		/**
 		 * @brief Writes up to "bytes" bytes to socket
@@ -35,15 +41,7 @@ class miniscript::os::network::TCPSocket : public NetworkSocket {
 		 * @throws miniscript::os::network::NetworkIOException
 		 * @return bytes written
 		 */
-		size_t write(void* buf, const size_t bytes);
-
-		/**
-		 * @brief Creates a TCP socket
-		 * @param socket socket
-		 * @param ipVersion IP version
-		 * @throws miniscript::os::network::NetworkSocketException
-		 */
-		static void create(TCPSocket& socket, IpVersion ipVersion);
+		virtual size_t write(void* buf, const size_t bytes);
 
 		/**
 		 * Connects a socket to given IP and port
@@ -51,18 +49,17 @@ class miniscript::os::network::TCPSocket : public NetworkSocket {
 		 * @param port port
 		 * @throws miniscript::os::network::NetworkSocketException
 		 */
-		void connect(const string& ip, const unsigned int port);
+		virtual void connect(const string& ip, const unsigned int port);
 
 		/**
 		 * @brief Creates a TCP server socket
-		 * @param socket socket
 		 * @param ip ip
 		 * @param port port
 		 * @param backlog backlog
 		 * @throws miniscript::os::network::NetworkSocketException
 		 * @return socket
 		 */
-		static void createServerSocket(TCPSocket& socket, const std::string& ip, const unsigned int port, const int backlog);
+		TCPSocket* createServerSocket(const std::string& ip, const unsigned int port, const int backlog);
 
 		/**
 		 * @brief Disables nagle's algorithm
@@ -76,6 +73,7 @@ class miniscript::os::network::TCPSocket : public NetworkSocket {
 		 * @throws miniscript::os::network::NetworkSocketException
 		 * @return if socket was accepted
 		 */
-		bool accept(TCPSocket& _socket);
+		virtual bool accept(TCPSocket& _socket);
+
 };
 

@@ -78,6 +78,7 @@ SRCS = \
 	src/miniscript/os/network/NetworkSocket.cpp \
 	src/miniscript/os/network/NetworkSocketClosedException.cpp \
 	src/miniscript/os/network/NetworkSocketException.cpp \
+	src/miniscript/os/network/SecureTCPSocket.cpp \
 	src/miniscript/os/network/TCPSocket.cpp \
 	src/miniscript/utilities/Base64.cpp \
 	src/miniscript/utilities/Console.cpp \
@@ -102,8 +103,7 @@ MAIN_SRCS = \
 	src/miniscript/tools/miniscriptmakefile-main.cpp \
 	src/miniscript/tools/miniscriptnmakefile-main.cpp \
 	src/miniscript/tools/miniscripttranspiler-main.cpp \
-	src/miniscript/tools/miniscriptuntranspiler-main.cpp \
-	src/miniscript/tools/ssltest-main.cpp
+	src/miniscript/tools/miniscriptuntranspiler-main.cpp
 
 MAINS = $(MAIN_SRCS:$(SRC)/%-main.cpp=$(BIN)/%)
 OBJS = $(SRCS:$(SRC)/%.cpp=$(OBJ)/%.o)

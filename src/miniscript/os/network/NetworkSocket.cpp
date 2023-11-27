@@ -23,14 +23,11 @@ using std::to_string;
 
 using miniscript::os::network::NetworkSocket;
 
-NetworkSocket& NetworkSocket::operator=(const NetworkSocket& socket) {
-	descriptor = socket.descriptor;
-	ip = socket.ip;
-	ipVersion = socket.ipVersion;
-	return *this;
+NetworkSocket::IpVersion NetworkSocket::determineIpVersion(const string& ip) {
+	return ip.find(':') != std::string::npos?IpVersion::IPV6:IpVersion::IPV4;
 }
 
-NetworkSocket::NetworkSocket() : descriptor(-1), ip("0.0.0.0"), port(0), ipVersion(IpVersion::IPV4) {
+NetworkSocket::NetworkSocket() : descriptor(-1), ip("0.0.0.0"), port(0) {
 }
 
 NetworkSocket::~NetworkSocket() {
@@ -44,13 +41,9 @@ const unsigned int NetworkSocket::getPort() {
 	return port;
 }
 
-void NetworkSocket::shutdown() {
-	if (descriptor != -1) ::shutdown(descriptor, SHUT_RDWR);
-}
-
 void NetworkSocket::bind(const std::string& ip, const unsigned int port) {
 	// determine IP version
-	ipVersion = determineIpVersion(ip);
+	auto ipVersion = determineIpVersion(ip);
 
 	// socket address in setup
 	socklen_t sinLen = 0;
@@ -122,6 +115,10 @@ void NetworkSocket::setNonBlocked() {
 	#endif
 }
 
+void NetworkSocket::shutdown() {
+	if (descriptor != -1) ::shutdown(descriptor, SHUT_RDWR);
+}
+
 void NetworkSocket::close() {
 	#if defined(_WIN32)
 		::closesocket(descriptor);
@@ -129,10 +126,6 @@ void NetworkSocket::close() {
 		::close(descriptor);
 	#endif
 	descriptor = -1;
-}
-
-NetworkSocket::IpVersion NetworkSocket::determineIpVersion(const string& ip) {
-	return ip.find(':') != std::string::npos?IpVersion::IPV6:IpVersion::IPV4;
 }
 
 #if defined(__MINGW32__) && !defined(__MINGW64__)
