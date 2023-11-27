@@ -17,7 +17,7 @@ else
 	LIB_EXT = .so
 endif
 LIB := lib$(NAME)$(LIB_EXT)
-MAIN_LDFLAGS = -L $(LIB_DIR) -l $(NAME)
+MAIN_LDFLAGS = -L $(LIB_DIR) -l $(NAME) -L/usr/lib64 -lssl -lcrypto
 
 #
 CPPVERSION = -std=c++2a
@@ -37,6 +37,9 @@ else ifeq ($(OSSHORT), Msys)
 	# Windows
 	LIBS_LDFLAGS := -L/mingw64/lib -lws2_32
 endif
+
+#
+LIBS_LDFLAGS := $(LIBS_LDFLAGS)
 
 #
 CPPFLAGS := $(INCLUDES)
@@ -99,7 +102,8 @@ MAIN_SRCS = \
 	src/miniscript/tools/miniscriptmakefile-main.cpp \
 	src/miniscript/tools/miniscriptnmakefile-main.cpp \
 	src/miniscript/tools/miniscripttranspiler-main.cpp \
-	src/miniscript/tools/miniscriptuntranspiler-main.cpp
+	src/miniscript/tools/miniscriptuntranspiler-main.cpp \
+	src/miniscript/tools/ssltest-main.cpp
 
 MAINS = $(MAIN_SRCS:$(SRC)/%-main.cpp=$(BIN)/%)
 OBJS = $(SRCS:$(SRC)/%.cpp=$(OBJ)/%.o)
