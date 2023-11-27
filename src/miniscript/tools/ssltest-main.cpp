@@ -72,6 +72,7 @@ void handleFailure() {
 }
 
 int main(int argc, char *argv[]) {
+	// see: https://wiki.openssl.org/index.php/SSL/TLS_Client
 	#define HOST_NAME "drewke.net"
 	#define HOST_PORT "443"
 	#define HOST_RESOURCE "/tdme2/"
