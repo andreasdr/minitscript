@@ -5,14 +5,18 @@ MSCBIN = mscbin
 INCLUDES = \
 	/I "." \
 	/I "src" \
-	/I "ext"
+	/I "ext" \
+	/I "ext\windows-msc\openssl\include"
 
 # For some reason this works only once LOL
 # WINDOWS_SDK_DIR = %WindowsSdkDir%Lib\%WindowsSDKLibVersion%
 WINDOWS_SDK_DIR = C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0
 
 MAIN_LDFLAGS = /LIBPATH $(MSCBIN)\libminiscript.lib
-LIBS_LDFLAGS = /LIBPATH "$(WINDOWS_SDK_DIR)\um\x64\ws2_32.lib"
+LIBS_LDFLAGS = \
+	/LIBPATH "$(WINDOWS_SDK_DIR)\um\x64\ws2_32.lib" \
+	/LIBPATH "ext\windows-msc\openssl\lib\libcrypto.lib" \
+	/LIBPATH "ext\windows-msc\openssl\lib\libssl.lib"
 
 FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi
 # /NODEFAULTLIB:msvcrt
