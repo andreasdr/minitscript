@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 
 	SSL *ssl = NULL;
 	SSL_CTX *ctx = NULL;
-	BIO *web = NULL, *out = NULL;
+	BIO *bio = NULL, *out = NULL;
 
 	init_openssl_library();
 
@@ -110,15 +110,15 @@ int main(int argc, char *argv[]) {
 	if (!(1 == res))
 		handleFailure();
 
-	web = BIO_new_ssl_connect(ctx);
-	if (!(web != NULL))
+	bio = BIO_new_ssl_connect(ctx);
+	if (!(bio != NULL))
 		handleFailure();
 
-	res = BIO_set_conn_hostname(web, HOST_NAME ":" HOST_PORT);
+	res = BIO_set_conn_hostname(bio, HOST_NAME ":" HOST_PORT);
 	if (!(1 == res))
 		handleFailure();
 
-	BIO_get_ssl(web, &ssl);
+	BIO_get_ssl(bio, &ssl);
 	if (!(ssl != NULL))
 		handleFailure();
 
@@ -135,11 +135,11 @@ int main(int argc, char *argv[]) {
 	if (!(NULL != out))
 		handleFailure();
 
-	res = BIO_do_connect(web);
+	res = BIO_do_connect(bio);
 	if (!(1 == res))
 		handleFailure();
 
-	res = BIO_do_handshake(web);
+	res = BIO_do_handshake(bio);
 	if (!(1 == res))
 		handleFailure();
 
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
 	/* Step 3: hostname verification */
 	/* An exercise left to the reader */
 
-	BIO_puts(web, "GET " HOST_RESOURCE " HTTP/1.1\r\n"
+	BIO_puts(bio, "GET " HOST_RESOURCE " HTTP/1.1\r\n"
 	"Host: " HOST_NAME "\r\n"
 	"Connection: close\r\n\r\n");
 	BIO_puts(out, "\n");
@@ -168,18 +168,18 @@ int main(int argc, char *argv[]) {
 	int len = 0;
 	do {
 		char buff[1536] = { };
-		len = BIO_read(web, buff, sizeof(buff));
+		len = BIO_read(bio, buff, sizeof(buff));
 
 		if (len > 0)
 			BIO_write(out, buff, len);
 
-	} while (len > 0 || BIO_should_retry(web));
+	} while (len > 0 || BIO_should_retry(bio));
 
 	if (out)
 		BIO_free(out);
 
-	if (web != NULL)
-		BIO_free_all(web);
+	if (bio != NULL)
+		BIO_free_all(bio);
 
 	if (NULL != ctx)
 		SSL_CTX_free(ctx);
