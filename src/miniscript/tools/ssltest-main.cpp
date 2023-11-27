@@ -104,6 +104,7 @@ int main(int argc, char *argv[]) {
 	const long flags = SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_COMPRESSION;
 	SSL_CTX_set_options(ctx, flags);
 
+	// see: https://stackoverflow.com/questions/59017890/where-is-the-certificate-file-for-ssl-ctx-load-verify-locations-in-openssl-locat
 	res = SSL_CTX_load_verify_locations(ctx, "/etc/ssl/certs/ca-certificates.crt" /* truststore */, "/etc/ssl/certs/");
 	if (!(1 == res))
 		handleFailure();
