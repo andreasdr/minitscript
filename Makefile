@@ -17,7 +17,7 @@ else
 	LIB_EXT = .so
 endif
 LIB := lib$(NAME)$(LIB_EXT)
-MAIN_LDFLAGS = -L $(LIB_DIR) -l $(NAME) -L/usr/lib64 -lssl -lcrypto
+MAIN_LDFLAGS = -L $(LIB_DIR) -l $(NAME)
 
 #
 CPPVERSION = -std=c++2a
@@ -29,13 +29,31 @@ INCLUDES = -Isrc -Iext -I.
 CXX := $(CXX) -fPIC
 
 # set platform specific flags
-ifeq ($(OS), Haiku)
+ifeq ($(OS), Darwin)
+	# MacOSX
+	LIBS_LDFLAGS := -lssl -lcrypto
+else ifeq ($(OS), FreeBSD)
+	# FreeBSD
+	INCLUDES := $(INCLUDES) -I/usr/local/include
+	LIBS_LDFLAGS := -L/usr/local/lib -lssl -lcrypto
+else ifeq ($(OS), NetBSD)
+	# NetBSD
+	INCLUDES := $(INCLUDES) -I/usr/pkg/include
+	LIBS_LDFLAGS := -L/usr/pkg/lib -lssl -lcrypto
+else ifeq ($(OS), OpenBSD)
+	# OpenBSD
+	INCLUDES := $(INCLUDES) -I/usr/local/include
+	LIBS_LDFLAGS := -L/usr/local/lib -lssl -lcrypto
+else ifeq ($(OS), Haiku)
 	# Haiku
 	INCLUDES := $(INCLUDES) -I/boot/system/develop/headers
-	LIBS_LDFLAGS := -lnetwork
-else ifeq ($(OSSHORT), Msys)
-	# Windows
-	LIBS_LDFLAGS := -L/mingw64/lib -lws2_32
+	LIBS_LDFLAGS := -lnetwork -lssl -lcrypto
+else ifeq ($(OS), Linux)
+	# Linux
+	LIBS_LDFLAGS := -L/usr/lib64 -lssl -lcrypto
+else
+	INCLUDES := $(INCLUDES) -I/mingw64/include
+	LIBS_LDFLAGS := -L/mingw64/lib -lws2_32 -lssl -lcrypto
 endif
 
 #
