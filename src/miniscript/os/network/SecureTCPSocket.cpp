@@ -162,11 +162,17 @@ bool SecureTCPSocket::accept(SecureTCPSocket &_socket) {
 }
 
 void SecureTCPSocket::shutdown() {
-	//
+	if (bio != nullptr) BIO_free_all(bio);
+	if (ctx != nullptr) SSL_CTX_free(ctx);
+	bio = nullptr;
+	ctx = nullptr;
 }
 
 void SecureTCPSocket::close() {
-	//
+	if (bio != nullptr) BIO_free_all(bio);
+	if (ctx != nullptr) SSL_CTX_free(ctx);
+	bio = nullptr;
+	ctx = nullptr;
 }
 
 int SecureTCPSocket::openSSLVerifyCallback(int preverify, X509_STORE_CTX *x509_ctx) {
