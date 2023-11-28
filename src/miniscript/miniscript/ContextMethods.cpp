@@ -210,9 +210,9 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 				return "context.script.getScriptIds";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				auto scripts = miniScript->getContext()->getScripts();
+				auto scriptIds = miniScript->getContext()->getScriptIds();
 				returnValue.setType(MiniScript::TYPE_ARRAY);
-				for (const auto& script: scripts) returnValue.pushArrayEntry(script);
+				for (const auto& scriptId: scriptIds) returnValue.pushArrayEntry(scriptId);
 			}
 		};
 		miniScript->registerMethod(new ScriptMethodContextScriptGetScriptIds(miniScript));

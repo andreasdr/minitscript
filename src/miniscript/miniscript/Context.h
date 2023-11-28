@@ -61,12 +61,13 @@ public:
 	}
 
 	/**
-	 * @return scripts
+	 * Get script ids
+	 * @return script ids
 	 */
-	inline const vector<MiniScript*> getScripts() {
-		vector<MiniScript*> result;
+	inline const vector<string> getScriptIds() {
+		vector<string> result;
 		for (const auto& [scriptId, script]: scriptsById) {
-			result.push_back(script);
+			result.push_back(scriptId);
 		}
 		return result;
 	}

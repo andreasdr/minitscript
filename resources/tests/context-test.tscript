@@ -16,7 +16,7 @@ on: nothing
 	console.log("Loading script: context-test-2.tscript")
 	context.script.loadScript("context-test-2", "resources/tests", "context-test-2.tscript")
 	console.log("Context script ids: " + context.script.getScriptIds())
-	console.log("Checking if callable hello2 does exist in context-test-2")
+	console.log("Checking if callable hello2() does exist in context-test-2")
 	if (context.script.hasCallable("context-test-2", "hello2") == true)
 		console.log("Calling hello2 from context-test-2")
 		context.script.call("context-test-2", "hello2", "Andreas")

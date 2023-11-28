@@ -95,9 +95,12 @@ int main(int argc, char** argv)
 				#if defined(_MSC_VER)
 					OPENSSL_Applink();
 				#endif
+				// add script to context
+				auto scriptPtr = script.get();
+				context->addScript("main", script.release());
 				//
-				while (script->isRunning() == true) {
-					script->execute();
+				while (scriptPtr->isRunning() == true) {
+					scriptPtr->execute();
 				}
 			}
 		}
