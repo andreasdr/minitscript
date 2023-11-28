@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <miniscript/miniscript.h>
+#include <miniscript/miniscript/Context.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/Version.h>
 #include <miniscript/utilities/Console.h>
@@ -26,6 +27,7 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
+using miniscript::miniscript::Context;
 using miniscript::miniscript::MiniScript;
 using miniscript::miniscript::Version;
 using miniscript::utilities::Console;
@@ -250,7 +252,9 @@ int main(int argc, char** argv)
 	// MiniScript::registerDataTypes();
 
 	//
+	auto context = make_unique<Context>();
 	auto miniScript = make_unique<MiniScript>();
+	miniScript->setContext(context.get());
 	miniScript->registerMethods();
 
 	//
