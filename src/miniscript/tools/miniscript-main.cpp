@@ -2,8 +2,10 @@
 #include <memory>
 #include <string>
 
-// required for OpenSSL to work when having OpenSSL embedded in a DLL which is used here
-#include <openssl/applink.c>
+// Windows MSC: required for OpenSSL to work when having OpenSSL embedded in a DLL which is used here
+#if defined(_MSC_VER)
+	#include <openssl/applink.c>
+#endif
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
@@ -84,8 +86,10 @@ int main(int argc, char** argv)
 			} else {
 				// TODO: we need a MiniScript startup routine
 				Network::initialize();
-				// required for OpenSSL to work when having OpenSSL embedded in a DLL which is used here
-				OPENSSL_Applink();
+				// Windows MSC: required for OpenSSL to work when having OpenSSL embedded in a DLL which is used here
+				#if defined(_MSC_VER)
+					OPENSSL_Applink();
+				#endif
 				//
 				while (script->isRunning() == true) {
 					script->execute();
