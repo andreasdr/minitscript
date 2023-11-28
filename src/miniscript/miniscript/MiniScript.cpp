@@ -26,6 +26,7 @@
 #include <miniscript/miniscript/BaseMethods.h>
 #include <miniscript/miniscript/CryptographyMethods.h>
 #include <miniscript/miniscript/ConsoleMethods.h>
+#include <miniscript/miniscript/ContextMethods.h>
 #include <miniscript/miniscript/FileSystemMethods.h>
 #include <miniscript/miniscript/JSONMethods.h>
 #include <miniscript/miniscript/MapMethods.h>
@@ -72,6 +73,7 @@ using miniscript::miniscript::ArrayMethods;
 using miniscript::miniscript::BaseMethods;
 using miniscript::miniscript::CryptographyMethods;
 using miniscript::miniscript::ConsoleMethods;
+using miniscript::miniscript::ContextMethods;
 using miniscript::miniscript::FileSystemMethods;
 using miniscript::miniscript::JSONMethods;
 using miniscript::miniscript::MapMethods;
@@ -121,21 +123,21 @@ const string MiniScript::getBaseClass() {
 
 const vector<string> MiniScript::getTranspilationUnits() {
 	return {
+		"src/miniscript/miniscript/ApplicationMethods.cpp",
 		"src/miniscript/miniscript/ArrayMethods.cpp",
 		"src/miniscript/miniscript/BaseMethods.cpp",
 		"src/miniscript/miniscript/ConsoleMethods.cpp",
+		"src/miniscript/miniscript/ContextMethods.cpp",
+		"src/miniscript/miniscript/CryptographyMethods.cpp",
 		"src/miniscript/miniscript/FileSystemMethods.cpp",
 		"src/miniscript/miniscript/JSONMethods.cpp",
 		"src/miniscript/miniscript/MapMethods.cpp",
 		"src/miniscript/miniscript/MathMethods.cpp",
-		"src/miniscript/miniscript/MiniScript.cpp",
+		"src/miniscript/miniscript/NetworkMethods.cpp",
 		"src/miniscript/miniscript/ScriptMethods.cpp",
-		"src/miniscript/miniscript/ScriptMethods.h",
 		"src/miniscript/miniscript/SetMethods.cpp",
 		"src/miniscript/miniscript/StringMethods.cpp",
 		"src/miniscript/miniscript/TimeMethods.cpp",
-		"src/miniscript/miniscript/Transpiler.cpp",
-		"src/miniscript/miniscript/Version.cpp",
 		"src/miniscript/miniscript/XMLMethods.cpp"
 	};
 }
@@ -2763,47 +2765,52 @@ void MiniScript::registerMethods() {
 	miniScriptMath = make_unique<MathMethods>(this);
 	miniScriptMath->registerMethods();
 
-	// register base methods
+	// base script methods
+	// 	register base methods
 	BaseMethods::registerMethods(this);
 
-	// register string methods
+	// 	register string methods
 	StringMethods::registerMethods(this);
 
-	// register array methods
+	// 	register array methods
 	ArrayMethods::registerMethods(this);
 
-	// register map methods
+	// 	register map methods
 	MapMethods::registerMethods(this);
 
-	// register set methods
+	// 	register set methods
 	SetMethods::registerMethods(this);
 
-	// register script methods
+	// 	register script methods
 	ScriptMethods::registerMethods(this);
 
-	// register file system methods
-	FileSystemMethods::registerMethods(this);
-
+	// additional script methods
 	// register application methods
 	ApplicationMethods::registerMethods(this);
-
-	// register time methods
-	TimeMethods::registerMethods(this);
-
-	// register cryptography methods
-	CryptographyMethods::registerMethods(this);
-
-	// register JSON methods
-	JSONMethods::registerMethods(this);
-
-	// register XML methods
-	XMLMethods::registerMethods(this);
 
 	// register console methods
 	ConsoleMethods::registerMethods(this);
 
+	// register context methods
+	ContextMethods::registerMethods(this);
+
+	// register cryptography methods
+	CryptographyMethods::registerMethods(this);
+
+	// register file system methods
+	FileSystemMethods::registerMethods(this);
+
+	// register JSON methods
+	JSONMethods::registerMethods(this);
+
 	// register network methods
 	NetworkMethods::registerMethods(this);
+
+	// register time methods
+	TimeMethods::registerMethods(this);
+
+	// register XML methods
+	XMLMethods::registerMethods(this);
 
 	//
 	for (const auto scriptDataType: scriptDataTypes) {

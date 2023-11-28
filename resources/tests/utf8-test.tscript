@@ -38,5 +38,5 @@ on: error
 	console.log("utf8-test: Error")
 	console.log("------------------")
 	console.log("An error occurred")
-	script.wait(1000)
+	script.stop()
 end

@@ -73,6 +73,7 @@ SRCS = \
 	src/miniscript/miniscript/BaseMethods.cpp \
 	src/miniscript/miniscript/CryptographyMethods.cpp \
 	src/miniscript/miniscript/ConsoleMethods.cpp \
+	src/miniscript/miniscript/ContextMethods.cpp \
 	src/miniscript/miniscript/Context.cpp \
 	src/miniscript/miniscript/FileSystemMethods.cpp \
 	src/miniscript/miniscript/JSONMethods.cpp \

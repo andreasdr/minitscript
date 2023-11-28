@@ -7,6 +7,7 @@ namespace miniscript {
 	class ArrayMethods;
 	class BaseMethods;
 	class ConsoleMethods;
+	class ContextMethods;
 	class Context;
 	class CryptographyMethods;
 	class FileSystemMethods;
