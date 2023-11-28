@@ -101,11 +101,7 @@ void SecureTCPSocket::connect(const std::string& hostname, const unsigned int po
 	//
 	long result = 1;
 	// see: https://stackoverflow.com/questions/59017890/where-is-the-certificate-file-for-ssl-ctx-load-verify-locations-in-openssl-locat
-	#if defined(_MSC_VER)
-		result = SSL_CTX_load_verify_locations(ctx, "resources\\certs\\cacert-2023-08-22.pem" /* truststore */, "resources\\certs");
-	#else
-		result = SSL_CTX_load_verify_locations(ctx, "/etc/ssl/certs/ca-certificates.crt" /* truststore */, "/etc/ssl/certs/");
-	#endif
+	result = SSL_CTX_load_verify_locations(ctx, "resources/certs/cacert-2023-08-22.pem" /* truststore */, "resources/certs");
 	if (!(1 == result))
 		throw NetworkSocketException("Could not connect socket: " + openSSLGetErrors());
 
