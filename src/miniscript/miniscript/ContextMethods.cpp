@@ -94,7 +94,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						} else {
 							#if defined (__APPLE__)
 								// MACOSX currently does not support initializing span using begin and end iterators,
-								vector<ScriptVariable> callArgumentValues(argumentValues.size() - 2);
+								vector<MiniScript::ScriptVariable> callArgumentValues(argumentValues.size() - 2);
 								for (auto i = 2; i < argumentValues.size(); i++) callArgumentValues[i - 2] = move(argumentValues[i]);
 								// call
 								span callArgumentValuesSpan(callArgumentValues);
