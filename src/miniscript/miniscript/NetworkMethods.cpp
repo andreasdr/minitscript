@@ -57,18 +57,22 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 					(argumentValues.size() <= 2 || argumentValues[2].getType() == MiniScript::TYPE_MAP)) {
 					// GET parameters
 					unordered_map<string, string> getParameters;
-					auto getParameterMapPtr = argumentValues[1].getMapPointer();
-					if (getParameterMapPtr != nullptr) {
-						for (const auto& [key, value]: *getParameterMapPtr) {
-							getParameters[key] = value->getValueAsString();
+					if (argumentValues.size() >= 2) {
+						auto getParameterMapPtr = argumentValues[1].getMapPointer();
+						if (getParameterMapPtr != nullptr) {
+							for (const auto& [key, value]: *getParameterMapPtr) {
+								getParameters[key] = value->getValueAsString();
+							}
 						}
 					}
 					// headers
 					unordered_map<string, string> headers;
-					auto headersMapPtr = argumentValues[2].getMapPointer();
-					if (headersMapPtr != nullptr) {
-						for (const auto& [key, value]: *headersMapPtr) {
-							headers[key] = value->getValueAsString();
+					if (argumentValues.size() >= 3) {
+						auto headersMapPtr = argumentValues[2].getMapPointer();
+						if (headersMapPtr != nullptr) {
+							for (const auto& [key, value]: *headersMapPtr) {
+								headers[key] = value->getValueAsString();
+							}
 						}
 					}
 					//
@@ -128,18 +132,23 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 					(argumentValues.size() <= 2 || argumentValues[2].getType() == MiniScript::TYPE_MAP)) {
 					// GET parameters
 					unordered_map<string, string> getParameters;
-					auto getParameterMapPtr = argumentValues[1].getMapPointer();
-					if (getParameterMapPtr != nullptr) {
-						for (const auto& [key, value]: *getParameterMapPtr) {
-							getParameters[key] = value->getValueAsString();
+					if (argumentValues.size() >= 2) {
+						auto getParameterMapPtr = argumentValues[1].getMapPointer();
+						if (getParameterMapPtr != nullptr) {
+							for (const auto& [key, value]: *getParameterMapPtr) {
+								getParameters[key] = value->getValueAsString();
+							}
 						}
+
 					}
 					// headers
 					unordered_map<string, string> headers;
-					auto headersMapPtr = argumentValues[2].getMapPointer();
-					if (headersMapPtr != nullptr) {
-						for (const auto& [key, value]: *headersMapPtr) {
-							headers[key] = value->getValueAsString();
+					if (argumentValues.size() >= 3) {
+						auto headersMapPtr = argumentValues[2].getMapPointer();
+						if (headersMapPtr != nullptr) {
+							for (const auto& [key, value]: *headersMapPtr) {
+								headers[key] = value->getValueAsString();
+							}
 						}
 					}
 					//
@@ -209,28 +218,34 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 					(argumentValues.size() <= 3 || argumentValues[3].getType() == MiniScript::TYPE_MAP)) {
 					// post parameters
 					unordered_map<string, string> postParameters;
-					if (argumentValues[1].getType() == MiniScript::TYPE_MAP) {
-						auto postParameterMapPtr = argumentValues[1].getMapPointer();
-						if (postParameterMapPtr != nullptr) {
-							for (const auto& [key, value]: *postParameterMapPtr) {
-								postParameters[key] = value->getValueAsString();
+					if (argumentValues.size() >= 2) {
+						if (argumentValues[1].getType() == MiniScript::TYPE_MAP) {
+							auto postParameterMapPtr = argumentValues[1].getMapPointer();
+							if (postParameterMapPtr != nullptr) {
+								for (const auto& [key, value]: *postParameterMapPtr) {
+									postParameters[key] = value->getValueAsString();
+								}
 							}
 						}
 					}
 					// GET parameters
 					unordered_map<string, string> getParameters;
-					auto getParameterMapPtr = argumentValues[2].getMapPointer();
-					if (getParameterMapPtr != nullptr) {
-						for (const auto& [key, value]: *getParameterMapPtr) {
-							getParameters[key] = value->getValueAsString();
+					if (argumentValues.size() >= 3) {
+						auto getParameterMapPtr = argumentValues[2].getMapPointer();
+						if (getParameterMapPtr != nullptr) {
+							for (const auto& [key, value]: *getParameterMapPtr) {
+								getParameters[key] = value->getValueAsString();
+							}
 						}
 					}
 					// headers
 					unordered_map<string, string> headers;
-					auto headersMapPtr = argumentValues[3].getMapPointer();
-					if (headersMapPtr != nullptr) {
-						for (const auto& [key, value]: *headersMapPtr) {
-							headers[key] = value->getValueAsString();
+					if (argumentValues.size() >= 4) {
+						auto headersMapPtr = argumentValues[3].getMapPointer();
+						if (headersMapPtr != nullptr) {
+							for (const auto& [key, value]: *headersMapPtr) {
+								headers[key] = value->getValueAsString();
+							}
 						}
 					}
 					//
@@ -305,28 +320,34 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 					(argumentValues.size() <= 3 || argumentValues[3].getType() == MiniScript::TYPE_MAP)) {
 					// post parameters
 					unordered_map<string, string> postParameters;
-					if (argumentValues[1].getType() == MiniScript::TYPE_MAP) {
-						auto postParameterMapPtr = argumentValues[1].getMapPointer();
-						if (postParameterMapPtr != nullptr) {
-							for (const auto& [key, value]: *postParameterMapPtr) {
-								postParameters[key] = value->getValueAsString();
+					if (argumentValues.size() >= 2) {
+						if (argumentValues[1].getType() == MiniScript::TYPE_MAP) {
+							auto postParameterMapPtr = argumentValues[1].getMapPointer();
+							if (postParameterMapPtr != nullptr) {
+								for (const auto& [key, value]: *postParameterMapPtr) {
+									postParameters[key] = value->getValueAsString();
+								}
 							}
 						}
 					}
 					// GET parameters
 					unordered_map<string, string> getParameters;
-					auto getParameterMapPtr = argumentValues[2].getMapPointer();
-					if (getParameterMapPtr != nullptr) {
-						for (const auto& [key, value]: *getParameterMapPtr) {
-							getParameters[key] = value->getValueAsString();
+					if (argumentValues.size() >= 3) {
+						auto getParameterMapPtr = argumentValues[2].getMapPointer();
+						if (getParameterMapPtr != nullptr) {
+							for (const auto& [key, value]: *getParameterMapPtr) {
+								getParameters[key] = value->getValueAsString();
+							}
 						}
 					}
 					// headers
 					unordered_map<string, string> headers;
-					auto headersMapPtr = argumentValues[3].getMapPointer();
-					if (headersMapPtr != nullptr) {
-						for (const auto& [key, value]: *headersMapPtr) {
-							headers[key] = value->getValueAsString();
+					if (argumentValues.size() >= 4) {
+						auto headersMapPtr = argumentValues[3].getMapPointer();
+						if (headersMapPtr != nullptr) {
+							for (const auto& [key, value]: *headersMapPtr) {
+								headers[key] = value->getValueAsString();
+							}
 						}
 					}
 					//
@@ -398,18 +419,22 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 					(argumentValues.size() <= 2 || argumentValues[2].getType() == MiniScript::TYPE_MAP)) {
 					// GET parameters
 					unordered_map<string, string> getParameters;
-					auto getParameterMapPtr = argumentValues[1].getMapPointer();
-					if (getParameterMapPtr != nullptr) {
-						for (const auto& [key, value]: *getParameterMapPtr) {
-							getParameters[key] = value->getValueAsString();
+					if (argumentValues.size() >= 2) {
+						auto getParameterMapPtr = argumentValues[1].getMapPointer();
+						if (getParameterMapPtr != nullptr) {
+							for (const auto& [key, value]: *getParameterMapPtr) {
+								getParameters[key] = value->getValueAsString();
+							}
 						}
 					}
 					// headers
 					unordered_map<string, string> headers;
-					auto headersMapPtr = argumentValues[2].getMapPointer();
-					if (headersMapPtr != nullptr) {
-						for (const auto& [key, value]: *headersMapPtr) {
-							headers[key] = value->getValueAsString();
+					if (argumentValues.size() >= 3) {
+						auto headersMapPtr = argumentValues[2].getMapPointer();
+						if (headersMapPtr != nullptr) {
+							for (const auto& [key, value]: *headersMapPtr) {
+								headers[key] = value->getValueAsString();
+							}
 						}
 					}
 					//
