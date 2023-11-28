@@ -71,7 +71,7 @@ class miniscript::os::network::SecureTCPSocket : public TCPSocket {
 		 * @throws miniscript::os::network::NetworkSocketException
 		 * @return socket
 		 */
-		static void createServerSocket(SecureTCPSocket& socket, const std::string& hostname, const unsigned int port, const int backlog);
+		static void createServerSocket(SecureTCPSocket& socket, const string& hostname, const unsigned int port, const int backlog);
 
 		/**
 		 * @brief Accepts a socket from a server socket

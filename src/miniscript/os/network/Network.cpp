@@ -24,6 +24,7 @@
 
 using miniscript::os::network::Network;
 
+using std::string;
 using std::to_string;
 
 using miniscript::os::network::NetworkException;

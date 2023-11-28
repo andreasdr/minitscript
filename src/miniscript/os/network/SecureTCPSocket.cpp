@@ -26,6 +26,7 @@
 
 using miniscript::os::network::SecureTCPSocket;
 
+using std::string;
 using std::to_string;
 
 using miniscript::os::network::Network;
@@ -47,9 +48,7 @@ SecureTCPSocket::~SecureTCPSocket() {
 size_t SecureTCPSocket::read(void* buf, const size_t bytes) {
 	auto bytesRead = BIO_read(bio, buf, bytes);
 	if (bytesRead == -1) {
-		std::string msg = "error while reading from socket: ";
-		// TODO: message
-		throw NetworkIOException(msg);
+		throw NetworkIOException("Error while reading from socket: " + openSSLGetErrors());
 	} else
 	if (bytesRead == 0) {
 		throw NetworkSocketClosedException("end of stream");
@@ -61,21 +60,13 @@ size_t SecureTCPSocket::read(void* buf, const size_t bytes) {
 size_t SecureTCPSocket::write(void* buf, const size_t bytes) {
 	auto bytesWritten = BIO_write(bio, buf, bytes);
 	if (bytesWritten == -1) {
-		if (errno == ECONNRESET || errno == EPIPE) {
-			std::string msg = "end of stream: ";
-			// TODO: message
-			throw NetworkSocketClosedException(msg);
-		} else {
-			std::string msg = "error while writing to socket: ";
-			// TODO: message
-			throw NetworkIOException(msg);
-		}
+		throw NetworkIOException("Error while writing to socket: " + openSSLGetErrors());
 	}
 	//
 	return (size_t)bytesWritten;
 }
 
-void SecureTCPSocket::connect(const std::string& hostname, const unsigned int port) {
+void SecureTCPSocket::connect(const string& hostname, const unsigned int port) {
 	// set address
 	this->ip = Network::getIpByHostname(hostname);
 	this->port = port;
@@ -153,7 +144,7 @@ void SecureTCPSocket::connect(const std::string& hostname, const unsigned int po
 		throw NetworkSocketException("Could not connect socket: " + openSSLGetErrors());
 }
 
-void SecureTCPSocket::createServerSocket(SecureTCPSocket& socket, const std::string& ip, const unsigned int port, const int backlog) {
+void SecureTCPSocket::createServerSocket(SecureTCPSocket& socket, const string& ip, const unsigned int port, const int backlog) {
 	throw new NetworkSocketException("Could not create secure server socket: not implemented");
 }
 

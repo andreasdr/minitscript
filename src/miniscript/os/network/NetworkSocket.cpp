@@ -19,6 +19,7 @@
 
 #include <miniscript/os/network/NetworkSocket.h>
 
+using std::string;
 using std::to_string;
 
 using miniscript::os::network::NetworkSocket;
@@ -41,7 +42,7 @@ const unsigned int NetworkSocket::getPort() {
 	return port;
 }
 
-void NetworkSocket::bind(const std::string& ip, const unsigned int port) {
+void NetworkSocket::bind(const string& ip, const unsigned int port) {
 	// determine IP version
 	auto ipVersion = determineIpVersion(ip);
 

@@ -6,6 +6,8 @@
 #include <miniscript/os/network/fwd-miniscript.h>
 #include <miniscript/os/network/NetworkSocket.h>
 
+using std::string;
+
 /**
  * Class representing a TCP socket
  * @author Andreas Drewke
@@ -59,7 +61,7 @@ class miniscript::os::network::TCPSocket: public NetworkSocket {
 		 * @throws miniscript::os::network::NetworkSocketException
 		 * @return socket
 		 */
-		TCPSocket* createServerSocket(const std::string& ip, const unsigned int port, const int backlog);
+		TCPSocket* createServerSocket(const string& ip, const unsigned int port, const int backlog);
 
 		/**
 		 * @brief Disables nagle's algorithm

@@ -32,6 +32,7 @@
 using miniscript::os::network::TCPSocket;
 
 using std::make_unique;
+using std::string;
 using std::to_string;
 
 using miniscript::os::network::NetworkIOException;
@@ -80,7 +81,7 @@ size_t TCPSocket::write(void* buf, const size_t bytes) {
 	return (size_t)bytesWritten;
 }
 
-void TCPSocket::connect(const std::string& ip, const unsigned int port) {
+void TCPSocket::connect(const string& ip, const unsigned int port) {
 	// determine IP version
 	auto ipVersion = determineIpVersion(ip);
 
@@ -144,7 +145,7 @@ void TCPSocket::connect(const std::string& ip, const unsigned int port) {
 	this->port = port;
 }
 
-TCPSocket* TCPSocket::createServerSocket(const std::string& ip, const unsigned int port, const int backlog) {
+TCPSocket* TCPSocket::createServerSocket(const string& ip, const unsigned int port, const int backlog) {
 	// create socket
 	auto socket = make_unique<TCPSocket>();
 	auto ipVersion = determineIpVersion(ip);
