@@ -98,7 +98,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 								for (auto i = 2; i < argumentValues.size(); i++) callArgumentValues[i - 2] = move(argumentValues[i]);
 								// call
 								span callArgumentValuesSpan(callArgumentValues);
-								logicMiniScript->call(scriptIdx, callArgumentValuesSpan, returnValue);
+								script->call(scriptIdx, callArgumentValuesSpan, returnValue);
 								// move back arguments
 								for (auto i = 2; i < argumentValues.size(); i++) argumentValues[i] = move(callArgumentValues[i - 2]);
 							#else
