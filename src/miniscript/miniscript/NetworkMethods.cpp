@@ -19,14 +19,6 @@ using miniscript::network::httpclient::HTTPClient;
 using miniscript::utilities::Console;
 using miniscript::utilities::Exception;
 
-/**
-	GET
-	HEAD
-	POST
-	PUT
-	DELETE
- */
-
 void NetworkMethods::registerMethods(MiniScript* miniScript) {
 	// network
 	{
