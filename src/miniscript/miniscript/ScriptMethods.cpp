@@ -301,4 +301,105 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new ScriptMethodScriptGetVariables(miniScript));
 	}
+	{
+		//
+		class ScriptMethodContextScriptHasCallable: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodContextScriptHasCallable(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "scriptId", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "callable", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "context.script.hasCallable";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string scriptId;
+				string callable;
+				if (MiniScript::getStringValue(argumentValues, 0, scriptId) == false ||
+					MiniScript::getStringValue(argumentValues, 1, callable) == false) {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					auto script = miniScript->getContext()->getScript(scriptId);
+					if (script == nullptr) {
+						returnValue.setValue(false);
+					} else {
+						auto scriptIdx = script->getFunctionScriptIdx(callable);
+						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callable == false) {
+							returnValue.setValue(false);
+						} else {
+							returnValue.setValue(true);
+						}
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodContextScriptHasCallable(miniScript));
+	}
+	{
+		//
+		class ScriptMethodContextScriptCall: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodContextScriptCall(MiniScript* miniScript):
+				ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "scriptId", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "callable", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "context.script.call";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string scriptId;
+				string callable;
+				if (MiniScript::getStringValue(argumentValues, 0, scriptId) == false ||
+					MiniScript::getStringValue(argumentValues, 1, callable) == false) {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					auto script = dynamic_cast<MiniScript*>(miniScript->getContext()->getScript(scriptId));
+					if (script == nullptr) {
+						Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": no script with given id: " + scriptId);
+						miniScript->startErrorScript();
+					} else {
+						auto scriptIdx = script->getFunctionScriptIdx(callable);
+						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callable == false) {
+							Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": callable not found: " + callable);
+							miniScript->startErrorScript();
+						} else {
+							#if defined (__APPLE__)
+								// MACOSX currently does not support initializing span using begin and end iterators,
+								vector<ScriptVariable> callArgumentValues(argumentValues.size() - 2);
+								for (auto i = 2; i < argumentValues.size(); i++) callArgumentValues[i - 2] = move(argumentValues[i]);
+								// call
+								span callArgumentValuesSpan(callArgumentValues);
+								logicMiniScript->call(scriptIdx, callArgumentValuesSpan, returnValue);
+								// move back arguments
+								for (auto i = 2; i < argumentValues.size(); i++) argumentValues[i] = move(callArgumentValues[i - 2]);
+							#else
+								span callArgumentValuesSpan(argumentValues.begin() + 2, argumentValues.end());
+								script->call(scriptIdx, callArgumentValuesSpan, returnValue);
+							#endif
+						}
+					}
+				}
+			}
+			bool isVariadic() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodContextScriptCall(miniScript));
+	}
 }

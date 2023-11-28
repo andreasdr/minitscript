@@ -14,6 +14,7 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/fwd-miniscript.h>
+#include <miniscript/miniscript/Context.h>
 #include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Exception.h>
@@ -48,6 +49,7 @@ using _Integer = miniscript::utilities::Integer;
 using _StringTools = miniscript::utilities::StringTools;
 using _Time = miniscript::utilities::Time;
 using _UTF8CharacterIterator = miniscript::utilities::UTF8CharacterIterator;
+using _Context = miniscript::miniscript::Context;
 
 namespace miniscript {
 namespace tools {
@@ -2253,6 +2255,7 @@ protected:
 	};
 
 	bool native;
+	_Context* context { nullptr };
 	vector<Script> scripts;
 	string nativeHash;
 	vector<Script> nativeScripts;
@@ -2816,6 +2819,20 @@ private:
 	static bool viewIsKey(const string_view& candidate);
 
 public:
+	/**
+	 * @return context
+	 */
+	inline _Context* getContext() {
+		return context;
+	}
+
+	/**
+	 * Set context
+	 * @param context context
+	 */
+	inline void setContext(_Context* context) {
+		this->context = context;
+	}
 
 	/**
 	 * Returns string representation of given argument indices
