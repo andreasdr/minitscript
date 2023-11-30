@@ -106,15 +106,6 @@ const string MiniScript::ScriptVariable::CLASSNAME_MAP = "map";
 const string MiniScript::ScriptVariable::CLASSNAME_SET = "set";
 
 const vector<string> MiniScript::ScriptMethod::CONTEXTFUNCTIONS_ALL = {};
-const vector<string> MiniScript::ScriptMethod::CONTEXTFUNCTIONS_ENGINE = { "initializeEngine", "updateEngine" };
-const vector<string> MiniScript::ScriptMethod::CONTEXTFUNCTIONS_LOGIC = { "initializeLogic", "updateLogic", "onLogicAdded", "onLogicsProcessed" };
-const vector<string> MiniScript::ScriptMethod::CONTEXTFUNCTIONS_ENGINELOGIC = {
-	// engine
-	"initializeEngine", "updateEngine",
-	// logic
-	"initializeLogic", "updateLogic", "onLogicAdded", "onLogicsProcessed"
-};
-const vector<string> MiniScript::ScriptMethod::CONTEXTFUNCTION_GUI = {};
 
 
 const string MiniScript::getBaseClass() {

@@ -2051,10 +2051,6 @@ public:
 
 	protected:
 		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ALL;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ENGINE;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_LOGIC;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTIONS_ENGINELOGIC;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const vector<string> CONTEXTFUNCTION_GUI;
 
 	private:
 		vector<ArgumentType> argumentTypes;
