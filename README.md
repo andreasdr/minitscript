@@ -772,7 +772,7 @@ end
 | <sub>clear(): Null</sub>                                                                         |
 | Get byte array entry                                                                             |
 | <sub>get($index: Integer): Integer</sub>                                                         |
-| Get array length                                                                                 |
+| Get byte array length                                                                            |
 | <sub>length(): Integer</sub>                                                                     |
 | Add entry to byte array                                                                          |
 | <sub>push(...): Null</sub>                                                                       |
