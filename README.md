@@ -103,8 +103,7 @@ forCondition takes a single boolean value as argument. The loop will be executed
 
 See this example that shows user script functions and recursion.
 
-It also shows $arguments array variable, which is created in function context and allows access to all arguments that the function was called with.
-Argument variable names in function declaration are also populated in function context with corresponding values.
+Argument variables, parsed in function declarations are populated in function context with corresponding values.
 ```
 ...
 # user script function of recursive factorial computation
@@ -161,12 +160,13 @@ end
 ...
 ```
 
-A special type of functions are callables. Callables are functions that are used to interact between MiniScript logics.
-Despite the fact that a callable function of a logic can be called from another logic, 
-they have the limitation that they must only contain MiniScript C++ method calls that dont require a context function.
+A special type of functions are callables. Callables are functions that are used to interact between MiniScript scripts.
+ 
+Despite the fact that a callable function of a script can be called from another script, 
+they have the limitation that they must not contain MiniScript C++ method calls that require a context function.
 
-Context functions are functions that are called from TDME2 to e.g. update audio, engine or physics, 
-like e.g. initializeEngine(), updateEngine() or initializeLogic(), updateLogic(), ...
+Context functions are functions that require a special context. You can ignore this fow now. 
+Default MiniScript does not provide script methods by C++ that require a context. 
 
 ```
 ...
