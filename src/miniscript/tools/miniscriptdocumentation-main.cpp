@@ -119,7 +119,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 	auto scriptMethods = miniScript->getMethods();
 	//
 	for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
-		const auto& className = EngineMiniScript::ScriptVariable::getClassName(static_cast<EngineMiniScript::ScriptVariableType>(typeIdx));
+		const auto& className = MiniScript::ScriptVariable::getClassName(static_cast<MiniScript::ScriptVariableType>(typeIdx));
 		if (className.empty() == true) break;
 		allClassMethods.insert(className);
 	}
@@ -165,8 +165,8 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		// constructors
 		auto _static = false;
 		if (className.empty() == true) {
-			for (auto typeIdx = static_cast<int>(EngineMiniScript::TYPE_STRING); ; typeIdx++) {
-				const auto& classNameCandidate = EngineMiniScript::ScriptVariable::getClassName(static_cast<EngineMiniScript::ScriptVariableType>(typeIdx));
+			for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
+				const auto& classNameCandidate = MiniScript::ScriptVariable::getClassName(static_cast<MiniScript::ScriptVariableType>(typeIdx));
 				if (classNameCandidate.empty() == true) break;
 				if (scriptMethod->getMethodName() == classNameCandidate) {
 					className = classNameCandidate;
