@@ -11,13 +11,13 @@ This is the home of the MiniScript language. This document and repository is WIP
   - very small implementation of a scripting language
   - runs on every CPU, OS, ... due to its simplicity, so its highly portable
   - can be easily extended by writing state machine machine states and script methods in C++ as well as custom data types
-  - built-in data types: null, boolean, integer, float, string, array, map and set
+  - built-in data types: null, boolean, integer, float, string, byte array, array, map and set
   - when calling script C++ methods or script functions with arguments it does optionally use references or value by copy
   - supports user script functions and recursion
   - supports operators by operator to method mapping by a preprocessor run
   - supports loops and conditions
   - supports programming with classes style programming
-    - for built-in datatypes: string, array, map and set
+    - for built-in datatypes: string, byte array, array, map and set
     - for script classes/objects
     - for custom data types
   - supports event like programming
@@ -203,6 +203,7 @@ Default MiniScript works with the following data types:
 - integer
 - float
 - string
+- byte array
 - array
 - map
 - set  
@@ -267,7 +268,75 @@ The primitive data types can also be assigned by using initialization methods th
 ...
 ```
 
-## 4.2. Arrays
+## 4.2. Byte arrays
+
+A byte array is a collection/sequence of byte values which can be accessed by indices. Bytes are the smallest atomic values a CPU does handle.
+A byte has a value of 0...255. Using bit math you can also manipulate byte values at bit scope.
+
+Usually byte arrays can be used to exchange/construct network packets/streams, texture data, mesh data, ...
+Also, using a byte array instead of a generic array for byte storage, results in using much less memory space. 
+
+Initializing a byte array by constructor:
+
+```
+...
+	$byteArray = bytearray()
+...
+```
+
+... or initialize and push values to it:
+```
+...
+	$byteArray = bytearray(1, 2, 3)
+...
+```
+
+Pushing values using bytearray.push():
+```
+...
+	$byteArray->push(5, 6, 7)
+...
+```
+
+Pushing values using [] operator:
+```
+...
+	$byteArray[] = 8
+	$byteArray[] = 9
+	$byteArray[] = 10
+...
+```
+
+Iterating byte arrays using bytearray.length() and bytearray.get():
+```
+...
+	$i = 0
+	forCondition($i < $byteArray->length())
+		console.log($i + ": " + $byteArray->get($i))
+		++$i
+	end
+...
+```
+
+Iterating byte arrays using bytearray.length() and [] operator:
+```
+...
+	$i = 0
+	forCondition($i < $byteArray->length())
+		console.log($i + ": " + $byteArray[$i])
+		++$i
+	end
+...
+```
+
+Removing from byte arrays using a index with bytearray.remove():
+```
+...
+	$byteArray->remove(2)
+...
+```
+
+## 4.3. Arrays
 
 An array is a collection/sequence of values which can be accessed by indices.
 
@@ -348,7 +417,7 @@ Removing from arrays using a index with array.remove():
 ```
 
 
-## 4.3. Maps
+## 4.4. Maps
 
 A map is key, value pair storage using a underlying hash map. Keys can only exist once in a map.
 
@@ -437,7 +506,7 @@ Reading all keys and values from map using map.get() and map.getKeys()
 ...
 ```
 
-## 4.4. Sets
+## 4.5. Sets
 
 A set is key storage using a underlying hash set. Keys can only exist once in a set.
 
@@ -511,9 +580,9 @@ Reading all keys as array from set:
 ...
 ```
 
-## 4.5. Classes
+## 4.6. Classes
 
-Classes in MiniScript can be represented by maps, a constructed map with function assignments and/or definitions can be called object, see map section in 4.3.
+Classes in MiniScript can be represented by maps, a constructed map with function assignments and/or definitions can be called object, see map section in 4.4.
 
 Creating a object in MiniScript works by using map initializer plus () -> methodName function assignment, or () -> { console.dump($this) } inline function definition.
 Please see a example below.
@@ -689,7 +758,30 @@ end
 | Trim string                                                                                      |
 | <sub>trim(): String</sub>                                                                        |
 
-## 6.2. Array class
+## 6.2. Byte array class
+
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| &nbsp;                                    |
+| <b>STATIC METHODS</b>                     |
+| Create a byte array                                                                              |
+| <sub><b>static</b> bytearray(...): ByteArray</sub>                                               |
+| &nbsp;                                    |
+| <b>NON STATIC METHODS</b>                 |
+| Clear byte array                                                                                 |
+| <sub>clear(): Null</sub>                                                                         |
+| Get byte array entry                                                                             |
+| <sub>get($index: Integer): Integer</sub>                                                         |
+| Get array length                                                                                 |
+| <sub>length(): Integer</sub>                                                                     |
+| Add entry to byte array                                                                          |
+| <sub>push(...): Null</sub>                                                                       |
+| Remove entry from byte array                                                                     |
+| <sub>remove($index: Integer): Null</sub>                                                         |
+| Set byte array entry                                                                             |
+| <sub>set($index: Integer, $value: Integer): Null</sub>                                           |
+
+## 6.3. Array class
 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -699,6 +791,8 @@ end
 | <sub><b>static</b> array(...): Array</sub>                                                       |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
+| Clear array                                                                                      |
+| <sub>clear(): Null</sub>                                                                         |
 | Get array entry                                                                                  |
 | <sub>get($index: Integer): Mixed</sub>                                                           |
 | Get array index by value                                                                         |
@@ -718,7 +812,7 @@ end
 | Sort array                                                                                       |
 | <sub>sort($function: String): Null</sub>                                                         |
 
-## 6.3. Map class
+## 6.4. Map class
 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -741,7 +835,7 @@ end
 | Set map entry                                                                                    |
 | <sub>set($key: String, $value: Mixed): Null</sub>                                                |
 
-## 6.4. Set class
+## 6.5. Set class
 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

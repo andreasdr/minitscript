@@ -23,6 +23,42 @@ on: nothing
 	console.log("------------------------")
 	console.log()
 	console.log("---------")
+	console.log("ByteArrays")
+	console.log("---------")
+	$byteArray = bytearray(1, 2, 3)
+	console.log("byte array initialized with: $byteArray = array(1, 2, 3): " + $byteArray)
+	$byteArray->push(4, 5, 6)
+	console.log("byte array pushed values with: $byteArray->push(4, 5, 6)")
+	console.log("byte array now looks like: ", $byteArray)
+	$byteArray[] = 7
+	$byteArray[] = 8
+	$byteArray[] = 9
+	$byteArray[] = 10
+	console.log("byte array values added with [] operator: 7, 8, 9, 10")
+	console.log("byte array now looks like: ", $byteArray)
+	console.log("byte array length: ", $byteArray->length())
+	console.log("byte array iteration with $byteArray->get(): ")
+	$i = 0
+	forCondition($i < $byteArray->length())
+		console.log($i + ": " + $byteArray->get($i))
+		++$i
+	end 
+	console.log("byte array iteration with [] operator: ")
+	$i = 0
+	forCondition($i < $byteArray->length())
+		console.log($i + ": " + $byteArray[$i])
+		++$i
+	end
+	console.log("byte array iteration with [] operator and some index math: ")
+	$i = 0
+	forCondition($i < $byteArray->length() / 2)
+		console.log($i + "-a: " + $byteArray[$i * 2 + 0])
+		console.log($i + "-b: " + $byteArray[$i * 2 + 1])
+		++$i
+	end
+	$byteArray->remove(1)
+	console.log("removed byte array entry @ 1: " + $byteArray)
+	console.log("---------")
 	console.log("Arrays")
 	console.log("---------")
 	$array = [1, 2, 3, [1, 2, 3], {a: xxx, b: yyy, c: zzz}, {a, b, c}]
@@ -38,10 +74,13 @@ on: nothing
 	$array[] = array(1,2,3)
 	console.log("array values added with [] operator: 123, 1234, 12345, array(1,2,3)")
 	console.log("array now looks like: ", $array)
-	console.log("array values added with [] operator to push to array of array: 50, 60")
 	$array[11][] = 50
 	$array[11][] = 60
+	console.log("array values added with [] operator to push to array of array: 50, 60")
+	console.log("array now looks like: ", $array)
 	$array[11][$array[11]->length() - 1] = 61
+	console.log("array of array: 60 -> 61")
+	console.log("array now looks like: ", $array)
 	console.log("array length: ", $array->length())
 	console.log("array iteration with $array->get(): ")
 	$i = 0
@@ -55,17 +94,20 @@ on: nothing
 		console.log($i + ": " + $array[$i])
 		++$i
 	end
-	console.log("array iteration with [] opertator and some index math: ")
+	console.log("array iteration with [] operator and some index math: ")
 	$i = 0
 	forCondition($i < $array->length() / 2)
 		console.log($i + "-a: " + $array[$i * 2 + 0])
 		console.log($i + "-b: " + $array[$i * 2 + 1])
 		++$i
 	end
-	console.log("array removal of 123, 1234, 12345 using array.removeOf")
 	$array->removeOf(123)
 	$array->removeOf(1234)
 	$array->removeOf(12345)
+	console.log("array removal of 123, 1234, 12345 using array.removeOf: " + $array)
+	$array->remove(1)
+	console.log("removed array entry @ 1: " + $array)
+	#
 	console.log("array now looks like: ", $array)
 	console.log("array indexOf 10: ", $array->indexOf(10))
 	console.log("array indexOf 10 beginning to search from 6: ", $array->indexOf(10, 6))

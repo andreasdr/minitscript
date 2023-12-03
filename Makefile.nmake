@@ -29,6 +29,7 @@ SRCS = \
 	src/miniscript/miniscript/ApplicationMethods.cpp \
 	src/miniscript/miniscript/ArrayMethods.cpp \
 	src/miniscript/miniscript/BaseMethods.cpp \
+	src/miniscript/miniscript/ByteArrayMethods.cpp \
 	src/miniscript/miniscript/CryptographyMethods.cpp \
 	src/miniscript/miniscript/ConsoleMethods.cpp \
 	src/miniscript/miniscript/ContextMethods.cpp \
