@@ -1795,7 +1795,6 @@ public:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
-						_Console::println("ScriptVariable::getClassName(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return CLASSNAME_NONE;
 					}
 					return MiniScript::scriptDataTypes[dataTypeIdx]->getClassName();
@@ -1826,7 +1825,6 @@ public:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
-						_Console::println("ScriptVariable::getTypeAsString(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return CLASSNAME_NONE;
 					}
 					return MiniScript::scriptDataTypes[dataTypeIdx]->getTypeAsString();
