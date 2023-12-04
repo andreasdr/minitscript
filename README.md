@@ -14,9 +14,9 @@ This is the home of the MiniScript language. This document and repository is WIP
   - built-in data types: null, boolean, integer, float, string, byte array, array, map and set
   - when calling script C++ methods or script functions with arguments it does optionally use references or value by copy
   - supports user script functions and recursion
+  - supports inline/lamda functions
   - supports operators by operator to method mapping by a preprocessor run
   - supports loops and conditions
-  - supports inline/lamda functions
   - supports programming with classes style programming
     - for built-in datatypes: string, byte array, array, map and set
     - for script classes/objects
