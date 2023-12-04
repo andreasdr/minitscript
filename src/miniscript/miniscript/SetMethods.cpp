@@ -169,4 +169,44 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new ScriptMethodSetGetKeys(miniScript));
 	}
+	{
+		//
+		class ScriptMethodSetForEach: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodSetForEach(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_ARRAY, .name = "set", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_NULL
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "set.forEach";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string function;
+				if (argumentValues.size() != 2 ||
+					argumentValues[0].getType() != MiniScript::TYPE_SET ||
+					MiniScript::getStringValue(argumentValues, 1, function, false) == false) {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					auto setPtr = argumentValues[0].getSetPointer();
+					if (setPtr != nullptr) {
+						for (auto setEntry: *setPtr) {
+							vector<MiniScript::ScriptVariable> functionArgumentValues { MiniScript::ScriptVariable(setEntry) };
+							span functionArgumentValuesSpan(functionArgumentValues);
+							MiniScript::ScriptVariable functionReturnValue;
+							miniScript->call(function, functionArgumentValuesSpan, functionReturnValue);
+						}
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodSetForEach(miniScript));
+	}
 }

@@ -203,7 +203,6 @@ void MiniScript::executeScriptLine() {
 }
 
 bool MiniScript::parseScriptStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const ScriptStatement& statement, string& accessObjectMemberStatement) {
-	// TODO: improve me!
 	if (VERBOSE == true) Console::println("MiniScript::parseScriptStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
 	string_view objectMemberAccessObject;
 	string_view objectMemberAccessMethod;
@@ -223,6 +222,7 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 	//
 	for (auto i = executableStatementStartIdx; i < executableStatement.size(); i++) {
 		auto c = executableStatement[i];
+		// quotes
 		if (squareBracketCount == 0 && curlyBracketCount == 0 && ((c == '"' || c == '\'') && lc != '\\')) {
 			if (bracketCount == 1) {
 				if (quote == '\0') {
@@ -246,6 +246,7 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 				}
 			}
 		} else
+		// quotes end
 		if (quote != '\0') {
 			if (bracketCount == 1) {
 				quotedArgumentEnd = i;
@@ -257,17 +258,18 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 				}
 			}
 		} else {
-			// TODO: guess I need to check here too for balance of [ and ] also
+			// no quotes, handle (
 			if (c == '(') {
 				bracketCount++;
 				if (bracketCount > 1) {
 					if (argumentStart == string::npos) {
-						argumentStart = i + 1;
+						argumentStart = i;
 					} else {
 						argumentEnd = i;
 					}
 				}
 			} else
+			// )
 			if (c == ')') {
 				bracketCount--;
 				if (bracketCount == 0) {
@@ -287,12 +289,13 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 					}
 				} else {
 					if (argumentStart == string::npos) {
-						argumentStart = i + 1;
+						argumentStart = i;
 					} else {
 						argumentEnd = i;
 					}
 				}
 			} else
+			// [
 			if (c == '[' && curlyBracketCount == 0) {
 				if (squareBracketCount == 0) {
 					if (argumentStart == string::npos) {
@@ -303,6 +306,7 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 				}
 				squareBracketCount++;
 			} else
+			// ]
 			if (c == ']' && curlyBracketCount == 0) {
 				squareBracketCount--;
 				if (squareBracketCount == 0) {
@@ -313,6 +317,7 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 					}
 				}
 			} else
+			// {
 			if (c == '{') {
 				if (curlyBracketCount == 0) {
 					if (argumentStart == string::npos) {
@@ -323,6 +328,7 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 				}
 				curlyBracketCount++;
 			} else
+			// }
 			if (c == '}') {
 				curlyBracketCount--;
 				if (curlyBracketCount == 0) {
@@ -333,6 +339,7 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 					}
 				}
 			} else
+			// ,
 			if (squareBracketCount == 0 && curlyBracketCount == 0) {
 				if (c == ',') {
 					if (bracketCount == 1) {
@@ -374,11 +381,11 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 		//
 		lc = c;
 	}
-	//
+	// extract method name
 	if (methodStart != string::npos && methodEnd != string::npos) {
 		methodName = StringTools::viewTrim(string_view(&executableStatement[methodStart], methodEnd - methodStart + 1));
 	}
-	//
+	// handle object member access and generate internal.script.evaluateMemberAccess call
 	if (objectMemberAccess == true) {
 		// construct executable statement and arguments
 		string_view evaluateMemberAccessMethodName;
@@ -466,7 +473,8 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 MiniScript::ScriptVariable MiniScript::executeScriptStatement(const ScriptSyntaxTreeNode& syntaxTree, const ScriptStatement& statement) {
 	if (VERBOSE == true) Console::println("MiniScript::executeScriptStatement(): " + getStatementInformation(statement) + "': " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
 	// return on literal or empty syntaxTree
-	if (syntaxTree.type != ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD && syntaxTree.type != ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
+	if (syntaxTree.type != ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD &&
+		syntaxTree.type != ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
 		return initializeVariable(syntaxTree.value);
 	}
 	//
@@ -682,6 +690,14 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 		// object member access
 		string_view accessObjectMemberObject;
 		string_view accessObjectMemberMethod;
+		vector<string_view> lamdaFunctionArguments;
+		string_view lamdaFunctionScriptCode;
+		if (viewIsLamdaFunction(argument, lamdaFunctionArguments, lamdaFunctionScriptCode) == true) {
+			ScriptVariable variable;
+			createLamdaFunction(variable, lamdaFunctionArguments, lamdaFunctionScriptCode, false, statement);
+			ScriptSyntaxTreeNode subSyntaxTree(ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {});
+			syntaxTree.arguments.push_back(subSyntaxTree);
+		} else
 		if (getObjectMemberAccess(argument, accessObjectMemberObject, accessObjectMemberMethod, statement) == true) {
 			// method call
 			string_view subMethodName;
@@ -2843,13 +2859,14 @@ void MiniScript::registerVariables() {
 	for (const auto& [variableName, variable]: getRootScriptState().variables) delete variable;
 }
 
-void MiniScript::createInlineFunction(ScriptVariable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, const ScriptStatement& statement) {
+void MiniScript::createLamdaFunction(ScriptVariable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, bool populateThis, const ScriptStatement& statement) {
 	// function declaration
-	auto functionName = string() + "inline_function_" + to_string(inlineFunctionIdx++);
-	auto inlineFunctionScriptCode = "function: " + functionName + "(&$this";
+	auto functionName = string() + "lamda_function_" + to_string(inlineFunctionIdx++);
+	auto inlineFunctionScriptCode = "function: " + functionName + "(";
+	if (populateThis == true) inlineFunctionScriptCode+= "&$this";
 	auto argumentIdx = 0;
 	for (const auto& argument: arguments) {
-		inlineFunctionScriptCode+= ",";
+		if (argumentIdx > 0 || populateThis == true) inlineFunctionScriptCode+= ",";
 		inlineFunctionScriptCode+= argument;
 		argumentIdx++;
 	}
@@ -3262,9 +3279,9 @@ const MiniScript::ScriptVariable MiniScript::initializeMapSet(const string_view&
 									//
 									vector<string_view> arguments;
 									string_view functionScriptCodeStringView;
-									if (viewIsInlineFunction(mapValueStringView, arguments, functionScriptCodeStringView) == true) {
+									if (viewIsLamdaFunction(mapValueStringView, arguments, functionScriptCodeStringView) == true) {
 										ScriptVariable mapValue;
-										miniScript->createInlineFunction(mapValue, arguments, functionScriptCodeStringView, statement);
+										miniScript->createLamdaFunction(mapValue, arguments, functionScriptCodeStringView, true, statement);
 										variable.setMapEntry(string(mapKey), mapValue);
 									} else {
 										// map/set

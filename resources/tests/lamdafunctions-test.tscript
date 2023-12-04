@@ -1,0 +1,37 @@
+# initialize
+on: initialize
+	console.log("---------------------------------")
+	console.log("lamdafunctions-test: Initialize")
+	console.log("---------------------------------")
+	console.log()
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.log("------------------------------")
+	console.log("lamdafunctions-test: Nothing")
+	console.log("------------------------------")
+	console.log()
+	console.log("array.forEach() Test: [1, 2, 3, 4, 5, 6]")
+	$array = [1, 2, 3, 4, 5, 6]
+	$array->forEach(($element) -> { console.log($element) })
+	console.log("array.forEach() + Sort Desc Test:")
+	$array->sort(($a, $b) -> { return($a > $b) })
+	$array->forEach(($element) -> { console.log($element) })
+	console.log("set.forEach() Test: {aaa, bbb, ccc}")
+	$set = {aaa, bbb, ccc}
+	$set->forEach(($element) -> { console.log($element) })
+	console.log("map.forEach() Test: {a: 1, b: 2, c: 3}")
+	$map = {a: 1, b: 2, c: 3}
+	$map->forEach(($key, $value) -> { console.log($key + " = " + $value) })
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.log("----------------------------")
+	console.log("lamdafunctions-test: Error")
+	console.log("----------------------------")
+	console.log("An error occurred")
+	script.stop()
+end

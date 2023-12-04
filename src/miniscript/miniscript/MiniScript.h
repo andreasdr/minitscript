@@ -2585,13 +2585,14 @@ protected:
 	virtual int determineNamedScriptIdxToStart();
 
 	/***
-	 * Create inline function for given variable
+	 * Create inline/lamda function for given variable
 	 * @param variable variable
 	 * @param arguments arguments
 	 * @param functionScriptCode function script code
+	 * @param populateThis populate this variable, which applies to inline member function of maps/objects
 	 * @param statement statement
 	 */
-	void createInlineFunction(ScriptVariable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, const ScriptStatement& statement);
+	void createLamdaFunction(ScriptVariable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, bool populateThis, const ScriptStatement& statement);
 
 	/**
 	 * Initialize array by initializer string
@@ -2869,13 +2870,13 @@ private:
 	}
 
 	/**
-	 * Returns if a given string is a inline function
+	 * Returns if a given string is a inline/lambda function
 	 * @param candidate candidate
 	 * @param arguments arguments
 	 * @param functionScriptCode function script code
 	 * @return if candidate is a inline function
 	 */
-	inline static bool viewIsInlineFunction(const string_view& candidate, vector<string_view>& arguments, string_view& functionScriptCode) {
+	inline static bool viewIsLamdaFunction(const string_view& candidate, vector<string_view>& arguments, string_view& functionScriptCode) {
 		if (candidate.size() == 0) return false;
 		//
 		auto i = 0;
