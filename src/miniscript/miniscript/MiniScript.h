@@ -1735,12 +1735,10 @@ public:
 			if (value.find('(') != string::npos &&
 				value.find(')') != string::npos) {
 				setFunctionCallStatement(miniScript->doStatementPreProcessing(string(value), statement), miniScript, statement);
-				_Console::println("Function Call Statement: " + miniScript->doStatementPreProcessing(string(value), statement));
 			} else
 			// variable
 			if (viewIsVariableAccess(value) == true) {
 				setFunctionCallStatement("getVariable(\"" + string(value) + "\")", miniScript, statement);
-				_Console::println("Variable Access: " + string(value));
 			} else {
 				setValue(string(value));
 			}
@@ -2585,6 +2583,15 @@ protected:
 	 * @return script index or SCRIPTIDX_NONE if no script to start
 	 */
 	virtual int determineNamedScriptIdxToStart();
+
+	/***
+	 * Create inline function for given variable
+	 * @param variable variable
+	 * @param arguments arguments
+	 * @param functionScriptCode function script code
+	 * @param statement statement
+	 */
+	void createInlineFunction(ScriptVariable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, const ScriptStatement& statement);
 
 	/**
 	 * Initialize array by initializer string

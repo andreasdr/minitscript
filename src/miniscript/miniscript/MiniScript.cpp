@@ -2843,6 +2843,39 @@ void MiniScript::registerVariables() {
 	for (const auto& [variableName, variable]: getRootScriptState().variables) delete variable;
 }
 
+void MiniScript::createInlineFunction(ScriptVariable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, const ScriptStatement& statement) {
+	// function declaration
+	auto functionName = string() + "inline_function_" + to_string(inlineFunctionIdx++);
+	auto inlineFunctionScriptCode = "function: " + functionName + "(&$this";
+	auto argumentIdx = 0;
+	for (const auto& argument: arguments) {
+		inlineFunctionScriptCode+= ",";
+		inlineFunctionScriptCode+= argument;
+		argumentIdx++;
+	}
+	inlineFunctionScriptCode+= string() + ")" + "\n";
+	// function definition
+	auto scriptCode = string(functionScriptCode);
+	auto lineIdx = MiniScript::LINE_FIRST;
+	auto currentLineIdx = MiniScript::LINE_FIRST;
+	for (auto i = 0; i < scriptCode.size(); i++) {
+		//
+		currentLineIdx = lineIdx;
+
+		// try to get next statement code
+		auto statementCode = getNextStatement(scriptCode, i, lineIdx);
+		//
+		inlineFunctionScriptCode+= doStatementPreProcessing(statementCode, statement) + "\n";
+	}
+	//
+	inlineFunctionScriptCode+= "\n";
+	inlineFunctionScriptCode+= string() + "end" + "\n";
+	// store it to be parsed later
+	deferredFunctionScriptCodes.push_back(inlineFunctionScriptCode);
+	//
+	variable.setFunctionAssignment(functionName);
+}
+
 const MiniScript::ScriptVariable MiniScript::initializeArray(const string_view& initializerString, MiniScript* miniScript, const ScriptStatement& statement) {
 	ScriptVariable variable;
 	variable.setType(TYPE_ARRAY);
@@ -3230,38 +3263,8 @@ const MiniScript::ScriptVariable MiniScript::initializeMapSet(const string_view&
 									vector<string_view> arguments;
 									string_view functionScriptCodeStringView;
 									if (viewIsInlineFunction(mapValueStringView, arguments, functionScriptCodeStringView) == true) {
-										string functionScriptCode;
-										// function declaration
-										auto functionName = string() + "map_inline_function_" + to_string(miniScript->inlineFunctionIdx++);
-										functionScriptCode = "function: " + functionName + "(&$this";
-										auto argumentIdx = 0;
-										for (const auto& argument: arguments) {
-											functionScriptCode+= ",";
-											functionScriptCode+= argument;
-											argumentIdx++;
-										}
-										functionScriptCode+= string() + ")" + "\n";
-										// function definition
-										auto scriptCode = string(functionScriptCodeStringView);
-										auto lineIdx = MiniScript::LINE_FIRST;
-										auto currentLineIdx = MiniScript::LINE_FIRST;
-										for (auto i = 0; i < scriptCode.size(); i++) {
-											//
-											currentLineIdx = lineIdx;
-
-											// try to get next statement code
-											auto statementCode = miniScript->getNextStatement(scriptCode, i, lineIdx);
-											//
-											functionScriptCode+= miniScript->doStatementPreProcessing(statementCode, statement) + "\n";
-										}
-										//
-										functionScriptCode+= "\n";
-										functionScriptCode+= string() + "end" + "\n";
-										// store it to be parsed later
-										miniScript->deferredFunctionScriptCodes.push_back(functionScriptCode);
-										//
 										ScriptVariable mapValue;
-										mapValue.setFunctionAssignment(functionName);
+										miniScript->createInlineFunction(mapValue, arguments, functionScriptCodeStringView, statement);
 										variable.setMapEntry(string(mapKey), mapValue);
 									} else {
 										// map/set
