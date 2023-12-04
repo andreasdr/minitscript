@@ -238,6 +238,34 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
+		class ScriptMethodMapClear: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodMapClear(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = true, .nullable = false }
+					},
+					MiniScript::TYPE_NULL
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "map.clear";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				if (argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_MAP) {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					argumentValues[0].clearMap();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodMapClear(miniScript));
+	}
+	{
+		//
 		class ScriptMethodMapForEach: public MiniScript::ScriptMethod {
 		private:
 			MiniScript* miniScript { nullptr };

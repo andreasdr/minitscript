@@ -1484,7 +1484,6 @@ public:
 			auto& arrayValue = getArrayValueReference();
 			for (auto i = 0; i < arrayValue.size(); i++) arrayValue[i]->releaseReference();
 			arrayValue.clear();
-			return;
 		}
 
 		/**
@@ -1594,6 +1593,18 @@ public:
 		}
 
 		/**
+		 * Clear array
+		 */
+		inline void clearMap() {
+			if (getType() != TYPE_MAP) return;
+			auto& mapValue = getMapValueReference();
+			for (const auto& [mapEntryName, mapEntryValue]: mapValue) {
+				mapEntryValue->releaseReference();
+			}
+			mapValue.clear();
+		}
+
+		/**
 		 * @return const pointer to underlying unordered_set or nullptr
 		 */
 		inline const unordered_set<string>* getSetPointer() const {
@@ -1666,6 +1677,15 @@ public:
 				keys.push_back(key);
 			}
 			return keys;
+		}
+
+		/**
+		 * Clear set
+		 */
+		inline void clearSet() {
+			if (getType() != TYPE_SET) return;
+			auto& setValue = getSetValueReference();
+			setValue.clear();
 		}
 
 		/**
@@ -1811,7 +1831,7 @@ public:
 				case TYPE_INTEGER: return "Integer";
 				case TYPE_FLOAT: return "Float";
 				case TYPE_FUNCTION_CALL: return string();
-				case TYPE_FUNCTION_ASSIGNMENT: return string();
+				case TYPE_FUNCTION_ASSIGNMENT: return "Function";
 				case TYPE_PSEUDO_NUMBER: return "Number";
 				case TYPE_PSEUDO_MIXED: return "Mixed";
 				case TYPE_STRING: return "String";

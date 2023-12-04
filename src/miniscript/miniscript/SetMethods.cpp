@@ -171,6 +171,34 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
+		class ScriptMethodSetClear: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodSetClear(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = true, .nullable = false }
+					},
+					MiniScript::TYPE_NULL
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "set.clear";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				if ((argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_SET)) {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					argumentValues[0].clearSet();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodSetClear(miniScript));
+	}
+	{
+		//
 		class ScriptMethodSetForEach: public MiniScript::ScriptMethod {
 		private:
 			MiniScript* miniScript { nullptr };

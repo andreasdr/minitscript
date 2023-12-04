@@ -386,9 +386,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "array.clear";
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
-				int64_t index;
-				if ((argumentValues.size() < 2 || argumentValues[0].getType() != MiniScript::TYPE_ARRAY) ||
-					MiniScript::getIntegerValue(argumentValues, 1, index, false) == false) {
+				if (argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_ARRAY) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {

@@ -813,6 +813,8 @@ end
 | <b>NON STATIC METHODS</b>                 |
 | Clear array                                                                                      |
 | <sub>clear(): Null</sub>                                                                         |
+| Iterate array values, by using a (Lamda) function, which takes one argument for array value      |
+| <sub>forEach($function: Function): Null</sub>                                                    |
 | Get array entry                                                                                  |
 | <sub>get($index: Integer): Mixed</sub>                                                           |
 | Get array index by value                                                                         |
@@ -830,7 +832,7 @@ end
 | Set array entry                                                                                  |
 | <sub>set($index: Integer, $value: Mixed): Null</sub>                                             |
 | Sort array                                                                                       |
-| <sub>sort($function: String): Null</sub>                                                         |
+| <sub>sort($function: Function): Null</sub>                                                       |
 
 ## 6.4. Map class
 
@@ -840,8 +842,12 @@ end
 | <b>STATIC METHODS</b>                     |
 | Create map                                                                                       |
 | <sub><b>static</b> map(): Map</sub>                                                              |
+| Iterate map values, by using a (Lamda) function, which takes two arguments, one for the key name and one for the key value|
+| <sub><b>static</b> map.forEach($map: Array, $function: Function): Null</sub>                     |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
+| Clear map                                                                                        |
+| <sub>clear(): Null</sub>                                                                         |
 | Get map value by key                                                                             |
 | <sub>get($key: String): Mixed</sub>                                                              |
 | Get map keys                                                                                     |
@@ -863,8 +869,12 @@ end
 | <b>STATIC METHODS</b>                     |
 | Create set                                                                                       |
 | <sub><b>static</b> set(): Set</sub>                                                              |
+| Iterate set keys, by using a (Lamda) function, which takes one argument for key name             |
+| <sub><b>static</b> set.forEach($set: Array, $function: Function): Null</sub>                     |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
+| Clear set                                                                                        |
+| <sub>clear(): Null</sub>                                                                         |
 | Get set keys                                                                                     |
 | <sub>getKeys(): Array</sub>                                                                      |
 | Has key in set                                                                                   |
