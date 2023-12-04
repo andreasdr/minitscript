@@ -16,6 +16,7 @@ This is the home of the MiniScript language. This document and repository is WIP
   - supports user script functions and recursion
   - supports operators by operator to method mapping by a preprocessor run
   - supports loops and conditions
+  - supports inline/lamda functions
   - supports programming with classes style programming
     - for built-in datatypes: string, byte array, array, map and set
     - for script classes/objects
@@ -379,6 +380,20 @@ Pushing values using [] operator:
 ...
 ```
 
+Removing values from arrays using array.removeOf():
+```
+...
+	$array->removeOf(6)
+	$array->removeOf(7)
+...
+```
+
+Removing from arrays using a index with array.remove():
+```
+...
+	$array->remove(2)
+...
+```
 Iterating arrays using array.length() and array.get():
 ```
 ...
@@ -401,21 +416,12 @@ Iterating arrays using array.length() and [] operator:
 ...
 ```
 
-Removing values from arrays using array.removeOf():
+Iterating arrays using array.forEach() and a lamda function
 ```
 ...
-	$array->removeOf(6)
-	$array->removeOf(7)
+	$array->forEach(($value) -> { console.log($value) })
 ...
 ```
-
-Removing from arrays using a index with array.remove():
-```
-...
-	$array->remove(2)
-...
-```
-
 
 ## 4.4. Maps
 
@@ -506,6 +512,13 @@ Reading all keys and values from map using map.get() and map.getKeys()
 ...
 ```
 
+Iterating maps using map.forEach() and a lamda function
+```
+...
+	$map->forEach(($key, $value) -> { console.log($key + " = " + $value) })
+...
+```
+
 ## 4.5. Sets
 
 A set is key storage using a underlying hash set. Keys can only exist once in a set.
@@ -577,6 +590,13 @@ Reading all keys as array from set:
 ```
 ...
 	console.log("set keys: ", $set->getKeys())
+...
+```
+
+Iterating sets using set.forEach() and a lamda function
+```
+...
+	$set->forEach(($value) -> { console.log($value) })
 ...
 ```
 
