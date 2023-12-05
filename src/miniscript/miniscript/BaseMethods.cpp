@@ -408,6 +408,64 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new ScriptMethodFloat(miniScript));
 	}
+	{
+		//
+		class ScriptMethodFloatToIntValue: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodFloatToIntValue(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_FLOAT, .name = "float", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_INTEGER
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "float.toIntValue";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				float floatValue;
+				if (MiniScript::getFloatValue(argumentValues, 0, floatValue, false) == true) {
+					returnValue.setValue(static_cast<int64_t>(*((uint32_t*)&floatValue)));
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodFloatToIntValue(miniScript));
+	}
+	{
+		//
+		class ScriptMethodFloatfromIntValue: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodFloatfromIntValue(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_INTEGER, .name = "integer", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_FLOAT
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "float.fromIntValue";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				int64_t intValue;
+				if (MiniScript::getIntegerValue(argumentValues, 0, intValue, false) == true) {
+					returnValue.setValue(*((float*)&intValue));
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodFloatfromIntValue(miniScript));
+	}
 	//
 	{
 		//
