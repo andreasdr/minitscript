@@ -596,7 +596,7 @@ Reading all keys as array from set:
 Iterating sets using set.forEach() and a lamda function
 ```
 ...
-	$set->forEach(($value) -> { console.log($value) })
+	$set->forEach(($key) -> { console.log($key) })
 ...
 ```
 
