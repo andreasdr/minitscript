@@ -731,6 +731,8 @@ end
 | <sub><b>static</b> string($string: String): String</sub>                                         |
 | Concatenate strings                                                                              |
 | <sub><b>static</b> string.concatenate(...): String</sub>                                         |
+| Create string from byte array                                                                    |
+| <sub><b>static</b> string.fromByteArray($byteArray: ByteArray): String</sub>                     |
 | Create spaces as string                                                                          |
 | <sub><b>static</b> string.space([$spaces: Integer]): String</sub>                                |
 | &nbsp;                                    |
@@ -769,6 +771,8 @@ end
 | <sub>startsWith($prefix: String): Boolean</sub>                                                  |
 | Return substring of string                                                                       |
 | <sub>substring($beginIndex: Integer[, $endIndex: Integer]): String</sub>                         |
+| Convert string to byte array                                                                     |
+| <sub>toByteArray(): ByteArray</sub>                                                              |
 | Compute lower case string of string                                                              |
 | <sub>toLowerCase(): String</sub>                                                                 |
 | Compute upper case string of string                                                              |

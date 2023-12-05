@@ -145,6 +145,11 @@ on: nothing
 	console.log("abc >= def: ", "abc" >= "def")
 	console.log("def >= abc: ", "def" >= "abc")
 	console.log("------------------------")
+	$string = "Andreas is a very good boy <3"
+	$stringToByteArray = $string->toByteArray()
+	$stringFromByteArray = string.fromByteArray($stringToByteArray)
+	console.log("'Andreas is a very good boy <3'->toByteArray(): " + $string->toByteArray())
+	console.log("string.fromByteArray('Andreas is a very good boy <3')->toByteArray()): " + $stringFromByteArray)
 	console.log("------------------------")
 	console.log("Variable")
 	console.log("------------------------")
