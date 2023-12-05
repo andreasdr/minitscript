@@ -206,7 +206,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			ScriptMethodSetForEach(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
-						{ .type = MiniScript::TYPE_ARRAY, .name = "set", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_NULL

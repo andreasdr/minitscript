@@ -869,12 +869,12 @@ end
 | <b>STATIC METHODS</b>                     |
 | Create set                                                                                       |
 | <sub><b>static</b> set(): Set</sub>                                                              |
-| Iterate set keys, by using a (Lamda) function, which takes one argument for key name             |
-| <sub><b>static</b> set.forEach($set: Array, $function: Function): Null</sub>                     |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Clear set                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
+| Iterate set keys, by using a (Lamda) function, which takes one argument for key name             |
+| <sub>forEach($function: Function): Null</sub>                                                    |
 | Get set keys                                                                                     |
 | <sub>getKeys(): Array</sub>                                                                      |
 | Has key in set                                                                                   |
