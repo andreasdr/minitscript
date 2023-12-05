@@ -73,13 +73,37 @@ on: nothing
 			++$i
 		end
 	end 
-	# create file
+	# create binary file
+	console.log("Creating file: filesystem-test/test.bin")
+	$binaryContent = bytearray(1, 2, 3, 4, 5, 6)
+	if (filesystem.setContent("filesystem-test", "test.bin", $binaryContent) == false)
+		console.log("Could not create file filesystem-test/test.bin. Exiting.")
+		script.stop()
+	end
+	# binary file size
+	console.log("Reading file size of filesystem-test/test.bin: " + filesystem.getFileSize("filesystem-test", "test.bin"))
+	# reading file
+	console.log("Reading file: filesystem-test/test.bin")
+	$fileContent = filesystem.getContent("filesystem-test", "test.bin");
+	if ($fileContent == null)
+		console.log("Could not read file filesystem-test/test.bin. Exiting.")
+		script.stop()
+	else
+		console.log("filesystem-test/test.bin: " + $fileContent)
+	end
+	# remove binary file
+	console.log("Removing file: filesystem-test/test.bin")
+	if (filesystem.removeFile("filesystem-test", "test.bin") == false)
+		console.log("Could not remove file filesystem-test/test.bin. Exiting.")
+		script.stop()
+	end
+	# create text file
 	console.log("Creating file: filesystem-test/test.txt")
 	if (filesystem.setContentFromString("filesystem-test", "test.txt", "Arrr. I am a mighty pirate.") == false)
 		console.log("Could not create file filesystem-test/test.txt. Exiting.")
 		script.stop()
 	end
-	# file size
+	# text file size
 	console.log("Reading file size of filesystem-test/test.txt: " + filesystem.getFileSize("filesystem-test", "test.txt"))
 	# reading file
 	console.log("Reading file: filesystem-test/test.txt")
@@ -90,19 +114,19 @@ on: nothing
 	else
 		console.log("filesystem-test/test.txt: " + $fileContent)
 	end
-	# remove file
+	# remove text file
 	console.log("Removing file: filesystem-test/test.txt")
 	if (filesystem.removeFile("filesystem-test", "test.txt") == false)
 		console.log("Could not remove file filesystem-test/test.txt. Exiting.")
 		script.stop()
 	end
-	# create file
+	# create lines based text file
 	console.log("Creating file: filesystem-test/test.txt")
 	if (filesystem.setContentFromStringArray("filesystem-test", "test.txt", ["Line 1", "Line 2", "Line 3"]) == false)
 		console.log("Could not create file filesystem-test/test.txt. Exiting.")
 		script.stop()
 	end
-	# file size
+	# lines based file text size
 	console.log("Reading file size of filesystem-test/test.txt: " + filesystem.getFileSize("filesystem-test", "test.txt"))
 	# reading file
 	console.log("Reading file: filesystem-test/test.txt")

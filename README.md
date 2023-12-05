@@ -1014,6 +1014,10 @@ end
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Get canonical URI                                                                                |
 | <sub>filesystem.getCanonicalURI($pathName: String, $fileName: String): ?String</sub>             |
+| Get file content as byte array                                                                   |
+| <sub>filesystem.getContent($pathName: String, $fileName: String): ?ByteArray</sub>               |
+| Set file content from byte array                                                                 |
+| <sub>filesystem.setContent($pathName: String, $fileName: String, $content: ByteArray): Boolean</sub>|
 | Get file content as string                                                                       |
 | <sub>filesystem.getContentAsString($pathName: String, $fileName: String): ?String</sub>          |
 | Get file content as string array                                                                 |

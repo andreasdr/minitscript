@@ -175,6 +175,91 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
+		class ScriptFileSystemGetContent: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemGetContent(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_BYTEARRAY,
+					true
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.getContent";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string pathName;
+				string fileName;
+				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
+					MiniScript::getStringValue(argumentValues, 1, fileName, false) == true) {
+					try {
+						vector<uint8_t> content;
+						FileSystem::getContent(pathName, fileName, content);
+						returnValue.setValue(content);
+					} catch (Exception& exception) {
+						Console::println("An error occurred: " + string(exception.what()));
+					}
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemGetContent(miniScript));
+	}
+	{
+		//
+		class ScriptFileSystemSetContent: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptFileSystemSetContent(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "content", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "filesystem.setContent";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string pathName;
+				string fileName;
+				if (argumentValues.size() == 3 &&
+					MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
+					MiniScript::getStringValue(argumentValues, 1, fileName, false) == true) {
+					try {
+						auto contentPtr = argumentValues[2].getByteArrayPointer();
+						if (contentPtr == nullptr) throw ExceptionBase("Empty content byte array provided");
+						FileSystem::setContent(pathName, fileName, *contentPtr);
+						returnValue.setValue(true);
+					} catch (Exception& exception) {
+						returnValue.setValue(false);
+						Console::println("An error occurred: " + string(exception.what()));
+					}
+				} else {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptFileSystemSetContent(miniScript));
+	}
+	{
+		//
 		class ScriptFileSystemGetContentAsStringArray: public MiniScript::ScriptMethod {
 		private:
 			MiniScript* miniScript { nullptr };
