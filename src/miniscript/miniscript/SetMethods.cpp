@@ -230,6 +230,10 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 							span functionArgumentValuesSpan(functionArgumentValues);
 							MiniScript::ScriptVariable functionReturnValue;
 							miniScript->call(function, functionArgumentValuesSpan, functionReturnValue);
+							// exit condition
+							bool result = false;
+							functionReturnValue.getBooleanValue(result, false);
+							if (result == true) break;
 						}
 					}
 				}
