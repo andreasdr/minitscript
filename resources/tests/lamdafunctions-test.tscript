@@ -16,6 +16,9 @@ on: nothing
 	console.log("array.forEach() log test: [1, 2, 3, 4, 5, 6]")
 	$array = [1, 2, 3, 4, 5, 6]
 	$array->forEach(($element) -> { console.log($element) })
+	# log array values to console using array.forRange
+	console.log("array.forRange(1,3,2) log test: [1, 2, 3, 4, 5, 6]")
+	$array->forRange(($element) -> { console.log($element) }, 1, 3, 2)
 	# sum array values using array.forEach
 	$sum = 0
 	$array->forEach(($element, &$sum) -> { $sum = $sum + $element }, $sum)

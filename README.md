@@ -821,8 +821,10 @@ end
 | <b>NON STATIC METHODS</b>                 |
 | Clear array                                                                                      |
 | <sub>clear(): Null</sub>                                                                         |
-| Iterate array values, by using a (Lamda) function, which takes one argument for array value      |
+| Iterate array values, by using a (Lamda) function                                                |
 | <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
+| Iterate range of array values, by using a (Lamda) function                                       |
+| <sub>forRange($function: Function, $beginIndex: Integer[, $count: Integer[, $step: Integer[, &$cookie: Mixed]]]): Null</sub>|
 | Get array entry                                                                                  |
 | <sub>get($index: Integer): Mixed</sub>                                                           |
 | Get array index by value                                                                         |
@@ -854,7 +856,7 @@ end
 | <b>NON STATIC METHODS</b>                 |
 | Clear map                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
-| Iterate map key and value pairs, by using a (Lamda) function, which takes two arguments, one for the key name and one for the key value|
+| Iterate map key and value pairs, by using a (Lamda) function                                     |
 | <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
 | Get map value by key                                                                             |
 | <sub>get($key: String): Mixed</sub>                                                              |
@@ -881,7 +883,7 @@ end
 | <b>NON STATIC METHODS</b>                 |
 | Clear set                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
-| Iterate set keys, by using a (Lamda) function, which takes one argument for key name             |
+| Iterate set keys, by using a (Lamda) function                                                    |
 | <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
 | Get set keys                                                                                     |
 | <sub>getKeys(): Array</sub>                                                                      |
