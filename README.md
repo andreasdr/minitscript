@@ -842,12 +842,12 @@ end
 | <b>STATIC METHODS</b>                     |
 | Create map                                                                                       |
 | <sub><b>static</b> map(): Map</sub>                                                              |
-| Iterate map values, by using a (Lamda) function, which takes two arguments, one for the key name and one for the key value|
-| <sub><b>static</b> map.forEach($map: Array, $function: Function): Null</sub>                     |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Clear map                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
+| Iterate map values, by using a (Lamda) function, which takes two arguments, one for the key name and one for the key value|
+| <sub>forEach($function: Function): Null</sub>                                                    |
 | Get map value by key                                                                             |
 | <sub>get($key: String): Mixed</sub>                                                              |
 | Get map keys                                                                                     |

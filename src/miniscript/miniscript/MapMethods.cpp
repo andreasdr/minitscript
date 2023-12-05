@@ -273,7 +273,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			ScriptMethodMapForEach(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
-						{ .type = MiniScript::TYPE_ARRAY, .name = "map", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_NULL
