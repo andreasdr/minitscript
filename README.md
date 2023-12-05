@@ -822,7 +822,7 @@ end
 | Clear array                                                                                      |
 | <sub>clear(): Null</sub>                                                                         |
 | Iterate array values, by using a (Lamda) function, which takes one argument for array value      |
-| <sub>forEach($function: Function): Null</sub>                                                    |
+| <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
 | Get array entry                                                                                  |
 | <sub>get($index: Integer): Mixed</sub>                                                           |
 | Get array index by value                                                                         |
@@ -855,7 +855,7 @@ end
 | Clear map                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
 | Iterate map key and value pairs, by using a (Lamda) function, which takes two arguments, one for the key name and one for the key value|
-| <sub>forEach($function: Function): Null</sub>                                                    |
+| <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
 | Get map value by key                                                                             |
 | <sub>get($key: String): Mixed</sub>                                                              |
 | Get map keys                                                                                     |
@@ -882,7 +882,7 @@ end
 | Clear set                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
 | Iterate set keys, by using a (Lamda) function, which takes one argument for key name             |
-| <sub>forEach($function: Function): Null</sub>                                                    |
+| <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
 | Get set keys                                                                                     |
 | <sub>getKeys(): Array</sub>                                                                      |
 | Has key in set                                                                                   |
@@ -928,8 +928,6 @@ end
 | <sub>end(): Null</sub>                                                                           |
 | Equals                                                                                           |
 | <sub>equals($a: Mixed, $b: Mixed): Boolean</sub>                                                 |
-| Create float                                                                                     |
-| <sub>float($float: Float): Float</sub>                                                           |
 | For condition                                                                                    |
 | <sub>forCondition($condition: Boolean): Null</sub>                                               |
 | For time                                                                                         |

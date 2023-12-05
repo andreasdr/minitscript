@@ -2892,9 +2892,83 @@ private:
 	/**
 	 * Returns if a given string is a inline/lambda function
 	 * @param candidate candidate
+	 * @return if candidate is a inline/lambda function
+	 */
+	inline static bool viewIsLamdaFunction(const string_view& candidate) {
+		if (candidate.size() == 0) return false;
+		//
+		auto i = 0;
+		// (
+		if (candidate[i++] != '(') return false;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		//
+		auto argumentStartIdx = string::npos;
+		auto argumentEndIdx = string::npos;
+		//
+		for (; i < candidate.size(); i++) {
+			auto c = candidate[i];
+			if (c == '&') {
+				if (argumentStartIdx == string::npos) {
+					argumentStartIdx = i;
+				} else {
+					return false;
+				}
+			} else
+			if (c == '$') {
+				if (argumentStartIdx == string::npos) {
+					argumentStartIdx = i;
+				} else
+				if (argumentStartIdx == i - 1 && candidate[argumentStartIdx] == '&') {
+					// no op
+				} else {
+					return false;
+				}
+			} else
+			if (c == ',' || c == ')') {
+				if (argumentEndIdx == string::npos) {
+					if (argumentStartIdx != string::npos) {
+						argumentEndIdx = i;
+					}
+					//
+					argumentStartIdx = string::npos;
+					argumentEndIdx = string::npos;
+				} else {
+					return false;
+				}
+				if (c == ')') {
+					i++;
+					break;
+				}
+			} else
+			if (argumentStartIdx != string::npos && _Character::isAlphaNumeric(candidate[i]) == false && c != '_') {
+				return false;
+			}
+		}
+		//
+		if (i >= candidate.size()) return false;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		// -
+		if (candidate[i++] != '-') return false;
+		//
+		if (i >= candidate.size()) return false;
+		// >
+		if (candidate[i++] != '>') return false;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		//
+		if (candidate[i++] != '{') return false;
+		//
+		return true;
+	}
+
+	/**
+	 * Returns if a given string is a inline/lambda function
+	 * @param candidate candidate
 	 * @param arguments arguments
 	 * @param functionScriptCode function script code
-	 * @return if candidate is a inline function
+	 * @return if candidate is a inline/lambda function
 	 */
 	inline static bool viewIsLamdaFunction(const string_view& candidate, vector<string_view>& arguments, string_view& functionScriptCode) {
 		if (candidate.size() == 0) return false;

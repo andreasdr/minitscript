@@ -274,7 +274,8 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::ScriptMethod(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "cookie", .optional = true, .reference = true, .nullable = false }
 					},
 					MiniScript::TYPE_NULL
 				),
@@ -284,7 +285,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string function;
-				if (argumentValues.size() != 2 ||
+				if ((argumentValues.size() != 2 && argumentValues.size() != 3) ||
 					argumentValues[0].getType() != MiniScript::TYPE_MAP ||
 					MiniScript::getStringValue(argumentValues, 1, function, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
@@ -294,6 +295,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					if (mapPtr != nullptr) {
 						for (const auto& [mapKey, mapValue]: *mapPtr) {
 							vector<MiniScript::ScriptVariable> functionArgumentValues { MiniScript::ScriptVariable(mapKey), MiniScript::ScriptVariable::createReferenceVariable(mapValue) };
+							if (argumentValues.size() == 3) functionArgumentValues.push_back(argumentValues[2]);
 							span functionArgumentValuesSpan(functionArgumentValues);
 							MiniScript::ScriptVariable functionReturnValue;
 							miniScript->call(function, functionArgumentValuesSpan, functionReturnValue);

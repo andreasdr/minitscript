@@ -1916,7 +1916,7 @@ int MiniScript::determineNamedScriptIdxToStart() {
 }
 
 bool MiniScript::getNextStatementOperator(const string& processedStatement, MiniScript::ScriptStatementOperator& nextOperator, const ScriptStatement& statement) {
-	//
+	bool lamdaFunctionDeclaration = false;
 	auto curlyBracketCount = 0;
 	auto bracketCount = 0;
 	auto quote = '\0';
@@ -1933,9 +1933,13 @@ bool MiniScript::getNextStatementOperator(const string& processedStatement, Mini
 		} else
 		if (quote == '\0') {
 			if (c == '(') {
+				// read ahead if inline/lambda function
+				string_view lamdaFunctionCandidate(&processedStatement[i], processedStatement.size() - i);
+				if (viewIsLamdaFunction(lamdaFunctionCandidate) == true) lamdaFunctionDeclaration = true;
 				bracketCount++;
 			} else
 			if (c == ')') {
+				if (lamdaFunctionDeclaration == true) lamdaFunctionDeclaration = false;
 				bracketCount--;
 			} else
 			if (c == '{') {
@@ -1944,7 +1948,7 @@ bool MiniScript::getNextStatementOperator(const string& processedStatement, Mini
 			if (c == '}') {
 				curlyBracketCount--;
 			} else
-			if (curlyBracketCount == 0) {
+			if (curlyBracketCount == 0 && lamdaFunctionDeclaration == false) {
 				for (int j = OPERATOR_NONE + 1; j < OPERATOR_MAX; j++) {
 					auto priorizedOperator = static_cast<ScriptOperator>(j);
 					string operatorCandidate;
@@ -2231,6 +2235,8 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 }
 
 bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, const ScriptStatement& statement) {
+	// TODO: "xxx"->toUpperString()
+	// Console::println("oma: " + string(executableStatement));
 	//
 	auto objectMemberAccess = false;
 	auto objectStartIdx = string::npos;
@@ -2287,6 +2293,8 @@ bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, s
 			//
 			object = string_view(&executableStatement[objectStartIdx], objectEndIdx - objectStartIdx);
 			method = string_view(&executableStatement[memberCallStartIdx], memberCallEndIdx - memberCallStartIdx);
+			//
+			// Console::println("\t" + string(object) + " / " + string(method));
 			//
 			objectMemberAccess = true;
 			// dont break here, we can have multiple member access operators here, but we want the last one in this step

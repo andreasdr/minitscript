@@ -406,7 +406,8 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::ScriptMethod(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "cookie", .optional = true, .reference = true, .nullable = false }
 					},
 					MiniScript::TYPE_NULL
 				),
@@ -416,7 +417,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
 				string function;
-				if (argumentValues.size() != 2 ||
+				if ((argumentValues.size() != 2 && argumentValues.size() != 3) ||
 					argumentValues[0].getType() != MiniScript::TYPE_ARRAY ||
 					MiniScript::getStringValue(argumentValues, 1, function, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
@@ -426,6 +427,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 					if (arrayPtr != nullptr) {
 						for (auto arrayEntry: *arrayPtr) {
 							vector<MiniScript::ScriptVariable> functionArgumentValues { MiniScript::ScriptVariable::createReferenceVariable(arrayEntry) };
+							if (argumentValues.size() == 3) functionArgumentValues.push_back(argumentValues[2]);
 							span functionArgumentValuesSpan(functionArgumentValues);
 							MiniScript::ScriptVariable functionReturnValue;
 							miniScript->call(function, functionArgumentValuesSpan, functionReturnValue);
