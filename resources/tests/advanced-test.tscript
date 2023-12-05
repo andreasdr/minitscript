@@ -26,7 +26,7 @@ on: nothing
 	console.log("ByteArrays")
 	console.log("---------")
 	$byteArray = bytearray(1, 2, 3)
-	console.log("byte array initialized with: $byteArray = array(1, 2, 3): " + $byteArray)
+	console.log("byte array initialized with: $byteArray = bytearray(1, 2, 3): " + $byteArray)
 	$byteArray->push(4, 5, 6)
 	console.log("byte array pushed values with: $byteArray->push(4, 5, 6)")
 	console.log("byte array now looks like: ", $byteArray)
