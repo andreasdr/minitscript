@@ -850,7 +850,7 @@ end
 | <b>NON STATIC METHODS</b>                 |
 | Clear map                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
-| Iterate map values, by using a (Lamda) function, which takes two arguments, one for the key name and one for the key value|
+| Iterate map key and value pairs, by using a (Lamda) function, which takes two arguments, one for the key name and one for the key value|
 | <sub>forEach($function: Function): Null</sub>                                                    |
 | Get map value by key                                                                             |
 | <sub>get($key: String): Mixed</sub>                                                              |
