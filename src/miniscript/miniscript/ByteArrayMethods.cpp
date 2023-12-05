@@ -211,11 +211,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodByteArraySet: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArrayAppend: public MiniScript::ScriptMethod {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArraySet(MiniScript* miniScript):
+			ScriptMethodByteArrayAppend(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
@@ -242,7 +242,46 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArraySet(miniScript));
+		miniScript->registerMethod(new ScriptMethodByteArrayAppend(miniScript));
+	}
+	{
+		//
+		class ScriptMethodByteArrayExtract: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodByteArrayExtract(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
+						{ .type = MiniScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_INTEGER, .name = "length", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_BYTEARRAY
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "bytearray.extract";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				int64_t index;
+				int64_t length;
+				if (argumentValues.size() != 3 ||
+					argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY ||
+					MiniScript::getIntegerValue(argumentValues, 1, index, false) == false ||
+					MiniScript::getIntegerValue(argumentValues, 2, length, false) == false) {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					auto byteArrayPtr = argumentValues[0].getByteArrayPointer();
+					if (byteArrayPtr != nullptr) {
+						returnValue.setType(MiniScript::TYPE_BYTEARRAY);
+						for (auto i = index; i >= 0 && i < byteArrayPtr->size() && i < index + length; i++) returnValue.pushByteArrayEntry((*byteArrayPtr)[i]);
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodByteArrayExtract(miniScript));
 	}
 	{
 		//

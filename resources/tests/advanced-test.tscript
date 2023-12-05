@@ -60,6 +60,7 @@ on: nothing
 	console.log("removed byte array entry @ 1: " + $byteArray)
 	$byteArray->append(bytearray(101, 102, 103))
 	console.log("appended bytearray(101, 102, 103): " + $byteArray)
+	console.log("extracting bytearray from bytearray index 2, length 3: " + $byteArray->extract(2, 3))
 	console.log("---------")
 	console.log("Arrays")
 	console.log("---------")

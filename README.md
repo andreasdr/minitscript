@@ -796,6 +796,8 @@ end
 | <sub>append(&$other: ByteArray): Null</sub>                                                      |
 | Clear byte array                                                                                 |
 | <sub>clear(): Null</sub>                                                                         |
+| Extract a byte array from this byte array                                                        |
+| <sub>extract($index: Integer, $length: Integer): ByteArray</sub>                                 |
 | Get byte array entry                                                                             |
 | <sub>get($index: Integer): Integer</sub>                                                         |
 | Get byte array length                                                                            |
