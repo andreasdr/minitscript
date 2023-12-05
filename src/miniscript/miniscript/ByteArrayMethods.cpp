@@ -211,6 +211,41 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
+		class ScriptMethodByteArraySet: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodByteArraySet(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "other", .optional = false, .reference = true, .nullable = false },
+					},
+					MiniScript::TYPE_NULL
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "bytearray.append";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				if (argumentValues.size() != 2 ||
+					argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY ||
+					argumentValues[1].getType() != MiniScript::TYPE_BYTEARRAY) {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					auto byteArrayPtr = argumentValues[0].getByteArrayPointer();
+					auto otherByteArrayPtr = argumentValues[1].getByteArrayPointer();
+					if (byteArrayPtr != nullptr && otherByteArrayPtr != nullptr) {
+						for (const auto value: *otherByteArrayPtr) byteArrayPtr->push_back(value);
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodByteArraySet(miniScript));
+	}
+	{
+		//
 		class ScriptMethodByteArrayClear: public MiniScript::ScriptMethod {
 		private:
 			MiniScript* miniScript { nullptr };

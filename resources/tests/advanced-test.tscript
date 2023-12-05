@@ -58,6 +58,8 @@ on: nothing
 	end
 	$byteArray->remove(1)
 	console.log("removed byte array entry @ 1: " + $byteArray)
+	$byteArray->append(bytearray(101, 102, 103))
+	console.log("appended bytearray(101, 102, 103): " + $byteArray)
 	console.log("---------")
 	console.log("Arrays")
 	console.log("---------")

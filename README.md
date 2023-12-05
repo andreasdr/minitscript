@@ -792,6 +792,8 @@ end
 | <sub><b>static</b> bytearray(...): ByteArray</sub>                                               |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
+| Append another byte array to this byte array                                                     |
+| <sub>append(&$other: ByteArray): Null</sub>                                                      |
 | Clear byte array                                                                                 |
 | <sub>clear(): Null</sub>                                                                         |
 | Get byte array entry                                                                             |
