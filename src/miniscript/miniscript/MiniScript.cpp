@@ -133,7 +133,8 @@ const vector<string> MiniScript::getTranspilationUnits() {
 		"src/miniscript/miniscript/SetMethods.cpp",
 		"src/miniscript/miniscript/StringMethods.cpp",
 		"src/miniscript/miniscript/TimeMethods.cpp",
-		"src/miniscript/miniscript/XMLMethods.cpp"
+		"src/miniscript/miniscript/XMLMethods.cpp",
+		"src/miniscript/miniscript/MiniScript.cpp"
 	};
 }
 

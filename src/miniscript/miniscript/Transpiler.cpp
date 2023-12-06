@@ -1131,6 +1131,7 @@ bool Transpiler::transpileScriptStatement(
 									}
 									break;
 								case MiniScript::TYPE_STRING:
+								case MiniScript::TYPE_FUNCTION_ASSIGNMENT:
 									{
 										string value;
 										argument.value.getStringValue(value);

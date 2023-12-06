@@ -446,7 +446,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			ScriptMethodFloatfromIntValue(MiniScript* miniScript):
 				MiniScript::ScriptMethod(
 					{
-						{ .type = MiniScript::TYPE_INTEGER, .name = "integer", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_INTEGER, .name = "int", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_FLOAT
 				),
