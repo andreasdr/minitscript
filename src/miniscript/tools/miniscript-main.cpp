@@ -17,6 +17,7 @@
 #include <miniscript/os/network/Network.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Exception.h>
+#include <miniscript/utilities/StringTools.h>
 
 using std::cin;
 using std::exit;
@@ -32,6 +33,7 @@ using miniscript::os::filesystem::FileSystem;
 using miniscript::os::network::Network;
 using miniscript::utilities::Console;
 using miniscript::utilities::Exception;
+using miniscript::utilities::StringTools;
 
 static void printInformation() {
 	Console::println(string("miniscript ") + Version::getVersion());
@@ -88,12 +90,27 @@ int main(int argc, char** argv)
 	string tmpFile;
 	if (pathToScript.empty() == true) {
 		// read from standard input
+		auto statementsOnly = true;
 		string scriptCode;
 		string line;
-		while (cin.eof() == false && getline(cin, line)) scriptCode+= line + "\n";
+		while (cin.eof() == false && getline(cin, line)) {
+			if (StringTools::startsWith(line, "on:") == true ||
+				StringTools::startsWith(line, "on-enabled:") == true ||
+				StringTools::startsWith(line, "function:") == true ||
+				StringTools::startsWith(line, "callable:") == true) statementsOnly = false;
+			scriptCode+= line + "\n";
+		}
 		pathToScript = tmpnam(nullptr);
 		// create the script
 		try {
+			if (statementsOnly == true) {
+				scriptCode = StringTools::replace(
+					FileSystem::getContentAsString("resources/templates/cli", "statements.tscript"),
+					"{$statements}",
+					scriptCode
+				);
+			}
+			//
 			FileSystem::setContentFromString(
 				FileSystem::getPathName(pathToScript),
 				FileSystem::getFileName(pathToScript),
