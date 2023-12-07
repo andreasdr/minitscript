@@ -3532,7 +3532,6 @@ public:
 		if (variablePtr != nullptr) {
 			if (variablePtr->isConstant() == false) {
 				*variablePtr = variable;
-				variablePtr->unsetConstant();
 			} else {
 				_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 			}
@@ -3552,9 +3551,7 @@ public:
 			if (parentVariable->getType() == MiniScript::TYPE_MAP) {
 				// check if our parent is not a const variable
 				if (parentVariable->isConstant() == false) {
-					auto mapEntryValue = createReference == false?ScriptVariable::createNonReferenceVariable(&variable):ScriptVariable::createReferenceVariable(&variable);
-					mapEntryValue.unsetConstant();
-					parentVariable->setMapEntry(key, mapEntryValue);
+					parentVariable->setMapEntry(key, createReference == false?ScriptVariable::createNonReferenceVariable(&variable):ScriptVariable::createReferenceVariable(&variable));
 				} else {
 					_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 				}
@@ -3612,9 +3609,7 @@ public:
 				// check if our parent is not a const variable
 				if (parentVariable->isConstant() == false) {
 					// all checks passed, push variable to array
-					auto arrayEntry = createReference == false?ScriptVariable::createNonReferenceVariablePointer(&variable):ScriptVariable::createReferenceVariablePointer(&variable);
-					arrayEntry->unsetConstant();
-					parentVariable->pushArrayEntry(arrayEntry);
+					parentVariable->pushArrayEntry(createReference == false?ScriptVariable::createNonReferenceVariablePointer(&variable):ScriptVariable::createReferenceVariablePointer(&variable));
 				} else {
 					_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 				}
@@ -3657,7 +3652,6 @@ public:
 			if (existingVariable->isConstant() == false) {
 				// if we set a variable in variable scope that did exist before, we can safely remove the constness
 				*existingVariable = variable;
-				existingVariable->unsetConstant();
 			} else {
 				_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 			}
