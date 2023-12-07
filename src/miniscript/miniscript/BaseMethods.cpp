@@ -936,6 +936,42 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new ScriptMethodUnsetVariable(miniScript));
 	}
+	// set constant
+	{
+		//
+		class ScriptMethodSetConstant: public MiniScript::ScriptMethod {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			ScriptMethodSetConstant(MiniScript* miniScript):
+				MiniScript::ScriptMethod(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "constant", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "value", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "setConstant";
+			}
+			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+				string constant;
+				if (argumentValues.size() != 2 ||
+					MiniScript::getStringValue(argumentValues, 0, constant, false) == false) {
+					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					MiniScript::setConstant(argumentValues[1]);
+					miniScript->setVariable(constant, argumentValues[1], &statement);
+					returnValue = argumentValues[1];
+				}
+			}
+		};
+		miniScript->registerMethod(new ScriptMethodSetConstant(miniScript));
+	}
 	{
 		//
 		class ScriptMethodIncrement: public MiniScript::ScriptMethod {

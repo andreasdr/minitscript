@@ -378,8 +378,9 @@ public:
 		};
 
 		//
+		static constexpr uint32_t TYPE_BITS_VALUE { 1073741823 }; // 2 ^ 30 - 1
+		static constexpr uint32_t CONSTANT_BIT_VALUE { 1073741824 }; // 2 ^ 30
 		static constexpr uint32_t REFERENCE_BIT_VALUE { 2147483648 }; // 2 ^ 31
-		static constexpr uint32_t TYPE_BITS_VALUE { 2147483647 }; // 2 ^ 31 - 1
 
 		//
 		union ir {
@@ -448,23 +449,48 @@ public:
 		};
 
 		// 24 bytes
-		uint32_t typeAndReference { TYPE_NULL };	// 4 bytes
+		uint32_t typeReferenceConstantBits { TYPE_NULL };	// 4 bytes
 		int32_t referenceCounter { 1 };				// 4 bytes
 		uint64_t valuePtr { 0LL };					// 8 bytes
 		ir ir {};									// 8 bytes
+
+	public:
+		/**
+		 * @return is constant
+		 */
+		inline bool isConstant() const {
+			return
+				(typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE ||
+				(isReference() == true && (ir.reference->typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE);
+		}
+	private:
+
+		/**
+		 * Set constant
+		 */
+		inline void setConstant() {
+			typeReferenceConstantBits|= CONSTANT_BIT_VALUE;
+		}
+
+		/**
+		 * Unset constant
+		 */
+		inline void unsetConstant() {
+			typeReferenceConstantBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE;
+		}
 
 		/**
 		 * @return is reference
 		 */
 		inline bool isReference() const {
-			return (typeAndReference & REFERENCE_BIT_VALUE) == REFERENCE_BIT_VALUE;
+			return (typeReferenceConstantBits & REFERENCE_BIT_VALUE) == REFERENCE_BIT_VALUE;
 		}
 
 		/**
 		 * @return unset reference
 		 */
 		inline void unsetReference() {
-			typeAndReference&= TYPE_BITS_VALUE;
+			typeReferenceConstantBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE;
 			ir.reference = nullptr;
 		}
 
@@ -473,7 +499,7 @@ public:
 		 * @param variable variable
 		 */
 		inline void setReference(ScriptVariable* variable) {
-			typeAndReference|= REFERENCE_BIT_VALUE;
+			typeReferenceConstantBits|= REFERENCE_BIT_VALUE;
 			ir.reference = (ScriptVariable*)variable;
 			ir.reference->acquireReference();
 		}
@@ -504,7 +530,7 @@ public:
 		 * @return initializer
 		 */
 		inline Initializer*& getInitializerReference() {
-			return isReference() == true?ir.reference->ir.initializer:ir.initializer;
+			return isReference() == false?ir.initializer:ir.reference->ir.initializer;
 		}
 
 		/**
@@ -512,7 +538,7 @@ public:
 		 * @return value ptr
 		 */
 		inline const uint64_t& getValuePtrReference() const {
-			return isReference() == true?ir.reference->valuePtr:valuePtr;
+			return isReference() == false?valuePtr:ir.reference->valuePtr;
 		}
 
 		/**
@@ -520,7 +546,7 @@ public:
 		 * @return value ptr
 		 */
 		inline uint64_t& getValuePtrReference() {
-			return isReference() == true?ir.reference->valuePtr:valuePtr;
+			return isReference() == false?valuePtr:ir.reference->valuePtr;
 		}
 
 		/**
@@ -740,7 +766,8 @@ public:
 					}
 					MiniScript::scriptDataTypes[dataTypeIdx]->copyScriptVariable(to, from);
 			}
-
+			//
+			if (from.isConstant() == true) to.setConstant();
 		}
 
 		/**
@@ -792,7 +819,7 @@ public:
 		 * @param variable variable to move from
 		 */
 		inline ScriptVariable(ScriptVariable&& variable):
-			typeAndReference(exchange(variable.typeAndReference, static_cast<int>(MiniScript::TYPE_NULL))),
+			typeReferenceConstantBits(exchange(variable.typeReferenceConstantBits, static_cast<int>(MiniScript::TYPE_NULL))),
 			valuePtr(exchange(variable.valuePtr, 0ll)),
 			referenceCounter(exchange(variable.referenceCounter, 1)) {
 			// TODO: improve me
@@ -832,7 +859,7 @@ public:
 		 * @return this script variable
 		 */
 		inline ScriptVariable& operator=(ScriptVariable&& variable) {
-			swap(typeAndReference, variable.typeAndReference);
+			swap(typeReferenceConstantBits, variable.typeReferenceConstantBits);
 			swap(valuePtr, variable.valuePtr);
 			swap(ir, variable.ir);
 			swap(referenceCounter, variable.referenceCounter);
@@ -911,7 +938,7 @@ public:
 		 * @return type
 		 */
 		inline ScriptVariableType getType() const {
-			return static_cast<ScriptVariableType>((isReference() == true?ir.reference->typeAndReference:typeAndReference) & TYPE_BITS_VALUE);
+			return static_cast<ScriptVariableType>((isReference() == false?typeReferenceConstantBits:ir.reference->typeReferenceConstantBits) & TYPE_BITS_VALUE);
 		}
 
 		/**
@@ -973,9 +1000,13 @@ public:
 			this->getValuePtrReference() = 0LL;
 			//
 			if (isReference() == true) {
-				ir.reference->typeAndReference = newType;
+				ir.reference->typeReferenceConstantBits =
+					static_cast<uint32_t>(newType) |
+					((ir.reference->typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0);
 			} else {
-				typeAndReference = newType;
+				typeReferenceConstantBits =
+					static_cast<uint32_t>(newType) |
+					((typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0);
 			}
 			//
 			switch(getType()) {
@@ -3090,6 +3121,12 @@ private:
 
 public:
 	/**
+	 * Set variable recursively to be a constant
+	 * @param variable variable
+	 */
+	static void setConstant(ScriptVariable& variable);
+
+	/**
 	 * @return context
 	 */
 	inline _Context* getContext() {
@@ -3456,7 +3493,10 @@ public:
 		} else
 		// we have a pointer to a ordinary script variable
 		if (variablePtr != nullptr) {
-			return createReference == false?*variablePtr:ScriptVariable::createReferenceVariable(variablePtr);
+			// if we return any variable we can safely remove the constness, a reference can of course keep its constness
+			auto variable = createReference == false?*variablePtr:ScriptVariable::createReferenceVariable(variablePtr);
+			variable.unsetConstant();
+			return variable;
 		} else {
 			// special case for accessing byte array entries at given array index
 			if (parentVariable != nullptr && parentVariable->getType() == TYPE_BYTEARRAY && arrayIdx >= ARRAYIDX_FIRST) {
@@ -3490,7 +3530,12 @@ public:
 		auto variablePtr = getVariableIntern(globalVariableName.empty() == true?name:globalVariableName, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, false, globalVariableName.empty() == false);
 		// common case
 		if (variablePtr != nullptr) {
-			*variablePtr = variable;
+			if (variablePtr->isConstant() == false) {
+				*variablePtr = variable;
+				variablePtr->unsetConstant();
+			} else {
+				_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
+			}
 			return;
 		} else
 		// array add operator
@@ -3498,33 +3543,45 @@ public:
 			if (parentVariable == nullptr) {
 				string callerMethod = __FUNCTION__;
 				if (statement != nullptr) {
-					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': map access operator without map: '" + key + "'");
+					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: " + name + ": map access operator without map: '" + key + "'");
 				} else {
-					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': map access operator without map: '" + key + "'");
+					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: " + name + ": map access operator without map: '" + key + "'");
 				}
 			} else
 			// all checks passed, push to map
 			if (parentVariable->getType() == MiniScript::TYPE_MAP) {
-				parentVariable->setMapEntry(key, createReference == false?ScriptVariable::createNonReferenceVariable(&variable):ScriptVariable::createReferenceVariable(&variable));
+				// check if our parent is not a const variable
+				if (parentVariable->isConstant() == false) {
+					auto mapEntryValue = createReference == false?ScriptVariable::createNonReferenceVariable(&variable):ScriptVariable::createReferenceVariable(&variable);
+					mapEntryValue.unsetConstant();
+					parentVariable->setMapEntry(key, mapEntryValue);
+				} else {
+					_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
+				}
 			} else
 			if (parentVariable->getType() == MiniScript::TYPE_SET) {
-				bool booleanValue;
-				if (variable.getBooleanValue(booleanValue, false) == true) {
-					if (booleanValue == true) {
-						parentVariable->insertSetKey(key);
+				// check if our parent is not a const variable
+				if (parentVariable->isConstant() == false) {
+					bool booleanValue;
+					if (variable.getBooleanValue(booleanValue, false) == true) {
+						if (booleanValue == true) {
+							parentVariable->insertSetKey(key);
+						} else {
+							parentVariable->removeSetKey(key);
+						}
 					} else {
-						parentVariable->removeSetKey(key);
+						string callerMethod = __FUNCTION__;
+						_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: " + name + ": set access operator: expected boolean variable to remove/insert key in set, but got " + variable.getTypeAsString());
 					}
 				} else {
-					string callerMethod = __FUNCTION__;
-					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': set access operator: expected boolean variable to remove/insert key in set, but got " + variable.getTypeAsString());
+					_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 				}
 			} else {
 				string callerMethod = __FUNCTION__;
 				if (statement != nullptr) {
-					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
+					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: " + name + ": map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
 				} else {
-					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
+					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: " + name + ": map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
 				}
 			}
 			//
@@ -3534,29 +3591,39 @@ public:
 			if (parentVariable == nullptr) {
 				string callerMethod = __FUNCTION__;
 				if (statement != nullptr) {
-					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': [] array push operator without array");
+					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: " + name + ": [] array push operator without array");
 				} else {
-					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': [] array push operator without array");
+					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: " + name + ": [] array push operator without array");
 				}
 			} else
 			if (parentVariable->getType() == MiniScript::TYPE_BYTEARRAY) {
-				// all checks passed, push variable to array
-				auto& arrayValueReference = parentVariable->getByteArrayValueReference();
-				uint8_t value;
-				if (variable.getByteValue(this, value, statement) == true) {
-					arrayValueReference.push_back(value);
+				// check if our parent is not a const variable
+				if (parentVariable->isConstant() == false) {
+					// all checks passed, push variable to array
+					uint8_t value;
+					if (variable.getByteValue(this, value, statement) == true) {
+						parentVariable->pushByteArrayEntry(value);
+					}
+				} else {
+					_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 				}
 			} else
 			if (parentVariable->getType() == MiniScript::TYPE_ARRAY) {
-				// all checks passed, push variable to array
-				auto& arrayValueReference = parentVariable->getArrayValueReference();
-				arrayValueReference.push_back(createReference == false?ScriptVariable::createNonReferenceVariablePointer(&variable):ScriptVariable::createReferenceVariablePointer(&variable));
+				// check if our parent is not a const variable
+				if (parentVariable->isConstant() == false) {
+					// all checks passed, push variable to array
+					auto arrayEntry = createReference == false?ScriptVariable::createNonReferenceVariablePointer(&variable):ScriptVariable::createReferenceVariablePointer(&variable);
+					arrayEntry->unsetConstant();
+					parentVariable->pushArrayEntry(arrayEntry);
+				} else {
+					_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
+				}
 			} else {
 				string callerMethod = __FUNCTION__;
 				if (statement != nullptr) {
-					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': [] array push operator: expected byte array or array, but got " + parentVariable->getTypeAsString());
+					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: " + name + ": [] array push operator: expected byte array or array, but got " + parentVariable->getTypeAsString());
 				} else {
-					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': [] array push operator: expected byte array or array, but got " + parentVariable->getTypeAsString());
+					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: " + name + ": [] array push operator: expected byte array or array, but got " + parentVariable->getTypeAsString());
 				}
 			}
 			//
@@ -3564,16 +3631,21 @@ public:
 		} else
 		// special case for accessing byte array entries at given array index
 		if (arrayIdx >= ARRAYIDX_FIRST && parentVariable != nullptr && parentVariable->getType() == TYPE_BYTEARRAY) {
-			int64_t value;
-			if (variable.getIntegerValue(value, false) == true && value >= 0 && value <= 255) {
-				parentVariable->pushByteArrayEntry(value);
-			} else {
-				string callerMethod = __FUNCTION__;
-				if (statement != nullptr) {
-					_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: '" + name + "': [] byte array push operator: expected byte integer value (0 <= byte <= 255), but got " + variable.getTypeAsString());
+			// check if our parent is not a const variable
+			if (parentVariable->isConstant() == false) {
+				uint8_t value;
+				if (variable.getByteValue(this, value, statement) == true) {
+					parentVariable->pushByteArrayEntry(value);
 				} else {
-					_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: '" + name + "': [] byte array push operator: expected byte integer value (0 <= byte <= 255), but got " + variable.getTypeAsString());
+					string callerMethod = __FUNCTION__;
+					if (statement != nullptr) {
+						_Console::println("MiniScript::" + callerMethod + "(): " + getStatementInformation(*statement) + ": variable: " + name + ": [] byte array push operator: expected byte integer value (0 <= byte <= 255), but got " + variable.getTypeAsString());
+					} else {
+						_Console::println("MiniScript::" + callerMethod + "(): '" + scriptFileName + "': variable: " + name + ": [] byte array push operator: expected byte integer value (0 <= byte <= 255), but got " + variable.getTypeAsString());
+					}
 				}
+			} else {
+				_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 			}
 		}
 
@@ -3581,9 +3653,17 @@ public:
 		auto& scriptState = globalVariableName.empty() == true?getScriptState():getRootScriptState();
 		auto scriptVariableIt = scriptState.variables.find(globalVariableName.empty() == true?name:globalVariableName);
 		if (scriptVariableIt != scriptState.variables.end()) {
-			*scriptVariableIt->second = variable;
+			auto& existingVariable = scriptVariableIt->second;
+			if (existingVariable->isConstant() == false) {
+				// if we set a variable in variable scope that did exist before, we can safely remove the constness
+				*existingVariable = variable;
+				existingVariable->unsetConstant();
+			} else {
+				_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
+			}
 			return;
 		} else {
+			// if we set a variable in variable scope that did not exist before, we keep things as they are regarding constness
 			scriptState.variables[globalVariableName.empty() == true?name:globalVariableName] =
 				createReference == false?ScriptVariable::createNonReferenceVariablePointer(&variable):ScriptVariable::createReferenceVariablePointer(&variable);
 		}

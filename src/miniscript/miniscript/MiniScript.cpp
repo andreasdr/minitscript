@@ -3813,3 +3813,31 @@ inline bool MiniScript::evaluateAccess(const string& name, const string& callerM
 	//
 	return true;
 }
+
+void MiniScript::setConstant(ScriptVariable& variable) {
+	variable.setConstant();
+	switch (variable.getType()) {
+		case TYPE_ARRAY:
+			{
+				auto arrayPointer = variable.getArrayPointer();
+				if (arrayPointer == nullptr) break;
+				for (const auto arrayEntry: *arrayPointer) {
+					setConstant(*arrayEntry);
+				}
+				//
+				break;
+			}
+		case TYPE_MAP:
+			{
+				auto mapPointer = variable.getMapPointer();
+				if (mapPointer == nullptr) break;
+				for (const auto& [mapKey, mapValue]: *mapPointer) {
+					setConstant(*mapValue);
+				}
+				//
+				break;
+			}
+		default:
+			break;
+	}
+}
