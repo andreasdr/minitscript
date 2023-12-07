@@ -454,7 +454,6 @@ public:
 		uint64_t valuePtr { 0LL };					// 8 bytes
 		ir ir {};									// 8 bytes
 
-	public:
 		/**
 		 * @return is constant
 		 */
@@ -463,7 +462,6 @@ public:
 				(typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE ||
 				(isReference() == true && (ir.reference->typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE);
 		}
-	private:
 
 		/**
 		 * Set constant
