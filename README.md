@@ -210,7 +210,7 @@ Default MiniScript works with the following data types:
 - set  
 
 Variable identifiers always start with a "$". Constants need also be prefixed with a "$" and should be named with uppercase letters like "$PI = 3.14".
-You can manually set variables with the setVariable("$variableName", ...) or constants with setConstant("$CONSTANT", ...).
+You can manually set variables with the setVariable("$variableName", ...) or constants with setConstant("$CONSTANT", ...) method.
 
 ## 4.1. Primitive data types
 
