@@ -32,7 +32,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.hasCallable";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
 				string callable;
 				if (MiniScript::getStringValue(argumentValues, 0, scriptId) == false ||
@@ -74,7 +74,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.call";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
 				string callable;
 				if (MiniScript::getStringValue(argumentValues, 0, scriptId) == false ||
@@ -94,7 +94,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						} else {
 							#if defined (__APPLE__)
 								// MACOSX currently does not support initializing span using begin and end iterators,
-								vector<MiniScript::ScriptVariable> callArgumentValues(argumentValues.size() - 2);
+								vector<MiniScript::Variable> callArgumentValues(argumentValues.size() - 2);
 								for (auto i = 2; i < argumentValues.size(); i++) callArgumentValues[i - 2] = move(argumentValues[i]);
 								// call
 								span callArgumentValuesSpan(callArgumentValues);
@@ -135,7 +135,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.loadScript";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
 				string pathName;
 				string fileName;
@@ -185,7 +185,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.removeScript";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
 				if (MiniScript::getStringValue(argumentValues, 0, scriptId) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
@@ -209,7 +209,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.getScriptIds";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				auto scriptIds = miniScript->getContext()->getScriptIds();
 				returnValue.setType(MiniScript::TYPE_ARRAY);
 				for (const auto& scriptId: scriptIds) returnValue.pushArrayEntry(scriptId);

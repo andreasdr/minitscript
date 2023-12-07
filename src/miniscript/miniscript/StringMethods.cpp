@@ -86,7 +86,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == true) {
 					returnValue.setValue(stringValue);
@@ -115,7 +115,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.length";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == true) {
 					// utf8 character iterator
@@ -149,7 +149,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.charAt";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				int64_t index;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false ||
@@ -185,7 +185,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.startsWith";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string prefix;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false ||
@@ -217,7 +217,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.endsWith";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string suffix;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false ||
@@ -251,7 +251,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.replace";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string what;
 				string by;
@@ -292,7 +292,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.indexOf";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string what;
 				int64_t beginIndex = 0;
@@ -337,7 +337,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.firstIndexOf";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string what;
 				int64_t beginIndex = 0;
@@ -390,7 +390,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.lastIndexOf";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string what;
 				int64_t beginIndex = -1;
@@ -443,7 +443,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.substring";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				int64_t beginIndex;
 				int64_t endIndex = -1;
@@ -489,7 +489,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.equalsIgnoreCase";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string other;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false ||
@@ -520,7 +520,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.trim";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
@@ -550,7 +550,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.regexMatch";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string pattern;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false ||
@@ -583,7 +583,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.regexReplace";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string pattern;
 				string by;
@@ -617,7 +617,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.tokenize";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string delimiters;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false ||
@@ -653,7 +653,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.space";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t spaces = 1;
 				if (MiniScript::getIntegerValue(argumentValues, 0, spaces, true) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
@@ -677,7 +677,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.concatenate";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string result;
 				for (const auto& argumentValue: argumentValues) {
 					result+= argumentValue.getValueAsString();
@@ -707,7 +707,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.toUpperCase";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == true) {
 					returnValue.setValue(StringTools::toUpperCase(stringValue));
@@ -736,7 +736,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.toLowerCase";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == true) {
 					returnValue.setValue(StringTools::toLowerCase(stringValue));
@@ -765,7 +765,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.isEmpty";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == true) {
 					returnValue.setValue(stringValue.empty());
@@ -794,7 +794,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.isFloat";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == true) {
 					returnValue.setValue(Float::is(stringValue));
@@ -823,7 +823,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.isInteger";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == true) {
 					returnValue.setValue(Integer::is(stringValue));
@@ -854,7 +854,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.padLeft";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string by;
 				int64_t toLength;
@@ -893,7 +893,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.padRight";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string by;
 				int64_t toLength;
@@ -930,7 +930,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.toByteArray";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (MiniScript::getStringValue(argumentValues, 0, stringValue, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
@@ -960,7 +960,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "string.fromByteArray";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				if (argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));

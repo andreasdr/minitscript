@@ -24,7 +24,7 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "console.log";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				for (const auto& argumentValue: argumentValues) {
 					Console::print(argumentValue.getValueAsString());
 				}
@@ -52,7 +52,7 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "console.dump";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (argumentValues.size() != 1) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();

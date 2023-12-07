@@ -68,7 +68,7 @@ static void generateMiniScriptMethodsDocumentation(const string& heading, int ma
 		method+= "(";
 		method+= scriptMethod->getArgumentsInformation();
 		method+= "): ";
-		method+= MiniScript::ScriptVariable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
+		method+= MiniScript::Variable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
 		method+= "</sub>";
 		while (method.size() < 99) method+= " ";
 		method+= "|";
@@ -119,7 +119,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 	auto scriptMethods = miniScript->getMethods();
 	//
 	for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
-		const auto& className = MiniScript::ScriptVariable::getClassName(static_cast<MiniScript::ScriptVariableType>(typeIdx));
+		const auto& className = MiniScript::Variable::getClassName(static_cast<MiniScript::VariableType>(typeIdx));
 		if (className.empty() == true) break;
 		allClassMethods.insert(className);
 	}
@@ -131,7 +131,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		//
 		auto _class = false;
 		for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
-			const auto& classNameCandidate = MiniScript::ScriptVariable::getClassName(static_cast<MiniScript::ScriptVariableType>(typeIdx));
+			const auto& classNameCandidate = MiniScript::Variable::getClassName(static_cast<MiniScript::VariableType>(typeIdx));
 			if (classNameCandidate.empty() == true) break;
 			if (classNameCandidate == className) {
 				_class = true;
@@ -149,7 +149,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		auto _static =
 			scriptMethod->getArgumentTypes().empty() == true ||
 			scriptMethod->getArgumentTypes()[0].name != className ||
-			MiniScript::ScriptVariable::getClassName(scriptMethod->getArgumentTypes()[0].type) != className;
+			MiniScript::Variable::getClassName(scriptMethod->getArgumentTypes()[0].type) != className;
 		//
 		allClassMethods.insert(scriptMethod->getMethodName());
 	}
@@ -166,7 +166,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		auto _static = false;
 		if (className.empty() == true) {
 			for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
-				const auto& classNameCandidate = MiniScript::ScriptVariable::getClassName(static_cast<MiniScript::ScriptVariableType>(typeIdx));
+				const auto& classNameCandidate = MiniScript::Variable::getClassName(static_cast<MiniScript::VariableType>(typeIdx));
 				if (classNameCandidate.empty() == true) break;
 				if (scriptMethod->getMethodName() == classNameCandidate) {
 					className = classNameCandidate;
@@ -180,7 +180,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 			_static =
 				scriptMethod->getArgumentTypes().empty() == true ||
 				scriptMethod->getArgumentTypes()[0].name != className ||
-				MiniScript::ScriptVariable::getClassName(scriptMethod->getArgumentTypes()[0].type) != className;
+				MiniScript::Variable::getClassName(scriptMethod->getArgumentTypes()[0].type) != className;
 		}
 		//
 		string description;
@@ -198,7 +198,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		method+= "(";
 		method+= scriptMethod->getArgumentsInformation(_static == true?0:1);
 		method+= "): ";
-		method+= MiniScript::ScriptVariable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
+		method+= MiniScript::Variable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
 		method+= "</sub>";
 		while (method.size() < 99) method+= " ";
 		method+= "|";
@@ -209,7 +209,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 	//
 	auto classIdx = 1;
 	for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
-		const auto& className = MiniScript::ScriptVariable::getClassName(static_cast<MiniScript::ScriptVariableType>(typeIdx));
+		const auto& className = MiniScript::Variable::getClassName(static_cast<MiniScript::VariableType>(typeIdx));
 		if (className.empty() == true) break;
 		auto classNameDescription = descriptions.get("miniscript.baseclass." + (className.empty() == true?"No class":className), "Not documented");
 		//
@@ -284,7 +284,7 @@ int main(int argc, char** argv)
 		operatorString+= "(";
 		operatorString+= scriptMethod->getArgumentsInformation();
 		operatorString+= "): ";
-		operatorString+= MiniScript::ScriptVariable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
+		operatorString+= MiniScript::Variable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
 		while (operatorString.size() < 99) operatorString+= " ";
 		operatorString+= "|";
 		operators.push_back(operatorString);

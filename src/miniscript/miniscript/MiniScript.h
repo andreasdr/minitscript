@@ -69,7 +69,7 @@ class miniscript::miniscript::MiniScript {
 	friend class Transpiler;
 
 public:
-	enum ScriptOperator {
+	enum Operator {
 		// see: https://en.cppreference.com/w/cpp/language/operator_precedence
 		OPERATOR_NONE,
 		// priority 2
@@ -116,8 +116,8 @@ public:
 		STATEMACHINESTATE_WAIT_FOR_CONDITION
 	};
 
-	struct ScriptStatement {
-		ScriptStatement(
+	struct Statement {
+		Statement(
 			int line,
 			int statementIdx,
 			const string& statement,
@@ -137,7 +137,7 @@ public:
 		int gotoStatementIdx;
 	};
 
-	enum ScriptVariableType {
+	enum VariableType {
 		// primitives
 		TYPE_NULL,
 		TYPE_BOOLEAN,
@@ -159,13 +159,13 @@ public:
 	};
 
 	//
-	class ScriptSyntaxTreeNode;
-	class ScriptVariable;
+	class SyntaxTreeNode;
+	class Variable;
 
 	/**
 	 * Script data type
 	 */
-	class ScriptDataType {
+	class DataType {
 		friend class MiniScript;
 		friend class MathMethods;
 
@@ -198,21 +198,21 @@ public:
 		 * Unset script variable value
 		 * @param variable variable
 		 */
-		virtual void unsetScriptVariableValue(ScriptVariable& variable) const = 0;
+		virtual void unsetScriptVariableValue(Variable& variable) const = 0;
 
 		/**
 		 * Set script variable value
 		 * @param variable variable
 		 * @param value value
 		 */
-		virtual void setScriptVariableValue(ScriptVariable& variable, const void* value) const = 0;
+		virtual void setScriptVariableValue(Variable& variable, const void* value) const = 0;
 
 		/**
 		 * Copy script variable
 		 * @param to to
 		 * @param from from
 		 */
-		virtual void copyScriptVariable(ScriptVariable& to, const ScriptVariable& from) const = 0;
+		virtual void copyScriptVariable(Variable& to, const Variable& from) const = 0;
 
 		/**
 		 * Multiply
@@ -222,7 +222,7 @@ public:
 		 * @param statement statement
 		 * @return mul was executed
 		 */
-		virtual bool mul(MiniScript* miniScript, const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) const = 0;
+		virtual bool mul(MiniScript* miniScript, const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
 
 		/**
 		 * Division
@@ -232,7 +232,7 @@ public:
 		 * @param statement statement
 		 * @return div was executed
 		 */
-		virtual bool div(MiniScript* miniScript, const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) const = 0;
+		virtual bool div(MiniScript* miniScript, const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
 
 		/**
 		 * Addition
@@ -242,7 +242,7 @@ public:
 		 * @param statement statement
 		 * @return add was executed
 		 */
-		virtual bool add(MiniScript* miniScript, const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) const = 0;
+		virtual bool add(MiniScript* miniScript, const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
 
 		/**
 		 * Subtraction
@@ -252,21 +252,21 @@ public:
 		 * @param statement statement
 		 * @return sub was executed
 		 */
-		virtual bool sub(MiniScript* miniScript, const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) const = 0;
+		virtual bool sub(MiniScript* miniScript, const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
 
 	public:
 		// forbid class copy
-		FORBID_CLASS_COPY(ScriptDataType)
+		FORBID_CLASS_COPY(DataType)
 
 		/**
 		 * Script data type
 		 * @param mathDataType is math data type and provides math methods
 		 */
-		ScriptDataType(bool mathDataType): mathDataType(mathDataType) {
+		DataType(bool mathDataType): mathDataType(mathDataType) {
 			//
 		}
 
-		virtual ~ScriptDataType() {
+		virtual ~DataType() {
 			//
 		}
 
@@ -292,14 +292,14 @@ public:
 		 * @param variable variable
 		 * @return value as string
 		 */
-		virtual const string getValueAsString(const ScriptVariable& variable) const = 0;
+		virtual const string getValueAsString(const Variable& variable) const = 0;
 
 	};
 
 	/**
 	 * MiniScript script variable
 	 */
-	class ScriptVariable {
+	class Variable {
 		friend class MiniScript;
 
 	private:
@@ -313,7 +313,7 @@ public:
 				 */
 				Initializer():
 					statement(
-						MiniScript::ScriptStatement(
+						MiniScript::Statement(
 							MiniScript::LINE_NONE,
 							MiniScript::STATEMENTIDX_NONE,
 							string(),
@@ -321,7 +321,7 @@ public:
 							MiniScript::STATEMENTIDX_NONE
 						)
 					),
-					syntaxTree(new ScriptSyntaxTreeNode()) {
+					syntaxTree(new SyntaxTreeNode()) {
 					//
 				}
 
@@ -331,7 +331,7 @@ public:
 				 * @param statement statement
 				 * @param syntaxTree syntax tree
 				 */
-				Initializer(const string& initializerString, const ScriptStatement& statement, ScriptSyntaxTreeNode* syntaxTree): initializerString(initializerString), statement(statement), syntaxTree(syntaxTree) {}
+				Initializer(const string& initializerString, const Statement& statement, SyntaxTreeNode* syntaxTree): initializerString(initializerString), statement(statement), syntaxTree(syntaxTree) {}
 
 				/**
 				 * Destructor
@@ -360,21 +360,21 @@ public:
 				/**
 				 * @return statement
 				 */
-				const ScriptStatement& getStatement() const {
+				const Statement& getStatement() const {
 					return statement;
 				}
 
 				/**
 				 * @return syntax tree node
 				 */
-				const ScriptSyntaxTreeNode* getSyntaxTree() const {
+				const SyntaxTreeNode* getSyntaxTree() const {
 					return syntaxTree;
 				}
 
 			private:
 				string initializerString;
-				ScriptStatement statement;
-				ScriptSyntaxTreeNode* syntaxTree;
+				Statement statement;
+				SyntaxTreeNode* syntaxTree;
 		};
 
 		//
@@ -385,14 +385,14 @@ public:
 		//
 		union ir {
 			Initializer* initializer;
-			ScriptVariable* reference;
+			Variable* reference;
 		};
 
 		/**
 		 * String value
 		 */
 		class StringValue {
-			friend class ScriptVariable;
+			friend class Variable;
 		public:
 			/**
 			 * Constructor
@@ -496,9 +496,9 @@ public:
 		 * Set reference
 		 * @param variable variable
 		 */
-		inline void setReference(ScriptVariable* variable) {
+		inline void setReference(Variable* variable) {
 			typeReferenceConstantBits|= REFERENCE_BIT_VALUE;
-			ir.reference = (ScriptVariable*)variable;
+			ir.reference = (Variable*)variable;
 			ir.reference->acquireReference();
 		}
 
@@ -620,29 +620,29 @@ public:
 		/**
 		 * @return array value reference
 		 */
-		inline vector<ScriptVariable*>& getArrayValueReference() {
-			return *static_cast<vector<ScriptVariable*>*>((void*)getValuePtrReference());
+		inline vector<Variable*>& getArrayValueReference() {
+			return *static_cast<vector<Variable*>*>((void*)getValuePtrReference());
 		}
 
 		/**
 		 * @return const array value reference
 		 */
-		inline const vector<ScriptVariable*>& getArrayValueReference() const {
-			return *static_cast<vector<ScriptVariable*>*>((void*)getValuePtrReference());
+		inline const vector<Variable*>& getArrayValueReference() const {
+			return *static_cast<vector<Variable*>*>((void*)getValuePtrReference());
 		}
 
 		/**
 		 * @return map value reference
 		 */
-		inline unordered_map<string, ScriptVariable*>& getMapValueReference() {
-			return *static_cast<unordered_map<string, ScriptVariable*>*>((void*)getValuePtrReference());
+		inline unordered_map<string, Variable*>& getMapValueReference() {
+			return *static_cast<unordered_map<string, Variable*>*>((void*)getValuePtrReference());
 		}
 
 		/**
 		 * @return const map value reference
 		 */
-		inline const unordered_map<string, ScriptVariable*>& getMapValueReference() const {
-			return *static_cast<unordered_map<string, ScriptVariable*>*>((void*)getValuePtrReference());
+		inline const unordered_map<string, Variable*>& getMapValueReference() const {
+			return *static_cast<unordered_map<string, Variable*>*>((void*)getValuePtrReference());
 		}
 
 		/**
@@ -673,12 +673,12 @@ public:
 		 * @param variable variable
 		 * @returns reference variable
 		 */
-		inline static ScriptVariable createReferenceVariable(const ScriptVariable* variable) {
+		inline static Variable createReferenceVariable(const Variable* variable) {
 			// copy a reference variable is cheap
 			if (variable->isReference() == true) return *variable;
 			//
-			ScriptVariable referenceVariable;
-			referenceVariable.setReference((ScriptVariable*)variable);
+			Variable referenceVariable;
+			referenceVariable.setReference((Variable*)variable);
 			return referenceVariable;
 		}
 
@@ -687,12 +687,12 @@ public:
 		 * @param variable variable
 		 * @returns reference variable
 		 */
-		inline static ScriptVariable* createReferenceVariablePointer(const ScriptVariable* variable) {
+		inline static Variable* createReferenceVariablePointer(const Variable* variable) {
 			// copy a reference variable is cheap
-			if (variable->isReference() == true) return new ScriptVariable(*variable);
+			if (variable->isReference() == true) return new Variable(*variable);
 			//
-			ScriptVariable* referenceVariable = new ScriptVariable();
-			referenceVariable->setReference((ScriptVariable*)variable);
+			Variable* referenceVariable = new Variable();
+			referenceVariable->setReference((Variable*)variable);
 			return referenceVariable;
 		}
 
@@ -701,7 +701,7 @@ public:
 		 * @param from from
 		 * @param to to
 		 */
-		inline static void copyScriptVariable(ScriptVariable& to, const ScriptVariable& from) {
+		inline static void copyScriptVariable(Variable& to, const Variable& from) {
 			// initial setup
 			to.setType(from.getType());
 			// do the copy
@@ -758,11 +758,11 @@ public:
 				default:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(from.getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
-					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
+					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						_Console::println("ScriptVariable::copyScriptVariable(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
 					}
-					MiniScript::scriptDataTypes[dataTypeIdx]->copyScriptVariable(to, from);
+					MiniScript::dataTypes[dataTypeIdx]->copyScriptVariable(to, from);
 			}
 			//
 			if (from.isConstant() == true) to.setConstant();
@@ -773,11 +773,11 @@ public:
 		 * @param variable variable
 		 * @returns reference variable
 		 */
-		inline static ScriptVariable createNonReferenceVariable(const ScriptVariable* variable) {
+		inline static Variable createNonReferenceVariable(const Variable* variable) {
 			// copy a non reference variable is cheap
 			if (variable->isReference() == false) return *variable;
 			// otherwise do the copy
-			ScriptVariable nonReferenceVariable;
+			Variable nonReferenceVariable;
 			//
 			copyScriptVariable(nonReferenceVariable, *variable);
 			//
@@ -789,11 +789,11 @@ public:
 		 * @param variable variable
 		 * @returns reference variable
 		 */
-		inline static ScriptVariable* createNonReferenceVariablePointer(const ScriptVariable* variable) {
+		inline static Variable* createNonReferenceVariablePointer(const Variable* variable) {
 			// copy a non reference variable is cheap
-			if (variable->isReference() == false) return new ScriptVariable(*variable);
+			if (variable->isReference() == false) return new Variable(*variable);
 			// otherwise do the copy
-			ScriptVariable* nonReferenceVariable = new ScriptVariable();
+			Variable* nonReferenceVariable = new Variable();
 			//
 			copyScriptVariable(*nonReferenceVariable, *variable);
 			//
@@ -804,7 +804,7 @@ public:
 		 * Copy constructor
 		 * @param variable variable to copy
 		 */
-		inline ScriptVariable(const ScriptVariable& variable) {
+		inline Variable(const Variable& variable) {
 			if (variable.isReference() == true) {
 				setReference(variable.ir.reference);
 			} else {
@@ -816,7 +816,7 @@ public:
 		 * Move constructor
 		 * @param variable variable to move from
 		 */
-		inline ScriptVariable(ScriptVariable&& variable):
+		inline Variable(Variable&& variable):
 			typeReferenceConstantBits(exchange(variable.typeReferenceConstantBits, static_cast<int>(MiniScript::TYPE_NULL))),
 			valuePtr(exchange(variable.valuePtr, 0ll)),
 			referenceCounter(exchange(variable.referenceCounter, 1)) {
@@ -830,7 +830,7 @@ public:
 		 * @param variable variable to copy
 		 * @return this variable
 		 */
-		inline ScriptVariable& operator=(const ScriptVariable& variable) {
+		inline Variable& operator=(const Variable& variable) {
 			// set up new variable
 			if (variable.isReference() == true) {
 				// release current reference
@@ -856,7 +856,7 @@ public:
 		 * @param variable variable to move from
 		 * @return this script variable
 		 */
-		inline ScriptVariable& operator=(ScriptVariable&& variable) {
+		inline Variable& operator=(Variable&& variable) {
 			swap(typeReferenceConstantBits, variable.typeReferenceConstantBits);
 			swap(valuePtr, variable.valuePtr);
 			swap(ir, variable.ir);
@@ -868,13 +868,13 @@ public:
 		/**
 		 * Constructor
 		 */
-		inline ScriptVariable() {
+		inline Variable() {
 		}
 
 		/**
 		 * Destructor
 		 */
-		inline ~ScriptVariable() {
+		inline ~Variable() {
 			if (isReference() == true) {
 				ir.reference->releaseReference();
 			}
@@ -888,7 +888,7 @@ public:
 		 * Constructor
 		 * @param value value
 		 */
-		inline ScriptVariable(bool value) {
+		inline Variable(bool value) {
 			setValue(value);
 		}
 
@@ -896,7 +896,7 @@ public:
 		 * Constructor
 		 * @param value value
 		 */
-		inline ScriptVariable(int64_t value) {
+		inline Variable(int64_t value) {
 			setValue(value);
 		}
 
@@ -904,7 +904,7 @@ public:
 		 * Constructor
 		 * @param value value
 		 */
-		inline ScriptVariable(float value) {
+		inline Variable(float value) {
 			setValue(value);
 		}
 
@@ -912,7 +912,7 @@ public:
 		 * Constructor
 		 * @param value value
 		 */
-		inline ScriptVariable(const string& value) {
+		inline Variable(const string& value) {
 			setValue(value);
 		}
 
@@ -920,7 +920,7 @@ public:
 		 * Constructor
 		 * @param value value
 		 */
-		inline ScriptVariable(const vector<ScriptVariable*>& value) {
+		inline Variable(const vector<Variable*>& value) {
 			setValue(value);
 		}
 
@@ -928,22 +928,22 @@ public:
 		 * Constructor
 		 * @param value value
 		 */
-		inline ScriptVariable(const unordered_map<string, ScriptVariable*>& value) {
+		inline Variable(const unordered_map<string, Variable*>& value) {
 			setValue(value);
 		}
 
 		/**
 		 * @return type
 		 */
-		inline ScriptVariableType getType() const {
-			return static_cast<ScriptVariableType>((isReference() == false?typeReferenceConstantBits:ir.reference->typeReferenceConstantBits) & TYPE_BITS_VALUE);
+		inline VariableType getType() const {
+			return static_cast<VariableType>((isReference() == false?typeReferenceConstantBits:ir.reference->typeReferenceConstantBits) & TYPE_BITS_VALUE);
 		}
 
 		/**
 		 * Set type
 		 * @param newType new type
 		 */
-		inline void setType(ScriptVariableType newType) {
+		inline void setType(VariableType newType) {
 			if (getType() == newType) return;
 			switch(getType()) {
 				case TYPE_NULL:
@@ -970,13 +970,13 @@ public:
 					break;
 				case TYPE_ARRAY:
 					for (auto arrayValue: getArrayValueReference()) arrayValue->releaseReference();
-					delete static_cast<vector<ScriptVariable*>*>((void*)getValuePtrReference());
+					delete static_cast<vector<Variable*>*>((void*)getValuePtrReference());
 					delete getInitializerReference();
 					getInitializerReference() = nullptr;
 					break;
 				case TYPE_MAP:
 					for (const auto& [mapEntryName, mapEntryValue]: getMapValueReference()) mapEntryValue->releaseReference();
-					delete static_cast<unordered_map<string, ScriptVariable*>*>((void*)getValuePtrReference());
+					delete static_cast<unordered_map<string, Variable*>*>((void*)getValuePtrReference());
 					delete getInitializerReference();
 					getInitializerReference() = nullptr;
 					break;
@@ -988,11 +988,11 @@ public:
 				default:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
-					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
+					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						_Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
 					}
-					MiniScript::scriptDataTypes[dataTypeIdx]->unsetScriptVariableValue(*this);
+					MiniScript::dataTypes[dataTypeIdx]->unsetScriptVariableValue(*this);
 
 			}
 			this->getValuePtrReference() = 0LL;
@@ -1026,11 +1026,11 @@ public:
 					getValuePtrReference() = (uint64_t)(new vector<uint8_t>());
 					break;
 				case TYPE_ARRAY:
-					getValuePtrReference() = (uint64_t)(new vector<ScriptVariable*>());
+					getValuePtrReference() = (uint64_t)(new vector<Variable*>());
 					getInitializerReference() = new Initializer();
 					break;
 				case TYPE_MAP:
-					getValuePtrReference() = (uint64_t)(new unordered_map<string, ScriptVariable*>());
+					getValuePtrReference() = (uint64_t)(new unordered_map<string, Variable*>());
 					getInitializerReference() = new Initializer();
 					break;
 				case TYPE_SET:
@@ -1044,11 +1044,11 @@ public:
 				default:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
-					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
+					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						_Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
 					}
-					MiniScript::scriptDataTypes[dataTypeIdx]->setScriptVariableValue(*this, nullptr);
+					MiniScript::dataTypes[dataTypeIdx]->setScriptVariableValue(*this, nullptr);
 			}
 		}
 
@@ -1215,7 +1215,7 @@ public:
 		 * @param statement statement
 		 * @return success
 		 */
-		inline bool getByteValue(MiniScript* miniScript, uint8_t& value, const ScriptStatement* statement = nullptr) const {
+		inline bool getByteValue(MiniScript* miniScript, uint8_t& value, const Statement* statement = nullptr) const {
 			int64_t intValue;
 			if (getIntegerValue(intValue, false) == true && value >= 0 && value <= 255) {
 				value = intValue;
@@ -1304,11 +1304,11 @@ public:
 		 * Set array value from given value into variable
 		 * @param value value
 		 */
-		inline void setValue(const vector<ScriptVariable*>& value) {
+		inline void setValue(const vector<Variable*>& value) {
 			setType(TYPE_ARRAY);
 			auto& arrayValue = getArrayValueReference();
 			for (const auto arrayEntry: value) {
-				arrayValue.push_back(new ScriptVariable(*arrayEntry));
+				arrayValue.push_back(new Variable(*arrayEntry));
 			}
 		}
 
@@ -1316,11 +1316,11 @@ public:
 		 * Set map value from given value into variable
 		 * @param value value
 		 */
-		inline void setValue(const unordered_map<string, ScriptVariable*>& value) {
+		inline void setValue(const unordered_map<string, Variable*>& value) {
 			setType(TYPE_MAP);
 			auto& mapValue = getMapValueReference();
 			for (const auto& [mapEntryName, mapEntryValue]: value) {
-				mapValue[mapEntryName] = new ScriptVariable(*mapEntryValue);
+				mapValue[mapEntryName] = new Variable(*mapEntryValue);
 			}
 		}
 
@@ -1340,11 +1340,11 @@ public:
 		inline void setValue(const void* value) {
 			// custom data type
 			auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
-			if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
+			if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 				_Console::println("ScriptVariable::setValue(): unknown custom data type with id " + to_string(dataTypeIdx));
 				return;
 			}
-			MiniScript::scriptDataTypes[dataTypeIdx]->setScriptVariableValue(*this, value);
+			MiniScript::dataTypes[dataTypeIdx]->setScriptVariableValue(*this, value);
 		}
 
 		/**
@@ -1433,7 +1433,7 @@ public:
 		/**
 		 * @return return const pointer to underlying vector or nullptr
 		 */
-		inline const vector<ScriptVariable*>* getArrayPointer() const {
+		inline const vector<Variable*>* getArrayPointer() const {
 			if (getType() != TYPE_ARRAY) return nullptr;
 			auto& arrayValue = getArrayValueReference();
 			return &arrayValue;
@@ -1442,7 +1442,7 @@ public:
 		/**
 		 * @return pointer to underlying vector or nullptr
 		 */
-		inline vector<ScriptVariable*>* getArrayPointer() {
+		inline vector<Variable*>* getArrayPointer() {
 			if (getType() != TYPE_ARRAY) return nullptr;
 			auto& arrayValue = getArrayValueReference();
 			return &arrayValue;
@@ -1462,33 +1462,33 @@ public:
 		 * @param idx index
 		 * @return entry from array with given index
 		 */
-		inline const ScriptVariable getArrayEntry(int64_t idx) const {
-			if (getType() != TYPE_ARRAY) return ScriptVariable();
+		inline const Variable getArrayEntry(int64_t idx) const {
+			if (getType() != TYPE_ARRAY) return Variable();
 			const auto& arrayValue = getArrayValueReference();
 			if (idx >= 0 && idx < arrayValue.size()) return *arrayValue[idx];
-			return ScriptVariable();
+			return Variable();
 		}
 
 		/**
 		 * Set entry in array with given index
 		 * @param idx index
 		 */
-		inline void setArrayEntry(int64_t idx, const ScriptVariable& value) {
+		inline void setArrayEntry(int64_t idx, const Variable& value) {
 			setType(TYPE_ARRAY);
 			if (idx < 0) return;
 			auto& arrayValue = getArrayValueReference();
-			while (arrayValue.size() <= idx) pushArrayEntry(ScriptVariable());
+			while (arrayValue.size() <= idx) pushArrayEntry(Variable());
 			arrayValue[idx]->releaseReference();
-			arrayValue[idx] = new ScriptVariable(value);
+			arrayValue[idx] = new Variable(value);
 		}
 
 		/**
 		 * Push entry to array
 		 * @param value value
 		 */
-		inline void pushArrayEntry(const ScriptVariable& value) {
+		inline void pushArrayEntry(const Variable& value) {
 			setType(TYPE_ARRAY);
-			getArrayValueReference().push_back(new ScriptVariable(value));
+			getArrayValueReference().push_back(new Variable(value));
 		}
 
 		/**
@@ -1518,7 +1518,7 @@ public:
 		/**
 		 * @return return const pointer to underlying unordered_map or nullptr
 		 */
-		inline const unordered_map<string, ScriptVariable*>* getMapPointer() const {
+		inline const unordered_map<string, Variable*>* getMapPointer() const {
 			if (getType() != TYPE_MAP) return nullptr;
 			auto& mapValue = getMapValueReference();
 			return &mapValue;
@@ -1527,7 +1527,7 @@ public:
 		/**
 		 * @return pointer to underlying unordered_map or nullptr
 		 */
-		inline unordered_map<string, ScriptVariable*>* getMapPointer() {
+		inline unordered_map<string, Variable*>* getMapPointer() {
 			if (getType() != TYPE_MAP) return nullptr;
 			auto& mapValue = getMapValueReference();
 			return &mapValue;
@@ -1559,12 +1559,12 @@ public:
 		 * @param key key
 		 * @return map entry from given key
 		 */
-		inline const ScriptVariable getMapEntry(const string& key) const {
-			if (getType() != TYPE_MAP) return ScriptVariable();
+		inline const Variable getMapEntry(const string& key) const {
+			if (getType() != TYPE_MAP) return Variable();
 			const auto& mapValue = getMapValueReference();
 			auto it = mapValue.find(key);
 			if (it != mapValue.end()) return *it->second;
-			return ScriptVariable();
+			return Variable();
 		}
 
 		/**
@@ -1572,11 +1572,11 @@ public:
 		 * @param key key
 		 * @param value value
 		 */
-		inline void setMapEntry(const string& key, const ScriptVariable& value) {
+		inline void setMapEntry(const string& key, const Variable& value) {
 			setType(TYPE_MAP);
 			auto mapValueIt = getMapValueReference().find(key);
 			if (mapValueIt != getMapValueReference().end()) mapValueIt->second->releaseReference();
-			getMapValueReference()[key] = new ScriptVariable(value);
+			getMapValueReference()[key] = new Variable(value);
 		}
 
 		/**
@@ -1611,8 +1611,8 @@ public:
 		 * Get map values
 		 * @return values
 		 */
-		inline const vector<ScriptVariable*> getMapValues() const {
-			vector<ScriptVariable*> values;
+		inline const vector<Variable*> getMapValues() const {
+			vector<Variable*> values;
 			if (getType() != TYPE_MAP) return values;
 			const auto& mapValue = getMapValueReference();
 			for (const auto& [mapEntryKey, mapEntryValue]: mapValue) {
@@ -1723,7 +1723,7 @@ public:
 		 * @param statement statement
 		 * @param initializerStatement initializer statement
 		 */
-		void setFunctionCallStatement(const string& initializerStatement, MiniScript* miniScript, const ScriptStatement& statement);
+		void setFunctionCallStatement(const string& initializerStatement, MiniScript* miniScript, const Statement& statement);
 
 		/**
 		 * Set function assignment from given value into variable
@@ -1740,7 +1740,7 @@ public:
 		 * @param miniScript mini script
 		 * @param statement statement
 		 */
-		inline void setImplicitTypedValue(const string& value, MiniScript* miniScript, const ScriptStatement& statement) {
+		inline void setImplicitTypedValue(const string& value, MiniScript* miniScript, const Statement& statement) {
 			setImplicitTypedValueFromStringView(string_view(value), miniScript, statement);
 		}
 
@@ -1750,7 +1750,7 @@ public:
 		 * @param miniScript mini script
 		 * @param statement statement
 		 */
-		inline void setImplicitTypedValueFromStringView(const string_view& value, MiniScript* miniScript, const ScriptStatement& statement) {
+		inline void setImplicitTypedValueFromStringView(const string_view& value, MiniScript* miniScript, const Statement& statement) {
 			string_view function;
 			//
 			if (value == "null") {
@@ -1799,7 +1799,7 @@ public:
 		 * @param expectedType expected type
 		 * @return given variable type does match expected variable type
 		 */
-		inline static bool isExpectedType(ScriptVariableType type, ScriptVariableType expectedType) {
+		inline static bool isExpectedType(VariableType type, VariableType expectedType) {
 			if (type == expectedType) return true;
 			switch(expectedType) {
 				case TYPE_PSEUDO_NUMBER:
@@ -1823,7 +1823,7 @@ public:
 		 * @param type type
 		 * @return class name of given script variable type
 		 */
-		inline static const string& getClassName(ScriptVariableType type) {
+		inline static const string& getClassName(VariableType type) {
 			switch (type) {
 				case TYPE_NULL: return CLASSNAME_NONE;
 				case TYPE_BOOLEAN: return CLASSNAME_NONE;
@@ -1841,10 +1841,10 @@ public:
 				default:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
-					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
+					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						return CLASSNAME_NONE;
 					}
-					return MiniScript::scriptDataTypes[dataTypeIdx]->getClassName();
+					return MiniScript::dataTypes[dataTypeIdx]->getClassName();
 			}
 		}
 
@@ -1853,7 +1853,7 @@ public:
 		 * @param type type
 		 * @return script variable type as string
 		 */
-		inline static const string getTypeAsString(ScriptVariableType type) {
+		inline static const string getTypeAsString(VariableType type) {
 			switch(type) {
 				case TYPE_NULL: return "Null";
 				case TYPE_BOOLEAN: return "Boolean";
@@ -1871,10 +1871,10 @@ public:
 				default:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
-					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
+					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						return CLASSNAME_NONE;
 					}
-					return MiniScript::scriptDataTypes[dataTypeIdx]->getTypeAsString();
+					return MiniScript::dataTypes[dataTypeIdx]->getTypeAsString();
 			}
 			return string();
 		}
@@ -1892,7 +1892,7 @@ public:
 		 * @param nullable nullable
 		 * @return return value variable type string representation
 		 */
-		inline static const string getReturnTypeAsString(ScriptVariableType type, bool nullable) {
+		inline static const string getReturnTypeAsString(VariableType type, bool nullable) {
 			switch(type) {
 				case TYPE_NULL: return "Null";
 				default: return string(nullable?"?":"") + getTypeAsString(type);
@@ -2089,11 +2089,11 @@ public:
 				default:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
-					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::scriptDataTypes.size()) {
+					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						_Console::println("ScriptVariable::getValueAsString(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return result;
 					}
-					return MiniScript::scriptDataTypes[dataTypeIdx]->getValueAsString(*this);
+					return MiniScript::dataTypes[dataTypeIdx]->getValueAsString(*this);
 
 			}
 			return result;
@@ -2140,7 +2140,7 @@ public:
 	class ScriptMethod {
 	public:
 		struct ArgumentType {
-			ScriptVariableType type;
+			VariableType type;
 			string name;
 			bool optional;
 			bool reference;
@@ -2158,7 +2158,7 @@ public:
 		 */
 		ScriptMethod(
 			const vector<ArgumentType>& argumentTypes = {},
-			ScriptVariableType returnValueType = ScriptVariableType::TYPE_NULL,
+			VariableType returnValueType = VariableType::TYPE_NULL,
 			bool returnValueNullable = false
 		):
 			argumentTypes(argumentTypes),
@@ -2183,7 +2183,7 @@ public:
 		 * @param returnValue return value
 		 * @param statement statement
 		 */
-		virtual void executeMethod(span<ScriptVariable>& argumentValues, ScriptVariable& returnValue, const ScriptStatement& statement) = 0;
+		virtual void executeMethod(span<Variable>& argumentValues, Variable& returnValue, const Statement& statement) = 0;
 
 		/**
 		 * @return arguments
@@ -2212,7 +2212,7 @@ public:
 					if (argumentType.reference == true) {
 						result+= "&";
 					}
-					result+= "$" + argumentType.name + ": " + (argumentType.nullable == true?"?":"") + ScriptVariable::getTypeAsString(argumentType.type);
+					result+= "$" + argumentType.name + ": " + (argumentType.nullable == true?"?":"") + Variable::getTypeAsString(argumentType.type);
 				}
 				argumentIdx++;
 			}
@@ -2228,7 +2228,7 @@ public:
 		/**
 		 * @return return value type
 		 */
-		const ScriptVariableType& getReturnValueType() const {
+		const VariableType& getReturnValueType() const {
 			return returnValueType;
 		}
 
@@ -2256,7 +2256,7 @@ public:
 		/**
 		 * @return operator
 		 */
-		virtual ScriptOperator getOperator() const {
+		virtual Operator getOperator() const {
 			return OPERATOR_NONE;
 		}
 
@@ -2272,28 +2272,28 @@ public:
 
 	private:
 		vector<ArgumentType> argumentTypes;
-		ScriptVariableType returnValueType;
+		VariableType returnValueType;
 		bool returnValueNullable;
 	};
 
-	struct ScriptSyntaxTreeNode {
+	struct SyntaxTreeNode {
 		enum Type {
 			SCRIPTSYNTAXTREENODE_NONE,
 			SCRIPTSYNTAXTREENODE_LITERAL,
 			SCRIPTSYNTAXTREENODE_EXECUTE_METHOD,
 			SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION
 		};
-		ScriptSyntaxTreeNode():
+		SyntaxTreeNode():
 			type(SCRIPTSYNTAXTREENODE_NONE),
-			value(ScriptVariable()),
+			value(Variable()),
 			method(nullptr),
 			arguments({})
 		{}
-		ScriptSyntaxTreeNode(
+		SyntaxTreeNode(
 			Type type,
-			const ScriptVariable& value,
+			const Variable& value,
 			ScriptMethod* method,
-			const vector<ScriptSyntaxTreeNode>& arguments
+			const vector<SyntaxTreeNode>& arguments
 		):
 			type(type),
 			value(value),
@@ -2301,9 +2301,9 @@ public:
 			arguments(arguments)
 		{}
 		Type type;
-		ScriptVariable value;
+		Variable value;
 		ScriptMethod* method;
-		vector<ScriptSyntaxTreeNode> arguments;
+		vector<SyntaxTreeNode> arguments;
 	};
 
 	/**
@@ -2328,13 +2328,13 @@ public:
 			// applies only for on and on-enabled
 			const string& condition,
 			const string& executableCondition,
-			ScriptStatement conditionStatement,
-			ScriptSyntaxTreeNode conditionSyntaxTree,
+			Statement conditionStatement,
+			SyntaxTreeNode conditionSyntaxTree,
 			// applies only for on-enabled
 			const string& name,
 			bool emitCondition,
-			const vector<ScriptStatement>& statements,
-			const vector<ScriptSyntaxTreeNode>& syntaxTree,
+			const vector<Statement>& statements,
+			const vector<SyntaxTreeNode>& syntaxTree,
 			// applies only for functions
 			bool callable,
 			const vector<ScriptArgument>& arguments
@@ -2356,12 +2356,12 @@ public:
 		int line;
 		string condition;
 		string executableCondition;
-		ScriptStatement conditionStatement;
-		ScriptSyntaxTreeNode conditionSyntaxTree;
+		Statement conditionStatement;
+		SyntaxTreeNode conditionSyntaxTree;
 		string name;
 		bool emitCondition;
-		vector<ScriptStatement> statements;
-		vector<ScriptSyntaxTreeNode> syntaxTree;
+		vector<Statement> statements;
+		vector<SyntaxTreeNode> syntaxTree;
 		bool callable;
 		vector<ScriptArgument> arguments;
 	};
@@ -2392,11 +2392,11 @@ public:
 	 * @param arguments arguments
 	 * @return arguments as string
 	 */
-	inline const string getArgumentsAsString(const vector<ScriptSyntaxTreeNode>& arguments) {
+	inline const string getArgumentsAsString(const vector<SyntaxTreeNode>& arguments) {
 		string argumentsString;
 		for (const auto& argument: arguments) {
 			switch (argument.type) {
-				case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
+				case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
 					switch(argument.value.getType()) {
 						case TYPE_NULL:
 							{
@@ -2422,8 +2422,8 @@ public:
 							}
 					}
 					break;
-				case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
-				case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+				case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
+				case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 					argumentsString+= (argumentsString.empty() == false?", ":"") + argument.value.getValueAsString() + string("(") + getArgumentsAsString(argument.arguments) + string(")");
 					break;
 				default:
@@ -2461,12 +2461,12 @@ protected:
 		int64_t timeWaitStarted { TIME_NONE };
 		int64_t timeWaitTime { TIME_NONE };
 		string id;
-		unordered_map<string, ScriptVariable*> variables;
+		unordered_map<string, Variable*> variables;
 		unordered_map<int, int64_t> forTimeStarted;
 		stack<bool> conditionStack;
 		stack<EndType> endTypeStack;
 		// applies for functions only
-		ScriptVariable returnValue;
+		Variable returnValue;
 	};
 
 	bool native;
@@ -2512,7 +2512,7 @@ protected:
 	 * Go to statement goto from given statement
 	 * @param statement statement
 	 */
-	void gotoStatementGoto(const ScriptStatement& statement) {
+	void gotoStatementGoto(const Statement& statement) {
 		getScriptState().gotoStatementIdx = statement.gotoStatementIdx;
 	}
 
@@ -2532,11 +2532,11 @@ protected:
 	}
 
 	/**
-	 * Set native user script functions
-	 * @param nativeScriptFunctions native user script functions
+	 * Set native functions
+	 * @param nativeFunctions native functions
 	 */
-	inline void setNativeScriptFunctions(const unordered_map<string, int>& nativeScriptFunctions) {
-		this->scriptFunctions = nativeScriptFunctions;
+	inline void setNativeFunctions(const unordered_map<string, int>& nativeFunctions) {
+		this->functions = nativeFunctions;
 	}
 
 	/**
@@ -2641,7 +2641,7 @@ protected:
 	 * @param populateThis populate this variable, which applies to inline member function of maps/objects
 	 * @param statement statement
 	 */
-	void createLamdaFunction(ScriptVariable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, bool populateThis, const ScriptStatement& statement);
+	void createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, bool populateThis, const Statement& statement);
 
 	/**
 	 * Initialize array by initializer string
@@ -2650,7 +2650,7 @@ protected:
 	 * @param statement statement
 	 * @return initialized variable
 	 */
-	static const ScriptVariable initializeArray(const string_view& initializerString, MiniScript* miniScript, const ScriptStatement& statement);
+	static const Variable initializeArray(const string_view& initializerString, MiniScript* miniScript, const Statement& statement);
 
 	/**
 	 * Initialize map/set by initializer string
@@ -2659,30 +2659,30 @@ protected:
 	 * @param statement statement
 	 * @return initialized variable
 	 */
-	static const ScriptVariable initializeMapSet(const string_view& initializerString, MiniScript* miniScript, const ScriptStatement& statement);
+	static const Variable initializeMapSet(const string_view& initializerString, MiniScript* miniScript, const Statement& statement);
 
 private:
 	static constexpr bool VERBOSE { false };
 
 	//
 	MINISCRIPT_STATIC_DLL_IMPEXT static const string OPERATOR_CHARS;
-	MINISCRIPT_STATIC_DLL_IMPEXT static vector<ScriptDataType*> scriptDataTypes;
+	MINISCRIPT_STATIC_DLL_IMPEXT static vector<DataType*> dataTypes;
 
 	// TODO: maybe we need a better naming for this
 	// script functions defined by script itself
-	unordered_map<string, int> scriptFunctions;
+	unordered_map<string, int> functions;
 	// script methods defined by using ScriptMethod
-	unordered_map<string, ScriptMethod*> scriptMethods;
-	unordered_map<int, ScriptStateMachineState*> scriptStateMachineStates;
-	unordered_map<uint8_t, ScriptMethod*> scriptOperators;
+	unordered_map<string, ScriptMethod*> methods;
+	unordered_map<int, ScriptStateMachineState*> stateMachineStates;
+	unordered_map<uint8_t, ScriptMethod*> operators;
 	string scriptPathName;
 	string scriptFileName;
 	bool scriptValid { false };
 
 	//
-	struct ScriptStatementOperator {
+	struct StatementOperator {
 		int idx { OPERATORIDX_NONE };
-		ScriptOperator scriptOperator;
+		Operator scriptOperator;
 	};
 
 	/**
@@ -2716,7 +2716,7 @@ private:
 	 * @param accessObjectMember generated access object member statement
 	 * @return success
 	 */
-	bool parseScriptStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const ScriptStatement& statement, string& accessObjectMemberStatement);
+	bool parseScriptStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const Statement& statement, string& accessObjectMemberStatement);
 
 	/**
 	 * Execute a script statement
@@ -2724,7 +2724,7 @@ private:
 	 * @param statement statement
 	 * @return return value as script variable
 	 */
-	ScriptVariable executeScriptStatement(const ScriptSyntaxTreeNode& syntaxTree, const ScriptStatement& statement);
+	Variable executeScriptStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement);
 
 	/**
 	 * Create script statement syntax tree
@@ -2734,7 +2734,7 @@ private:
 	 * @param syntaxTree syntax tree
 	 * @return success
 	 */
-	bool createScriptStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const ScriptStatement& statement, ScriptSyntaxTreeNode& syntaxTree);
+	bool createScriptStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree);
 
 	/**
 	 * Validate callabe
@@ -2747,7 +2747,7 @@ private:
 	 * @param syntaxTreeNode syntax tree node
 	 * @param statement statement
 	 */
-	bool validateCallable(const ScriptSyntaxTreeNode& syntaxTreeNode, const ScriptStatement& statement);
+	bool validateCallable(const SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
 
 	/**
 	 * Validate context functions
@@ -2762,7 +2762,7 @@ private:
 	 * @param functionStack function stack
 	 * @param statement statement
 	 */
-	bool validateContextFunctions(const ScriptSyntaxTreeNode& syntaxTreeNode, vector<string>& functionStack, const ScriptStatement& statement);
+	bool validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode, vector<string>& functionStack, const Statement& statement);
 
 	/**
 	 * Returns if char is operator char
@@ -2779,7 +2779,7 @@ private:
 	 * @param nextOperator next operator
 	 * @param statement statement
 	 */
-	bool getNextStatementOperator(const string& processedStatement, ScriptStatementOperator& nextOperator, const ScriptStatement& statement);
+	bool getNextStatementOperator(const string& processedStatement, StatementOperator& nextOperator, const Statement& statement);
 
 	/**
 	 * Trim argument and remove unnessessary parenthesis
@@ -2811,7 +2811,7 @@ private:
 	 * @param processedStatement statement that is currently being processed
 	 * @param statement statement
 	 */
-	const string doStatementPreProcessing(const string& processedStatement, const ScriptStatement& statement);
+	const string doStatementPreProcessing(const string& processedStatement, const Statement& statement);
 
 	/**
 	 * Returns if statement has a object member access
@@ -2821,7 +2821,7 @@ private:
 	 * @param statement statement
 	 * @return statement has a object member access
 	 */
-	bool getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, const ScriptStatement& statement);
+	bool getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, const Statement& statement);
 
 	/**
 	 * Get access operator left and right indices
@@ -2832,7 +2832,7 @@ private:
 	 * @param statement statement
 	 * @param startIdx startIdx
 	 */
-	bool getVariableAccessOperatorLeftRightIndices(const string& name, const string& callerMethod, string::size_type& accessOperatorLeftIdx, string::size_type& accessOperatorRightIdx, const ScriptStatement* statement = nullptr, int startIdx = 0);
+	bool getVariableAccessOperatorLeftRightIndices(const string& name, const string& callerMethod, string::size_type& accessOperatorLeftIdx, string::size_type& accessOperatorRightIdx, const Statement* statement = nullptr, int startIdx = 0);
 
 	/**
 	 * Evaluate access
@@ -2844,7 +2844,7 @@ private:
 	 * @param key map key
 	 * @param statement statement
 	 */
-	bool evaluateAccess(const string& name, const string& callerMethod, string::size_type& arrayAccessOperatorLeftIdx, string::size_type& arrayAccessOperatorRightIdx, int64_t& arrayIdx, string& key, const ScriptStatement* statement = nullptr);
+	bool evaluateAccess(const string& name, const string& callerMethod, string::size_type& arrayAccessOperatorLeftIdx, string::size_type& arrayAccessOperatorRightIdx, int64_t& arrayIdx, string& key, const Statement* statement = nullptr);
 
 	/**
 	 * Returns pointer of variable with given name or nullptr
@@ -2859,7 +2859,7 @@ private:
 	 * @param global use global context instead of current context
 	 * @return pointer to variable
 	 */
-	ScriptVariable* getVariableIntern(const string& name, const string& callerMethod, ScriptVariable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const ScriptStatement* statement = nullptr, bool expectVariable = true, bool global = false);
+	Variable* getVariableIntern(const string& name, const string& callerMethod, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const Statement* statement = nullptr, bool expectVariable = true, bool global = false);
 
 	/**
 	 * Evaluate given statement without executing preprocessor run
@@ -2869,14 +2869,14 @@ private:
 	 * @param pushOwnScriptState push own script state
 	 * @return success
 	 */
-	bool evaluateInternal(const string& statement, const string& executableStatement, ScriptVariable& returnValue, bool pushOwnScriptState = true);
+	bool evaluateInternal(const string& statement, const string& executableStatement, Variable& returnValue, bool pushOwnScriptState = true);
 
 	/**
 	  * Initialize variable
 	  * @param variable variable
 	  * @return initialized variable
 	  */
-	const ScriptVariable initializeVariable(const ScriptVariable& variable);
+	const Variable initializeVariable(const Variable& variable);
 
 	/**
 	 * Returns if a given string is a function assignment
@@ -3122,7 +3122,7 @@ public:
 	 * Set variable recursively to be a constant
 	 * @param variable variable
 	 */
-	static void setConstant(ScriptVariable& variable);
+	static void setConstant(Variable& variable);
 
 	/**
 	 * @return context
@@ -3157,8 +3157,8 @@ public:
 	/**
 	 * @return data types
 	 */
-	inline static const vector<ScriptDataType*>& getDataTypes() {
-		return scriptDataTypes;
+	inline static const vector<DataType*>& getDataTypes() {
+		return dataTypes;
 	}
 
 	/**
@@ -3166,8 +3166,8 @@ public:
 	 * @param className class name
 	 * @return script data type
 	 */
-	inline static ScriptDataType* getDataTypeByClassName(const string& className) {
-		for (const auto scriptDataType: scriptDataTypes) {
+	inline static DataType* getDataTypeByClassName(const string& className) {
+		for (const auto scriptDataType: dataTypes) {
 			if (scriptDataType->getClassName() == className) return scriptDataType;
 		}
 		return nullptr;
@@ -3177,7 +3177,7 @@ public:
 	 * Register script data type
 	 * @param scriptDataType script data type
 	 */
-	static void registerDataType(ScriptDataType* scriptDataType);
+	static void registerDataType(DataType* scriptDataType);
 
 	// forbid class copy
 	FORBID_CLASS_COPY(MiniScript)
@@ -3278,7 +3278,7 @@ public:
 	 * @return method exists
 	 */
 	inline bool hasMethod(const string& methodName) {
-		return scriptMethods.find(methodName) != scriptMethods.end();
+		return methods.find(methodName) != methods.end();
 	}
 
 	/**
@@ -3287,7 +3287,7 @@ public:
 	 * @return function exists
 	 */
 	inline bool hasFunction(const string& functionName) {
-		return scriptFunctions.find(functionName) != scriptFunctions.end();
+		return functions.find(functionName) != functions.end();
 	}
 
 	/**
@@ -3310,7 +3310,7 @@ public:
 	 * @param statement statement
 	 * @return script statement information
 	 */
-	inline const string getStatementInformation(const ScriptStatement& statement) {
+	inline const string getStatementInformation(const Statement& statement) {
 		return scriptFileName + ":" + to_string(statement.line) +  ": " + statement.statement;
 	}
 
@@ -3333,7 +3333,7 @@ public:
 	 * @param scriptOperator script operator
 	 * @return script operator as string
 	 */
-	inline static string getOperatorAsString(ScriptOperator scriptOperator) {
+	inline static string getOperatorAsString(Operator scriptOperator) {
 		switch(scriptOperator) {
 			case(OPERATOR_NONE): return "NONE";
 			case(OPERATOR_INCREMENT): return "++";
@@ -3368,7 +3368,7 @@ public:
 	 * @param type type
 	 * @return has type
 	 */
-	inline static bool hasType(const span<ScriptVariable>& arguments, ScriptVariableType type) {
+	inline static bool hasType(const span<Variable>& arguments, VariableType type) {
 		for (const auto& argument: arguments) if (argument.getType() == type) return true;
 		return false;
 	}
@@ -3381,7 +3381,7 @@ public:
 	 * @param optional optionalfalse
 	 * @return success
 	 */
-	inline static bool getBooleanValue(const span<ScriptVariable>& arguments, int idx, bool& value, bool optional = false) {
+	inline static bool getBooleanValue(const span<Variable>& arguments, int idx, bool& value, bool optional = false) {
 		if (idx >= arguments.size()) return optional;
 		const auto& argument = arguments[idx];
 		return argument.getBooleanValue(value, optional);
@@ -3395,7 +3395,7 @@ public:
 	 * @param optional optional
 	 * @return success
 	 */
-	inline static bool getIntegerValue(const span<ScriptVariable>& arguments, int idx, int64_t& value, bool optional = false) {
+	inline static bool getIntegerValue(const span<Variable>& arguments, int idx, int64_t& value, bool optional = false) {
 		if (idx >= arguments.size()) return optional;
 		const auto& argument = arguments[idx];
 		return argument.getIntegerValue(value, optional);
@@ -3409,7 +3409,7 @@ public:
 	 * @param optional optional
 	 * @return success
 	 */
-	inline static bool getFloatValue(const span<ScriptVariable>& arguments, int idx, float& value, bool optional = false) {
+	inline static bool getFloatValue(const span<Variable>& arguments, int idx, float& value, bool optional = false) {
 		if (idx >= arguments.size()) return optional;
 		const auto& argument = arguments[idx];
 		return argument.getFloatValue(value, optional);
@@ -3423,7 +3423,7 @@ public:
 	 * @param optional optional
 	 * @return success
 	 */
-	inline static bool getStringValue(const span<ScriptVariable>& arguments, int idx, string& value, bool optional = false) {
+	inline static bool getStringValue(const span<Variable>& arguments, int idx, string& value, bool optional = false) {
 		if (idx >= arguments.size()) return optional;
 		const auto& argument = arguments[idx];
 		return argument.getStringValue(value, optional);
@@ -3472,7 +3472,7 @@ public:
 	 * @param createReference optional flag for creating variable references
 	 * @return variable
 	 */
-	inline const ScriptVariable getVariable(const string& name, const ScriptStatement* statement = nullptr, bool createReference = false) {
+	inline const Variable getVariable(const string& name, const Statement* statement = nullptr, bool createReference = false) {
 		// global accessor
 		string globalVariableName;
 		if (_StringTools::startsWith(name, "$GLOBAL.") == true) {
@@ -3480,28 +3480,28 @@ public:
 		}
 
 		//
-		ScriptVariable* parentVariable = nullptr;
+		Variable* parentVariable = nullptr;
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
 		auto variablePtr = getVariableIntern(globalVariableName.empty() == true?name:globalVariableName, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, true, globalVariableName.empty() == false);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
-			return ScriptVariable(setAccessBool == SETACCESSBOOL_TRUE);
+			return Variable(setAccessBool == SETACCESSBOOL_TRUE);
 		} else
 		// we have a pointer to a ordinary script variable
 		if (variablePtr != nullptr) {
 			// if we return any variable we can safely remove the constness, a reference can of course keep its constness
-			auto variable = createReference == false?*variablePtr:ScriptVariable::createReferenceVariable(variablePtr);
+			auto variable = createReference == false?*variablePtr:Variable::createReferenceVariable(variablePtr);
 			variable.unsetConstant();
 			return variable;
 		} else {
 			// special case for accessing byte array entries at given array index
 			if (parentVariable != nullptr && parentVariable->getType() == TYPE_BYTEARRAY && arrayIdx >= ARRAYIDX_FIRST) {
-				return ScriptVariable(static_cast<int64_t>(parentVariable->getByteArrayEntry(arrayIdx)));
+				return Variable(static_cast<int64_t>(parentVariable->getByteArrayEntry(arrayIdx)));
 			} else {
 				// nothing to return
-				return ScriptVariable();
+				return Variable();
 			}
 		}
 	}
@@ -3513,7 +3513,7 @@ public:
 	 * @param statement optional statement the variable is written in
 	 * @param createReference optional flag for creating variable references
 	 */
-	inline void setVariable(const string& name, const ScriptVariable& variable, const ScriptStatement* statement = nullptr, bool createReference = false) {
+	inline void setVariable(const string& name, const Variable& variable, const Statement* statement = nullptr, bool createReference = false) {
 		// global accessor
 		string globalVariableName;
 		if (_StringTools::startsWith(name, "$GLOBAL.") == true) {
@@ -3521,7 +3521,7 @@ public:
 		}
 
 		//
-		ScriptVariable* parentVariable = nullptr;
+		Variable* parentVariable = nullptr;
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
@@ -3549,7 +3549,7 @@ public:
 			if (parentVariable->getType() == MiniScript::TYPE_MAP) {
 				// check if our parent is not a const variable
 				if (parentVariable->isConstant() == false) {
-					parentVariable->setMapEntry(key, createReference == false?ScriptVariable::createNonReferenceVariable(&variable):ScriptVariable::createReferenceVariable(&variable));
+					parentVariable->setMapEntry(key, createReference == false?Variable::createNonReferenceVariable(&variable):Variable::createReferenceVariable(&variable));
 				} else {
 					_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 				}
@@ -3607,7 +3607,7 @@ public:
 				// check if our parent is not a const variable
 				if (parentVariable->isConstant() == false) {
 					// all checks passed, push variable to array
-					parentVariable->pushArrayEntry(createReference == false?ScriptVariable::createNonReferenceVariablePointer(&variable):ScriptVariable::createReferenceVariablePointer(&variable));
+					parentVariable->pushArrayEntry(createReference == false?Variable::createNonReferenceVariablePointer(&variable):Variable::createReferenceVariablePointer(&variable));
 				} else {
 					_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 				}
@@ -3657,7 +3657,7 @@ public:
 		} else {
 			// if we set a variable in variable scope that did not exist before, we keep things as they are regarding constness
 			scriptState.variables[globalVariableName.empty() == true?name:globalVariableName] =
-				createReference == false?ScriptVariable::createNonReferenceVariablePointer(&variable):ScriptVariable::createReferenceVariablePointer(&variable);
+				createReference == false?Variable::createNonReferenceVariablePointer(&variable):Variable::createReferenceVariablePointer(&variable);
 		}
 	}
 
@@ -3666,7 +3666,7 @@ public:
 	 * @param name name
 	 * @param statement optional statement the variable is unset in
 	 */
-	inline void unsetVariable(const string& name, const ScriptStatement* statement = nullptr) {
+	inline void unsetVariable(const string& name, const Statement* statement = nullptr) {
 		// TODO:
 	}
 
@@ -3722,12 +3722,12 @@ public:
 	 */
 	inline int getFunctionScriptIdx(const string& function) {
 		// lookup function
-		auto scriptFunctionsIt = scriptFunctions.find(function);
-		if (scriptFunctionsIt == scriptFunctions.end()) {
+		auto functionIt = functions.find(function);
+		if (functionIt == functions.end()) {
 			return SCRIPTIDX_NONE;
 		}
 		//
-		auto scriptIdx = scriptFunctionsIt->second;
+		auto scriptIdx = functionIt->second;
 		//
 		return scriptIdx;
 	}
@@ -3739,7 +3739,7 @@ public:
 	 * @param returnValue return value
 	 * @return success
 	 */
-	virtual bool call(int scriptIdx, span<ScriptVariable>& argumentValues, ScriptVariable& returnValue);
+	virtual bool call(int scriptIdx, span<Variable>& argumentValues, Variable& returnValue);
 
 	/**
 	 * Call (script user) function
@@ -3748,15 +3748,15 @@ public:
 	 * @param returnValue return value
 	 * @return success
 	 */
-	inline bool call(const string& function, span<ScriptVariable>& argumentValues, ScriptVariable& returnValue) {
+	inline bool call(const string& function, span<Variable>& argumentValues, Variable& returnValue) {
 		// lookup function
-		auto scriptFunctionsIt = scriptFunctions.find(function);
-		if (scriptFunctionsIt == scriptFunctions.end()) {
+		auto functionIt = functions.find(function);
+		if (functionIt == functions.end()) {
 			// _Console::println("MiniScript::call(): Script user function not found: " + function);
 			return false;
 		}
 		//
-		auto scriptIdx = scriptFunctionsIt->second;
+		auto scriptIdx = functionIt->second;
 		// call it
 		return call(scriptIdx, argumentValues, returnValue);
 	}
@@ -3767,8 +3767,8 @@ public:
 	 * @param returnValue script return value
 	 * @return success
 	 */
-	inline bool evaluate(const string& evaluateStatement, ScriptVariable& returnValue) {
-		ScriptStatement evaluateScriptStatement(
+	inline bool evaluate(const string& evaluateStatement, Variable& returnValue) {
+		Statement evaluateScriptStatement(
 			LINE_NONE,
 			STATEMENTIDX_FIRST,
 			"internal.script.evaluate(" + _StringTools::replace(_StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
@@ -3791,9 +3791,9 @@ public:
 	 * @return script method or nullptr
 	 */
 	inline ScriptMethod* getMethod(const string& methodName) {
-		auto scriptMethodIt = scriptMethods.find(methodName);
-		if (scriptMethodIt != scriptMethods.end()) {
-			return scriptMethodIt->second;
+		auto methodIt = methods.find(methodName);
+		if (methodIt != methods.end()) {
+			return methodIt->second;
 		} else {
 			return nullptr;
 		}

@@ -96,17 +96,17 @@ using miniscript::utilities::SHA256;
 using miniscript::utilities::Time;
 
 const string MiniScript::OPERATOR_CHARS = "+-!~/%<>=&^|";
-vector<MiniScript::ScriptDataType*> MiniScript::scriptDataTypes;
+vector<MiniScript::DataType*> MiniScript::dataTypes;
 const string MiniScript::METHOD_SCRIPTCALL = "script.call";
 const string MiniScript::METHOD_ENABLENAMEDCONDITION = "script.enableNamedCondition";
 const string MiniScript::METHOD_DISABLENAMEDCONDITION = "script.disableNamedCondition";
 
-const string MiniScript::ScriptVariable::CLASSNAME_NONE = "";
-const string MiniScript::ScriptVariable::CLASSNAME_STRING = "string";
-const string MiniScript::ScriptVariable::CLASSNAME_BYTEARRAY = "bytearray";
-const string MiniScript::ScriptVariable::CLASSNAME_ARRAY = "array";
-const string MiniScript::ScriptVariable::CLASSNAME_MAP = "map";
-const string MiniScript::ScriptVariable::CLASSNAME_SET = "set";
+const string MiniScript::Variable::CLASSNAME_NONE = "";
+const string MiniScript::Variable::CLASSNAME_STRING = "string";
+const string MiniScript::Variable::CLASSNAME_BYTEARRAY = "bytearray";
+const string MiniScript::Variable::CLASSNAME_ARRAY = "array";
+const string MiniScript::Variable::CLASSNAME_MAP = "map";
+const string MiniScript::Variable::CLASSNAME_SET = "set";
 
 const vector<string> MiniScript::ScriptMethod::CONTEXTFUNCTIONS_ALL = {};
 
@@ -144,35 +144,35 @@ MiniScript::MiniScript() {
 }
 
 MiniScript::~MiniScript() {
-	for (const auto& [scriptMethodId, scriptMethod]: scriptMethods) delete scriptMethod;
-	for (const auto& [scriptStateMachineStateId, scriptStateMachineState]: scriptStateMachineStates) delete scriptStateMachineState;
+	for (const auto& [methodName, method]: this->methods) delete method;
+	for (const auto& [stateMachineStateId, stateMachineState]: this->stateMachineStates) delete stateMachineState;
 	while (scriptStateStack.empty() == false) popScriptState();
 }
 
 void MiniScript::registerStateMachineState(ScriptStateMachineState* state) {
-	auto scriptStateMachineStateIt = scriptStateMachineStates.find(state->getId());
-	if (scriptStateMachineStateIt != scriptStateMachineStates.end()) {
+	auto stateMachineStateIt = stateMachineStates.find(state->getId());
+	if (stateMachineStateIt != stateMachineStates.end()) {
 		Console::println("MiniScript::registerStateMachineState(): " + scriptFileName + ": state with id + " + to_string(state->getId()) + ", name " + state->getName() + " already registered.");
 		return;
 	}
-	scriptStateMachineStates[state->getId()] = state;
+	stateMachineStates[state->getId()] = state;
 }
 
 void MiniScript::initializeNative() {
 }
 
 void MiniScript::registerMethod(ScriptMethod* scriptMethod) {
-	auto scriptMethodsIt = scriptMethods.find(scriptMethod->getMethodName());
-	if (scriptMethodsIt != scriptMethods.end()) {
+	auto scriptMethodsIt = methods.find(scriptMethod->getMethodName());
+	if (scriptMethodsIt != methods.end()) {
 		Console::println("MiniScript::registerMethod(): " + scriptFileName + ": method with name " + scriptMethod->getMethodName() + " already registered.");
 		return;
 	}
-	scriptMethods[scriptMethod->getMethodName()] = scriptMethod;
+	methods[scriptMethod->getMethodName()] = scriptMethod;
 }
 
-void MiniScript::registerDataType(ScriptDataType* scriptDataType) {
-	scriptDataType->setType(TYPE_PSEUDO_CUSTOM_DATATYPES + scriptDataTypes.size());
-	scriptDataTypes.push_back(scriptDataType);
+void MiniScript::registerDataType(DataType* scriptDataType) {
+	scriptDataType->setType(TYPE_PSEUDO_CUSTOM_DATATYPES + dataTypes.size());
+	dataTypes.push_back(scriptDataType);
 }
 
 void MiniScript::executeScriptLine() {
@@ -203,7 +203,7 @@ void MiniScript::executeScriptLine() {
 	}
 }
 
-bool MiniScript::parseScriptStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const ScriptStatement& statement, string& accessObjectMemberStatement) {
+bool MiniScript::parseScriptStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const Statement& statement, string& accessObjectMemberStatement) {
 	if (VERBOSE == true) Console::println("MiniScript::parseScriptStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
 	string_view objectMemberAccessObject;
 	string_view objectMemberAccessMethod;
@@ -471,26 +471,26 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 	return true;
 }
 
-MiniScript::ScriptVariable MiniScript::executeScriptStatement(const ScriptSyntaxTreeNode& syntaxTree, const ScriptStatement& statement) {
+MiniScript::Variable MiniScript::executeScriptStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement) {
 	if (VERBOSE == true) Console::println("MiniScript::executeScriptStatement(): " + getStatementInformation(statement) + "': " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
 	// return on literal or empty syntaxTree
-	if (syntaxTree.type != ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD &&
-		syntaxTree.type != ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
+	if (syntaxTree.type != SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD &&
+		syntaxTree.type != SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
 		return initializeVariable(syntaxTree.value);
 	}
 	//
-	vector<ScriptVariable> argumentValues;
-	ScriptVariable returnValue;
+	vector<Variable> argumentValues;
+	Variable returnValue;
 	// construct argument values
 	for (const auto& argument: syntaxTree.arguments) {
 		switch (argument.type) {
-			case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
+			case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
 				{
 					argumentValues.push_back(initializeVariable(argument.value));
 					break;
 				}
-			case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
-			case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
+			case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+			case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 				{
 					argumentValues.push_back(executeScriptStatement(argument, statement));
 					break;
@@ -506,9 +506,9 @@ MiniScript::ScriptVariable MiniScript::executeScriptStatement(const ScriptSyntax
 	// try first user functions
 	if (syntaxTree.method == nullptr) {
 		auto method = syntaxTree.value.getValueAsString();
-		auto scriptFunctionsIt = scriptFunctions.find(method);
-		if (scriptFunctionsIt != scriptFunctions.end()) {
-			auto scriptIdx = scriptFunctionsIt->second;
+		auto functionsIt = functions.find(method);
+		if (functionsIt != functions.end()) {
+			auto scriptIdx = functionsIt->second;
 			// call
 			span argumentValuesSpan(argumentValues);
 			call(scriptIdx, argumentValuesSpan, returnValue);
@@ -619,7 +619,7 @@ MiniScript::ScriptVariable MiniScript::executeScriptStatement(const ScriptSyntax
 					Console::println(
 						getStatementInformation(statement) +
 						": method '" + string(syntaxTree.value.getValueAsString()) + "'" +
-						": argument value @ " + to_string(argumentIdx) + ": expected " + ScriptVariable::getTypeAsString(argumentType.type) + ", but got: " + (argumentIdx < argumentValues.size()?argumentValues[argumentIdx].getAsString():"nothing"));
+						": argument value @ " + to_string(argumentIdx) + ": expected " + Variable::getTypeAsString(argumentType.type) + ", but got: " + (argumentIdx < argumentValues.size()?argumentValues[argumentIdx].getAsString():"nothing"));
 				}
 				argumentIdx++;
 			}
@@ -637,11 +637,11 @@ MiniScript::ScriptVariable MiniScript::executeScriptStatement(const ScriptSyntax
 		if (scriptMethod->isReturnValueNullable() == true && returnValue.getType() == TYPE_NULL) {
 			// no op, this is a valid return value
 		} else
-		if (MiniScript::ScriptVariable::isExpectedType(returnValue.getType(), scriptMethod->getReturnValueType()) == false) {
+		if (MiniScript::Variable::isExpectedType(returnValue.getType(), scriptMethod->getReturnValueType()) == false) {
 			Console::println(
 				getStatementInformation(statement) +
 				": method '" + string(syntaxTree.value.getValueAsString()) + "'" +
-				": return value: expected " + ScriptVariable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable()) + ", but got: " + ScriptVariable::getReturnTypeAsString(returnValue.getType(), false));
+				": return value: expected " + Variable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable()) + ", but got: " + Variable::getReturnTypeAsString(returnValue.getType(), false));
 		}
 		//
 		return returnValue;
@@ -650,32 +650,32 @@ MiniScript::ScriptVariable MiniScript::executeScriptStatement(const ScriptSyntax
 	return returnValue;
 }
 
-bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const ScriptStatement& statement, ScriptSyntaxTreeNode& syntaxTree) {
+bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree) {
 	if (VERBOSE == true) Console::println("MiniScript::createScriptStatementSyntaxTree(): " + getStatementInformation(statement) + ": " + string(methodName) + "(" + getArgumentsAsString(arguments) + ")");
 	// method/function
-	auto scriptFunctionIdx = SCRIPTIDX_NONE;
+	auto functionIdx = SCRIPTIDX_NONE;
 	ScriptMethod* scriptMethod = nullptr;
 	// try first user functions
 	{
-		auto scriptFunctionsIt = scriptFunctions.find(string(methodName));
-		if (scriptFunctionsIt != scriptFunctions.end()) {
-			scriptFunctionIdx = scriptFunctionsIt->second;
+		auto scriptFunctionsIt = functions.find(string(methodName));
+		if (scriptFunctionsIt != functions.end()) {
+			functionIdx = scriptFunctionsIt->second;
 		}
 	}
 	// try methods next
 	{
-		auto scriptMethodsIt = scriptMethods.find(string(methodName));
-		if (scriptMethodsIt != scriptMethods.end()) {
+		auto scriptMethodsIt = methods.find(string(methodName));
+		if (scriptMethodsIt != methods.end()) {
 			scriptMethod = scriptMethodsIt->second;
 		}
 	}
 
 	// arguments
 	vector<bool> argumentReferences(0);
-	if (scriptFunctionIdx != SCRIPTIDX_NONE) {
-		argumentReferences.resize(scripts[scriptFunctionIdx].arguments.size());
+	if (functionIdx != SCRIPTIDX_NONE) {
+		argumentReferences.resize(scripts[functionIdx].arguments.size());
 		auto argumentIdx = 0;
-		for (const auto& argument: scripts[scriptFunctionIdx].arguments) {
+		for (const auto& argument: scripts[functionIdx].arguments) {
 			argumentReferences[argumentIdx++] = argument.reference;
 		}
 	} else
@@ -694,9 +694,9 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 		vector<string_view> lamdaFunctionArguments;
 		string_view lamdaFunctionScriptCode;
 		if (viewIsLamdaFunction(argument, lamdaFunctionArguments, lamdaFunctionScriptCode) == true) {
-			ScriptVariable variable;
+			Variable variable;
 			createLamdaFunction(variable, lamdaFunctionArguments, lamdaFunctionScriptCode, false, statement);
-			ScriptSyntaxTreeNode subSyntaxTree(ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {});
+			SyntaxTreeNode subSyntaxTree(SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {});
 			syntaxTree.arguments.push_back(subSyntaxTree);
 		} else
 		if (getObjectMemberAccess(argument, accessObjectMemberObject, accessObjectMemberMethod, statement) == true) {
@@ -705,7 +705,7 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 			vector<string_view> subArguments;
 			string accessObjectMemberStatement;
 			if (parseScriptStatement(argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
-				ScriptSyntaxTreeNode subSyntaxTree;
+				SyntaxTreeNode subSyntaxTree;
 				if (createScriptStatementSyntaxTree(subMethodName, subArguments, statement, subSyntaxTree) == false) {
 					return false;
 				}
@@ -717,15 +717,15 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 		// plain variable
 		if (viewIsVariableAccess(argument) == true) {
 			//
-			ScriptVariable value;
+			Variable value;
 			value.setValue(string(argument));
 
 			// look up getVariable method
 			string methodName = argumentIdx >= argumentReferences.size() || argumentReferences[argumentIdx] == false?"getVariable":"getVariableReference";
 			ScriptMethod* method = nullptr;
 			{
-				auto scriptMethodsIt = scriptMethods.find(methodName);
-				if (scriptMethodsIt != scriptMethods.end()) {
+				auto scriptMethodsIt = methods.find(methodName);
+				if (scriptMethodsIt != methods.end()) {
 					method = scriptMethodsIt->second;
 				} else {
 					Console::println(getStatementInformation(statement) + ": unknown method '" + methodName + "'");
@@ -737,13 +737,13 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 			}
 
 			syntaxTree.arguments.emplace_back(
-				ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD,
-				MiniScript::ScriptVariable(methodName),
+				SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD,
+				MiniScript::Variable(methodName),
 				method,
-				initializer_list<ScriptSyntaxTreeNode>
+				initializer_list<SyntaxTreeNode>
 					{
 						{
-							ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
+							SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
 							value,
 							nullptr,
 							{}
@@ -768,7 +768,7 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 			vector<string_view> subArguments;
 			string accessObjectMemberStatement;
 			if (parseScriptStatement(argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
-				ScriptSyntaxTreeNode subSyntaxTree;
+				SyntaxTreeNode subSyntaxTree;
 				if (createScriptStatementSyntaxTree(subMethodName, subArguments, statement, subSyntaxTree) == false) {
 					return false;
 				}
@@ -779,31 +779,31 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 			}
 		} else {
 			// string literal
-			ScriptVariable argumentValue;
+			Variable argumentValue;
 			if ((StringTools::viewStartsWith(argument, "\"") == true &&
 				StringTools::viewEndsWith(argument, "\"") == true) ||
 				(StringTools::viewStartsWith(argument, "'") == true &&
 				StringTools::viewEndsWith(argument, "'") == true)) {
 				//
-				ScriptVariable value;
+				Variable value;
 				value.setValue(string(StringTools::viewSubstring(argument, 1, argument.size() - 1)));
 				//
 				syntaxTree.arguments.emplace_back(
-					ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
+					SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
 					value,
 					nullptr,
-					initializer_list<ScriptSyntaxTreeNode>{}
+					initializer_list<SyntaxTreeNode>{}
 				);
 			} else {
 				// implicitely literal
-				ScriptVariable value;
+				Variable value;
 				value.setImplicitTypedValueFromStringView(argument, this, statement);
 				//
 				syntaxTree.arguments.emplace_back(
-					ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
+					SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
 					value,
 					nullptr,
-					initializer_list<ScriptSyntaxTreeNode>{}
+					initializer_list<SyntaxTreeNode>{}
 				);
 			}
 		}
@@ -811,15 +811,15 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 		argumentIdx++;
 	}
 	// try first user functions
-	if (scriptFunctionIdx != SCRIPTIDX_NONE) {
-		syntaxTree.type = ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION;
+	if (functionIdx != SCRIPTIDX_NONE) {
+		syntaxTree.type = SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION;
 		syntaxTree.value = string(methodName);
 		//
 		return true;
 	} else
 	// try methods next
 	if (scriptMethod != nullptr) {
-		syntaxTree.type = ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD;
+		syntaxTree.type = SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD;
 		syntaxTree.value = string(methodName);
 		syntaxTree.method = scriptMethod;
 		//
@@ -857,14 +857,14 @@ bool MiniScript::validateCallable(const string& function) {
 	return true;
 }
 
-bool MiniScript::validateCallable(const ScriptSyntaxTreeNode& syntaxTreeNode, const ScriptStatement& statement) {
+bool MiniScript::validateCallable(const SyntaxTreeNode& syntaxTreeNode, const Statement& statement) {
 	//
 	switch (syntaxTreeNode.type) {
-		case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
 			{
 				break;
 			}
-		case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 			{
 				const auto& contextFunctions = syntaxTreeNode.method->getContextFunctions();
 				if (contextFunctions.empty() == false) {
@@ -886,7 +886,7 @@ bool MiniScript::validateCallable(const ScriptSyntaxTreeNode& syntaxTreeNode, co
 				}
 			}
 			break;
-		case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 			{
 				for (const auto& argument: syntaxTreeNode.arguments) {
 					if (validateCallable(argument, statement) == false) return false;
@@ -929,14 +929,14 @@ bool MiniScript::validateContextFunctions(const string& function, vector<string>
 	return true;
 }
 
-bool MiniScript::validateContextFunctions(const ScriptSyntaxTreeNode& syntaxTreeNode, vector<string>& functionStack, const ScriptStatement& statement) {
+bool MiniScript::validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode, vector<string>& functionStack, const Statement& statement) {
 	//
 	switch (syntaxTreeNode.type) {
-		case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
 			{
 				break;
 			}
-		case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 			{
 				const auto& contextFunctions = syntaxTreeNode.method->getContextFunctions();
 				if (contextFunctions.empty() == false) {
@@ -980,7 +980,7 @@ bool MiniScript::validateContextFunctions(const ScriptSyntaxTreeNode& syntaxTree
 				}
 			}
 			break;
-		case ScriptSyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 			{
 				for (const auto& argument: syntaxTreeNode.arguments) {
 					if (validateContextFunctions(argument, functionStack, statement) == false) return false;
@@ -1030,8 +1030,8 @@ void MiniScript::executeStateMachine() {
 				if (scriptState.lastStateMachineState == nullptr || scriptState.state != scriptState.lastState) {
 					scriptState.lastState = scriptState.state;
 					scriptState.lastStateMachineState = nullptr;
-					auto scriptStateMachineStateIt = scriptStateMachineStates.find(scriptState.state);
-					if (scriptStateMachineStateIt != scriptStateMachineStates.end()) {
+					auto scriptStateMachineStateIt = stateMachineStates.find(scriptState.state);
+					if (scriptStateMachineStateIt != stateMachineStates.end()) {
 						scriptState.lastStateMachineState = scriptStateMachineStateIt->second;
 					}
 				}
@@ -1443,7 +1443,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					}
 				}
 				auto trimmedStatement = StringTools::trim(statement);
-				ScriptStatement scriptStatement(
+				Statement scriptStatement(
 					currentLineIdx,
 					STATEMENTIDX_FIRST,
 					"internal.script.evaluate(" + StringTools::replace(StringTools::replace(trimmedStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
@@ -1456,7 +1456,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				statementIdx = STATEMENTIDX_FIRST;
 				// add to user functions
 				if (scriptType == Script::SCRIPTTYPE_FUNCTION) {
-					scriptFunctions[conditionOrName] = scripts.size();
+					functions[conditionOrName] = scripts.size();
 				}
 
 				// push to scripts
@@ -1465,12 +1465,12 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					currentLineIdx,
 					conditionOrName,
 					conditionOrNameExecutable,
-					ScriptStatement(currentLineIdx, statementIdx, conditionOrName, conditionOrNameExecutable, STATEMENTIDX_NONE),
-					ScriptSyntaxTreeNode(),
+					Statement(currentLineIdx, statementIdx, conditionOrName, conditionOrNameExecutable, STATEMENTIDX_NONE),
+					SyntaxTreeNode(),
 					name,
 					emitCondition,
-					initializer_list<ScriptStatement>{},
-					initializer_list<ScriptSyntaxTreeNode>{},
+					initializer_list<Statement>{},
+					initializer_list<SyntaxTreeNode>{},
 					callable,
 					arguments
 				);
@@ -1568,7 +1568,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				}
 			} else
 			if (StringTools::regexMatch(statementCode, "^elseif[\\s]*\\(.*\\)$") == true) {
-				ScriptStatement scriptStatement(
+				Statement scriptStatement(
 					currentLineIdx,
 					STATEMENTIDX_FIRST,
 					StringTools::replace(StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
@@ -1611,7 +1611,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					scriptValid = false;
 				}
 			} else {
-				ScriptStatement scriptStatement(
+				Statement scriptStatement(
 					currentLineIdx,
 					STATEMENTIDX_FIRST,
 					StringTools::replace(StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
@@ -1700,10 +1700,10 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	scriptFileName = fileName;
 
 	//
-	for (const auto& [scriptMethodId, scriptMethod]: scriptMethods) delete scriptMethod;
-	for (const auto& [scriptStateMachineStateId, scriptStateMachineState]: scriptStateMachineStates) delete scriptStateMachineState;
-	scriptMethods.clear();
-	scriptStateMachineStates.clear();
+	for (const auto& [scriptMethodId, scriptMethod]: methods) delete scriptMethod;
+	for (const auto& [scriptStateMachineStateId, scriptStateMachineState]: stateMachineStates) delete scriptStateMachineState;
+	methods.clear();
+	stateMachineStates.clear();
 	while (scriptStateStack.empty() == false) popScriptState();
 
 	// shutdown script state
@@ -1845,7 +1845,7 @@ int MiniScript::determineScriptIdxToStart() {
 			// emit condition
 		} else {
 			auto conditionMet = true;
-			auto returnValue = ScriptVariable();
+			auto returnValue = Variable();
 			if (evaluateInternal(script.condition, script.executableCondition, returnValue) == true) {
 				auto returnValueBoolValue = false;
 				if (returnValue.getBooleanValue(returnValueBoolValue, false) == false) {
@@ -1886,7 +1886,7 @@ int MiniScript::determineNamedScriptIdxToStart() {
 				// no op
 			} else {
 				auto conditionMet = true;
-				ScriptVariable returnValue;
+				Variable returnValue;
 				if (evaluateInternal(script.condition, script.executableCondition, returnValue) == true) {
 					auto returnValueBoolValue = false;
 					if (returnValue.getBooleanValue(returnValueBoolValue, false) == false) {
@@ -1916,7 +1916,7 @@ int MiniScript::determineNamedScriptIdxToStart() {
 	return SCRIPTIDX_NONE;
 }
 
-bool MiniScript::getNextStatementOperator(const string& processedStatement, MiniScript::ScriptStatementOperator& nextOperator, const ScriptStatement& statement) {
+bool MiniScript::getNextStatementOperator(const string& processedStatement, MiniScript::StatementOperator& nextOperator, const Statement& statement) {
 	bool lamdaFunctionDeclaration = false;
 	auto curlyBracketCount = 0;
 	auto bracketCount = 0;
@@ -1951,7 +1951,7 @@ bool MiniScript::getNextStatementOperator(const string& processedStatement, Mini
 			} else
 			if (curlyBracketCount == 0 && lamdaFunctionDeclaration == false) {
 				for (int j = OPERATOR_NONE + 1; j < OPERATOR_MAX; j++) {
-					auto priorizedOperator = static_cast<ScriptOperator>(j);
+					auto priorizedOperator = static_cast<Operator>(j);
 					string operatorCandidate;
 					auto operatorString = getOperatorAsString(priorizedOperator);
 					if (operatorString.size() == 1) operatorCandidate+= processedStatement[i];
@@ -2178,13 +2178,13 @@ inline const string MiniScript::findLeftArgument(const string& statement, int po
 	return trimArgument(argument);
 }
 
-const string MiniScript::doStatementPreProcessing(const string& processedStatement, const ScriptStatement& statement) {
+const string MiniScript::doStatementPreProcessing(const string& processedStatement, const Statement& statement) {
 	auto preprocessedStatement = processedStatement;
 	//
-	ScriptStatementOperator nextOperators;
+	StatementOperator nextOperators;
 	while (getNextStatementOperator(preprocessedStatement, nextOperators, statement) == true) {
-		auto methodIt = scriptOperators.find(nextOperators.scriptOperator);
-		if (methodIt == scriptOperators.end()) {
+		auto methodIt = operators.find(nextOperators.scriptOperator);
+		if (methodIt == operators.end()) {
 			Console::println(getStatementInformation(statement) + ": " + processedStatement + ": operator found in: '" + preprocessedStatement + "'@" + to_string(nextOperators.idx) + ": no method found");
 			// TODO: error handling
 			return preprocessedStatement;
@@ -2229,13 +2229,13 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 				method->getMethodName() + "(" + leftArgument + ", " + rightArgument + ")" +
 				StringTools::substring(preprocessedStatement, nextOperators.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size());
 		}
-		nextOperators = ScriptStatementOperator();
+		nextOperators = StatementOperator();
 	}
 	//
 	return preprocessedStatement;
 }
 
-bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, const ScriptStatement& statement) {
+bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, const Statement& statement) {
 	// TODO: "xxx"->toUpperString()
 	// Console::println("oma: " + string(executableStatement));
 	//
@@ -2308,7 +2308,7 @@ bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, s
 	return objectMemberAccess;
 }
 
-bool MiniScript::call(int scriptIdx, span<ScriptVariable>& argumentValues, ScriptVariable& returnValue) {
+bool MiniScript::call(int scriptIdx, span<Variable>& argumentValues, Variable& returnValue) {
 	if (scriptIdx < 0 || scriptIdx >= scripts.size()) {
 		Console::println("MiniScript::call(): invalid script index: " + to_string(scriptIdx));
 		return false;
@@ -2356,9 +2356,9 @@ bool MiniScript::call(int scriptIdx, span<ScriptVariable>& argumentValues, Scrip
 
 const vector<MiniScript::ScriptMethod*> MiniScript::getMethods() {
 	vector<ScriptMethod*> methods;
-	for (const auto& [scriptMethodName, scriptMethod]: scriptMethods) {
-		if (scriptMethod->isPrivate() == true) continue;
-		methods.push_back(scriptMethod);
+	for (const auto& [methodName, method]: this->methods) {
+		if (method->isPrivate() == true) continue;
+		methods.push_back(method);
 	}
 	//
 	struct {
@@ -2414,7 +2414,7 @@ const vector<MiniScript::ScriptMethod*> MiniScript::getMethods() {
 
 const vector<MiniScript::ScriptMethod*> MiniScript::getOperatorMethods() {
 	vector<ScriptMethod*> methods;
-	for (const auto& [scriptOperatorId, scriptMethod]: scriptOperators) {
+	for (const auto& [scriptOperatorId, scriptMethod]: operators) {
 		methods.push_back(scriptMethod);
 	}
 	return methods;
@@ -2471,7 +2471,7 @@ const string MiniScript::getInformation() {
 	result+="State Machine States:\n";
 	{
 		vector<string> states;
-		for (const auto& [scriptStateMachineStateId, scriptStateMachineState]: scriptStateMachineStates) {
+		for (const auto& [scriptStateMachineStateId, scriptStateMachineState]: stateMachineStates) {
 			string state;
 			state = scriptStateMachineState->getName() + "(" + to_string(scriptStateMachineState->getId()) + ")";
 			states.push_back(state);
@@ -2487,15 +2487,15 @@ const string MiniScript::getInformation() {
 		result+= "Methods:\n";
 		{
 			vector<string> methods;
-			for (const auto& [scriptMethodName, scriptMethod]: scriptMethods) {
-				if (scriptMethod->isPrivate() == true) continue;
-				string method;
-				method+= scriptMethod->getMethodName();
-				method+= "(";
-				method+= scriptMethod->getArgumentsInformation();
-				method+= "): ";
-				method+= ScriptVariable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
-				methods.push_back(method);
+			for (const auto& [methodName, method]: this->methods) {
+				if (method->isPrivate() == true) continue;
+				string methodDescription;
+				methodDescription+= method->getMethodName();
+				methodDescription+= "(";
+				methodDescription+= method->getArgumentsInformation();
+				methodDescription+= "): ";
+				methodDescription+= Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable());
+				methods.push_back(methodDescription);
 			}
 			sort(methods.begin(), methods.end());
 			for (const auto& method: methods) result+= method + "\n";
@@ -2506,15 +2506,15 @@ const string MiniScript::getInformation() {
 		result+= "Operators:\n";
 		{
 			vector<string> operators;
-			for (const auto& [scriptOperatorId, scriptMethod]: scriptOperators) {
+			for (const auto& [operatorId, method]: this->operators) {
 				string operatorString;
-				operatorString+= getOperatorAsString(scriptMethod->getOperator());
+				operatorString+= getOperatorAsString(method->getOperator());
 				operatorString+= " --> ";
-				operatorString+= scriptMethod->getMethodName();
+				operatorString+= method->getMethodName();
 				operatorString+= "(";
-				operatorString+= scriptMethod->getArgumentsInformation();
+				operatorString+= method->getArgumentsInformation();
 				operatorString+= "): ";
-				operatorString+= ScriptVariable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
+				operatorString+= Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable());
 				operators.push_back(operatorString);
 			}
 			sort(operators.begin(), operators.end());
@@ -2626,8 +2626,8 @@ void MiniScript::registerStateMachineStates() {
 
 void MiniScript::registerMethods() {
 	// unregister old registered methods
-	for (const auto& [scriptMethodId, scriptMethod]: scriptMethods) delete scriptMethod;
-	scriptMethods.clear();
+	for (const auto& [scriptMethodId, scriptMethod]: methods) delete scriptMethod;
+	methods.clear();
 	// script intern base methods
 	{
 		//
@@ -2638,7 +2638,7 @@ void MiniScript::registerMethods() {
 			ScriptMethodInternalScriptEvaluate(MiniScript* miniScript):
 				ScriptMethod(
 					{
-						{ .type = ScriptVariableType::TYPE_PSEUDO_MIXED, .name = "statement", .optional = false, .reference = false, .nullable = false }
+						{ .type = VariableType::TYPE_PSEUDO_MIXED, .name = "statement", .optional = false, .reference = false, .nullable = false }
 					},
 					TYPE_PSEUDO_MIXED
 				),
@@ -2646,7 +2646,7 @@ void MiniScript::registerMethods() {
 			const string getMethodName() override {
 				return "internal.script.evaluate";
 			}
-			void executeMethod(span<ScriptVariable>& argumentValues, ScriptVariable& returnValue, const ScriptStatement& statement) override {
+			void executeMethod(span<Variable>& argumentValues, Variable& returnValue, const Statement& statement) override {
 				if (argumentValues.size() != 1) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -2670,9 +2670,9 @@ void MiniScript::registerMethods() {
 			ScriptMethodInternalEvaluateMemberAccess(MiniScript* miniScript):
 				ScriptMethod(
 					{
-						{ .type = ScriptVariableType::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = true },
-						{ .type = ScriptVariableType::TYPE_PSEUDO_MIXED, .name = "this", .optional = false, .reference = false, .nullable = true },
-						{ .type = ScriptVariableType::TYPE_STRING, .name = "member", .optional = false, .reference = false, .nullable = false }
+						{ .type = VariableType::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = true },
+						{ .type = VariableType::TYPE_PSEUDO_MIXED, .name = "this", .optional = false, .reference = false, .nullable = true },
+						{ .type = VariableType::TYPE_STRING, .name = "member", .optional = false, .reference = false, .nullable = false }
 					},
 					TYPE_PSEUDO_MIXED,
 					true
@@ -2681,7 +2681,7 @@ void MiniScript::registerMethods() {
 			const string getMethodName() override {
 				return "internal.script.evaluateMemberAccess";
 			}
-			void executeMethod(span<ScriptVariable>& argumentValues, ScriptVariable& returnValue, const ScriptStatement& statement) override {
+			void executeMethod(span<Variable>& argumentValues, Variable& returnValue, const Statement& statement) override {
 				// Current layout:
 				//	0: variable name of object, 1: variable content of object
 				//	2: object method to call
@@ -2729,7 +2729,7 @@ void MiniScript::registerMethods() {
 						}
 						if (method != nullptr || functionIdx != MiniScript::SCRIPTIDX_NONE) {
 							// create method call arguments
-							vector<ScriptVariable> callArgumentValues(1 + (argumentValues.size() - 3) / 2);
+							vector<Variable> callArgumentValues(1 + (argumentValues.size() - 3) / 2);
 							//	this
 							callArgumentValues[0] = move(argumentValues[1]);
 							//	additional method call arguments
@@ -2844,22 +2844,22 @@ void MiniScript::registerMethods() {
 	XMLMethods::registerMethods(this);
 
 	//
-	for (const auto scriptDataType: scriptDataTypes) {
+	for (const auto scriptDataType: dataTypes) {
 		if (scriptDataType->isMathDataType() == true) miniScriptMath->registerDataType(scriptDataType);
 		scriptDataType->registerMethods(this);
 	}
 
 	// determine operators
-	for (const auto& [scriptMethodName, scriptMethod]: scriptMethods) {
+	for (const auto& [scriptMethodName, scriptMethod]: methods) {
 		auto methodOperator = scriptMethod->getOperator();
 		if (methodOperator != OPERATOR_NONE) {
 			auto methodOperatorString = getOperatorAsString(methodOperator);
-			auto scriptOperatorIt = scriptOperators.find(static_cast<uint8_t>(methodOperator));
-			if (scriptOperatorIt != scriptOperators.end()) {
+			auto scriptOperatorIt = operators.find(static_cast<uint8_t>(methodOperator));
+			if (scriptOperatorIt != operators.end()) {
 				Console::println("MiniScript::registerMethods(): operator '" + methodOperatorString + "' already registered for method " + scriptMethod->getMethodName() + "");
 				continue;
 			}
-			scriptOperators[static_cast<uint8_t>(methodOperator)] = scriptMethod;
+			operators[static_cast<uint8_t>(methodOperator)] = scriptMethod;
 		}
 	}
 }
@@ -2868,7 +2868,7 @@ void MiniScript::registerVariables() {
 	for (const auto& [variableName, variable]: getRootScriptState().variables) delete variable;
 }
 
-void MiniScript::createLamdaFunction(ScriptVariable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, bool populateThis, const ScriptStatement& statement) {
+void MiniScript::createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, bool populateThis, const Statement& statement) {
 	// function declaration
 	auto functionName = string() + "lamda_function_" + to_string(inlineFunctionIdx++);
 	auto inlineFunctionScriptCode = "function: " + functionName + "(";
@@ -2902,8 +2902,8 @@ void MiniScript::createLamdaFunction(ScriptVariable& variable, const vector<stri
 	variable.setFunctionAssignment(functionName);
 }
 
-const MiniScript::ScriptVariable MiniScript::initializeArray(const string_view& initializerString, MiniScript* miniScript, const ScriptStatement& statement) {
-	ScriptVariable variable;
+const MiniScript::Variable MiniScript::initializeArray(const string_view& initializerString, MiniScript* miniScript, const Statement& statement) {
+	Variable variable;
 	variable.setType(TYPE_ARRAY);
 	//
 	auto bracketCount = 0;
@@ -2936,7 +2936,7 @@ const MiniScript::ScriptVariable MiniScript::initializeArray(const string_view& 
 			if (arrayValueLength > 0) {
 				auto arrayValueStringView = StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 				if (arrayValueStringView.empty() == false) {
-					ScriptVariable arrayValue;
+					Variable arrayValue;
 					arrayValue.setImplicitTypedValueFromStringView(arrayValueStringView, miniScript, statement);
 					variable.pushArrayEntry(arrayValue);
 				}
@@ -3048,14 +3048,14 @@ const MiniScript::ScriptVariable MiniScript::initializeArray(const string_view& 
 		lc = c;
 	}
 	//
-	auto initalizer = make_unique<MiniScript::ScriptVariable::Initializer>(string(initializerString), statement, nullptr);
+	auto initalizer = make_unique<MiniScript::Variable::Initializer>(string(initializerString), statement, nullptr);
 	variable.ir.initializer->copy(initalizer.get());
 	//
 	return variable;
 }
 
-const MiniScript::ScriptVariable MiniScript::initializeMapSet(const string_view& initializerString, MiniScript* miniScript, const ScriptStatement& statement) {
-	ScriptVariable variable;
+const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initializerString, MiniScript* miniScript, const Statement& statement) {
+	Variable variable;
 	variable.setType(TYPE_MAP);
 	//
 	auto bracketCount = 0;
@@ -3127,7 +3127,7 @@ const MiniScript::ScriptVariable MiniScript::initializeMapSet(const string_view&
 				if (mapValueLength > 0) {
 					auto mapValueStringView = StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 					if (mapValueStringView.empty() == false) {
-						ScriptVariable mapValue;
+						Variable mapValue;
 						mapValue.setImplicitTypedValueFromStringView(mapValueStringView, miniScript, statement);
 						//
 						variable.setMapEntry(string(mapKey), mapValue);
@@ -3137,7 +3137,7 @@ const MiniScript::ScriptVariable MiniScript::initializeMapSet(const string_view&
 				}
 			} else {
 				//
-				variable.setMapEntry(string(mapKey), ScriptVariable());
+				variable.setMapEntry(string(mapKey), Variable());
 			}
 		}
 		//
@@ -3289,7 +3289,7 @@ const MiniScript::ScriptVariable MiniScript::initializeMapSet(const string_view&
 									vector<string_view> arguments;
 									string_view functionScriptCodeStringView;
 									if (viewIsLamdaFunction(mapValueStringView, arguments, functionScriptCodeStringView) == true) {
-										ScriptVariable mapValue;
+										Variable mapValue;
 										miniScript->createLamdaFunction(mapValue, arguments, functionScriptCodeStringView, true, statement);
 										variable.setMapEntry(string(mapKey), mapValue);
 									} else {
@@ -3380,7 +3380,7 @@ const MiniScript::ScriptVariable MiniScript::initializeMapSet(const string_view&
 	}
 	// convert to set if no values given
 	if (hasValues == false) {
-		ScriptVariable setVariable;
+		Variable setVariable;
 		setVariable.setType(TYPE_SET);
 		const auto& mapValueReference = variable.getMapValueReference();
 		for (const auto& [mapVariableKey, mapVariableValue]: mapValueReference) {
@@ -3389,17 +3389,17 @@ const MiniScript::ScriptVariable MiniScript::initializeMapSet(const string_view&
 		variable = setVariable;
 	}
 	//
-	auto initalizer = make_unique<MiniScript::ScriptVariable::Initializer>(string(initializerString), statement, nullptr);
+	auto initalizer = make_unique<MiniScript::Variable::Initializer>(string(initializerString), statement, nullptr);
 	variable.ir.initializer->copy(initalizer.get());
 	//
 	return variable;
 }
 
-void MiniScript::ScriptVariable::setFunctionCallStatement(const string& initializerStatement, MiniScript* miniScript, const ScriptStatement& statement) {
+void MiniScript::Variable::setFunctionCallStatement(const string& initializerStatement, MiniScript* miniScript, const Statement& statement) {
 	setType(TYPE_FUNCTION_CALL);
 	getStringValueReference().setValue(initializerStatement);
 	//
-	ScriptStatement initializerScriptStatement(
+	Statement initializerScriptStatement(
 		statement.line,
 		statement.statementIdx,
 		initializerStatement,
@@ -3410,7 +3410,7 @@ void MiniScript::ScriptVariable::setFunctionCallStatement(const string& initiali
 	string_view methodName;
 	vector<string_view> arguments;
 	string accessObjectMemberStatement;
-	ScriptSyntaxTreeNode* evaluateSyntaxTree = new ScriptSyntaxTreeNode();
+	SyntaxTreeNode* evaluateSyntaxTree = new SyntaxTreeNode();
 	if (miniScript->parseScriptStatement(initializerStatement, methodName, arguments, initializerScriptStatement, accessObjectMemberStatement) == false) {
 		//
 	} else
@@ -3421,7 +3421,7 @@ void MiniScript::ScriptVariable::setFunctionCallStatement(const string& initiali
 	}
 }
 
-inline MiniScript::ScriptVariable* MiniScript::getVariableIntern(const string& name, const string& callerMethod, ScriptVariable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const ScriptStatement* statement, bool expectVariable, bool global) {
+inline MiniScript::Variable* MiniScript::getVariableIntern(const string& name, const string& callerMethod, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const Statement* statement, bool expectVariable, bool global) {
 	//
 	if (isVariableAccess(name) == false) {
 		if (statement != nullptr) {
@@ -3449,7 +3449,7 @@ inline MiniScript::ScriptVariable* MiniScript::getVariableIntern(const string& n
 		return nullptr;
 	}
 	// retrieve variable from function script state
-	ScriptVariable* variablePtr = nullptr;
+	Variable* variablePtr = nullptr;
 	if (global == false) {
 		const auto& scriptState = getScriptState();
 		auto scriptVariableIt = scriptState.variables.find(extractedVariableName.empty() == false?extractedVariableName:name);
@@ -3625,8 +3625,8 @@ inline MiniScript::ScriptVariable* MiniScript::getVariableIntern(const string& n
 	}
 }
 
-inline bool MiniScript::evaluateInternal(const string& statement, const string& executableStatement, ScriptVariable& returnValue, bool pushOwnScriptState) {
-	ScriptStatement evaluateStatement(
+inline bool MiniScript::evaluateInternal(const string& statement, const string& executableStatement, Variable& returnValue, bool pushOwnScriptState) {
+	Statement evaluateStatement(
 		LINE_NONE,
 		0,
 		"internal.script.evaluate(" + statement + ")",
@@ -3638,7 +3638,7 @@ inline bool MiniScript::evaluateInternal(const string& statement, const string& 
 	string_view methodName;
 	vector<string_view> arguments;
 	string accessObjectMemberStatement;
-	ScriptSyntaxTreeNode evaluateSyntaxTree;
+	SyntaxTreeNode evaluateSyntaxTree;
 	if (parseScriptStatement(scriptEvaluateStatement, methodName, arguments, evaluateStatement, accessObjectMemberStatement) == false) {
 		return false;
 	} else
@@ -3663,11 +3663,11 @@ inline bool MiniScript::evaluateInternal(const string& statement, const string& 
 	}
 }
 
-inline const MiniScript::ScriptVariable MiniScript::initializeVariable(const ScriptVariable& variable) {
+inline const MiniScript::Variable MiniScript::initializeVariable(const Variable& variable) {
 	switch (variable.getType()) {
 		case TYPE_ARRAY:
 			{
-				ScriptVariable arrayVariable;
+				Variable arrayVariable;
 				//
 				arrayVariable.setType(TYPE_ARRAY);
 				auto arrayPointer = variable.getArrayPointer();
@@ -3680,7 +3680,7 @@ inline const MiniScript::ScriptVariable MiniScript::initializeVariable(const Scr
 			}
 		case TYPE_MAP:
 			{
-				ScriptVariable mapVariable;
+				Variable mapVariable;
 				//
 				auto mapPointer = variable.getMapPointer();
 				if (mapPointer == nullptr) break;
@@ -3713,7 +3713,7 @@ inline bool MiniScript::viewIsKey(const string_view& candidate) {
 	return true;
 }
 
-inline bool MiniScript::getVariableAccessOperatorLeftRightIndices(const string& name, const string& callerMethod, string::size_type& accessOperatorLeftIdx, string::size_type& accessOperatorRightIdx, const ScriptStatement* statement, int startIdx) {
+inline bool MiniScript::getVariableAccessOperatorLeftRightIndices(const string& name, const string& callerMethod, string::size_type& accessOperatorLeftIdx, string::size_type& accessOperatorRightIdx, const Statement* statement, int startIdx) {
 	accessOperatorLeftIdx = string::npos;
 	accessOperatorRightIdx = string::npos;
 	auto haveKey = false;
@@ -3779,7 +3779,7 @@ inline bool MiniScript::getVariableAccessOperatorLeftRightIndices(const string& 
 	return true;
 }
 
-inline bool MiniScript::evaluateAccess(const string& name, const string& callerMethod, string::size_type& arrayAccessOperatorLeftIdx, string::size_type& arrayAccessOperatorRightIdx, int64_t& arrayIdx, string& key, const ScriptStatement* statement) {
+inline bool MiniScript::evaluateAccess(const string& name, const string& callerMethod, string::size_type& arrayAccessOperatorLeftIdx, string::size_type& arrayAccessOperatorRightIdx, int64_t& arrayIdx, string& key, const Statement* statement) {
 	key.clear();
 	arrayIdx = ARRAYIDX_NONE;
 	// check for dot access
@@ -3795,7 +3795,7 @@ inline bool MiniScript::evaluateAccess(const string& name, const string& callerM
 			arrayIdx = Integer::viewParse(arrayIdxExpressionStringView);
 		} else {
 			// TODO: as evaluate statement we also might need the expression that had not yet a preprocessor run for error messages and such
-			ScriptVariable statementReturnValue;
+			Variable statementReturnValue;
 			auto evaluateStatement = string(arrayIdxExpressionStringView);
 			if (evaluateInternal(evaluateStatement, evaluateStatement, statementReturnValue, false) == false || statementReturnValue.getIntegerValue(arrayIdx, false) == false) {
 				if (statement != nullptr) {
@@ -3814,7 +3814,7 @@ inline bool MiniScript::evaluateAccess(const string& name, const string& callerM
 	return true;
 }
 
-void MiniScript::setConstant(ScriptVariable& variable) {
+void MiniScript::setConstant(Variable& variable) {
 	variable.setConstant();
 	switch (variable.getType()) {
 		case TYPE_ARRAY:

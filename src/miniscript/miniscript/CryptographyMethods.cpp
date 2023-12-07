@@ -37,7 +37,7 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "cryptography.base64.encode";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
 				if (MiniScript::getStringValue(argumentValues, 0, value, false) == true) {
 					returnValue.setValue(Base64::encode(value));
@@ -66,7 +66,7 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "cryptography.base64.decode";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
 				if (MiniScript::getStringValue(argumentValues, 0, value, false) == true) {
 					returnValue.setValue(Base64::decode(value));
@@ -96,7 +96,7 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "cryptography.sha256.encode";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
 				if (MiniScript::getStringValue(argumentValues, 0, value, false) == true) {
 					returnValue.setValue(SHA256::encode(value));

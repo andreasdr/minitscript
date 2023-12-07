@@ -77,8 +77,8 @@ public:
 		string& generatedDefinitions,
 		const string& miniScriptClassName,
 		const string& methodName,
-		const MiniScript::ScriptSyntaxTreeNode& syntaxTree,
-		const MiniScript::ScriptStatement& statement,
+		const MiniScript::SyntaxTreeNode& syntaxTree,
+		const MiniScript::Statement& statement,
 		const unordered_map<string, vector<string>>& methodCodeMap,
 		const unordered_set<string>& allMethods,
 		bool condition,
@@ -115,7 +115,7 @@ public:
 	 */
 	static void generateArrayMapSetVariable(
 		MiniScript* miniScript,
-		const MiniScript::ScriptVariable& variable,
+		const MiniScript::Variable& variable,
 		const unordered_map<string, vector<string>>& methodCodeMap,
 		const unordered_set<string>& allMethods,
 		const string& methodName,
@@ -149,8 +149,8 @@ public:
 		string& generatedDefinitions,
 		const string& miniScriptClassName,
 		const string& methodName,
-		const MiniScript::ScriptSyntaxTreeNode& syntaxTree,
-		const MiniScript::ScriptStatement& statement,
+		const MiniScript::SyntaxTreeNode& syntaxTree,
+		const MiniScript::Statement& statement,
 		const unordered_map<string, vector<string>>& methodCodeMap,
 		const unordered_set<string>& allMethods,
 		bool condition,
@@ -181,8 +181,8 @@ public:
 	static bool transpileScriptStatement(
 		MiniScript* miniScript,
 		string& generatedCode,
-		const MiniScript::ScriptSyntaxTreeNode& syntaxTree,
-		const MiniScript::ScriptStatement& statement,
+		const MiniScript::SyntaxTreeNode& syntaxTree,
+		const MiniScript::Statement& statement,
 		int scriptConditionIdx,
 		int scriptIdx,
 		int& statementIdx,
@@ -241,7 +241,7 @@ public:
 	 * Create source code for given syntax tree node
 	 * @param syntaxTreeNode syntax tree node
 	 */
-	static const string createSourceCode(const MiniScript::ScriptSyntaxTreeNode& syntaxTreeNode);
+	static const string createSourceCode(const MiniScript::SyntaxTreeNode& syntaxTreeNode);
 
 	/**
 	 * Create source code for given syntax tree
@@ -257,8 +257,8 @@ public:
 		const string& condition,
 		const vector<MiniScript::Script::ScriptArgument>& arguments,
 		const string& name,
-		const MiniScript::ScriptSyntaxTreeNode& conditionSyntaxTree,
-		const vector<MiniScript::ScriptSyntaxTreeNode>& syntaxTree
+		const MiniScript::SyntaxTreeNode& conditionSyntaxTree,
+		const vector<MiniScript::SyntaxTreeNode>& syntaxTree
 	);
 
 	/**

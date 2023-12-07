@@ -29,7 +29,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				returnValue.setType(MiniScript::TYPE_MAP);
 			}
 		};
@@ -54,7 +54,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.set";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
 				if (argumentValues.size() != 3 ||
@@ -87,7 +87,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.has";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
 				if (argumentValues.size() < 2 ||
@@ -120,7 +120,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.get";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
 				if (argumentValues.size() < 2 ||
@@ -153,7 +153,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.remove";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
 				if (argumentValues.size() < 2 ||
@@ -185,7 +185,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.getKeys";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				if (argumentValues.size() != 1 ||
 					argumentValues[0].getType() != MiniScript::TYPE_MAP) {
@@ -219,7 +219,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.getValues";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				if (argumentValues.size() != 1 ||
 					argumentValues[0].getType() != MiniScript::TYPE_MAP) {
@@ -253,7 +253,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.clear";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_MAP) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -283,7 +283,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.forEach";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
 				if ((argumentValues.size() != 2 && argumentValues.size() != 3) ||
 					argumentValues[0].getType() != MiniScript::TYPE_MAP ||
@@ -294,10 +294,10 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					auto mapPtr = argumentValues[0].getMapPointer();
 					if (mapPtr != nullptr) {
 						for (const auto& [mapKey, mapValue]: *mapPtr) {
-							vector<MiniScript::ScriptVariable> functionArgumentValues { MiniScript::ScriptVariable(mapKey), MiniScript::ScriptVariable::createReferenceVariable(mapValue) };
+							vector<MiniScript::Variable> functionArgumentValues { MiniScript::Variable(mapKey), MiniScript::Variable::createReferenceVariable(mapValue) };
 							if (argumentValues.size() == 3) functionArgumentValues.push_back(argumentValues[2]);
 							span functionArgumentValuesSpan(functionArgumentValues);
-							MiniScript::ScriptVariable functionReturnValue;
+							MiniScript::Variable functionReturnValue;
 							miniScript->call(function, functionArgumentValuesSpan, functionReturnValue);
 							// exit condition
 							bool result = false;

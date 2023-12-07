@@ -30,7 +30,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				returnValue.setType(MiniScript::TYPE_SET);
 			}
 		};
@@ -54,7 +54,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.insert";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
 				if (argumentValues.size() != 2 ||
@@ -87,7 +87,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.has";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
 				if (argumentValues.size() < 2 ||
@@ -120,7 +120,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.remove";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
 				if (argumentValues.size() < 2 ||
@@ -152,7 +152,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.getKeys";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				if (argumentValues.size() != 1 ||
 					argumentValues[0].getType() != MiniScript::TYPE_SET) {
@@ -186,7 +186,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.clear";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if ((argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_SET)) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -216,7 +216,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.forEach";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
 				if ((argumentValues.size() != 2 && argumentValues.size() != 3) ||
 					argumentValues[0].getType() != MiniScript::TYPE_SET ||
@@ -227,10 +227,10 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 					auto setPtr = argumentValues[0].getSetPointer();
 					if (setPtr != nullptr) {
 						for (auto setEntry: *setPtr) {
-							vector<MiniScript::ScriptVariable> functionArgumentValues { MiniScript::ScriptVariable(setEntry) };
+							vector<MiniScript::Variable> functionArgumentValues { MiniScript::Variable(setEntry) };
 							if (argumentValues.size() == 3) functionArgumentValues.push_back(argumentValues[2]);
 							span functionArgumentValuesSpan(functionArgumentValues);
-							MiniScript::ScriptVariable functionReturnValue;
+							MiniScript::Variable functionReturnValue;
 							miniScript->call(function, functionArgumentValuesSpan, functionReturnValue);
 							// exit condition
 							bool result = false;

@@ -38,7 +38,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.composeURI";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
@@ -73,7 +73,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.getFileSize";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
@@ -112,7 +112,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.getContentAsString";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
@@ -151,7 +151,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.setContentFromString";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				string content;
@@ -194,7 +194,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.getContent";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
@@ -235,7 +235,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.setContent";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				if (argumentValues.size() == 3 &&
@@ -279,7 +279,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.getContentAsStringArray";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
@@ -324,7 +324,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.setContentFromStringArray";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				if (argumentValues.size() == 3 &&
@@ -369,7 +369,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.isPath";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
 				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
 					try {
@@ -404,7 +404,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.isDrive";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
 				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
 					returnValue.setValue(FileSystem::isDrive(uri));
@@ -435,7 +435,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.exists";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
 				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
 					try {
@@ -472,7 +472,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.getCanonicalURI";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
@@ -508,7 +508,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.getCurrentWorkingPathName";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				try {
 					returnValue.setValue(FileSystem::getCurrentWorkingPathName());
 				} catch (Exception& exception) {
@@ -537,7 +537,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.changePath";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
 					try {
@@ -574,7 +574,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.getFileName";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
 				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
 					returnValue.setValue(FileSystem::getFileName(uri));
@@ -605,7 +605,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.getPathName";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
 				if (MiniScript::getStringValue(argumentValues, 0, uri, false) == true) {
 					returnValue.setValue(FileSystem::getPathName(uri));
@@ -636,7 +636,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.removeFileExtension";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, fileName, false) == true) {
 					returnValue.setValue(FileSystem::removeFileExtension(fileName));
@@ -668,7 +668,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.removeFile";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
@@ -707,7 +707,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.createPath";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
 					try {
@@ -745,7 +745,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.removePath";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				bool recursive;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true &&
@@ -785,7 +785,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.rename";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string fileNameFrom;
 				string fileNameTo;
 				if (MiniScript::getStringValue(argumentValues, 0, fileNameFrom, false) == true &&
@@ -825,7 +825,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.move";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string fileNameFrom;
 				string fileNameTo;
 				if (MiniScript::getStringValue(argumentValues, 0, fileNameFrom, false) == true &&
@@ -865,7 +865,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "filesystem.list";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				if (MiniScript::getStringValue(argumentValues, 0, pathName, false) == true) {
 					try {

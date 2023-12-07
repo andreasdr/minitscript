@@ -25,7 +25,7 @@ public:
 	 * Register script data type
 	 * @param scriptDataType script data type
 	 */
-	void registerDataType(MiniScript::ScriptDataType* scriptDataType);
+	void registerDataType(MiniScript::DataType* scriptDataType);
 
 	/**
 	 * Register methods
@@ -38,7 +38,7 @@ public:
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void mul(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement);
+	void mul(const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
 
 	/**
 	 * Division
@@ -46,7 +46,7 @@ public:
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void div(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement);
+	void div(const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
 
 	/**
 	 * Addition
@@ -54,7 +54,7 @@ public:
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void add(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement);
+	void add(const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
 
 	/**
 	 * Subtraction
@@ -62,10 +62,10 @@ public:
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void sub(const span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement);
+	void sub(const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
 
 private:
 	MiniScript* miniScript;
-	vector<MiniScript::ScriptDataType*> scriptDataTypes;
+	vector<MiniScript::DataType*> scriptDataTypes;
 
 };

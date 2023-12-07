@@ -41,7 +41,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "network.httpclient.head";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string url;
 				if (argumentValues.size() <= 3 &&
 					MiniScript::getStringValue(argumentValues, 0, url, false) == true &&
@@ -79,7 +79,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setType(MiniScript::TYPE_MAP);
 						returnValue.setMapEntry("status", static_cast<int64_t>(httpClient.getStatusCode()));
 						//
-						MiniScript::ScriptVariable responseHeaders;
+						MiniScript::Variable responseHeaders;
 						responseHeaders.setType(MiniScript::TYPE_MAP);
 						for (const auto& [headerName, headerValue]: httpClient.getResponseHeaders()) {
 							responseHeaders.setMapEntry(headerName, headerValue);
@@ -116,7 +116,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "network.httpclient.get";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string url;
 				if (argumentValues.size() <= 3 &&
 					MiniScript::getStringValue(argumentValues, 0, url, false) == true &&
@@ -162,7 +162,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setMapEntry("status", static_cast<int64_t>(httpClient.getStatusCode()));
 						returnValue.setMapEntry("response", response);
 						//
-						MiniScript::ScriptVariable responseHeaders;
+						MiniScript::Variable responseHeaders;
 						responseHeaders.setType(MiniScript::TYPE_MAP);
 						for (const auto& [headerName, headerValue]: httpClient.getResponseHeaders()) {
 							responseHeaders.setMapEntry(headerName, headerValue);
@@ -200,7 +200,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "network.httpclient.post";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string url;
 				string dataString;
 				if (argumentValues.size() >= 2 && argumentValues.size() <= 4 &&
@@ -264,7 +264,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setMapEntry("status", static_cast<int64_t>(httpClient.getStatusCode()));
 						returnValue.setMapEntry("response", response);
 						//
-						MiniScript::ScriptVariable responseHeaders;
+						MiniScript::Variable responseHeaders;
 						responseHeaders.setType(MiniScript::TYPE_MAP);
 						for (const auto& [headerName, headerValue]: httpClient.getResponseHeaders()) {
 							responseHeaders.setMapEntry(headerName, headerValue);
@@ -302,7 +302,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "network.httpclient.put";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string url;
 				string dataString;
 				if (argumentValues.size() >= 2 && argumentValues.size() <= 4 &&
@@ -366,7 +366,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setMapEntry("status", static_cast<int64_t>(httpClient.getStatusCode()));
 						returnValue.setMapEntry("response", response);
 						//
-						MiniScript::ScriptVariable responseHeaders;
+						MiniScript::Variable responseHeaders;
 						responseHeaders.setType(MiniScript::TYPE_MAP);
 						for (const auto& [headerName, headerValue]: httpClient.getResponseHeaders()) {
 							responseHeaders.setMapEntry(headerName, headerValue);
@@ -403,7 +403,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "network.httpclient.delete";
 			}
-			void executeMethod(span<MiniScript::ScriptVariable>& argumentValues, MiniScript::ScriptVariable& returnValue, const MiniScript::ScriptStatement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string url;
 				if (argumentValues.size() <= 3 &&
 					MiniScript::getStringValue(argumentValues, 0, url, false) == true &&
@@ -441,7 +441,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setType(MiniScript::TYPE_MAP);
 						returnValue.setMapEntry("status", static_cast<int64_t>(httpClient.getStatusCode()));
 						//
-						MiniScript::ScriptVariable responseHeaders;
+						MiniScript::Variable responseHeaders;
 						responseHeaders.setType(MiniScript::TYPE_MAP);
 						for (const auto& [headerName, headerValue]: httpClient.getResponseHeaders()) {
 							responseHeaders.setMapEntry(headerName, headerValue);
