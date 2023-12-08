@@ -20,12 +20,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	// file system methods
 	{
 		//
-		class ScriptFileSystemComposeFileName: public MiniScript::ScriptMethod {
+		class ScriptFileSystemComposeFileName: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemComposeFileName(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
@@ -54,12 +54,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemGetFileSize: public MiniScript::ScriptMethod {
+		class ScriptFileSystemGetFileSize: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemGetFileSize(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
@@ -93,12 +93,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemGetContentAsString: public MiniScript::ScriptMethod {
+		class ScriptFileSystemGetContentAsString: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemGetContentAsString(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
@@ -132,12 +132,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemSetContentFromString: public MiniScript::ScriptMethod {
+		class ScriptFileSystemSetContentFromString: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemSetContentFromString(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
@@ -175,12 +175,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemGetContent: public MiniScript::ScriptMethod {
+		class ScriptFileSystemGetContent: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemGetContent(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
@@ -216,12 +216,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemSetContent: public MiniScript::ScriptMethod {
+		class ScriptFileSystemSetContent: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemSetContent(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
@@ -260,12 +260,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemGetContentAsStringArray: public MiniScript::ScriptMethod {
+		class ScriptFileSystemGetContentAsStringArray: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemGetContentAsStringArray(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
@@ -305,12 +305,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemSetContentFromStringArray: public MiniScript::ScriptMethod {
+		class ScriptFileSystemSetContentFromStringArray: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemSetContentFromStringArray(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
@@ -351,12 +351,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemIsPath: public MiniScript::ScriptMethod {
+		class ScriptFileSystemIsPath: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemIsPath(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false },
 					},
@@ -387,12 +387,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemIsDrive: public MiniScript::ScriptMethod {
+		class ScriptFileSystemIsDrive: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemIsDrive(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false },
 					},
@@ -417,12 +417,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 		miniScript->registerMethod(new ScriptFileSystemIsDrive(miniScript));
 	}
 	{
-		class ScriptFileSystemFileExists: public MiniScript::ScriptMethod {
+		class ScriptFileSystemFileExists: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemFileExists(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false },
 					},
@@ -453,12 +453,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemGetCanonicalPath: public MiniScript::ScriptMethod {
+		class ScriptFileSystemGetCanonicalPath: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemGetCanonicalPath(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
@@ -492,12 +492,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemGetCurrentWorkingPathName: public MiniScript::ScriptMethod {
+		class ScriptFileSystemGetCurrentWorkingPathName: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemGetCurrentWorkingPathName(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{},
 					MiniScript::TYPE_STRING,
 					true
@@ -520,12 +520,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemChangePath: public MiniScript::ScriptMethod {
+		class ScriptFileSystemChangePath: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemChangePath(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 					},
@@ -557,12 +557,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemGetFileName: public MiniScript::ScriptMethod {
+		class ScriptFileSystemGetFileName: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemGetFileName(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false }
 					},
@@ -588,12 +588,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemGetPathName: public MiniScript::ScriptMethod {
+		class ScriptFileSystemGetPathName: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemGetPathName(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false }
 					},
@@ -619,12 +619,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemRemoveFileExtension: public MiniScript::ScriptMethod {
+		class ScriptFileSystemRemoveFileExtension: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemRemoveFileExtension(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
 					},
@@ -650,12 +650,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemRemoveFile: public MiniScript::ScriptMethod {
+		class ScriptFileSystemRemoveFile: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemRemoveFile(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
@@ -690,12 +690,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemCreatePath: public MiniScript::ScriptMethod {
+		class ScriptFileSystemCreatePath: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemCreatePath(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 					},
@@ -727,12 +727,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemRemovePath: public MiniScript::ScriptMethod {
+		class ScriptFileSystemRemovePath: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemRemovePath(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "recursive", .optional = false, .reference = false, .nullable = false },
@@ -767,12 +767,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemRename: public MiniScript::ScriptMethod {
+		class ScriptFileSystemRename: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemRename(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "fileNameFrom", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "fileNameTo", .optional = false, .reference = false, .nullable = false },
@@ -807,12 +807,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemMove: public MiniScript::ScriptMethod {
+		class ScriptFileSystemMove: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemMove(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "uriFrom", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "uriTo", .optional = false, .reference = false, .nullable = false },
@@ -847,12 +847,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptFileSystemList: public MiniScript::ScriptMethod {
+		class ScriptFileSystemList: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptFileSystemList(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 					},

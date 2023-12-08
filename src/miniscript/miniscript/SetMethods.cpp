@@ -17,12 +17,12 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	// sets
 	{
 		//
-		class ScriptMethodSet: public MiniScript::ScriptMethod {
+		class ScriptMethodSet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSet(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{},
 					MiniScript::TYPE_SET
 				),
@@ -38,12 +38,12 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodSetInsert: public MiniScript::ScriptMethod {
+		class ScriptMethodSetInsert: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSetInsert(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "key", .optional = false, .reference = false, .nullable = false }
@@ -71,12 +71,12 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodSetHas: public MiniScript::ScriptMethod {
+		class ScriptMethodSetHas: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSetHas(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "key", .optional = false, .reference = false, .nullable = false }
@@ -104,12 +104,12 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodSetRemove: public MiniScript::ScriptMethod {
+		class ScriptMethodSetRemove: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSetRemove(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "key", .optional = false, .reference = false, .nullable = false }
@@ -137,12 +137,12 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodSetGetKeys: public MiniScript::ScriptMethod {
+		class ScriptMethodSetGetKeys: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSetGetKeys(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false },
 					},
@@ -171,12 +171,12 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodSetClear: public MiniScript::ScriptMethod {
+		class ScriptMethodSetClear: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSetClear(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = true, .nullable = false }
 					},
@@ -199,12 +199,12 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodSetForEach: public MiniScript::ScriptMethod {
+		class ScriptMethodSetForEach: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSetForEach(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },

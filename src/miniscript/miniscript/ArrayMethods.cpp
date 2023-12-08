@@ -16,12 +16,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	// array methods
 	{
 		//
-		class ScriptMethodArray: public MiniScript::ScriptMethod {
+		class ScriptMethodArray: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArray(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{},
 					MiniScript::TYPE_ARRAY
 				),
@@ -43,12 +43,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayLength: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayLength: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayLength(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false }
 					},
@@ -71,12 +71,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayPush: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayPush: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayPush(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false }
 					},
@@ -105,12 +105,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayGet: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayGet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayGet(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false }
@@ -136,12 +136,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArraySet: public MiniScript::ScriptMethod {
+		class ScriptMethodArraySet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArraySet(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false },
@@ -168,12 +168,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayRemove: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayRemove: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayRemove(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false }
@@ -199,12 +199,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayRemoveOf: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayRemoveOf: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayRemoveOf(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false },
@@ -241,12 +241,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayIndexOf: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayIndexOf: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayIndexOf(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false },
@@ -284,12 +284,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArraySort: public MiniScript::ScriptMethod {
+		class ScriptMethodArraySort: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArraySort(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },
@@ -337,12 +337,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayReverse: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayReverse: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayReverse(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false }
 					},
@@ -370,12 +370,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayClear: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayClear: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayClear(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false }
 					},
@@ -398,12 +398,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayForEach: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayForEach: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayForEach(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },
@@ -444,12 +444,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodArrayForRange: public MiniScript::ScriptMethod {
+		class ScriptMethodArrayForRange: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodArrayForRange(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },

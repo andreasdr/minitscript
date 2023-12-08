@@ -22,10 +22,10 @@ public:
 	MathMethods(MiniScript* miniScript): miniScript(miniScript) {}
 
 	/**
-	 * Register script data type
-	 * @param scriptDataType script data type
+	 * Register data type
+	 * @param dataType data type
 	 */
-	void registerDataType(MiniScript::DataType* scriptDataType);
+	void registerDataType(MiniScript::DataType* dataType);
 
 	/**
 	 * Register methods
@@ -66,6 +66,6 @@ public:
 
 private:
 	MiniScript* miniScript;
-	vector<MiniScript::DataType*> scriptDataTypes;
+	vector<MiniScript::DataType*> dataTypes;
 
 };

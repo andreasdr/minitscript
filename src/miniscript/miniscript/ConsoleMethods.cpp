@@ -16,11 +16,11 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 	// console
 	{
 		//
-		class ScriptMethodConsoleLog: public MiniScript::ScriptMethod {
+		class ScriptMethodConsoleLog: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodConsoleLog(MiniScript* miniScript): MiniScript::ScriptMethod(), miniScript(miniScript) {}
+			ScriptMethodConsoleLog(MiniScript* miniScript): MiniScript::Method(), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "console.log";
 			}
@@ -38,12 +38,12 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodConsoleDump: public MiniScript::ScriptMethod {
+		class ScriptMethodConsoleDump: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodConsoleDump(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "value", .optional = false, .reference = false, .nullable = false }
 					}

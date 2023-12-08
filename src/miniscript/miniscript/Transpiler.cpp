@@ -899,8 +899,8 @@ bool Transpiler::transpileScriptStatement(
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 			{
 				// check script user functions
-				auto scriptFunctionsIdx = miniScript->getFunctionScriptIdx(syntaxTree.value.getValueAsString());
-				if (scriptFunctionsIdx != MiniScript::SCRIPTIDX_NONE) {
+				auto functionsIdx = syntaxTree.getFunctionScriptIdx();
+				if (functionsIdx != MiniScript::SCRIPTIDX_NONE) {
 					// have a wrapping script.call call
 					MiniScript::SyntaxTreeNode callSyntaxTreeNode;
 					callSyntaxTreeNode.type = MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD;
@@ -921,7 +921,7 @@ bool Transpiler::transpileScriptStatement(
 						Console::println("Transpiler::transpileScriptStatement(): method code not found: '" + callSyntaxTreeNode.value.getValueAsString() + "'");
 						return false;
 					}
-					callSyntaxTreeNode.method = method;
+					callSyntaxTreeNode.setMethod(method);
 					return transpileScriptStatement(
 						miniScript,
 						generatedCode,
@@ -1400,7 +1400,7 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 
 	//
 	unordered_set<int> gotoStatementIdxSet;
-	for (const auto& scriptStatement: script.statements) gotoStatementIdxSet.insert(scriptStatement.gotoStatementIdx);
+	for (const auto& statement: script.statements) gotoStatementIdxSet.insert(statement.gotoStatementIdx);
 
 	//
 	auto statementIdx = MiniScript::STATEMENTIDX_FIRST;

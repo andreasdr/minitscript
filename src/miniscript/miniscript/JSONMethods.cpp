@@ -18,12 +18,12 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 	// json
 	{
 		//
-		class ScriptMethodJSONSerialize: public MiniScript::ScriptMethod {
+		class ScriptMethodJSONSerialize: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodJSONSerialize(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "value", .optional = false, .reference = false, .nullable = false },
 					},
@@ -47,12 +47,12 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodJSONDeserialize: public MiniScript::ScriptMethod {
+		class ScriptMethodJSONDeserialize: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodJSONDeserialize(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "json", .optional = false, .reference = false, .nullable = false },
 					},

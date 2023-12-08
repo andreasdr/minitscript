@@ -163,7 +163,7 @@ public:
 	class Variable;
 
 	/**
-	 * Script data type
+	 * Data type
 	 */
 	class DataType {
 		friend class MiniScript;
@@ -190,33 +190,33 @@ public:
 
 		/**
 		 * Register methods
-		 * @param miniScript mini script instance
+		 * @param miniScript MiniScript instance
 		 */
 		virtual void registerMethods(MiniScript* miniScript) const = 0;
 
 		/**
-		 * Unset script variable value
+		 * Unset variable value
 		 * @param variable variable
 		 */
-		virtual void unsetScriptVariableValue(Variable& variable) const = 0;
+		virtual void unsetVariableValue(Variable& variable) const = 0;
 
 		/**
-		 * Set script variable value
+		 * Set variable value
 		 * @param variable variable
 		 * @param value value
 		 */
-		virtual void setScriptVariableValue(Variable& variable, const void* value) const = 0;
+		virtual void setVariableValue(Variable& variable, const void* value) const = 0;
 
 		/**
-		 * Copy script variable
+		 * Copy variable
 		 * @param to to
 		 * @param from from
 		 */
-		virtual void copyScriptVariable(Variable& to, const Variable& from) const = 0;
+		virtual void copyVariable(Variable& to, const Variable& from) const = 0;
 
 		/**
 		 * Multiply
-		 * @param miniScript mini script instance
+		 * @param miniScript MiniScript instance
 		 * @param argumentValues argument values
 		 * @param returnValue return value
 		 * @param statement statement
@@ -226,7 +226,7 @@ public:
 
 		/**
 		 * Division
-		 * @param miniScript mini script instance
+		 * @param miniScript MiniScript instance
 		 * @param argumentValues argument values
 		 * @param returnValue return value
 		 * @param statement statement
@@ -236,7 +236,7 @@ public:
 
 		/**
 		 * Addition
-		 * @param miniScript mini script instance
+		 * @param miniScript MiniScript instance
 		 * @param argumentValues argument values
 		 * @param returnValue return value
 		 * @param statement statement
@@ -246,7 +246,7 @@ public:
 
 		/**
 		 * Subtraction
-		 * @param miniScript mini script instance
+		 * @param miniScript MiniScript instance
 		 * @param argumentValues argument values
 		 * @param returnValue return value
 		 * @param statement statement
@@ -259,7 +259,7 @@ public:
 		FORBID_CLASS_COPY(DataType)
 
 		/**
-		 * Script data type
+		 * Data type
 		 * @param mathDataType is math data type and provides math methods
 		 */
 		DataType(bool mathDataType): mathDataType(mathDataType) {
@@ -297,14 +297,14 @@ public:
 	};
 
 	/**
-	 * MiniScript script variable
+	 * Variable
 	 */
 	class Variable {
 		friend class MiniScript;
 
 	private:
 		/**
-		 * MiniScript variable initializer
+		 * Variable initializer
 		 */
 		class Initializer {
 			public:
@@ -762,7 +762,7 @@ public:
 						_Console::println("ScriptVariable::copyScriptVariable(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
 					}
-					MiniScript::dataTypes[dataTypeIdx]->copyScriptVariable(to, from);
+					MiniScript::dataTypes[dataTypeIdx]->copyVariable(to, from);
 			}
 			//
 			if (from.isConstant() == true) to.setConstant();
@@ -992,7 +992,7 @@ public:
 						_Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
 					}
-					MiniScript::dataTypes[dataTypeIdx]->unsetScriptVariableValue(*this);
+					MiniScript::dataTypes[dataTypeIdx]->unsetVariableValue(*this);
 
 			}
 			this->getValuePtrReference() = 0LL;
@@ -1048,7 +1048,7 @@ public:
 						_Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
 					}
-					MiniScript::dataTypes[dataTypeIdx]->setScriptVariableValue(*this, nullptr);
+					MiniScript::dataTypes[dataTypeIdx]->setVariableValue(*this, nullptr);
 			}
 		}
 
@@ -1344,7 +1344,7 @@ public:
 				_Console::println("ScriptVariable::setValue(): unknown custom data type with id " + to_string(dataTypeIdx));
 				return;
 			}
-			MiniScript::dataTypes[dataTypeIdx]->setScriptVariableValue(*this, value);
+			MiniScript::dataTypes[dataTypeIdx]->setVariableValue(*this, value);
 		}
 
 		/**
@@ -2135,9 +2135,9 @@ public:
 	};
 
 	/**
-	 * Script method
+	 * Method
 	 */
-	class ScriptMethod {
+	class Method {
 	public:
 		struct ArgumentType {
 			VariableType type;
@@ -2148,7 +2148,7 @@ public:
 		};
 
 		// forbid class copy
-		FORBID_CLASS_COPY(ScriptMethod)
+		FORBID_CLASS_COPY(Method)
 
 		/**
 		 * Constructor
@@ -2156,7 +2156,7 @@ public:
 		 * @param returnValueType return value type
 		 * @param returnValueNullable true if return value can also be a null value
 		 */
-		ScriptMethod(
+		Method(
 			const vector<ArgumentType>& argumentTypes = {},
 			VariableType returnValueType = VariableType::TYPE_NULL,
 			bool returnValueNullable = false
@@ -2170,15 +2170,15 @@ public:
 		/**
 		 * Destructor
 		 */
-		virtual ~ScriptMethod() {}
+		virtual ~Method() {}
 
 		/**
-		 * @return script method name
+		 * @return method name
 		 */
 		virtual const string getMethodName() = 0;
 
 		/**
-		 * Execute script method
+		 * Execute method
 		 * @param argumentValues argument values
 		 * @param returnValue return value
 		 * @param statement statement
@@ -2286,23 +2286,46 @@ public:
 		SyntaxTreeNode():
 			type(SCRIPTSYNTAXTREENODE_NONE),
 			value(Variable()),
-			method(nullptr),
+			pointer(0ll),
 			arguments({})
 		{}
 		SyntaxTreeNode(
 			Type type,
 			const Variable& value,
-			ScriptMethod* method,
+			Method* method,
 			const vector<SyntaxTreeNode>& arguments
 		):
 			type(type),
 			value(value),
-			method(method),
+			pointer((uint64_t)method),
 			arguments(arguments)
 		{}
+		SyntaxTreeNode(
+			Type type,
+			const Variable& value,
+			uint64_t functionIdx,
+			const vector<SyntaxTreeNode>& arguments
+		):
+			type(type),
+			value(value),
+			pointer(functionIdx),
+			arguments(arguments)
+		{}
+		inline Method* getMethod() const {
+			return (Method*)pointer;
+		}
+		inline void setMethod(Method* method) {
+			pointer = (uint64_t)method;
+		}
+		inline uint64_t getFunctionScriptIdx() const {
+			return pointer;
+		}
+		inline void setFunctionScriptIdx(uint64_t scriptIdx) {
+			pointer = scriptIdx;
+		}
 		Type type;
 		Variable value;
-		ScriptMethod* method;
+		uint64_t pointer;
 		vector<SyntaxTreeNode> arguments;
 	};
 
@@ -2669,21 +2692,19 @@ private:
 	MINISCRIPT_STATIC_DLL_IMPEXT static vector<DataType*> dataTypes;
 
 	// TODO: maybe we need a better naming for this
-	// script functions defined by script itself
+	// functions defined by script itself
 	unordered_map<string, int> functions;
-	// script methods defined by using ScriptMethod
-	unordered_map<string, ScriptMethod*> methods;
+	// registered methods
+	unordered_map<string, Method*> methods;
+	// registered state machine states
 	unordered_map<int, ScriptStateMachineState*> stateMachineStates;
-	unordered_map<uint8_t, ScriptMethod*> operators;
+	// operators
+	unordered_map<uint8_t, Method*> operators;
+	//
 	string scriptPathName;
 	string scriptFileName;
-	bool scriptValid { false };
-
 	//
-	struct StatementOperator {
-		int idx { OPERATORIDX_NONE };
-		Operator scriptOperator;
-	};
+	bool scriptValid { false };
 
 	/**
 	 * Parse additional script code into this MiniScript instance
@@ -2772,14 +2793,6 @@ private:
 	static inline const bool isOperatorChar(char c) {
 		return OPERATOR_CHARS.find(c) != string::npos;
 	}
-
-	/**
-	 * Determine next not substituted operator in statement
-	 * @param processedStatement statement that is currently being processed
-	 * @param nextOperator next operator
-	 * @param statement statement
-	 */
-	bool getNextStatementOperator(const string& processedStatement, StatementOperator& nextOperator, const Statement& statement);
 
 	/**
 	 * Trim argument and remove unnessessary parenthesis
@@ -3167,17 +3180,17 @@ public:
 	 * @return script data type
 	 */
 	inline static DataType* getDataTypeByClassName(const string& className) {
-		for (const auto scriptDataType: dataTypes) {
-			if (scriptDataType->getClassName() == className) return scriptDataType;
+		for (const auto dataType: dataTypes) {
+			if (dataType->getClassName() == className) return dataType;
 		}
 		return nullptr;
 	}
 
 	/**
-	 * Register script data type
-	 * @param scriptDataType script data type
+	 * Register data type
+	 * @param dataType data type
 	 */
-	static void registerDataType(DataType* scriptDataType);
+	static void registerDataType(DataType* dataType);
 
 	// forbid class copy
 	FORBID_CLASS_COPY(MiniScript)
@@ -3436,10 +3449,10 @@ public:
 	void registerStateMachineState(ScriptStateMachineState* state);
 
 	/**
-	 * Register script method
-	 * @param scriptMethod script method
+	 * Register method
+	 * @param method method
 	 */
-	void registerMethod(ScriptMethod* scriptMethod);
+	void registerMethod(Method* method);
 
 	/**
 	 * Returns if a given string is a variable name
@@ -3607,7 +3620,7 @@ public:
 				// check if our parent is not a const variable
 				if (parentVariable->isConstant() == false) {
 					// all checks passed, push variable to array
-					parentVariable->pushArrayEntry(createReference == false?Variable::createNonReferenceVariablePointer(&variable):Variable::createReferenceVariablePointer(&variable));
+					parentVariable->pushArrayEntry(createReference == false?Variable::createNonReferenceVariable(&variable):Variable::createReferenceVariable(&variable));
 				} else {
 					_Console::println(getStatementInformation(*statement) + ": constant: " + name + ": Assignment of constant is not allowed");
 				}
@@ -3644,9 +3657,9 @@ public:
 
 		// default
 		auto& scriptState = globalVariableName.empty() == true?getScriptState():getRootScriptState();
-		auto scriptVariableIt = scriptState.variables.find(globalVariableName.empty() == true?name:globalVariableName);
-		if (scriptVariableIt != scriptState.variables.end()) {
-			auto& existingVariable = scriptVariableIt->second;
+		auto variableIt = scriptState.variables.find(globalVariableName.empty() == true?name:globalVariableName);
+		if (variableIt != scriptState.variables.end()) {
+			auto& existingVariable = variableIt->second;
 			if (existingVariable->isConstant() == false) {
 				// if we set a variable in variable scope that did exist before, we can safely remove the constness
 				*existingVariable = variable;
@@ -3788,9 +3801,9 @@ public:
 	/**
 	 * Get method by method name
 	 * @param methodName method name
-	 * @return script method or nullptr
+	 * @return method or nullptr
 	 */
-	inline ScriptMethod* getMethod(const string& methodName) {
+	inline Method* getMethod(const string& methodName) {
 		auto methodIt = methods.find(methodName);
 		if (methodIt != methods.end()) {
 			return methodIt->second;
@@ -3800,14 +3813,14 @@ public:
 	}
 
 	/**
-	 * @return script methods
+	 * @return methods
 	 */
-	const vector<ScriptMethod*> getMethods();
+	const vector<Method*> getMethods();
 
 	/**
-	 * @return script operator methods
+	 * @return operator methods
 	 */
-	const vector<ScriptMethod*> getOperatorMethods();
+	const vector<Method*> getOperatorMethods();
 
 	/**
 	 * Get miniscript script information

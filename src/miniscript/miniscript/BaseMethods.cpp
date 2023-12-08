@@ -18,12 +18,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// base methods
 	{
 		//
-		class ScriptMethodReturn: public MiniScript::ScriptMethod {
+		class ScriptMethodReturn: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodReturn(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "value", .optional = true, .reference = false, .nullable = false }
 					},
@@ -54,11 +54,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodEnd: public MiniScript::ScriptMethod {
+		class ScriptMethodEnd: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodEnd(MiniScript* miniScript): MiniScript::ScriptMethod(), miniScript(miniScript) {}
+			ScriptMethodEnd(MiniScript* miniScript): MiniScript::Method(), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "end";
 			}
@@ -93,12 +93,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodForTime: public MiniScript::ScriptMethod {
+		class ScriptMethodForTime: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodForTime(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "time", .optional = false, .reference = false, .nullable = false }
 					}
@@ -137,12 +137,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodForCondition: public MiniScript::ScriptMethod {
+		class ScriptMethodForCondition: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodForCondition(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "condition", .optional = false, .reference = false, .nullable = false }
 					}
@@ -172,12 +172,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodIfCondition: public MiniScript::ScriptMethod {
+		class ScriptMethodIfCondition: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodIfCondition(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "condition", .optional = false, .reference = false, .nullable = false }
 					}
@@ -207,12 +207,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodElseIfCondition: public MiniScript::ScriptMethod {
+		class ScriptMethodElseIfCondition: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodElseIfCondition(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "condition", .optional = false, .reference = false, .nullable = false }
 					}
@@ -248,11 +248,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodElse: public MiniScript::ScriptMethod {
+		class ScriptMethodElse: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodElse(MiniScript* miniScript): MiniScript::ScriptMethod(), miniScript(miniScript) {}
+			ScriptMethodElse(MiniScript* miniScript): MiniScript::Method(), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "else";
 			}
@@ -274,12 +274,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// equality
 	{
 		//
-		class ScriptMethodEquals: public MiniScript::ScriptMethod {
+		class ScriptMethodEquals: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodEquals(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -312,12 +312,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodNotEqual: public MiniScript::ScriptMethod {
+		class ScriptMethodNotEqual: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodNotEqual(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -351,12 +351,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// int methods
 	{
 		//
-		class ScriptMethodInt: public MiniScript::ScriptMethod {
+		class ScriptMethodInt: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodInt(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "int", .optional = false, .reference = false, .nullable = false }
 					},
@@ -381,12 +381,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// float methods
 	{
 		//
-		class ScriptMethodFloat: public MiniScript::ScriptMethod {
+		class ScriptMethodFloat: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodFloat(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_FLOAT, .name = "float", .optional = false, .reference = false, .nullable = false }
 					},
@@ -410,12 +410,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodFloatToIntValue: public MiniScript::ScriptMethod {
+		class ScriptMethodFloatToIntValue: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodFloatToIntValue(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_FLOAT, .name = "float", .optional = false, .reference = false, .nullable = false }
 					},
@@ -439,12 +439,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodFloatfromIntValue: public MiniScript::ScriptMethod {
+		class ScriptMethodFloatfromIntValue: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodFloatfromIntValue(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "int", .optional = false, .reference = false, .nullable = false }
 					},
@@ -469,12 +469,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	//
 	{
 		//
-		class ScriptMethodGreater: public MiniScript::ScriptMethod {
+		class ScriptMethodGreater: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodGreater(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -515,12 +515,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodGreaterEquals: public MiniScript::ScriptMethod {
+		class ScriptMethodGreaterEquals: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodGreaterEquals(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -561,12 +561,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodLesser: public MiniScript::ScriptMethod {
+		class ScriptMethodLesser: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodLesser(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -607,12 +607,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodLesserEquals: public MiniScript::ScriptMethod {
+		class ScriptMethodLesserEquals: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodLesserEquals(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -654,12 +654,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// bool methods
 	{
 		//
-		class ScriptMethodBool: public MiniScript::ScriptMethod {
+		class ScriptMethodBool: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodBool(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "bool", .optional = false, .reference = false, .nullable = false }
 					},
@@ -684,12 +684,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodNot: public MiniScript::ScriptMethod {
+		class ScriptMethodNot: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodNot(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "bool", .optional = false, .reference = false, .nullable = false }
 					},
@@ -715,12 +715,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodAnd: public MiniScript::ScriptMethod {
+		class ScriptMethodAnd: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodAnd(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -759,12 +759,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodOr: public MiniScript::ScriptMethod {
+		class ScriptMethodOr: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodOr(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -804,12 +804,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// get variable
 	{
 		//
-		class ScriptMethodGetVariable: public MiniScript::ScriptMethod {
+		class ScriptMethodGetVariable: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodGetVariable(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false }
 					},
@@ -835,12 +835,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// get variable reference
 	{
 		//
-		class ScriptMethodGetVariableReference: public MiniScript::ScriptMethod {
+		class ScriptMethodGetVariableReference: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodGetVariableReference(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false }
 					},
@@ -868,12 +868,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// set variable
 	{
 		//
-		class ScriptMethodSetVariable: public MiniScript::ScriptMethod {
+		class ScriptMethodSetVariable: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSetVariable(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "value", .optional = false, .reference = false, .nullable = false }
@@ -906,12 +906,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// unset variable
 	{
 		//
-		class ScriptMethodUnsetVariable: public MiniScript::ScriptMethod {
+		class ScriptMethodUnsetVariable: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodUnsetVariable(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false }
 					},
@@ -939,12 +939,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	// set constant
 	{
 		//
-		class ScriptMethodSetConstant: public MiniScript::ScriptMethod {
+		class ScriptMethodSetConstant: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSetConstant(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "constant", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "value", .optional = false, .reference = false, .nullable = false }
@@ -974,12 +974,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodIncrement: public MiniScript::ScriptMethod {
+		class ScriptMethodIncrement: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodIncrement(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "variable", .optional = false, .reference = true, .nullable = false },
 					},
@@ -1008,12 +1008,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodDecrement: public MiniScript::ScriptMethod {
+		class ScriptMethodDecrement: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodDecrement(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "variable", .optional = false, .reference = true, .nullable = false },
 					},
@@ -1043,12 +1043,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	//
 	{
 		//
-		class ScriptMethodBitwiseNot: public MiniScript::ScriptMethod {
+		class ScriptMethodBitwiseNot: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodBitwiseNot(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "value", .optional = false, .reference = false, .nullable = false },
 					},
@@ -1074,12 +1074,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	//
 	{
-		class ScriptMethodBitwiseAnd: public MiniScript::ScriptMethod {
+		class ScriptMethodBitwiseAnd: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodBitwiseAnd(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -1108,12 +1108,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	//
 	{
-		class ScriptMethodBitwiseOr: public MiniScript::ScriptMethod {
+		class ScriptMethodBitwiseOr: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodBitwiseOr(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "b", .optional = false, .reference = false, .nullable = false }
@@ -1142,12 +1142,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	//
 	{
-		class ScriptMethodBitwiseXor: public MiniScript::ScriptMethod {
+		class ScriptMethodBitwiseXor: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodBitwiseXor(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "b", .optional = false, .reference = false, .nullable = false }

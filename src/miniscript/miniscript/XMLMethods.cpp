@@ -18,12 +18,12 @@ void XMLMethods::registerMethods(MiniScript* miniScript) {
 	// xml
 	{
 		//
-		class ScriptMethodXMLCreateTag: public MiniScript::ScriptMethod {
+		class ScriptMethodXMLCreateTag: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodXMLCreateTag(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "name", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_MAP, .name = "attributes", .optional = true, .reference = false, .nullable = false },

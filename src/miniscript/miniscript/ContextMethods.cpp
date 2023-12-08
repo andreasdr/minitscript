@@ -16,12 +16,12 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 	if (miniScript->getContext() == nullptr) return;
 	{
 		//
-		class ScriptMethodContextScriptHasCallable: public MiniScript::ScriptMethod {
+		class ScriptMethodContextScriptHasCallable: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodContextScriptHasCallable(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "scriptId", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "callable", .optional = false, .reference = false, .nullable = false }
@@ -58,12 +58,12 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodContextScriptCall: public MiniScript::ScriptMethod {
+		class ScriptMethodContextScriptCall: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodContextScriptCall(MiniScript* miniScript):
-				ScriptMethod(
+				Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "scriptId", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "callable", .optional = false, .reference = false, .nullable = false }
@@ -117,12 +117,12 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodContextScriptLoadScript: public MiniScript::ScriptMethod {
+		class ScriptMethodContextScriptLoadScript: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodContextScriptLoadScript(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "scriptId", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
@@ -170,12 +170,12 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodContextScriptRemoveScript: public MiniScript::ScriptMethod {
+		class ScriptMethodContextScriptRemoveScript: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodContextScriptRemoveScript(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "scriptId", .optional = false, .reference = false, .nullable = false }
 					},
@@ -199,12 +199,12 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodContextScriptGetScriptIds: public MiniScript::ScriptMethod {
+		class ScriptMethodContextScriptGetScriptIds: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodContextScriptGetScriptIds(MiniScript* miniScript):
-				MiniScript::ScriptMethod({}, MiniScript::TYPE_ARRAY),
+				MiniScript::Method({}, MiniScript::TYPE_ARRAY),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "context.script.getScriptIds";

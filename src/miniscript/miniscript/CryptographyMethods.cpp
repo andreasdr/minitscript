@@ -22,12 +22,12 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 	// base64
 	{
 		//
-		class ScriptMethodCryptographyBase64Encode: public MiniScript::ScriptMethod {
+		class ScriptMethodCryptographyBase64Encode: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodCryptographyBase64Encode(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false },
 					},
@@ -51,12 +51,12 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodCryptographyBase64Decode: public MiniScript::ScriptMethod {
+		class ScriptMethodCryptographyBase64Decode: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodCryptographyBase64Decode(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false },
 					},
@@ -81,12 +81,12 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 	// sha256
 	{
 		//
-		class ScriptMethodCryptographySHA256Encode: public MiniScript::ScriptMethod {
+		class ScriptMethodCryptographySHA256Encode: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodCryptographySHA256Encode(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false },
 					},

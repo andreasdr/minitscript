@@ -14,20 +14,20 @@ using miniscript::math::Math;
 using miniscript::miniscript::MiniScript;
 using miniscript::utilities::Console;
 
-void MathMethods::registerDataType(MiniScript::DataType* scriptDataType) {
-	scriptDataTypes.push_back(scriptDataType);
+void MathMethods::registerDataType(MiniScript::DataType* dataType) {
+	dataTypes.push_back(dataType);
 }
 
 void MathMethods::registerMethods() {
 	// operator methods
 	{
 		//
-		class ScriptMethodAdd: public MiniScript::ScriptMethod {
+		class ScriptMethodAdd: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodAdd(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false }
@@ -49,12 +49,12 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodSub: public MiniScript::ScriptMethod {
+		class ScriptMethodSub: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodSub(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false }
@@ -76,12 +76,12 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodMul: public MiniScript::ScriptMethod {
+		class ScriptMethodMul: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodMul(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false }
@@ -103,12 +103,12 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodDiv: public MiniScript::ScriptMethod {
+		class ScriptMethodDiv: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodDiv(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false }
@@ -130,11 +130,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodMod: public MiniScript::ScriptMethod {
+		class ScriptMethodMod: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMod(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodMod(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "range", .optional = false, .reference = false },
@@ -176,11 +176,11 @@ void MathMethods::registerMethods() {
 	// constants
 	{
 		//
-		class ScriptMethodPi: public MiniScript::ScriptMethod {
+		class ScriptMethodPI: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodPi(MiniScript* miniScript): MiniScript::ScriptMethod({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
+			ScriptMethodPI(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "math.PI";
 			}
@@ -188,15 +188,15 @@ void MathMethods::registerMethods() {
 				returnValue.setValue(Math::PI);
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodPi(miniScript));
+		miniScript->registerMethod(new ScriptMethodPI(miniScript));
 	}
 	{
 		//
-		class ScriptMethodEpsilon: public MiniScript::ScriptMethod {
+		class ScriptMethodEPSILON: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodEpsilon(MiniScript* miniScript): MiniScript::ScriptMethod({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
+			ScriptMethodEPSILON(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "math.EPSILON";
 			}
@@ -204,15 +204,15 @@ void MathMethods::registerMethods() {
 				returnValue.setValue(Math::EPSILON);
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodEpsilon(miniScript));
+		miniScript->registerMethod(new ScriptMethodEPSILON(miniScript));
 	}
 	{
 		//
-		class ScriptMethodDEG2RAD: public MiniScript::ScriptMethod {
+		class ScriptMethodDEG2RAD: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodDEG2RAD(MiniScript* miniScript): MiniScript::ScriptMethod({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
+			ScriptMethodDEG2RAD(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "math.DEG2RAD";
 			}
@@ -224,11 +224,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodG: public MiniScript::ScriptMethod {
+		class ScriptMethodG: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodG(MiniScript* miniScript): MiniScript::ScriptMethod({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
+			ScriptMethodG(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "math.G";
 			}
@@ -240,11 +240,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodAcos: public MiniScript::ScriptMethod {
+		class ScriptMethodAcos: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodAcos(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodAcos(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
 				},
@@ -266,11 +266,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodAsin: public MiniScript::ScriptMethod {
+		class ScriptMethodAsin: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodAsin(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodAsin(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
 				},
@@ -292,11 +292,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodAtan: public MiniScript::ScriptMethod {
+		class ScriptMethodAtan: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodAtan(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodAtan(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
 				},
@@ -318,11 +318,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodAtan2: public MiniScript::ScriptMethod {
+		class ScriptMethodAtan2: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodAtan2(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodAtan2(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "y", .optional = false, .reference = false },
 					{ .type = MiniScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
@@ -347,11 +347,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodTan: public MiniScript::ScriptMethod {
+		class ScriptMethodTan: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodTan(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodTan(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
 				},
@@ -373,11 +373,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodCos: public MiniScript::ScriptMethod {
+		class ScriptMethodCos: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodCos(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodCos(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
 				},
@@ -399,11 +399,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodSin: public MiniScript::ScriptMethod {
+		class ScriptMethodSin: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSin(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodSin(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
 				},
@@ -425,11 +425,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodFloor: public MiniScript::ScriptMethod {
+		class ScriptMethodFloor: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodFloor(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodFloor(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
 				},
@@ -451,11 +451,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodCeil: public MiniScript::ScriptMethod {
+		class ScriptMethodCeil: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodCeil(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodCeil(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
 				},
@@ -477,11 +477,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodRound: public MiniScript::ScriptMethod {
+		class ScriptMethodRound: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodRound(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodRound(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
 				},
@@ -503,11 +503,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodSqrt: public MiniScript::ScriptMethod {
+		class ScriptMethodSqrt: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSqrt(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodSqrt(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
 				},
@@ -529,11 +529,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodRandom: public MiniScript::ScriptMethod {
+		class ScriptMethodRandom: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodRandom(MiniScript* miniScript): MiniScript::ScriptMethod({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
+			ScriptMethodRandom(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "math.random";
 			}
@@ -545,11 +545,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodExp: public MiniScript::ScriptMethod {
+		class ScriptMethodExp: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodExp(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodExp(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "power", .optional = false, .reference = false },
 				},
@@ -571,11 +571,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodLog: public MiniScript::ScriptMethod {
+		class ScriptMethodLog: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodLog(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodLog(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
 				},
@@ -597,11 +597,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodSign: public MiniScript::ScriptMethod {
+		class ScriptMethodSign: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSign(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodSign(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
 				},
@@ -628,11 +628,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodSquare: public MiniScript::ScriptMethod {
+		class ScriptMethodSquare: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSquare(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodSquare(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
 				},
@@ -659,11 +659,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodMin: public MiniScript::ScriptMethod {
+		class ScriptMethodMin: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMin(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodMin(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value1", .optional = false, .reference = false },
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value2", .optional = false, .reference = false },
@@ -700,11 +700,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodMax: public MiniScript::ScriptMethod {
+		class ScriptMethodMax: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMax(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodMax(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value1", .optional = false, .reference = false },
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value2", .optional = false, .reference = false },
@@ -741,11 +741,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodAbs: public MiniScript::ScriptMethod {
+		class ScriptMethodAbs: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodAbs(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodAbs(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
 				},
@@ -772,11 +772,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodClamp: public MiniScript::ScriptMethod {
+		class ScriptMethodClamp: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodClamp(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodClamp(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "min", .optional = false, .reference = false },
@@ -818,11 +818,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodPow: public MiniScript::ScriptMethod {
+		class ScriptMethodPow: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodPow(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodPow(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "base", .optional = false, .reference = false },
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "power", .optional = false, .reference = false },
@@ -859,11 +859,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodMod: public MiniScript::ScriptMethod {
+		class ScriptMethodMod: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMod(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodMod(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "range", .optional = false, .reference = false },
@@ -901,11 +901,11 @@ void MathMethods::registerMethods() {
 	}
 	{
 		//
-		class ScriptMethodAbsMod: public MiniScript::ScriptMethod {
+		class ScriptMethodAbsMod: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodAbsMod(MiniScript* miniScript): MiniScript::ScriptMethod(
+			ScriptMethodAbsMod(MiniScript* miniScript): MiniScript::Method(
 				{
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
 					{ .type = MiniScript::TYPE_PSEUDO_NUMBER, .name = "range", .optional = false, .reference = false },
@@ -951,8 +951,8 @@ void MathMethods::mul(const span<MiniScript::Variable>& argumentValues, MiniScri
 		return;
 	}
 	// custom data types
-	for (const auto scriptDataType: scriptDataTypes) {
-		if (scriptDataType->mul(miniScript, argumentValues, returnValue, statement) == true) return;
+	for (const auto dataType: dataTypes) {
+		if (dataType->mul(miniScript, argumentValues, returnValue, statement) == true) return;
 	}
 	// float
 	if (MiniScript::hasType(argumentValues, MiniScript::TYPE_FLOAT) == true) {
@@ -995,8 +995,8 @@ void MathMethods::div(const span<MiniScript::Variable>& argumentValues, MiniScri
 		return;
 	}
 	// custom data types
-	for (const auto scriptDataType: scriptDataTypes) {
-		if (scriptDataType->div(miniScript, argumentValues, returnValue, statement) == true) return;
+	for (const auto dataType: dataTypes) {
+		if (dataType->div(miniScript, argumentValues, returnValue, statement) == true) return;
 	}
 	// float
 	if (MiniScript::hasType(argumentValues, MiniScript::TYPE_FLOAT) == true) {
@@ -1048,8 +1048,8 @@ void MathMethods::add(const span<MiniScript::Variable>& argumentValues, MiniScri
 		return;
 	}
 	// custom data types
-	for (const auto scriptDataType: scriptDataTypes) {
-		if (scriptDataType->add(miniScript, argumentValues, returnValue, statement) == true) return;
+	for (const auto dataType: dataTypes) {
+		if (dataType->add(miniScript, argumentValues, returnValue, statement) == true) return;
 	}
 	// float
 	if (MiniScript::hasType(argumentValues, MiniScript::TYPE_FLOAT) == true) {
@@ -1093,8 +1093,8 @@ void MathMethods::sub(const span<MiniScript::Variable>& argumentValues, MiniScri
 		return;
 	}
 	// custom data types
-	for (const auto scriptDataType: scriptDataTypes) {
-		if (scriptDataType->sub(miniScript, argumentValues, returnValue, statement) == true) return;
+	for (const auto dataType: dataTypes) {
+		if (dataType->sub(miniScript, argumentValues, returnValue, statement) == true) return;
 	}
 	// float
 	if (MiniScript::hasType(argumentValues, MiniScript::TYPE_FLOAT) == true) {

@@ -16,12 +16,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	// array methods
 	{
 		//
-		class ScriptMethodByteArray: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArray: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodByteArray(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{},
 					MiniScript::TYPE_BYTEARRAY
 				),
@@ -49,12 +49,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodByteArrayLength: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArrayLength: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodByteArrayLength(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = false, .nullable = false }
 					},
@@ -77,12 +77,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodByteArrayPush: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArrayPush: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodByteArrayPush(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false }
 					},
@@ -114,12 +114,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodByteArrayGet: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArrayGet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodByteArrayGet(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false }
@@ -145,12 +145,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodByteArraySet: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArraySet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodByteArraySet(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false },
@@ -180,12 +180,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodByteArrayRemove: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArrayRemove: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodByteArrayRemove(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false }
@@ -211,12 +211,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodByteArrayAppend: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArrayAppend: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodByteArrayAppend(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "other", .optional = false, .reference = true, .nullable = false },
@@ -246,12 +246,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodByteArrayExtract: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArrayExtract: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodByteArrayExtract(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false },
@@ -285,12 +285,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class ScriptMethodByteArrayClear: public MiniScript::ScriptMethod {
+		class ScriptMethodByteArrayClear: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
 			ScriptMethodByteArrayClear(MiniScript* miniScript):
-				MiniScript::ScriptMethod(
+				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false }
 					},
