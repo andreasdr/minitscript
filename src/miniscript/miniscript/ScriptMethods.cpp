@@ -245,8 +245,8 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 						Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": function not found: " + function);
 						miniScript->startErrorScript();
 					} else {
-						#if defined (__APPLE__)
-							// MACOSX currently does not support initializing span using begin and end iterators,
+						#if defined (__clang__)
+							// Clang currently does not support initializing span using begin and end iterators,
 							vector<MiniScript::Variable> callArgumentValues(argumentValues.size() - 1);
 							for (auto i = 1; i < argumentValues.size(); i++) callArgumentValues[i - 1] = move(argumentValues[i]);
 							// call
