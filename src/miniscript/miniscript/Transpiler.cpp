@@ -380,12 +380,12 @@ void Transpiler::generateArrayAccessMethods(
 										MiniScript::STATEMENTIDX_NONE
 									);
 									// parse script statement
-									if (miniScript->parseScriptStatement(string_view(arrayAccessStatementString), arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, accessObjectMemberStatement) == false) {
+									if (miniScript->parseStatement(string_view(arrayAccessStatementString), arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, accessObjectMemberStatement) == false) {
 										break;
 									}
 									// create syntax tree for this array access
 									MiniScript::SyntaxTreeNode arrayAccessSyntaxTree;
-									if (miniScript->createScriptStatementSyntaxTree(arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, arrayAccessSyntaxTree) == false) {
+									if (miniScript->createStatementSyntaxTree(arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, arrayAccessSyntaxTree) == false) {
 										break;
 									}
 

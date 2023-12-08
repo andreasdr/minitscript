@@ -175,7 +175,7 @@ void MiniScript::registerDataType(DataType* dataType) {
 	dataTypes.push_back(dataType);
 }
 
-void MiniScript::executeScriptLine() {
+void MiniScript::executeNextStatement() {
 	auto& scriptState = getScriptState();
 	if (scriptState.scriptIdx == SCRIPTIDX_NONE || scriptState.statementIdx == STATEMENTIDX_NONE || scriptState.running == false) return;
 	//
@@ -192,7 +192,7 @@ void MiniScript::executeScriptLine() {
 	if (VERBOSE == true) Console::println("MiniScript::executeScriptLine(): " + getStatementInformation(statement));
 
 	//
-	auto returnValue = executeScriptStatement(syntaxTree, statement);
+	auto returnValue = executeStatement(syntaxTree, statement);
 
 	//
 	scriptState.statementIdx++;
@@ -203,7 +203,7 @@ void MiniScript::executeScriptLine() {
 	}
 }
 
-bool MiniScript::parseScriptStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const Statement& statement, string& accessObjectMemberStatement) {
+bool MiniScript::parseStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const Statement& statement, string& accessObjectMemberStatement) {
 	if (VERBOSE == true) Console::println("MiniScript::parseScriptStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
 	string_view objectMemberAccessObject;
 	string_view objectMemberAccessMethod;
@@ -471,7 +471,7 @@ bool MiniScript::parseScriptStatement(const string_view& executableStatement, st
 	return true;
 }
 
-MiniScript::Variable MiniScript::executeScriptStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement) {
+MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement) {
 	if (VERBOSE == true) Console::println("MiniScript::executeScriptStatement(): " + getStatementInformation(statement) + "': " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
 	// return on literal or empty syntaxTree
 	if (syntaxTree.type != SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD &&
@@ -492,7 +492,7 @@ MiniScript::Variable MiniScript::executeScriptStatement(const SyntaxTreeNode& sy
 			case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 			case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 				{
-					argumentValues.push_back(executeScriptStatement(argument, statement));
+					argumentValues.push_back(executeStatement(argument, statement));
 					break;
 				}
 			default:
@@ -644,7 +644,7 @@ MiniScript::Variable MiniScript::executeScriptStatement(const SyntaxTreeNode& sy
 	return returnValue;
 }
 
-bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree) {
+bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree) {
 	if (VERBOSE == true) Console::println("MiniScript::createScriptStatementSyntaxTree(): " + getStatementInformation(statement) + ": " + string(methodName) + "(" + getArgumentsAsString(arguments) + ")");
 	// method/function
 	auto functionIdx = SCRIPTIDX_NONE;
@@ -698,9 +698,9 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 			string_view subMethodName;
 			vector<string_view> subArguments;
 			string accessObjectMemberStatement;
-			if (parseScriptStatement(argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
+			if (parseStatement(argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
-				if (createScriptStatementSyntaxTree(subMethodName, subArguments, statement, subSyntaxTree) == false) {
+				if (createStatementSyntaxTree(subMethodName, subArguments, statement, subSyntaxTree) == false) {
 					return false;
 				}
 				syntaxTree.arguments.push_back(subSyntaxTree);
@@ -761,9 +761,9 @@ bool MiniScript::createScriptStatementSyntaxTree(const string_view& methodName, 
 			string_view subMethodName;
 			vector<string_view> subArguments;
 			string accessObjectMemberStatement;
-			if (parseScriptStatement(argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
+			if (parseStatement(argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
-				if (createScriptStatementSyntaxTree(subMethodName, subArguments, statement, subSyntaxTree) == false) {
+				if (createStatementSyntaxTree(subMethodName, subArguments, statement, subSyntaxTree) == false) {
 					return false;
 				}
 				syntaxTree.arguments.push_back(subSyntaxTree);
@@ -1656,11 +1656,11 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 			string_view method;
 			vector<string_view> arguments;
 			string accessObjectMemberStatement;
-			if (parseScriptStatement(script.executableCondition, method, arguments, script.conditionStatement, accessObjectMemberStatement) == false) {
+			if (parseStatement(script.executableCondition, method, arguments, script.conditionStatement, accessObjectMemberStatement) == false) {
 				//
 				scriptValid = false;
 			} else
-			if (createScriptStatementSyntaxTree(method, arguments, script.conditionStatement, script.conditionSyntaxTree) == false) {
+			if (createStatementSyntaxTree(method, arguments, script.conditionStatement, script.conditionSyntaxTree) == false) {
 				//
 				scriptValid = false;
 			}
@@ -1673,11 +1673,11 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 			string_view methodName;
 			vector<string_view> arguments;
 			string accessObjectMemberStatement;
-			if (parseScriptStatement(statement.executableStatement, methodName, arguments, statement, accessObjectMemberStatement) == false) {
+			if (parseStatement(statement.executableStatement, methodName, arguments, statement, accessObjectMemberStatement) == false) {
 				//
 				scriptValid = false;
 			} else
-			if (createScriptStatementSyntaxTree(methodName, arguments, statement, syntaxTree) == false) {
+			if (createStatementSyntaxTree(methodName, arguments, statement, syntaxTree) == false) {
 				//
 				scriptValid = false;
 			}
@@ -2566,7 +2566,7 @@ void MiniScript::registerStateMachineStates() {
 					miniScript->setScriptStateState(STATEMACHINESTATE_WAIT_FOR_CONDITION);
 					return;
 				}
-				if (miniScript->native == false) miniScript->executeScriptLine();
+				if (miniScript->native == false) miniScript->executeNextStatement();
 			}
 		};
 		registerStateMachineState(new ScriptStateNextStatement(this));
@@ -3411,10 +3411,10 @@ void MiniScript::Variable::setFunctionCallStatement(const string& initializerSta
 	vector<string_view> arguments;
 	string accessObjectMemberStatement;
 	SyntaxTreeNode* evaluateSyntaxTree = new SyntaxTreeNode();
-	if (miniScript->parseScriptStatement(initializerStatement, methodName, arguments, initializerScriptStatement, accessObjectMemberStatement) == false) {
+	if (miniScript->parseStatement(initializerStatement, methodName, arguments, initializerScriptStatement, accessObjectMemberStatement) == false) {
 		//
 	} else
-	if (miniScript->createScriptStatementSyntaxTree(methodName, arguments, initializerScriptStatement, *evaluateSyntaxTree) == false) {
+	if (miniScript->createStatementSyntaxTree(methodName, arguments, initializerScriptStatement, *evaluateSyntaxTree) == false) {
 		//
 	} else {
 		getInitializerReference() = new Initializer(initializerStatement, statement, evaluateSyntaxTree);
@@ -3639,10 +3639,10 @@ inline bool MiniScript::evaluateInternal(const string& statement, const string& 
 	vector<string_view> arguments;
 	string accessObjectMemberStatement;
 	SyntaxTreeNode evaluateSyntaxTree;
-	if (parseScriptStatement(scriptEvaluateStatement, methodName, arguments, evaluateStatement, accessObjectMemberStatement) == false) {
+	if (parseStatement(scriptEvaluateStatement, methodName, arguments, evaluateStatement, accessObjectMemberStatement) == false) {
 		return false;
 	} else
-	if (createScriptStatementSyntaxTree(methodName, arguments, evaluateStatement, evaluateSyntaxTree) == false) {
+	if (createStatementSyntaxTree(methodName, arguments, evaluateStatement, evaluateSyntaxTree) == false) {
 		return false;
 	} else {
 		//
@@ -3652,7 +3652,7 @@ inline bool MiniScript::evaluateInternal(const string& statement, const string& 
 		}
 		getScriptState().running = true;
 		//
-		returnValue = executeScriptStatement(
+		returnValue = executeStatement(
 			evaluateSyntaxTree,
 			evaluateStatement
 		);
@@ -3692,7 +3692,7 @@ inline const MiniScript::Variable MiniScript::initializeVariable(const Variable&
 			}
 		case TYPE_FUNCTION_CALL:
 			{
-				return executeScriptStatement(
+				return executeStatement(
 					*variable.getInitializer()->getSyntaxTree(),
 					variable.getInitializer()->getStatement()
 				);

@@ -2129,7 +2129,7 @@ public:
 		virtual int getId() = 0;
 
 		/**
-		 * Execute script state machine state
+		 * Execute state machine state
 		 */
 		virtual void execute() = 0;
 	};
@@ -2707,7 +2707,7 @@ private:
 	bool scriptValid { false };
 
 	/**
-	 * Parse additional script code into this MiniScript instance
+	 * Parse script code into this MiniScript instance
 	 * @param scriptCode script code
 	 * @return success
 	 */
@@ -2715,21 +2715,21 @@ private:
 
 
 	/**
-	 * Execute a single script line
+	 * Execute next statement
 	 */
-	void executeScriptLine();
+	void executeNextStatement();
 
 	/**
 	 * Get next statement from script code
 	 * @param scriptCode script code
 	 * @param i character index
-	 * @param line script line
+	 * @param line line
 	 * @return next statement
 	 */
 	const string getNextStatement(const string& scriptCode, int& i, int& line);
 
 	/**
-	 * Parse a script statement
+	 * Parse a statement
 	 * @param executableStatement executable statement
 	 * @param methodName method name
 	 * @param arguments arguments
@@ -2737,25 +2737,25 @@ private:
 	 * @param accessObjectMember generated access object member statement
 	 * @return success
 	 */
-	bool parseScriptStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const Statement& statement, string& accessObjectMemberStatement);
+	bool parseStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const Statement& statement, string& accessObjectMemberStatement);
 
 	/**
-	 * Execute a script statement
+	 * Execute a statement
 	 * @param syntaxTree syntax tree
 	 * @param statement statement
 	 * @return return value as variable
 	 */
-	Variable executeScriptStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement);
+	Variable executeStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement);
 
 	/**
-	 * Create script statement syntax tree
+	 * Create statement syntax tree
 	 * @param methodName method name
 	 * @param arguments arguments
 	 * @param statement statement
 	 * @param syntaxTree syntax tree
 	 * @return success
 	 */
-	bool createScriptStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree);
+	bool createStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree);
 
 	/**
 	 * Validate callabe
@@ -2876,9 +2876,9 @@ private:
 
 	/**
 	 * Evaluate given statement without executing preprocessor run
-	 * @param statement script statement
-	 * @param executableStatement executable script statement
-	 * @param returnValue script return value
+	 * @param statement statement
+	 * @param executableStatement executable statement
+	 * @param returnValue return value
 	 * @param pushOwnScriptState push own script state
 	 * @return success
 	 */
@@ -3177,7 +3177,7 @@ public:
 	/**
 	 * Returns data type by class name or nullptr
 	 * @param className class name
-	 * @return script data type
+	 * @return data type
 	 */
 	inline static DataType* getDataTypeByClassName(const string& className) {
 		for (const auto dataType: dataTypes) {
@@ -3230,7 +3230,7 @@ public:
 	}
 
 	/**
-	 * @return if this script was compiled to C++ and is executed nativly
+	 * @return if this script was compiled to C++ and is executed natively
 	 */
 	inline bool isNative() {
 		return native;
@@ -3258,7 +3258,7 @@ public:
 	}
 
 	/**
-	 * @return script state
+	 * @return root script state
 	 */
 	inline ScriptState& getRootScriptState() {
 		return *(scriptStateStack[0].get());
@@ -3272,7 +3272,7 @@ public:
 	}
 
 	/**
-	 * @return mini script math
+	 * @return math methods
 	 */
 	inline MathMethods* getMathMethods() {
 		return miniScriptMath.get();
@@ -3319,18 +3319,18 @@ public:
 	virtual void registerVariables();
 
 	/**
-	 * Return script statement information
+	 * Return statement information
 	 * @param statement statement
-	 * @return script statement information
+	 * @return statement information
 	 */
 	inline const string getStatementInformation(const Statement& statement) {
 		return scriptFileName + ":" + to_string(statement.line) +  ": " + statement.statement;
 	}
 
 	/**
-	 * Get script argument information
+	 * Get argument information
 	 * @param methodName method name
-	 * @return script argument information
+	 * @return argument information
 	 */
 	inline const string getArgumentInformation(const string& methodName) {
 		auto scriptMethod = getMethod(methodName);
@@ -3343,11 +3343,11 @@ public:
 
 	/**
 	 * Get operator as string
-	 * @param scriptOperator script operator
-	 * @return script operator as string
+	 * @param operator_ operator
+	 * @return operator as string
 	 */
-	inline static string getOperatorAsString(Operator scriptOperator) {
-		switch(scriptOperator) {
+	inline static string getOperatorAsString(Operator operator_) {
+		switch(operator_) {
 			case(OPERATOR_NONE): return "NONE";
 			case(OPERATOR_INCREMENT): return "++";
 			case(OPERATOR_DECREMENT): return "--";
@@ -3443,7 +3443,7 @@ public:
 	}
 
 	/**
-	 * Register script state machine state
+	 * Register state machine state
 	 * @param state state
 	 */
 	void registerStateMachineState(ScriptStateMachineState* state);
@@ -3727,11 +3727,9 @@ public:
 	virtual void execute();
 
 	/**
-	 * Call (script user) function
-	 * @param function (script user) function
-	 * @param argumentValues argument values
-	 * @param returnValue return value
-	 * @return success
+	 * Return function script index by function name
+	 * @param function function
+	 * @return function script index
 	 */
 	inline int getFunctionScriptIdx(const string& function) {
 		// lookup function
@@ -3746,7 +3744,7 @@ public:
 	}
 
 	/**
-	 * Call (script user) function
+	 * Call function
 	 * @param scriptIdx script index
 	 * @param argumentValues argument values
 	 * @param returnValue return value
@@ -3755,8 +3753,8 @@ public:
 	virtual bool call(int scriptIdx, span<Variable>& argumentValues, Variable& returnValue);
 
 	/**
-	 * Call (script user) function
-	 * @param function (script user) function
+	 * Call function
+	 * @param function function
 	 * @param argumentValues argument values
 	 * @param returnValue return value
 	 * @return success
@@ -3775,9 +3773,9 @@ public:
 	}
 
 	/**
-	 * Evaluate given statement
-	 * @param statement script statement
-	 * @param returnValue script return value
+	 * Evaluate statement
+	 * @param evaluateStatement evaluate statement
+	 * @param returnValue return value
 	 * @return success
 	 */
 	inline bool evaluate(const string& evaluateStatement, Variable& returnValue) {
@@ -3823,7 +3821,7 @@ public:
 	const vector<Method*> getOperatorMethods();
 
 	/**
-	 * Get miniscript script information
+	 * Get script information for a specific script index
 	 * @param scriptIdx script index
 	 * @param includeStatements include statements
 	 * @return information as string
@@ -3831,7 +3829,7 @@ public:
 	const string getScriptInformation(int scriptIdx, bool includeStatements = true);
 
 	/**
-	 * Get miniscript instance information
+	 * Get MiniScript instance information
 	 * @return information as string
 	 */
 	const string getInformation();
