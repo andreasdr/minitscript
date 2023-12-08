@@ -39,7 +39,7 @@ namespace tools {
 namespace cli {
 class MiniscriptDocumentation {
 public:
-static void generateMiniScriptMethodsDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, unordered_set<string>& categories, const set<string>& allClassMethods, MiniScript* omitMiniScript = nullptr) {
+static void generateMiniMethodsDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, unordered_set<string>& categories, const set<string>& allClassMethods, MiniScript* omitMiniScript = nullptr) {
 	auto scriptMethods = miniScript->getMethods();
 	map<string, vector<pair<string, string>>> methodMarkupByCategory;
 	for (auto scriptMethod: scriptMethods) {
@@ -269,7 +269,7 @@ int main(int argc, char** argv)
 	// classes
 	miniscript::tools::cli::MiniscriptDocumentation::generateMiniScriptClassesDocumentation("MiniScript Classes", 6, miniScript.get(), descriptions, "miniscript.basemethod.", allClassMethods);
 	// base methods
-	miniscript::tools::cli::MiniscriptDocumentation::generateMiniScriptMethodsDocumentation("MiniScript Methods", 7, miniScript.get(), descriptions, "miniscript.basemethod.", baseMethodCategories, allClassMethods);
+	miniscript::tools::cli::MiniscriptDocumentation::generateMiniMethodsDocumentation("MiniScript Methods", 7, miniScript.get(), descriptions, "miniscript.basemethod.", baseMethodCategories, allClassMethods);
 
 	// operators
 	auto scriptOperatorMethods = miniScript->getOperatorMethods();

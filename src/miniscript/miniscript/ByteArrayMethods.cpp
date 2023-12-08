@@ -16,11 +16,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	// array methods
 	{
 		//
-		class ScriptMethodByteArray: public MiniScript::Method {
+		class MethodByteArray: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArray(MiniScript* miniScript):
+			MethodByteArray(MiniScript* miniScript):
 				MiniScript::Method(
 					{},
 					MiniScript::TYPE_BYTEARRAY
@@ -45,15 +45,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArray(miniScript));
+		miniScript->registerMethod(new MethodByteArray(miniScript));
 	}
 	{
 		//
-		class ScriptMethodByteArrayLength: public MiniScript::Method {
+		class MethodByteArrayLength: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArrayLength(MiniScript* miniScript):
+			MethodByteArrayLength(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = false, .nullable = false }
@@ -73,15 +73,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArrayLength(miniScript));
+		miniScript->registerMethod(new MethodByteArrayLength(miniScript));
 	}
 	{
 		//
-		class ScriptMethodByteArrayPush: public MiniScript::Method {
+		class MethodByteArrayPush: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArrayPush(MiniScript* miniScript):
+			MethodByteArrayPush(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false }
@@ -110,15 +110,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArrayPush(miniScript));
+		miniScript->registerMethod(new MethodByteArrayPush(miniScript));
 	}
 	{
 		//
-		class ScriptMethodByteArrayGet: public MiniScript::Method {
+		class MethodByteArrayGet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArrayGet(MiniScript* miniScript):
+			MethodByteArrayGet(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = false, .nullable = false },
@@ -141,15 +141,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArrayGet(miniScript));
+		miniScript->registerMethod(new MethodByteArrayGet(miniScript));
 	}
 	{
 		//
-		class ScriptMethodByteArraySet: public MiniScript::Method {
+		class MethodByteArraySet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArraySet(MiniScript* miniScript):
+			MethodByteArraySet(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
@@ -176,15 +176,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArraySet(miniScript));
+		miniScript->registerMethod(new MethodByteArraySet(miniScript));
 	}
 	{
 		//
-		class ScriptMethodByteArrayRemove: public MiniScript::Method {
+		class MethodByteArrayRemove: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArrayRemove(MiniScript* miniScript):
+			MethodByteArrayRemove(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
@@ -207,15 +207,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArrayRemove(miniScript));
+		miniScript->registerMethod(new MethodByteArrayRemove(miniScript));
 	}
 	{
 		//
-		class ScriptMethodByteArrayAppend: public MiniScript::Method {
+		class MethodByteArrayAppend: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArrayAppend(MiniScript* miniScript):
+			MethodByteArrayAppend(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
@@ -242,15 +242,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArrayAppend(miniScript));
+		miniScript->registerMethod(new MethodByteArrayAppend(miniScript));
 	}
 	{
 		//
-		class ScriptMethodByteArrayExtract: public MiniScript::Method {
+		class MethodByteArrayExtract: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArrayExtract(MiniScript* miniScript):
+			MethodByteArrayExtract(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
@@ -281,15 +281,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArrayExtract(miniScript));
+		miniScript->registerMethod(new MethodByteArrayExtract(miniScript));
 	}
 	{
 		//
-		class ScriptMethodByteArrayClear: public MiniScript::Method {
+		class MethodByteArrayClear: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodByteArrayClear(MiniScript* miniScript):
+			MethodByteArrayClear(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false }
@@ -310,6 +310,6 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodByteArrayClear(miniScript));
+		miniScript->registerMethod(new MethodByteArrayClear(miniScript));
 	}
 }

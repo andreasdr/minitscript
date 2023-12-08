@@ -2631,11 +2631,11 @@ void MiniScript::registerMethods() {
 	// script intern base methods
 	{
 		//
-		class ScriptMethodInternalScriptEvaluate: public Method {
+		class MethodInternalScriptEvaluate: public Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodInternalScriptEvaluate(MiniScript* miniScript):
+			MethodInternalScriptEvaluate(MiniScript* miniScript):
 				Method(
 					{
 						{ .type = VariableType::TYPE_PSEUDO_MIXED, .name = "statement", .optional = false, .reference = false, .nullable = false }
@@ -2659,15 +2659,15 @@ void MiniScript::registerMethods() {
 				return true;
 			}
 		};
-		registerMethod(new ScriptMethodInternalScriptEvaluate(this));
+		registerMethod(new MethodInternalScriptEvaluate(this));
 	}
 	{
 		//
-		class ScriptMethodInternalEvaluateMemberAccess: public Method {
+		class MethodInternalEvaluateMemberAccess: public Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodInternalEvaluateMemberAccess(MiniScript* miniScript):
+			MethodInternalEvaluateMemberAccess(MiniScript* miniScript):
 				Method(
 					{
 						{ .type = VariableType::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = true },
@@ -2786,7 +2786,7 @@ void MiniScript::registerMethods() {
 				return true;
 			}
 		};
-		registerMethod(new ScriptMethodInternalEvaluateMemberAccess(this));
+		registerMethod(new MethodInternalEvaluateMemberAccess(this));
 	}
 
 	// register math methods

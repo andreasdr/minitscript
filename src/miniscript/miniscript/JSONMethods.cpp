@@ -18,11 +18,11 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 	// json
 	{
 		//
-		class ScriptMethodJSONSerialize: public MiniScript::Method {
+		class MethodJSONSerialize: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodJSONSerialize(MiniScript* miniScript):
+			MethodJSONSerialize(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "value", .optional = false, .reference = false, .nullable = false },
@@ -43,15 +43,15 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodJSONSerialize(miniScript));
+		miniScript->registerMethod(new MethodJSONSerialize(miniScript));
 	}
 	{
 		//
-		class ScriptMethodJSONDeserialize: public MiniScript::Method {
+		class MethodJSONDeserialize: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodJSONDeserialize(MiniScript* miniScript):
+			MethodJSONDeserialize(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "json", .optional = false, .reference = false, .nullable = false },
@@ -80,6 +80,6 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodJSONDeserialize(miniScript));
+		miniScript->registerMethod(new MethodJSONDeserialize(miniScript));
 	}
 }

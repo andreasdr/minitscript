@@ -16,11 +16,11 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 	// map
 	{
 		//
-		class ScriptMethodMap: public MiniScript::Method {
+		class MethodMap: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMap(MiniScript* miniScript):
+			MethodMap(MiniScript* miniScript):
 				MiniScript::Method(
 					{},
 					MiniScript::TYPE_MAP
@@ -33,15 +33,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				returnValue.setType(MiniScript::TYPE_MAP);
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodMap(miniScript));
+		miniScript->registerMethod(new MethodMap(miniScript));
 	}
 	{
 		//
-		class ScriptMethodMapSet: public MiniScript::Method {
+		class MethodMapSet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMapSet(MiniScript* miniScript):
+			MethodMapSet(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = true, .nullable = false },
@@ -67,15 +67,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodMapSet(miniScript));
+		miniScript->registerMethod(new MethodMapSet(miniScript));
 	}
 	{
 		//
-		class ScriptMethodMapHas: public MiniScript::Method {
+		class MethodMapHas: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMapHas(MiniScript* miniScript):
+			MethodMapHas(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
@@ -100,15 +100,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodMapHas(miniScript));
+		miniScript->registerMethod(new MethodMapHas(miniScript));
 	}
 	{
 		//
-		class ScriptMethodMapGet: public MiniScript::Method {
+		class MethodMapGet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMapGet(MiniScript* miniScript):
+			MethodMapGet(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
@@ -133,15 +133,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodMapGet(miniScript));
+		miniScript->registerMethod(new MethodMapGet(miniScript));
 	}
 	{
 		//
-		class ScriptMethodMapRemove: public MiniScript::Method {
+		class MethodMapRemove: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMapRemove(MiniScript* miniScript):
+			MethodMapRemove(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = true, .nullable = false },
@@ -166,15 +166,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodMapRemove(miniScript));
+		miniScript->registerMethod(new MethodMapRemove(miniScript));
 	}
 	{
 		//
-		class ScriptMethodMapGetKeys: public MiniScript::Method {
+		class MethodMapGetKeys: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMapGetKeys(MiniScript* miniScript):
+			MethodMapGetKeys(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
@@ -200,15 +200,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodMapGetKeys(miniScript));
+		miniScript->registerMethod(new MethodMapGetKeys(miniScript));
 	}
 	{
 		//
-		class ScriptMethodMapGetValues: public MiniScript::Method {
+		class MethodMapGetValues: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMapGetValues(MiniScript* miniScript):
+			MethodMapGetValues(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
@@ -234,15 +234,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodMapGetValues(miniScript));
+		miniScript->registerMethod(new MethodMapGetValues(miniScript));
 	}
 	{
 		//
-		class ScriptMethodMapClear: public MiniScript::Method {
+		class MethodMapClear: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMapClear(MiniScript* miniScript):
+			MethodMapClear(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = true, .nullable = false }
@@ -262,15 +262,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodMapClear(miniScript));
+		miniScript->registerMethod(new MethodMapClear(miniScript));
 	}
 	{
 		//
-		class ScriptMethodMapForEach: public MiniScript::Method {
+		class MethodMapForEach: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodMapForEach(MiniScript* miniScript):
+			MethodMapForEach(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
@@ -308,6 +308,6 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodMapForEach(miniScript));
+		miniScript->registerMethod(new MethodMapForEach(miniScript));
 	}
 }

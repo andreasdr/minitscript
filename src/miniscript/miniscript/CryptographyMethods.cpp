@@ -22,11 +22,11 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 	// base64
 	{
 		//
-		class ScriptMethodCryptographyBase64Encode: public MiniScript::Method {
+		class MethodCryptographyBase64Encode: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodCryptographyBase64Encode(MiniScript* miniScript):
+			MethodCryptographyBase64Encode(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false },
@@ -47,15 +47,15 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodCryptographyBase64Encode(miniScript));
+		miniScript->registerMethod(new MethodCryptographyBase64Encode(miniScript));
 	}
 	{
 		//
-		class ScriptMethodCryptographyBase64Decode: public MiniScript::Method {
+		class MethodCryptographyBase64Decode: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodCryptographyBase64Decode(MiniScript* miniScript):
+			MethodCryptographyBase64Decode(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false },
@@ -76,16 +76,16 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodCryptographyBase64Decode(miniScript));
+		miniScript->registerMethod(new MethodCryptographyBase64Decode(miniScript));
 	}
 	// sha256
 	{
 		//
-		class ScriptMethodCryptographySHA256Encode: public MiniScript::Method {
+		class MethodCryptographySHA256Encode: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodCryptographySHA256Encode(MiniScript* miniScript):
+			MethodCryptographySHA256Encode(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false },
@@ -106,6 +106,6 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodCryptographySHA256Encode(miniScript));
+		miniScript->registerMethod(new MethodCryptographySHA256Encode(miniScript));
 	}
 }

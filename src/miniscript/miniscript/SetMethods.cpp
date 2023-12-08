@@ -17,11 +17,11 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	// sets
 	{
 		//
-		class ScriptMethodSet: public MiniScript::Method {
+		class MethodSet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSet(MiniScript* miniScript):
+			MethodSet(MiniScript* miniScript):
 				MiniScript::Method(
 					{},
 					MiniScript::TYPE_SET
@@ -34,15 +34,15 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				returnValue.setType(MiniScript::TYPE_SET);
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodSet(miniScript));
+		miniScript->registerMethod(new MethodSet(miniScript));
 	}
 	{
 		//
-		class ScriptMethodSetInsert: public MiniScript::Method {
+		class MethodSetInsert: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSetInsert(MiniScript* miniScript):
+			MethodSetInsert(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = true, .nullable = false },
@@ -67,15 +67,15 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodSetInsert(miniScript));
+		miniScript->registerMethod(new MethodSetInsert(miniScript));
 	}
 	{
 		//
-		class ScriptMethodSetHas: public MiniScript::Method {
+		class MethodSetHas: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSetHas(MiniScript* miniScript):
+			MethodSetHas(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false },
@@ -100,15 +100,15 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodSetHas(miniScript));
+		miniScript->registerMethod(new MethodSetHas(miniScript));
 	}
 	{
 		//
-		class ScriptMethodSetRemove: public MiniScript::Method {
+		class MethodSetRemove: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSetRemove(MiniScript* miniScript):
+			MethodSetRemove(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = true, .nullable = false },
@@ -133,15 +133,15 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodSetRemove(miniScript));
+		miniScript->registerMethod(new MethodSetRemove(miniScript));
 	}
 	{
 		//
-		class ScriptMethodSetGetKeys: public MiniScript::Method {
+		class MethodSetGetKeys: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSetGetKeys(MiniScript* miniScript):
+			MethodSetGetKeys(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false },
@@ -167,15 +167,15 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodSetGetKeys(miniScript));
+		miniScript->registerMethod(new MethodSetGetKeys(miniScript));
 	}
 	{
 		//
-		class ScriptMethodSetClear: public MiniScript::Method {
+		class MethodSetClear: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSetClear(MiniScript* miniScript):
+			MethodSetClear(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = true, .nullable = false }
@@ -195,15 +195,15 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodSetClear(miniScript));
+		miniScript->registerMethod(new MethodSetClear(miniScript));
 	}
 	{
 		//
-		class ScriptMethodSetForEach: public MiniScript::Method {
+		class MethodSetForEach: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodSetForEach(MiniScript* miniScript):
+			MethodSetForEach(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false },
@@ -241,6 +241,6 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodSetForEach(miniScript));
+		miniScript->registerMethod(new MethodSetForEach(miniScript));
 	}
 }

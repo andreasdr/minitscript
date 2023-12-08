@@ -510,7 +510,7 @@ void Transpiler::generateMiniScriptEvaluateMemberAccessArrays(
 	generatedDeclarations.push_back("");
 	generatedDeclarations.push_back("// evaluate member access arrays");
 	generatedDeclarations.push_back(
-		"array<array<ScriptMethod*, " +
+		"array<array<Method*, " +
 		to_string(methodIdx) +
 		">, " +
 		to_string((static_cast<int>(MiniScript::TYPE_PSEUDO_CUSTOM_DATATYPES + MiniScript::getDataTypes().size()) - static_cast<int>(MiniScript::TYPE_STRING))) +

@@ -21,11 +21,11 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 	// script methods
 	{
 		//
-		class ScriptMethodScriptWaitForCondition: public MiniScript::Method {
+		class MethodScriptWaitForCondition: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptWaitForCondition(MiniScript* miniScript): miniScript(miniScript) {}
+			MethodScriptWaitForCondition(MiniScript* miniScript): miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "script.waitForCondition";
 			}
@@ -36,15 +36,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_WAIT_FOR_CONDITION);
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptWaitForCondition(miniScript));
+		miniScript->registerMethod(new MethodScriptWaitForCondition(miniScript));
 	}
 	{
 		//
-		class ScriptMethodScriptWait: public MiniScript::Method {
+		class MethodScriptWait: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptWait(MiniScript* miniScript):
+			MethodScriptWait(MiniScript* miniScript):
 				MiniScript::Method({
 					{ .type = MiniScript::TYPE_INTEGER, .name = "time", .optional = false, .reference = false, .nullable = false }
 				}),
@@ -63,15 +63,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptWait(miniScript));
+		miniScript->registerMethod(new MethodScriptWait(miniScript));
 	}
 	{
 		//
-		class ScriptMethodScriptEmit: public MiniScript::Method {
+		class MethodScriptEmit: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptEmit(MiniScript* miniScript):
+			MethodScriptEmit(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "condition", .optional = false, .reference = false, .nullable = false }
@@ -91,15 +91,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptEmit(miniScript));
+		miniScript->registerMethod(new MethodScriptEmit(miniScript));
 	}
 	{
 		//
-		class ScriptMethodScriptEnableNamedCondition: public MiniScript::Method {
+		class MethodScriptEnableNamedCondition: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptEnableNamedCondition(MiniScript* miniScript):
+			MethodScriptEnableNamedCondition(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "name", .optional = false, .reference = false, .nullable = false }
@@ -127,15 +127,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptEnableNamedCondition(miniScript));
+		miniScript->registerMethod(new MethodScriptEnableNamedCondition(miniScript));
 	}
 	{
 		//
-		class ScriptMethodScriptDisableNamedCondition: public MiniScript::Method {
+		class MethodScriptDisableNamedCondition: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptDisableNamedCondition(MiniScript* miniScript):
+			MethodScriptDisableNamedCondition(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "name", .optional = false, .reference = false, .nullable = false }
@@ -162,15 +162,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptDisableNamedCondition(miniScript));
+		miniScript->registerMethod(new MethodScriptDisableNamedCondition(miniScript));
 	}
 	{
 		//
-		class ScriptMethodScriptGetNamedConditions: public MiniScript::Method {
+		class MethodScriptGetNamedConditions: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptGetNamedConditions(MiniScript* miniScript):
+			MethodScriptGetNamedConditions(MiniScript* miniScript):
 				MiniScript::Method({}, MiniScript::TYPE_STRING),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
@@ -184,15 +184,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				returnValue.setValue(result);
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptGetNamedConditions(miniScript));
+		miniScript->registerMethod(new MethodScriptGetNamedConditions(miniScript));
 	}
 	{
 		//
-		class ScriptMethodScriptEvaluate: public MiniScript::Method {
+		class MethodScriptEvaluate: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptEvaluate(MiniScript* miniScript):
+			MethodScriptEvaluate(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "statement", .optional = false, .reference = false, .nullable = false }
@@ -215,15 +215,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptEvaluate(miniScript));
+		miniScript->registerMethod(new MethodScriptEvaluate(miniScript));
 	}
 	{
 		//
-		class ScriptMethodScriptCall: public MiniScript::Method {
+		class MethodScriptCall: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptCall(MiniScript* miniScript):
+			MethodScriptCall(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "function", .optional = false, .reference = false, .nullable = false }
@@ -265,15 +265,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				return true;
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptCall(miniScript));
+		miniScript->registerMethod(new MethodScriptCall(miniScript));
 	}
 	{
 		//
-		class ScriptMethodScriptStop: public MiniScript::Method {
+		class MethodScriptStop: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptStop(MiniScript* miniScript): MiniScript::Method(), miniScript(miniScript) {}
+			MethodScriptStop(MiniScript* miniScript): MiniScript::Method(), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "script.stop";
 			}
@@ -283,15 +283,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				miniScript->stopRunning();
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptStop(miniScript));
+		miniScript->registerMethod(new MethodScriptStop(miniScript));
 	}
 	{
 		//
-		class ScriptMethodScriptGetVariables: public MiniScript::Method {
+		class MethodScriptGetVariables: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodScriptGetVariables(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_MAP), miniScript(miniScript) {}
+			MethodScriptGetVariables(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_MAP), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "script.getVariables";
 			}
@@ -302,6 +302,6 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodScriptGetVariables(miniScript));
+		miniScript->registerMethod(new MethodScriptGetVariables(miniScript));
 	}
 }

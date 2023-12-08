@@ -71,11 +71,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 	// string functions
 	{
 		//
-		class ScriptMethodString: public MiniScript::Method {
+		class MethodString: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodString(MiniScript* miniScript):
+			MethodString(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
@@ -96,15 +96,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodString(miniScript));
+		miniScript->registerMethod(new MethodString(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringLength: public MiniScript::Method {
+		class MethodStringLength: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringLength(MiniScript* miniScript):
+			MethodStringLength(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
@@ -129,15 +129,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringLength(miniScript));
+		miniScript->registerMethod(new MethodStringLength(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringCharAt: public MiniScript::Method {
+		class MethodStringCharAt: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringCharAt(MiniScript* miniScript):
+			MethodStringCharAt(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -165,15 +165,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringCharAt(miniScript));
+		miniScript->registerMethod(new MethodStringCharAt(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringStartsWith: public MiniScript::Method {
+		class MethodStringStartsWith: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringStartsWith(MiniScript* miniScript):
+			MethodStringStartsWith(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -197,15 +197,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringStartsWith(miniScript));
+		miniScript->registerMethod(new MethodStringStartsWith(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringEndsWith: public MiniScript::Method {
+		class MethodStringEndsWith: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringEndsWith(MiniScript* miniScript):
+			MethodStringEndsWith(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -229,15 +229,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringEndsWith(miniScript));
+		miniScript->registerMethod(new MethodStringEndsWith(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringReplace: public MiniScript::Method {
+		class MethodStringReplace: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringReplace(MiniScript* miniScript):
+			MethodStringReplace(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -271,15 +271,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringReplace(miniScript));
+		miniScript->registerMethod(new MethodStringReplace(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringIndexOf: public MiniScript::Method {
+		class MethodStringIndexOf: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringIndexOf(MiniScript* miniScript):
+			MethodStringIndexOf(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -316,15 +316,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringIndexOf(miniScript));
+		miniScript->registerMethod(new MethodStringIndexOf(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringFirstIndexOf: public MiniScript::Method {
+		class MethodStringFirstIndexOf: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringFirstIndexOf(MiniScript* miniScript):
+			MethodStringFirstIndexOf(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -369,15 +369,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringFirstIndexOf(miniScript));
+		miniScript->registerMethod(new MethodStringFirstIndexOf(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringLastIndexOf: public MiniScript::Method {
+		class MethodStringLastIndexOf: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringLastIndexOf(MiniScript* miniScript):
+			MethodStringLastIndexOf(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -422,15 +422,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringLastIndexOf(miniScript));
+		miniScript->registerMethod(new MethodStringLastIndexOf(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringSubString: public MiniScript::Method {
+		class MethodStringSubString: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringSubString(MiniScript* miniScript):
+			MethodStringSubString(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -469,15 +469,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringSubString(miniScript));
+		miniScript->registerMethod(new MethodStringSubString(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringEqualsIgnoreCase: public MiniScript::Method {
+		class MethodStringEqualsIgnoreCase: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringEqualsIgnoreCase(MiniScript* miniScript):
+			MethodStringEqualsIgnoreCase(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -501,15 +501,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringEqualsIgnoreCase(miniScript));
+		miniScript->registerMethod(new MethodStringEqualsIgnoreCase(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringTrim: public MiniScript::Method {
+		class MethodStringTrim: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringTrim(MiniScript* miniScript):
+			MethodStringTrim(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -530,15 +530,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringTrim(miniScript));
+		miniScript->registerMethod(new MethodStringTrim(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringRegexMatch: public MiniScript::Method {
+		class MethodStringRegexMatch: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringRegexMatch(MiniScript* miniScript):
+			MethodStringRegexMatch(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -562,15 +562,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringRegexMatch(miniScript));
+		miniScript->registerMethod(new MethodStringRegexMatch(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringRegexReplace: public MiniScript::Method {
+		class MethodStringRegexReplace: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringRegexReplace(MiniScript* miniScript):
+			MethodStringRegexReplace(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -597,15 +597,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringRegexReplace(miniScript));
+		miniScript->registerMethod(new MethodStringRegexReplace(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringTokenize: public MiniScript::Method {
+		class MethodStringTokenize: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringTokenize(MiniScript* miniScript):
+			MethodStringTokenize(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -634,15 +634,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringTokenize(miniScript));
+		miniScript->registerMethod(new MethodStringTokenize(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringSpace: public MiniScript::Method {
+		class MethodStringSpace: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringSpace(MiniScript* miniScript):
+			MethodStringSpace(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "spaces", .optional = true, .reference = false, .nullable = false }
@@ -665,15 +665,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringSpace(miniScript));
+		miniScript->registerMethod(new MethodStringSpace(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringConcatenate: public MiniScript::Method {
+		class MethodStringConcatenate: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringConcatenate(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_STRING), miniScript(miniScript) {}
+			MethodStringConcatenate(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_STRING), miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "string.concatenate";
 			}
@@ -688,15 +688,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				return true;
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringConcatenate(miniScript));
+		miniScript->registerMethod(new MethodStringConcatenate(miniScript));
 	}
 	{
 		//
-		class ScriptMethodToStringUpperCase: public MiniScript::Method {
+		class MethodToStringUpperCase: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodToStringUpperCase(MiniScript* miniScript):
+			MethodToStringUpperCase(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
@@ -717,15 +717,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodToStringUpperCase(miniScript));
+		miniScript->registerMethod(new MethodToStringUpperCase(miniScript));
 	}
 	{
 		//
-		class ScriptMethodToStringLowerCase: public MiniScript::Method {
+		class MethodToStringLowerCase: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodToStringLowerCase(MiniScript* miniScript):
+			MethodToStringLowerCase(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
@@ -746,15 +746,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodToStringLowerCase(miniScript));
+		miniScript->registerMethod(new MethodToStringLowerCase(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringIsEmpty: public MiniScript::Method {
+		class MethodStringIsEmpty: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringIsEmpty(MiniScript* miniScript):
+			MethodStringIsEmpty(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
@@ -775,15 +775,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringIsEmpty(miniScript));
+		miniScript->registerMethod(new MethodStringIsEmpty(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringIsFloat: public MiniScript::Method {
+		class MethodStringIsFloat: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringIsFloat(MiniScript* miniScript):
+			MethodStringIsFloat(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
@@ -804,15 +804,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringIsFloat(miniScript));
+		miniScript->registerMethod(new MethodStringIsFloat(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringIsInteger: public MiniScript::Method {
+		class MethodStringIsInteger: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringIsInteger(MiniScript* miniScript):
+			MethodStringIsInteger(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
@@ -833,15 +833,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringIsInteger(miniScript));
+		miniScript->registerMethod(new MethodStringIsInteger(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringPadLeft: public MiniScript::Method {
+		class MethodStringPadLeft: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringPadLeft(MiniScript* miniScript):
+			MethodStringPadLeft(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -872,15 +872,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringPadLeft(miniScript));
+		miniScript->registerMethod(new MethodStringPadLeft(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringPadRight: public MiniScript::Method {
+		class MethodStringPadRight: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringPadRight(MiniScript* miniScript):
+			MethodStringPadRight(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -911,15 +911,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringPadRight(miniScript));
+		miniScript->registerMethod(new MethodStringPadRight(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringToByteArray: public MiniScript::Method {
+		class MethodStringToByteArray: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringToByteArray(MiniScript* miniScript):
+			MethodStringToByteArray(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
@@ -941,15 +941,15 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringToByteArray(miniScript));
+		miniScript->registerMethod(new MethodStringToByteArray(miniScript));
 	}
 	{
 		//
-		class ScriptMethodStringFromByteArray: public MiniScript::Method {
+		class MethodStringFromByteArray: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodStringFromByteArray(MiniScript* miniScript):
+			MethodStringFromByteArray(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "byteArray", .optional = false, .reference = false, .nullable = false },
@@ -973,6 +973,6 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodStringFromByteArray(miniScript));
+		miniScript->registerMethod(new MethodStringFromByteArray(miniScript));
 	}
 }

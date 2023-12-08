@@ -40,11 +40,11 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 	// application
 	{
 		//
-		class ScriptMethodApplicationExecute: public MiniScript::Method {
+		class MethodApplicationExecute: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodApplicationExecute(MiniScript* miniScript):
+			MethodApplicationExecute(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "command", .optional = false, .reference = false, .nullable = false },
@@ -65,6 +65,6 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodApplicationExecute(miniScript));
+		miniScript->registerMethod(new MethodApplicationExecute(miniScript));
 	}
 }

@@ -23,11 +23,11 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 	// network
 	{
 		//
-		class ScriptMethodNetworkHTTPClientHEAD: public MiniScript::Method {
+		class MethodNetworkHTTPClientHEAD: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodNetworkHTTPClientHEAD(MiniScript* miniScript):
+			MethodNetworkHTTPClientHEAD(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "url", .optional = false, .reference = false, .nullable = false },
@@ -94,15 +94,15 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodNetworkHTTPClientHEAD(miniScript));
+		miniScript->registerMethod(new MethodNetworkHTTPClientHEAD(miniScript));
 	}
 	{
 		//
-		class ScriptMethodNetworkHTTPClientGET: public MiniScript::Method {
+		class MethodNetworkHTTPClientGET: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodNetworkHTTPClientGET(MiniScript* miniScript):
+			MethodNetworkHTTPClientGET(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "url", .optional = false, .reference = false, .nullable = false },
@@ -177,15 +177,15 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodNetworkHTTPClientGET(miniScript));
+		miniScript->registerMethod(new MethodNetworkHTTPClientGET(miniScript));
 	}
 	{
 		//
-		class ScriptMethodNetworkHTTPClientPOST: public MiniScript::Method {
+		class MethodNetworkHTTPClientPOST: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodNetworkHTTPClientPOST(MiniScript* miniScript):
+			MethodNetworkHTTPClientPOST(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "url", .optional = false, .reference = false, .nullable = false },
@@ -279,15 +279,15 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodNetworkHTTPClientPOST(miniScript));
+		miniScript->registerMethod(new MethodNetworkHTTPClientPOST(miniScript));
 	}
 	{
 		//
-		class ScriptMethodNetworkHTTPClientPUT: public MiniScript::Method {
+		class MethodNetworkHTTPClientPUT: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodNetworkHTTPClientPUT(MiniScript* miniScript):
+			MethodNetworkHTTPClientPUT(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "url", .optional = false, .reference = false, .nullable = false },
@@ -381,15 +381,15 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodNetworkHTTPClientPUT(miniScript));
+		miniScript->registerMethod(new MethodNetworkHTTPClientPUT(miniScript));
 	}
 	{
 		//
-		class ScriptMethodNetworkHTTPClientDELETE: public MiniScript::Method {
+		class MethodNetworkHTTPClientDELETE: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptMethodNetworkHTTPClientDELETE(MiniScript* miniScript):
+			MethodNetworkHTTPClientDELETE(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "url", .optional = false, .reference = false, .nullable = false },
@@ -456,6 +456,6 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new ScriptMethodNetworkHTTPClientDELETE(miniScript));
+		miniScript->registerMethod(new MethodNetworkHTTPClientDELETE(miniScript));
 	}
 }
