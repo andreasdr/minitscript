@@ -30,7 +30,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				returnValue.setType(MiniScript::TYPE_SET);
 			}
 		};
@@ -54,16 +54,16 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.insert";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
-				if (argumentValues.size() != 2 ||
-					argumentValues[0].getType() != MiniScript::TYPE_SET ||
-					MiniScript::getStringValue(argumentValues, 1, key, false) == false) {
+				if (arguments.size() != 2 ||
+					arguments[0].getType() != MiniScript::TYPE_SET ||
+					MiniScript::getStringValue(arguments, 1, key, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					argumentValues[0].insertSetKey(key);
+					arguments[0].insertSetKey(key);
 				}
 			}
 		};
@@ -87,16 +87,16 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.has";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
-				if (argumentValues.size() < 2 ||
-					argumentValues[0].getType() != MiniScript::TYPE_SET ||
-					MiniScript::getStringValue(argumentValues, 1, key, false) == false) {
+				if (arguments.size() < 2 ||
+					arguments[0].getType() != MiniScript::TYPE_SET ||
+					MiniScript::getStringValue(arguments, 1, key, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(argumentValues[0].hasSetKey(key));
+					returnValue.setValue(arguments[0].hasSetKey(key));
 				}
 			}
 		};
@@ -120,16 +120,16 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.remove";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
-				if (argumentValues.size() < 2 ||
-					argumentValues[0].getType() != MiniScript::TYPE_SET ||
-					MiniScript::getStringValue(argumentValues, 1, key, false) == false) {
+				if (arguments.size() < 2 ||
+					arguments[0].getType() != MiniScript::TYPE_SET ||
+					MiniScript::getStringValue(arguments, 1, key, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					argumentValues[0].removeSetKey(key);
+					arguments[0].removeSetKey(key);
 				}
 			}
 		};
@@ -152,14 +152,14 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.getKeys";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
-				if (argumentValues.size() != 1 ||
-					argumentValues[0].getType() != MiniScript::TYPE_SET) {
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_SET) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto keys = argumentValues[0].getSetKeys();
+					auto keys = arguments[0].getSetKeys();
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto& key: keys) {
 						returnValue.pushArrayEntry(key);
@@ -186,12 +186,12 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.clear";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if ((argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_SET)) {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if ((arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_SET)) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					argumentValues[0].clearSet();
+					arguments[0].clearSet();
 				}
 			}
 		};
@@ -216,22 +216,22 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "set.forEach";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
-				if ((argumentValues.size() != 2 && argumentValues.size() != 3) ||
-					argumentValues[0].getType() != MiniScript::TYPE_SET ||
-					MiniScript::getStringValue(argumentValues, 1, function, false) == false) {
+				if ((arguments.size() != 2 && arguments.size() != 3) ||
+					arguments[0].getType() != MiniScript::TYPE_SET ||
+					MiniScript::getStringValue(arguments, 1, function, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto setPtr = argumentValues[0].getSetPointer();
+					auto setPtr = arguments[0].getSetPointer();
 					if (setPtr != nullptr) {
 						for (auto setEntry: *setPtr) {
-							vector<MiniScript::Variable> functionArgumentValues { MiniScript::Variable(setEntry) };
-							if (argumentValues.size() == 3) functionArgumentValues.push_back(argumentValues[2]);
-							span functionArgumentValuesSpan(functionArgumentValues);
+							vector<MiniScript::Variable> functionArguments { MiniScript::Variable(setEntry) };
+							if (arguments.size() == 3) functionArguments.push_back(arguments[2]);
+							span functionArgumentsSpan(functionArguments);
 							MiniScript::Variable functionReturnValue;
-							miniScript->call(function, functionArgumentValuesSpan, functionReturnValue);
+							miniScript->call(function, functionArgumentsSpan, functionReturnValue);
 							// exit condition
 							bool result = false;
 							functionReturnValue.getBooleanValue(result, false);

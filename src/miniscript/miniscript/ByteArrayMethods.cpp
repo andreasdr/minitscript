@@ -32,10 +32,10 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			bool isVariadic() const override {
 				return true;
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				returnValue.setType(MiniScript::TYPE_BYTEARRAY);
 				uint8_t value;
-				for (const auto& argumentValue: argumentValues) {
+				for (const auto& argumentValue: arguments) {
 					if (argumentValue.getByteValue(miniScript, value, &statement) == true) {
 						returnValue.pushByteArrayEntry(value);
 					} else {
@@ -64,12 +64,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "bytearray.length";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY) {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(static_cast<int64_t>(argumentValues[0].getByteArraySize()));
+					returnValue.setValue(static_cast<int64_t>(arguments[0].getByteArraySize()));
 				}
 			}
 		};
@@ -95,16 +95,16 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			bool isVariadic() const override {
 				return true;
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
-				if (argumentValues.size() < 1 || argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY) {
+				if (arguments.size() < 1 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
 					uint8_t value;
-					for (auto i = 1; i < argumentValues.size(); i++) {
-						if (argumentValues[i].getByteValue(miniScript, value, &statement) == true) {
-							argumentValues[0].pushByteArrayEntry(value);
+					for (auto i = 1; i < arguments.size(); i++) {
+						if (arguments[i].getByteValue(miniScript, value, &statement) == true) {
+							arguments[0].pushByteArrayEntry(value);
 						}
 					}
 				}
@@ -130,14 +130,14 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "bytearray.get";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
-				if ((argumentValues.size() <= 1 || argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY) ||
-					MiniScript::getIntegerValue(argumentValues, 1, index, false) == false) {
+				if ((arguments.size() <= 1 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) ||
+					MiniScript::getIntegerValue(arguments, 1, index, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(static_cast<int64_t>(argumentValues[0].getByteArrayEntry(index)));
+					returnValue.setValue(static_cast<int64_t>(arguments[0].getByteArrayEntry(index)));
 				}
 			}
 		};
@@ -162,16 +162,16 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "bytearray.set";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
-				if ((argumentValues.size() <= 2 || argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY) ||
-					MiniScript::getIntegerValue(argumentValues, 1, index, false) == false) {
+				if ((arguments.size() <= 2 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) ||
+					MiniScript::getIntegerValue(arguments, 1, index, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
 					uint8_t value;
-					if (argumentValues[2].getByteValue(miniScript, value, &statement) == true) {
-						argumentValues[0].setByteArrayEntry(index, value);
+					if (arguments[2].getByteValue(miniScript, value, &statement) == true) {
+						arguments[0].setByteArrayEntry(index, value);
 					}
 				}
 			}
@@ -196,14 +196,14 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "bytearray.remove";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
-				if ((argumentValues.size() < 2 || argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY) ||
-					MiniScript::getIntegerValue(argumentValues, 1, index, false) == false) {
+				if ((arguments.size() < 2 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) ||
+					MiniScript::getIntegerValue(arguments, 1, index, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					argumentValues[0].removeByteArrayEntry(index);
+					arguments[0].removeByteArrayEntry(index);
 				}
 			}
 		};
@@ -227,15 +227,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "bytearray.appendByteArray";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (argumentValues.size() != 2 ||
-					argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					argumentValues[1].getType() != MiniScript::TYPE_BYTEARRAY) {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() != 2 ||
+					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
+					arguments[1].getType() != MiniScript::TYPE_BYTEARRAY) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto byteArrayPtr = argumentValues[0].getByteArrayPointer();
-					auto otherByteArrayPtr = argumentValues[1].getByteArrayPointer();
+					auto byteArrayPtr = arguments[0].getByteArrayPointer();
+					auto otherByteArrayPtr = arguments[1].getByteArrayPointer();
 					if (byteArrayPtr != nullptr && otherByteArrayPtr != nullptr) {
 						for (const auto value: *otherByteArrayPtr) byteArrayPtr->push_back(value);
 					}
@@ -263,17 +263,17 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "bytearray.extractByteArray";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
 				int64_t length;
-				if (argumentValues.size() != 3 ||
-					argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getIntegerValue(argumentValues, 1, index, false) == false ||
-					MiniScript::getIntegerValue(argumentValues, 2, length, false) == false) {
+				if (arguments.size() != 3 ||
+					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
+					MiniScript::getIntegerValue(arguments, 1, index, false) == false ||
+					MiniScript::getIntegerValue(arguments, 2, length, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto byteArrayPtr = argumentValues[0].getByteArrayPointer();
+					auto byteArrayPtr = arguments[0].getByteArrayPointer();
 					if (byteArrayPtr != nullptr) {
 						returnValue.setType(MiniScript::TYPE_BYTEARRAY);
 						for (auto i = index; i >= 0 && i < byteArrayPtr->size() && i < index + length; i++) returnValue.pushByteArrayEntry((*byteArrayPtr)[i]);
@@ -300,13 +300,13 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "bytearray.clear";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
-				if (argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_BYTEARRAY) {
+				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					argumentValues[0].clearByteArray();
+					arguments[0].clearByteArray();
 				}
 			}
 		};

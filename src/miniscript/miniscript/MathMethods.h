@@ -34,35 +34,35 @@ public:
 
 	/**
 	 * Multiply
-	 * @param argumentValues argument values
+	 * @param arguments argument values
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void mul(const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
+	void mul(const span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
 
 	/**
 	 * Division
-	 * @param argumentValues argument values
+	 * @param arguments argument values
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void div(const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
+	void div(const span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
 
 	/**
 	 * Addition
-	 * @param argumentValues argument values
+	 * @param arguments argument values
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void add(const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
+	void add(const span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
 
 	/**
 	 * Subtraction
-	 * @param argumentValues argument values
+	 * @param arguments argument values
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void sub(const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
+	void sub(const span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement);
 
 private:
 	MiniScript* miniScript;

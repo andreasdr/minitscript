@@ -37,9 +37,9 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "cryptography.base64.encode";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (MiniScript::getStringValue(argumentValues, 0, value, false) == true) {
+				if (MiniScript::getStringValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(Base64::encode(value));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
@@ -66,9 +66,9 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "cryptography.base64.decode";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (MiniScript::getStringValue(argumentValues, 0, value, false) == true) {
+				if (MiniScript::getStringValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(Base64::decode(value));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
@@ -96,9 +96,9 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "cryptography.sha256.encode";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (MiniScript::getStringValue(argumentValues, 0, value, false) == true) {
+				if (MiniScript::getStringValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(SHA256::encode(value));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));

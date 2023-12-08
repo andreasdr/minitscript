@@ -217,42 +217,42 @@ public:
 		/**
 		 * Multiply
 		 * @param miniScript MiniScript instance
-		 * @param argumentValues argument values
+		 * @param arguments argument values
 		 * @param returnValue return value
 		 * @param statement statement
 		 * @return mul was executed
 		 */
-		virtual bool mul(MiniScript* miniScript, const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
+		virtual bool mul(MiniScript* miniScript, const span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
 
 		/**
 		 * Division
 		 * @param miniScript MiniScript instance
-		 * @param argumentValues argument values
+		 * @param arguments argument values
 		 * @param returnValue return value
 		 * @param statement statement
 		 * @return div was executed
 		 */
-		virtual bool div(MiniScript* miniScript, const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
+		virtual bool div(MiniScript* miniScript, const span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
 
 		/**
 		 * Addition
 		 * @param miniScript MiniScript instance
-		 * @param argumentValues argument values
+		 * @param arguments argument values
 		 * @param returnValue return value
 		 * @param statement statement
 		 * @return add was executed
 		 */
-		virtual bool add(MiniScript* miniScript, const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
+		virtual bool add(MiniScript* miniScript, const span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
 
 		/**
 		 * Subtraction
 		 * @param miniScript MiniScript instance
-		 * @param argumentValues argument values
+		 * @param arguments argument values
 		 * @param returnValue return value
 		 * @param statement statement
 		 * @return sub was executed
 		 */
-		virtual bool sub(MiniScript* miniScript, const span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
+		virtual bool sub(MiniScript* miniScript, const span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const = 0;
 
 	public:
 		// forbid class copy
@@ -2179,11 +2179,11 @@ public:
 
 		/**
 		 * Execute method
-		 * @param argumentValues argument values
+		 * @param arguments argument values
 		 * @param returnValue return value
 		 * @param statement statement
 		 */
-		virtual void executeMethod(span<Variable>& argumentValues, Variable& returnValue, const Statement& statement) = 0;
+		virtual void executeMethod(span<Variable>& arguments, Variable& returnValue, const Statement& statement) = 0;
 
 		/**
 		 * @return arguments
@@ -3746,20 +3746,20 @@ public:
 	/**
 	 * Call function
 	 * @param scriptIdx script index
-	 * @param argumentValues argument values
+	 * @param arguments argument values
 	 * @param returnValue return value
 	 * @return success
 	 */
-	virtual bool call(int scriptIdx, span<Variable>& argumentValues, Variable& returnValue);
+	virtual bool call(int scriptIdx, span<Variable>& arguments, Variable& returnValue);
 
 	/**
 	 * Call function
 	 * @param function function
-	 * @param argumentValues argument values
+	 * @param arguments argument values
 	 * @param returnValue return value
 	 * @return success
 	 */
-	inline bool call(const string& function, span<Variable>& argumentValues, Variable& returnValue) {
+	inline bool call(const string& function, span<Variable>& arguments, Variable& returnValue) {
 		// lookup function
 		auto functionIt = functions.find(function);
 		if (functionIt == functions.end()) {
@@ -3769,7 +3769,7 @@ public:
 		//
 		auto scriptIdx = functionIt->second;
 		// call it
-		return call(scriptIdx, argumentValues, returnValue);
+		return call(scriptIdx, arguments, returnValue);
 	}
 
 	/**

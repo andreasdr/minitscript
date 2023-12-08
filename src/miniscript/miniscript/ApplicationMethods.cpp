@@ -55,9 +55,9 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "application.execute";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string command;
-				if (MiniScript::getStringValue(argumentValues, 0, command, false) == true) {
+				if (MiniScript::getStringValue(arguments, 0, command, false) == true) {
 					returnValue.setValue(ApplicationMethods::execute(command));
 				} else {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));

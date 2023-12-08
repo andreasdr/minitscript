@@ -1084,13 +1084,13 @@ bool Transpiler::transpileScriptStatement(
 
 	// construct argument values
 	{
-		vector<string> argumentValuesCode;
+		vector<string> argumentsCode;
 		if (depth > 0) {
-			argumentValuesCode.push_back("Variable& returnValue = argumentValuesD" + to_string(depth - 1) + (parentArgumentIdx != MiniScript::ARGUMENTIDX_NONE?"AIDX" + to_string(parentArgumentIdx):"") + "[" + to_string(argumentIdx) + "];");
+			argumentsCode.push_back("Variable& returnValue = argumentsD" + to_string(depth - 1) + (parentArgumentIdx != MiniScript::ARGUMENTIDX_NONE?"AIDX" + to_string(parentArgumentIdx):"") + "[" + to_string(argumentIdx) + "];");
 		} else {
-			argumentValuesCode.push_back("Variable returnValue;");
+			argumentsCode.push_back("Variable returnValue;");
 		}
-		argumentValuesCode.push_back("array<Variable, " + to_string(syntaxTree.arguments.size()) + "> argumentValues {");
+		argumentsCode.push_back("array<Variable, " + to_string(syntaxTree.arguments.size()) + "> arguments {");
 
 		// construct argument values
 		if (syntaxTree.arguments.empty() == false) {
@@ -1107,27 +1107,27 @@ bool Transpiler::transpileScriptStatement(
 						{
 							switch (argument.value.getType())  {
 								case MiniScript::TYPE_NULL:
-									argumentValuesCode.push_back(string() + "\t" + "Variable()" + (lastArgument == false?",":""));
+									argumentsCode.push_back(string() + "\t" + "Variable()" + (lastArgument == false?",":""));
 									break;
 								case MiniScript::TYPE_BOOLEAN:
 									{
 										bool value;
 										argument.value.getBooleanValue(value);
-										argumentValuesCode.push_back(string() + "\t" + "Variable(" + (value == true?"true":"false") + ")" + (lastArgument == false?",":""));
+										argumentsCode.push_back(string() + "\t" + "Variable(" + (value == true?"true":"false") + ")" + (lastArgument == false?",":""));
 									}
 									break;
 								case MiniScript::TYPE_INTEGER:
 									{
 										int64_t value;
 										argument.value.getIntegerValue(value);
-										argumentValuesCode.push_back(string() + "\t" +  + "Variable(static_cast<int64_t>(" + to_string(value) + "ll))" + (lastArgument == false?",":""));
+										argumentsCode.push_back(string() + "\t" +  + "Variable(static_cast<int64_t>(" + to_string(value) + "ll))" + (lastArgument == false?",":""));
 									}
 									break;
 								case MiniScript::TYPE_FLOAT:
 									{
 										float value;
 										argument.value.getFloatValue(value);
-										argumentValuesCode.push_back(string() + "\t" +  + "Variable(" + to_string(value) + "f)" + (lastArgument == false?",":""));
+										argumentsCode.push_back(string() + "\t" +  + "Variable(" + to_string(value) + "f)" + (lastArgument == false?",":""));
 									}
 									break;
 								case MiniScript::TYPE_STRING:
@@ -1148,7 +1148,7 @@ bool Transpiler::transpileScriptStatement(
 											arrayAccessStatementOffset-= (arrayAccessStatement.rightIdx - (arrayAccessStatement.leftIdx + 1)) - arrayAccessStatementMethodCall.size();
 										}
 										//
-										argumentValuesCode.push_back(string() + "\t" +  + "Variable(string(\"" + value + "\"))" + (lastArgument == false?",":""));
+										argumentsCode.push_back(string() + "\t" +  + "Variable(string(\"" + value + "\"))" + (lastArgument == false?",":""));
 									}
 									break;
 								case MiniScript::TYPE_ARRAY:
@@ -1169,7 +1169,7 @@ bool Transpiler::transpileScriptStatement(
 											);
 										//
 										auto initializerMethod = methodName + "_initializer_" + (scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?"c":"s") + "_" + to_string(statement.statementIdx) + "_" + miniScript->getArgumentIndicesAsString(nextArgumentIndices, "_");
-										argumentValuesCode.push_back(string() + "\t" + initializerMethod + "(statement)" + (lastArgument == false?",":""));
+										argumentsCode.push_back(string() + "\t" + initializerMethod + "(statement)" + (lastArgument == false?",":""));
 									}
 									break;
 								default:
@@ -1182,12 +1182,12 @@ bool Transpiler::transpileScriptStatement(
 						}
 					case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 						{
-							argumentValuesCode.push_back(string() + "\t" + "Variable()" + (lastArgument == false?",":"") + " // argumentValues[" + to_string(argumentIdx) + "] --> returnValue of " + argument.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(argument.arguments) + ")");
+							argumentsCode.push_back(string() + "\t" + "Variable()" + (lastArgument == false?",":"") + " // arguments[" + to_string(argumentIdx) + "] --> returnValue of " + argument.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(argument.arguments) + ")");
 							break;
 						}
 					case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 						{
-							argumentValuesCode.push_back(string() + "\t" + "Variable()" + (lastArgument == false?",":"") + " // argumentValues[" + to_string(argumentIdx) + "] --> returnValue of " + argument.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(argument.arguments) + ")");
+							argumentsCode.push_back(string() + "\t" + "Variable()" + (lastArgument == false?",":"") + " // arguments[" + to_string(argumentIdx) + "] --> returnValue of " + argument.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(argument.arguments) + ")");
 							break;
 						}
 					default:
@@ -1198,13 +1198,13 @@ bool Transpiler::transpileScriptStatement(
 			}
 		}
 		// end of arguments initialization
-		argumentValuesCode.push_back("};");
+		argumentsCode.push_back("};");
 
 		//
-		argumentValuesCode.push_back("array<Variable, " + to_string(syntaxTree.arguments.size()) + ">& argumentValuesD" + to_string(depth) + (argumentIdx != MiniScript::ARGUMENTIDX_NONE?"AIDX" + to_string(argumentIdx):"") + " = argumentValues;");
+		argumentsCode.push_back("array<Variable, " + to_string(syntaxTree.arguments.size()) + ">& argumentsD" + to_string(depth) + (argumentIdx != MiniScript::ARGUMENTIDX_NONE?"AIDX" + to_string(argumentIdx):"") + " = arguments;");
 
 		// argument values header
-		for (const auto& codeLine: argumentValuesCode) {
+		for (const auto& codeLine: argumentsCode) {
 			generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + "\n";
 		}
 	}

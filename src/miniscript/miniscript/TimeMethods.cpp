@@ -28,7 +28,7 @@ void TimeMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "time.getCurrentMillis";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				returnValue.setValue(Time::getCurrentMillis());
 			}
 		};
@@ -51,9 +51,9 @@ void TimeMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "time.getAsString";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string format = "%Y-%m-%d %H:%M:%S";
-				if (MiniScript::getStringValue(argumentValues, 0, format, true) == false) {
+				if (MiniScript::getStringValue(arguments, 0, format, true) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {

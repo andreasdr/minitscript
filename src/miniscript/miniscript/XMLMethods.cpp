@@ -35,17 +35,17 @@ void XMLMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "xml.createTag";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string name;
 				string innerXML;
-				if (MiniScript::getStringValue(argumentValues, 0, name, false) == false ||
-					(argumentValues.size() >= 2 && argumentValues[1].getType() != MiniScript::TYPE_MAP) ||
-					MiniScript::getStringValue(argumentValues, 2, innerXML, true) == false) {
+				if (MiniScript::getStringValue(arguments, 0, name, false) == false ||
+					(arguments.size() >= 2 && arguments[1].getType() != MiniScript::TYPE_MAP) ||
+					MiniScript::getStringValue(arguments, 2, innerXML, true) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto mapPtr = argumentValues[1].getMapPointer();
+					auto mapPtr = arguments[1].getMapPointer();
 					string xml;
 					xml+= "<" + name;
 					if (mapPtr != nullptr && mapPtr->empty() == false) {

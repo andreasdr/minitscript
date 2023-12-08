@@ -29,7 +29,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				returnValue.setType(MiniScript::TYPE_MAP);
 			}
 		};
@@ -54,16 +54,16 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.set";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
-				if (argumentValues.size() != 3 ||
-					argumentValues[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(argumentValues, 1, key, false) == false) {
+				if (arguments.size() != 3 ||
+					arguments[0].getType() != MiniScript::TYPE_MAP ||
+					MiniScript::getStringValue(arguments, 1, key, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					argumentValues[0].setMapEntry(key, argumentValues[2]);
+					arguments[0].setMapEntry(key, arguments[2]);
 				}
 			}
 		};
@@ -87,16 +87,16 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.has";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
-				if (argumentValues.size() < 2 ||
-					argumentValues[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(argumentValues, 1, key, false) == false) {
+				if (arguments.size() < 2 ||
+					arguments[0].getType() != MiniScript::TYPE_MAP ||
+					MiniScript::getStringValue(arguments, 1, key, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(argumentValues[0].hasMapEntry(key));
+					returnValue.setValue(arguments[0].hasMapEntry(key));
 				}
 			}
 		};
@@ -120,16 +120,16 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.get";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
-				if (argumentValues.size() < 2 ||
-					argumentValues[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(argumentValues, 1, key, false) == false) {
+				if (arguments.size() < 2 ||
+					arguments[0].getType() != MiniScript::TYPE_MAP ||
+					MiniScript::getStringValue(arguments, 1, key, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue = argumentValues[0].getMapEntry(key);
+					returnValue = arguments[0].getMapEntry(key);
 				}
 			}
 		};
@@ -153,16 +153,16 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.remove";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
-				if (argumentValues.size() < 2 ||
-					argumentValues[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(argumentValues, 1, key, false) == false) {
+				if (arguments.size() < 2 ||
+					arguments[0].getType() != MiniScript::TYPE_MAP ||
+					MiniScript::getStringValue(arguments, 1, key, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					argumentValues[0].removeMapEntry(key);
+					arguments[0].removeMapEntry(key);
 				}
 			}
 		};
@@ -185,14 +185,14 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.getKeys";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
-				if (argumentValues.size() != 1 ||
-					argumentValues[0].getType() != MiniScript::TYPE_MAP) {
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_MAP) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto keys = argumentValues[0].getMapKeys();
+					auto keys = arguments[0].getMapKeys();
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto& key: keys) {
 						returnValue.pushArrayEntry(key);
@@ -219,14 +219,14 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.getValues";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
-				if (argumentValues.size() != 1 ||
-					argumentValues[0].getType() != MiniScript::TYPE_MAP) {
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_MAP) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto values = argumentValues[0].getMapValues();
+					auto values = arguments[0].getMapValues();
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto value: values) {
 						returnValue.pushArrayEntry(*value);
@@ -253,12 +253,12 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.clear";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (argumentValues.size() != 1 || argumentValues[0].getType() != MiniScript::TYPE_MAP) {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_MAP) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					argumentValues[0].clearMap();
+					arguments[0].clearMap();
 				}
 			}
 		};
@@ -283,22 +283,22 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "map.forEach";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
-				if ((argumentValues.size() != 2 && argumentValues.size() != 3) ||
-					argumentValues[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(argumentValues, 1, function, false) == false) {
+				if ((arguments.size() != 2 && arguments.size() != 3) ||
+					arguments[0].getType() != MiniScript::TYPE_MAP ||
+					MiniScript::getStringValue(arguments, 1, function, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto mapPtr = argumentValues[0].getMapPointer();
+					auto mapPtr = arguments[0].getMapPointer();
 					if (mapPtr != nullptr) {
 						for (const auto& [mapKey, mapValue]: *mapPtr) {
-							vector<MiniScript::Variable> functionArgumentValues { MiniScript::Variable(mapKey), MiniScript::Variable::createReferenceVariable(mapValue) };
-							if (argumentValues.size() == 3) functionArgumentValues.push_back(argumentValues[2]);
-							span functionArgumentValuesSpan(functionArgumentValues);
+							vector<MiniScript::Variable> functionArguments { MiniScript::Variable(mapKey), MiniScript::Variable::createReferenceVariable(mapValue) };
+							if (arguments.size() == 3) functionArguments.push_back(arguments[2]);
+							span functionArgumentsSpan(functionArguments);
 							MiniScript::Variable functionReturnValue;
-							miniScript->call(function, functionArgumentValuesSpan, functionReturnValue);
+							miniScript->call(function, functionArgumentsSpan, functionReturnValue);
 							// exit condition
 							bool result = false;
 							functionReturnValue.getBooleanValue(result, false);

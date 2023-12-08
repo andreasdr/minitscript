@@ -33,13 +33,13 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "json.serialize";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
-				if (argumentValues.size() != 1) {
+				if (arguments.size() != 1) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(argumentValues[0].getValueAsString(false, true));
+					returnValue.setValue(arguments[0].getValueAsString(false, true));
 				}
 			}
 		};
@@ -62,9 +62,9 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "json.deserialize";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string json;
-				if (MiniScript::getStringValue(argumentValues, 0, json, false) == false) {
+				if (MiniScript::getStringValue(arguments, 0, json, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {

@@ -32,11 +32,11 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.hasCallable";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
 				string callable;
-				if (MiniScript::getStringValue(argumentValues, 0, scriptId) == false ||
-					MiniScript::getStringValue(argumentValues, 1, callable) == false) {
+				if (MiniScript::getStringValue(arguments, 0, scriptId) == false ||
+					MiniScript::getStringValue(arguments, 1, callable) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
@@ -74,11 +74,11 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.call";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
 				string callable;
-				if (MiniScript::getStringValue(argumentValues, 0, scriptId) == false ||
-					MiniScript::getStringValue(argumentValues, 1, callable) == false) {
+				if (MiniScript::getStringValue(arguments, 0, scriptId) == false ||
+					MiniScript::getStringValue(arguments, 1, callable) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
@@ -94,16 +94,16 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						} else {
 							#if defined (__clang__)
 								// Clang currently does not support initializing span using begin and end iterators,
-								vector<MiniScript::Variable> callArgumentValues(argumentValues.size() - 2);
-								for (auto i = 2; i < argumentValues.size(); i++) callArgumentValues[i - 2] = move(argumentValues[i]);
+								vector<MiniScript::Variable> callArguments(arguments.size() - 2);
+								for (auto i = 2; i < arguments.size(); i++) callArguments[i - 2] = move(arguments[i]);
 								// call
-								span callArgumentValuesSpan(callArgumentValues);
-								script->call(scriptIdx, callArgumentValuesSpan, returnValue);
+								span callArgumentsSpan(callArguments);
+								script->call(scriptIdx, callArgumentsSpan, returnValue);
 								// move back arguments
-								for (auto i = 2; i < argumentValues.size(); i++) argumentValues[i] = move(callArgumentValues[i - 2]);
+								for (auto i = 2; i < arguments.size(); i++) arguments[i] = move(callArguments[i - 2]);
 							#else
-								span callArgumentValuesSpan(argumentValues.begin() + 2, argumentValues.end());
-								script->call(scriptIdx, callArgumentValuesSpan, returnValue);
+								span callArgumentsSpan(arguments.begin() + 2, arguments.end());
+								script->call(scriptIdx, callArgumentsSpan, returnValue);
 							#endif
 						}
 					}
@@ -135,15 +135,15 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.loadScript";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
 				string pathName;
 				string fileName;
 				bool verbose = false;
-				if (MiniScript::getStringValue(argumentValues, 0, scriptId) == false ||
-					MiniScript::getStringValue(argumentValues, 1, pathName) == false ||
-					MiniScript::getStringValue(argumentValues, 2, fileName) == false ||
-					MiniScript::getBooleanValue(argumentValues, 3, verbose, true) == false) {
+				if (MiniScript::getStringValue(arguments, 0, scriptId) == false ||
+					MiniScript::getStringValue(arguments, 1, pathName) == false ||
+					MiniScript::getStringValue(arguments, 2, fileName) == false ||
+					MiniScript::getBooleanValue(arguments, 3, verbose, true) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
@@ -185,9 +185,9 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.removeScript";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
-				if (MiniScript::getStringValue(argumentValues, 0, scriptId) == false) {
+				if (MiniScript::getStringValue(arguments, 0, scriptId) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
@@ -209,7 +209,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "context.script.getScriptIds";
 			}
-			void executeMethod(span<MiniScript::Variable>& argumentValues, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				auto scriptIds = miniScript->getContext()->getScriptIds();
 				returnValue.setType(MiniScript::TYPE_ARRAY);
 				for (const auto& scriptId: scriptIds) returnValue.pushArrayEntry(scriptId);

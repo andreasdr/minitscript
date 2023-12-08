@@ -479,20 +479,20 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 		return initializeVariable(syntaxTree.value);
 	}
 	//
-	vector<Variable> argumentValues;
+	vector<Variable> arguments;
 	Variable returnValue;
 	// construct argument values
 	for (const auto& argument: syntaxTree.arguments) {
 		switch (argument.type) {
 			case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
 				{
-					argumentValues.push_back(initializeVariable(argument.value));
+					arguments.push_back(initializeVariable(argument.value));
 					break;
 				}
 			case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 			case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 				{
-					argumentValues.push_back(executeStatement(argument, statement));
+					arguments.push_back(executeStatement(argument, statement));
 					break;
 				}
 			default:
@@ -507,8 +507,8 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 	if (syntaxTree.type == SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
 		auto scriptIdx = syntaxTree.getFunctionScriptIdx();
 		// call
-		span argumentValuesSpan(argumentValues);
-		call(scriptIdx, argumentValuesSpan, returnValue);
+		span argumentsSpan(arguments);
+		call(scriptIdx, argumentsSpan, returnValue);
 		//
 		return returnValue;
 	} else
@@ -522,8 +522,8 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 				auto argumentOk = true;
 				// nullable and NULL argument
 				if (argumentType.nullable == true &&
-					argumentIdx >= 0 && argumentIdx < argumentValues.size() &&
-					argumentValues[argumentIdx].getType() == TYPE_NULL) {
+					argumentIdx >= 0 && argumentIdx < arguments.size() &&
+					arguments[argumentIdx].getType() == TYPE_NULL) {
 					argumentOk = true;
 				} else {
 					// otherwise check the argument
@@ -533,25 +533,25 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 						case TYPE_BOOLEAN:
 							{
 								bool booleanValue;
-								argumentOk = getBooleanValue(argumentValues, argumentIdx, booleanValue, argumentType.optional);
+								argumentOk = getBooleanValue(arguments, argumentIdx, booleanValue, argumentType.optional);
 							}
 							break;
 						case TYPE_INTEGER:
 							{
 								int64_t integerValue;
-								argumentOk = getIntegerValue(argumentValues, argumentIdx, integerValue, argumentType.optional);
+								argumentOk = getIntegerValue(arguments, argumentIdx, integerValue, argumentType.optional);
 							}
 							break;
 						case TYPE_FLOAT:
 							{
 								float floatValue;
-								argumentOk = getFloatValue(argumentValues, argumentIdx, floatValue, argumentType.optional);
+								argumentOk = getFloatValue(arguments, argumentIdx, floatValue, argumentType.optional);
 							}
 							break;
 						case TYPE_PSEUDO_NUMBER:
 							{
 								float floatValue;
-								argumentOk = getFloatValue(argumentValues, argumentIdx, floatValue, argumentType.optional);
+								argumentOk = getFloatValue(arguments, argumentIdx, floatValue, argumentType.optional);
 								break;
 							}
 						case TYPE_PSEUDO_MIXED:
@@ -562,48 +562,48 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 						case TYPE_STRING:
 							{
 								string stringValue;
-								argumentOk = getStringValue(argumentValues, argumentIdx, stringValue, argumentType.optional);
+								argumentOk = getStringValue(arguments, argumentIdx, stringValue, argumentType.optional);
 							}
 							break;
 						case TYPE_BYTEARRAY:
 							{
 								argumentOk =
-									argumentIdx < 0 || argumentIdx >= argumentValues.size()?
+									argumentIdx < 0 || argumentIdx >= arguments.size()?
 										argumentType.optional:
-										argumentValues[argumentIdx].getType() == TYPE_BYTEARRAY;
+										arguments[argumentIdx].getType() == TYPE_BYTEARRAY;
 								break;
 							}
 						case TYPE_ARRAY:
 							{
 								argumentOk =
-									argumentIdx < 0 || argumentIdx >= argumentValues.size()?
+									argumentIdx < 0 || argumentIdx >= arguments.size()?
 										argumentType.optional:
-										argumentValues[argumentIdx].getType() == TYPE_ARRAY;
+										arguments[argumentIdx].getType() == TYPE_ARRAY;
 								break;
 							}
 						case TYPE_MAP:
 							{
 								argumentOk =
-									argumentIdx < 0 || argumentIdx >= argumentValues.size()?
+									argumentIdx < 0 || argumentIdx >= arguments.size()?
 										argumentType.optional:
-										argumentValues[argumentIdx].getType() == TYPE_MAP;
+										arguments[argumentIdx].getType() == TYPE_MAP;
 								break;
 							}
 						case TYPE_SET:
 							{
 								argumentOk =
-									argumentIdx < 0 || argumentIdx >= argumentValues.size()?
+									argumentIdx < 0 || argumentIdx >= arguments.size()?
 										argumentType.optional:
-										argumentValues[argumentIdx].getType() == TYPE_SET;
+										arguments[argumentIdx].getType() == TYPE_SET;
 								break;
 							}
 						default:
 							{
 								// custom data types
 								argumentOk =
-									argumentIdx < 0 || argumentIdx >= argumentValues.size()?
+									argumentIdx < 0 || argumentIdx >= arguments.size()?
 										argumentType.optional:
-										argumentValues[argumentIdx].getType() == argumentType.type;
+										arguments[argumentIdx].getType() == argumentType.type;
 								break;
 							}
 
@@ -613,20 +613,20 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 					Console::println(
 						getStatementInformation(statement) +
 						": method '" + string(syntaxTree.value.getValueAsString()) + "'" +
-						": argument value @ " + to_string(argumentIdx) + ": expected " + Variable::getTypeAsString(argumentType.type) + ", but got: " + (argumentIdx < argumentValues.size()?argumentValues[argumentIdx].getAsString():"nothing"));
+						": argument value @ " + to_string(argumentIdx) + ": expected " + Variable::getTypeAsString(argumentType.type) + ", but got: " + (argumentIdx < arguments.size()?arguments[argumentIdx].getAsString():"nothing"));
 				}
 				argumentIdx++;
 			}
-			if (method->isVariadic() == false && argumentValues.size() > method->getArgumentTypes().size()) {
+			if (method->isVariadic() == false && arguments.size() > method->getArgumentTypes().size()) {
 				Console::println(
 					getStatementInformation(statement) +
 					": method '" + string(syntaxTree.value.getValueAsString()) + "'" +
-					": too many arguments: expected: " + to_string(method->getArgumentTypes().size()) + ", got " + to_string(argumentValues.size()));
+					": too many arguments: expected: " + to_string(method->getArgumentTypes().size()) + ", got " + to_string(arguments.size()));
 			}
 		}
 		// execute method
-		span argumentValuesSpan(argumentValues);
-		method->executeMethod(argumentValuesSpan, returnValue, statement);
+		span argumentsSpan(arguments);
+		method->executeMethod(argumentsSpan, returnValue, statement);
 		// check return type
 		if (method->isReturnValueNullable() == true && returnValue.getType() == TYPE_NULL) {
 			// no op, this is a valid return value
@@ -2308,7 +2308,7 @@ bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, s
 	return objectMemberAccess;
 }
 
-bool MiniScript::call(int scriptIdx, span<Variable>& argumentValues, Variable& returnValue) {
+bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& returnValue) {
 	if (scriptIdx < 0 || scriptIdx >= scripts.size()) {
 		Console::println("MiniScript::call(): invalid script index: " + to_string(scriptIdx));
 		return false;
@@ -2321,10 +2321,10 @@ bool MiniScript::call(int scriptIdx, span<Variable>& argumentValues, Variable& r
 		// also put named arguments into state context variables
 		auto argumentIdx = 0;
 		for (const auto& argument: scripts[scriptIdx].arguments) {
-			if (argumentIdx == argumentValues.size()) {
+			if (argumentIdx == arguments.size()) {
 				break;
 			}
-			setVariable(argument.name, argumentValues[argumentIdx], nullptr, argument.reference);
+			setVariable(argument.name, arguments[argumentIdx], nullptr, argument.reference);
 			argumentIdx++;
 		}
 	}
@@ -2646,13 +2646,13 @@ void MiniScript::registerMethods() {
 			const string getMethodName() override {
 				return "internal.script.evaluate";
 			}
-			void executeMethod(span<Variable>& argumentValues, Variable& returnValue, const Statement& statement) override {
-				if (argumentValues.size() != 1) {
+			void executeMethod(span<Variable>& arguments, Variable& returnValue, const Statement& statement) override {
+				if (arguments.size() != 1) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else
-				if (argumentValues.size() == 1) {
-					returnValue = argumentValues[0];
+				if (arguments.size() == 1) {
+					returnValue = arguments[0];
 				}
 			}
 			bool isPrivate() const override {
@@ -2681,7 +2681,7 @@ void MiniScript::registerMethods() {
 			const string getMethodName() override {
 				return "internal.script.evaluateMemberAccess";
 			}
-			void executeMethod(span<Variable>& argumentValues, Variable& returnValue, const Statement& statement) override {
+			void executeMethod(span<Variable>& arguments, Variable& returnValue, const Statement& statement) override {
 				// Current layout:
 				//	0: variable name of object, 1: variable content of object
 				//	2: object method to call
@@ -2692,83 +2692,83 @@ void MiniScript::registerMethods() {
 				string variable;
 				string member;
 				//
-				if (argumentValues.size() < 3 ||
-					miniScript->getStringValue(argumentValues, 2, member, false) == false) {
+				if (arguments.size() < 3 ||
+					miniScript->getStringValue(arguments, 2, member, false) == false) {
 					Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
 					// do we have a this variable name?
 					{
 						string thisVariableName;
-						if (argumentValues[0].getType() != MiniScript::TYPE_NULL && argumentValues[0].getStringValue(thisVariableName) == true) {
+						if (arguments[0].getType() != MiniScript::TYPE_NULL && arguments[0].getStringValue(thisVariableName) == true) {
 							// yep, looks like that, we always use a reference here
-							argumentValues[1] = miniScript->getVariable(thisVariableName, &statement, true);
+							arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
 						}
 					}
 					// check if map, if so fetch function assignment of member property
 					auto functionIdx = MiniScript::SCRIPTIDX_NONE;
-					if (argumentValues[1].getType() == TYPE_MAP) {
+					if (arguments[1].getType() == TYPE_MAP) {
 						string function;
-						auto mapValue = argumentValues[1].getMapEntry(member);
+						auto mapValue = arguments[1].getMapEntry(member);
 						if (mapValue.getType() == MiniScript::TYPE_FUNCTION_ASSIGNMENT && mapValue.getStringValue(function) == true) {
 							functionIdx = miniScript->getFunctionScriptIdx(function);
 						}
 					}
 					//
-					const auto& className = argumentValues[1].getClassName();
+					const auto& className = arguments[1].getClassName();
 					//
 					if (className.empty() == false || functionIdx != MiniScript::SCRIPTIDX_NONE) {
 						//
 						Method* method { nullptr };
 						if (functionIdx == MiniScript::SCRIPTIDX_NONE) {
 							#if defined(__MINISCRIPT_TRANSPILATION__)
-								method = evaluateMemberAccessArrays[static_cast<int>(argumentValues[1].getType()) - static_cast<int>(MiniScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
+								method = evaluateMemberAccessArrays[static_cast<int>(arguments[1].getType()) - static_cast<int>(MiniScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
 							#else
 								method = miniScript->getMethod(className + "." + member);
 							#endif
 						}
 						if (method != nullptr || functionIdx != MiniScript::SCRIPTIDX_NONE) {
 							// create method call arguments
-							vector<Variable> callArgumentValues(1 + (argumentValues.size() - 3) / 2);
+							vector<Variable> callArguments(1 + (arguments.size() - 3) / 2);
 							//	this
-							callArgumentValues[0] = move(argumentValues[1]);
+							callArguments[0] = move(arguments[1]);
 							//	additional method call arguments
 							{
 								auto callArgumentValueIdx = 1;
-								for (auto argumentValueIdx = 3; argumentValueIdx < argumentValues.size(); argumentValueIdx+=2) {
+								for (auto argumentValueIdx = 3; argumentValueIdx < arguments.size(); argumentValueIdx+=2) {
 									// do we have a this variable name?
 									string argumentVariableName;
-									if (argumentValues[argumentValueIdx].getType() != MiniScript::TYPE_NULL && argumentValues[argumentValueIdx].getStringValue(argumentVariableName) == true) {
+									if (arguments[argumentValueIdx].getType() != MiniScript::TYPE_NULL && arguments[argumentValueIdx].getStringValue(argumentVariableName) == true) {
 										// yep, looks like that
 										if (method != nullptr) {
-											argumentValues[argumentValueIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentValueIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentValueIdx].reference);
+											arguments[argumentValueIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentValueIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentValueIdx].reference);
 										} else
 										if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
-											argumentValues[argumentValueIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentValueIdx >= miniScript->getScripts()[functionIdx].arguments.size()?false:miniScript->getScripts()[functionIdx].arguments[callArgumentValueIdx].reference);
+											arguments[argumentValueIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentValueIdx >= miniScript->getScripts()[functionIdx].arguments.size()?false:miniScript->getScripts()[functionIdx].arguments[callArgumentValueIdx].reference);
 										}
 									}
 									//
-									callArgumentValues[callArgumentValueIdx] = move(argumentValues[argumentValueIdx + 1]);
+									callArguments[callArgumentValueIdx] = move(arguments[argumentValueIdx + 1]);
 									callArgumentValueIdx++;
 								}
 							}
 							//
-							span callArgumentValuesSpan(callArgumentValues);
+							span callArgumentsSpan(callArguments);
 							//
 							if (method != nullptr) {
-								method->executeMethod(callArgumentValuesSpan, returnValue, statement);
+								method->executeMethod(callArgumentsSpan, returnValue, statement);
 							} else
 							if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
-								miniScript->call(functionIdx, callArgumentValuesSpan, returnValue);
+								miniScript->call(functionIdx, callArgumentsSpan, returnValue);
 							}
 							// write back arguments from call arguments
 							//	this
-							argumentValues[1] = move(callArgumentValuesSpan[0]);
+							arguments[1] = move(callArgumentsSpan[0]);
 							//	additional arguments
 							{
 								auto callArgumentValueIdx = 1;
-								for (auto argumentValueIdx = 3; argumentValueIdx < argumentValues.size(); argumentValueIdx+=2) {
-									argumentValues[argumentValueIdx] = move(callArgumentValuesSpan[callArgumentValueIdx].getValueAsString());
+								for (auto argumentValueIdx = 3; argumentValueIdx < arguments.size(); argumentValueIdx+=2) {
+									arguments[argumentValueIdx] = move(callArgumentsSpan[callArgumentValueIdx].getValueAsString());
 									callArgumentValueIdx++;
 								}
 							}
