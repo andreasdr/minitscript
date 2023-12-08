@@ -697,11 +697,11 @@ public:
 		}
 
 		/**
-		 * Copy script variable
+		 * Copy variable
 		 * @param from from
 		 * @param to to
 		 */
-		inline static void copyScriptVariable(Variable& to, const Variable& from) {
+		inline static void copyVariable(Variable& to, const Variable& from) {
 			// initial setup
 			to.setType(from.getType());
 			// do the copy
@@ -779,7 +779,7 @@ public:
 			// otherwise do the copy
 			Variable nonReferenceVariable;
 			//
-			copyScriptVariable(nonReferenceVariable, *variable);
+			copyVariable(nonReferenceVariable, *variable);
 			//
 			return nonReferenceVariable;
 		}
@@ -795,7 +795,7 @@ public:
 			// otherwise do the copy
 			Variable* nonReferenceVariable = new Variable();
 			//
-			copyScriptVariable(*nonReferenceVariable, *variable);
+			copyVariable(*nonReferenceVariable, *variable);
 			//
 			return nonReferenceVariable;
 		}
@@ -808,7 +808,7 @@ public:
 			if (variable.isReference() == true) {
 				setReference(variable.ir.reference);
 			} else {
-				copyScriptVariable(*this, variable);
+				copyVariable(*this, variable);
 			}
 		}
 
@@ -845,7 +845,7 @@ public:
 			} else {
 				setType(TYPE_NULL);
 				//
-				copyScriptVariable(*this, variable);
+				copyVariable(*this, variable);
 			}
 			//
 			return *this;
@@ -854,7 +854,7 @@ public:
 		/**
 		 * Move operator
 		 * @param variable variable to move from
-		 * @return this script variable
+		 * @return this variable
 		 */
 		inline Variable& operator=(Variable&& variable) {
 			swap(typeReferenceConstantBits, variable.typeReferenceConstantBits);
@@ -1812,16 +1812,16 @@ public:
 		}
 
 		/**
-		 * @return class name of given script variable type
+		 * @return class name of given variable type
 		 */
 		inline const string& getClassName() {
 			return getClassName(getType());
 		}
 
 		/**
-		 * Return class name of given script variable type
+		 * Return class name of given variable type
 		 * @param type type
-		 * @return class name of given script variable type
+		 * @return class name of given variable type
 		 */
 		inline static const string& getClassName(VariableType type) {
 			switch (type) {
@@ -1849,9 +1849,9 @@ public:
 		}
 
 		/**
-		 * Returns given script variable type as string
+		 * Returns given variable type as string
 		 * @param type type
-		 * @return script variable type as string
+		 * @return variable type as string
 		 */
 		inline static const string getTypeAsString(VariableType type) {
 			switch(type) {
@@ -1880,7 +1880,7 @@ public:
 		}
 
 		/**
-		 * @return this script variable type as string
+		 * @return this variable type as string
 		 */
 		inline const string getTypeAsString() const {
 			return getTypeAsString(getType());
@@ -1910,7 +1910,7 @@ public:
 		}
 
 		/**
-		 * @return string representation of script variable type
+		 * @return string representation of variable type
 		 */
 		inline const string getAsString() const {
 			string result;
@@ -1924,11 +1924,11 @@ public:
 		}
 
 		/**
-		 * Print string representation of script variable
+		 * Print string representation of variable
 		 * @param formatted formatted
 		 * @param jsonCompatible json compatible
 		 * @param depth recursion depth
-		 * @return string representation of script variable type
+		 * @return string representation of variable type
 		 */
 		inline const string getValueAsString(bool formatted = false, bool jsonCompatible = false, int depth = 0) const {
 			string result;
@@ -2743,7 +2743,7 @@ private:
 	 * Execute a script statement
 	 * @param syntaxTree syntax tree
 	 * @param statement statement
-	 * @return return value as script variable
+	 * @return return value as variable
 	 */
 	Variable executeScriptStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement);
 
@@ -3502,7 +3502,7 @@ public:
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return Variable(setAccessBool == SETACCESSBOOL_TRUE);
 		} else
-		// we have a pointer to a ordinary script variable
+		// we have a pointer to a ordinary variable
 		if (variablePtr != nullptr) {
 			// if we return any variable we can safely remove the constness, a reference can of course keep its constness
 			auto variable = createReference == false?*variablePtr:Variable::createReferenceVariable(variablePtr);
@@ -3520,7 +3520,7 @@ public:
 	}
 
 	/**
-	 * Set script variable
+	 * Set variable
 	 * @param name name
 	 * @param variable variable
 	 * @param statement optional statement the variable is written in
@@ -3675,7 +3675,7 @@ public:
 	}
 
 	/**
-	 * Unset script variable
+	 * Unset variable
 	 * @param name name
 	 * @param statement optional statement the variable is unset in
 	 */
