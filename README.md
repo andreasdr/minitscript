@@ -794,11 +794,11 @@ end
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Append another byte array to this byte array                                                     |
-| <sub>append(&$other: ByteArray): Null</sub>                                                      |
+| <sub>appendByteArray(&$other: ByteArray): Null</sub>                                             |
 | Clear byte array                                                                                 |
 | <sub>clear(): Null</sub>                                                                         |
 | Extract a byte array from this byte array                                                        |
-| <sub>extract($index: Integer, $length: Integer): ByteArray</sub>                                 |
+| <sub>extractByteArray($index: Integer, $length: Integer): ByteArray</sub>                        |
 | Get byte array entry                                                                             |
 | <sub>get($index: Integer): Integer</sub>                                                         |
 | Get byte array length                                                                            |
@@ -1073,7 +1073,7 @@ end
 | Create float                                                                                     |
 | <sub>float($float: Float): Float</sub>                                                           |
 | Convert integer bit representation of float to float                                             |
-| <sub>float.fromIntValue($integer: Integer): Float</sub>                                          |
+| <sub>float.fromIntValue($int: Integer): Float</sub>                                              |
 | Convert float to integer bit representation of float                                             |
 | <sub>float.toIntValue($float: Float): Integer</sub>                                              |
 
