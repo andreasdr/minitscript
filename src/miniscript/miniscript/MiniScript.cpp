@@ -2734,22 +2734,22 @@ void MiniScript::registerMethods() {
 							callArguments[0] = move(arguments[1]);
 							//	additional method call arguments
 							{
-								auto callArgumentValueIdx = 1;
-								for (auto argumentValueIdx = 3; argumentValueIdx < arguments.size(); argumentValueIdx+=2) {
+								auto callArgumentIdx = 1;
+								for (auto argumentIdx = 3; argumentIdx < arguments.size(); argumentIdx+=2) {
 									// do we have a this variable name?
 									string argumentVariableName;
-									if (arguments[argumentValueIdx].getType() != MiniScript::TYPE_NULL && arguments[argumentValueIdx].getStringValue(argumentVariableName) == true) {
+									if (arguments[argumentIdx].getType() != MiniScript::TYPE_NULL && arguments[argumentIdx].getStringValue(argumentVariableName) == true) {
 										// yep, looks like that
 										if (method != nullptr) {
-											arguments[argumentValueIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentValueIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentValueIdx].reference);
+											arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentIdx].reference);
 										} else
 										if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
-											arguments[argumentValueIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentValueIdx >= miniScript->getScripts()[functionIdx].arguments.size()?false:miniScript->getScripts()[functionIdx].arguments[callArgumentValueIdx].reference);
+											arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionIdx].arguments.size()?false:miniScript->getScripts()[functionIdx].arguments[callArgumentIdx].reference);
 										}
 									}
 									//
-									callArguments[callArgumentValueIdx] = move(arguments[argumentValueIdx + 1]);
-									callArgumentValueIdx++;
+									callArguments[callArgumentIdx] = move(arguments[argumentIdx + 1]);
+									callArgumentIdx++;
 								}
 							}
 							//
@@ -2766,10 +2766,10 @@ void MiniScript::registerMethods() {
 							arguments[1] = move(callArgumentsSpan[0]);
 							//	additional arguments
 							{
-								auto callArgumentValueIdx = 1;
-								for (auto argumentValueIdx = 3; argumentValueIdx < arguments.size(); argumentValueIdx+=2) {
-									arguments[argumentValueIdx] = move(callArgumentsSpan[callArgumentValueIdx].getValueAsString());
-									callArgumentValueIdx++;
+								auto callArgumentIdx = 1;
+								for (auto argumentIdx = 3; argumentIdx < arguments.size(); argumentIdx+=2) {
+									arguments[argumentIdx] = move(callArgumentsSpan[callArgumentIdx].getValueAsString());
+									callArgumentIdx++;
 								}
 							}
 						}
