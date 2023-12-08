@@ -109,7 +109,7 @@ public:
 		OPERATOR_MAX
 	};
 
-	enum StateMachineState {
+	enum StateMachineStateId {
 		STATEMACHINESTATE_NONE = -1,
 		STATEMACHINESTATE_NEXT_STATEMENT,
 		STATEMACHINESTATE_WAIT,
@@ -2101,22 +2101,22 @@ public:
 	};
 
 	/**
-	 * Script State Machine State
+	 * State Machine State
 	 */
-	class ScriptStateMachineState {
+	class StateMachineState {
 	public:
 		// forbid class copy
-		FORBID_CLASS_COPY(ScriptStateMachineState)
+		FORBID_CLASS_COPY(StateMachineState)
 
 		/**
 		 * Constructor
 		 */
-		ScriptStateMachineState() {}
+		StateMachineState() {}
 
 		/**
 		 * Destructor
 		 */
-		virtual ~ScriptStateMachineState() {}
+		virtual ~StateMachineState() {}
 
 		/**
 		 * @return name
@@ -2476,7 +2476,7 @@ protected:
 		};
 		int state { STATE_NONE };
 		int lastState { STATE_NONE };
-		ScriptStateMachineState* lastStateMachineState { nullptr };
+		StateMachineState* lastStateMachineState { nullptr };
 		bool running { false };
 		int scriptIdx { SCRIPTIDX_NONE };
 		int statementIdx { STATEMENTIDX_NONE };
@@ -2572,7 +2572,7 @@ protected:
 	 * @param scriptIdx script index
 	 * @param stateMachineState state machine state
 	 */
-	inline void resetScriptExecutationState(int scriptIdx, StateMachineState stateMachineState) {
+	inline void resetScriptExecutationState(int scriptIdx, StateMachineStateId stateMachineState) {
 		auto& scriptState = getScriptState();
 		if (isFunctionRunning() == false) enabledNamedConditions.clear();
 		scriptState.forTimeStarted.clear();
@@ -2697,7 +2697,7 @@ private:
 	// registered methods
 	unordered_map<string, Method*> methods;
 	// registered state machine states
-	unordered_map<int, ScriptStateMachineState*> stateMachineStates;
+	unordered_map<int, StateMachineState*> stateMachineStates;
 	// operators
 	unordered_map<uint8_t, Method*> operators;
 	//
@@ -3446,7 +3446,7 @@ public:
 	 * Register state machine state
 	 * @param state state
 	 */
-	void registerStateMachineState(ScriptStateMachineState* state);
+	void registerStateMachineState(StateMachineState* state);
 
 	/**
 	 * Register method

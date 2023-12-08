@@ -149,7 +149,7 @@ MiniScript::~MiniScript() {
 	while (scriptStateStack.empty() == false) popScriptState();
 }
 
-void MiniScript::registerStateMachineState(ScriptStateMachineState* state) {
+void MiniScript::registerStateMachineState(StateMachineState* state) {
 	auto stateMachineStateIt = stateMachineStates.find(state->getId());
 	if (stateMachineStateIt != stateMachineStates.end()) {
 		Console::println("MiniScript::registerStateMachineState(): " + scriptFileName + ": state with id + " + to_string(state->getId()) + ", name " + state->getName() + " already registered.");
@@ -2548,11 +2548,11 @@ void MiniScript::registerStateMachineStates() {
 	// base
 	if (native == false) {
 		//
-		class ScriptStateNextStatement: public ScriptStateMachineState {
+		class ScriptStateNextStatement: public StateMachineState {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptStateNextStatement(MiniScript* miniScript): ScriptStateMachineState(), miniScript(miniScript) {}
+			ScriptStateNextStatement(MiniScript* miniScript): StateMachineState(), miniScript(miniScript) {}
 			virtual const string getName() override {
 				return "STATEMACHINESTATE_NEXT_STATEMENT";
 			}
@@ -2573,11 +2573,11 @@ void MiniScript::registerStateMachineStates() {
 	}
 	{
 		//
-		class ScriptStateWait: public ScriptStateMachineState {
+		class ScriptStateWait: public StateMachineState {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptStateWait(MiniScript* miniScript): ScriptStateMachineState(), miniScript(miniScript) {}
+			ScriptStateWait(MiniScript* miniScript): StateMachineState(), miniScript(miniScript) {}
 			virtual const string getName() override {
 				return "STATEMACHINESTATE_WAIT";
 			}
@@ -2595,11 +2595,11 @@ void MiniScript::registerStateMachineStates() {
 	}
 	{
 		//
-		class ScriptStateWaitForCondition: public ScriptStateMachineState {
+		class ScriptStateWaitForCondition: public StateMachineState {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			ScriptStateWaitForCondition(MiniScript* miniScript): ScriptStateMachineState(), miniScript(miniScript) {}
+			ScriptStateWaitForCondition(MiniScript* miniScript): StateMachineState(), miniScript(miniScript) {}
 			virtual const string getName() override {
 				return "STATEMACHINESTATE_WAIT_FOR_CONDITION";
 			}
