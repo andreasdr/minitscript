@@ -25,9 +25,6 @@ OFLAGS = -O3
 EXTRAFLAGS = 
 INCLUDES = -Isrc -Iext -I.
 
-#
-CXX := $(CXX) -fPIC
-
 # set platform specific flags
 ifeq ($(OS), Darwin)
 	# MacOSX
@@ -61,7 +58,7 @@ LIBS_LDFLAGS := $(LIBS_LDFLAGS)
 
 #
 CPPFLAGS := $(INCLUDES)
-CFLAGS := -g $(OFLAGS) $(EXTRAFLAGS) -pipe -MMD -MP -DNDEBUG
+CFLAGS := -g $(OFLAGS) $(EXTRAFLAGS) -pipe -MMD -MP -DNDEBUG -fPIC
 CXXFLAGS := $(CFLAGS) $(CPPVERSION)
 
 SRC = src
