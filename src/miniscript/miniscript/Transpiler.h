@@ -22,25 +22,25 @@ class miniscript::miniscript::Transpiler {
 public:
 
 	/**
-	 * Get all method names
+	 * Get all classes method names
 	 * @param miniScript MiniScript instance
-	 * @return all method names
+	 * @return all classes method names
 	 */
-	static const unordered_set<string> getAllMethodNames(MiniScript* miniScript);
+	static const unordered_set<string> getAllClassesMethodNames(MiniScript* miniScript);
 
 	/**
-	 * Get all method names sorted
+	 * Get all classes method names sorted
 	 * @param miniScript MiniScript instance
-	 * @return all method names sorted
+	 * @return all classes method names sorted
 	 */
-	static const vector<string> getAllMethodNamesSorted(MiniScript* miniScript);
+	static const vector<string> getAllClassesMethodNamesSorted(MiniScript* miniScript);
 
 	/**
-	 * Get all method names by class name
+	 * Get method names per classes
 	 * @param miniScript MiniScript instance
-	 * @return all method names
+	 * @return method names per classes
 	 */
-	static const unordered_map<string, vector<string>> getAllClassesMethodNames(MiniScript* miniScript);
+	static const unordered_map<string, vector<string>> getClassesMethodNames(MiniScript* miniScript);
 
 	/**
 	 * Gather method code

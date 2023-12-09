@@ -27,31 +27,30 @@ using miniscript::utilities::Console;
 using miniscript::utilities::Integer;
 using miniscript::utilities::StringTools;
 
-const unordered_set<string> Transpiler::getAllMethodNames(MiniScript* miniScript) {
+const unordered_set<string> Transpiler::getAllClassesMethodNames(MiniScript* miniScript) {
 	unordered_set<string> allMethods;
 	for (auto scriptMethod: miniScript->getMethods()) {
 		string className;
-		if (scriptMethod->getMethodName().rfind('.') != string::npos) className = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind('.'));
+		if (scriptMethod->getMethodName().rfind("::") != string::npos) className = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind("::"));
+		if (className.empty() == true) continue;
 		string method =
 			StringTools::substring(
 				scriptMethod->getMethodName(),
-				className.empty() == true?0:className.size() + 1,
+				className.size() + 2,
 				scriptMethod->getMethodName().size());
 		// first argument name of method must equal the name of the class
 		if (scriptMethod->getArgumentTypes().empty() == true ||
-			scriptMethod->getArgumentTypes()[0].name != className) continue;
+			scriptMethod->getArgumentTypes()[0].name != StringTools::toLowerCase(className)) continue;
 		// first argument of method must be of type of the class
-		if (className != MiniScript::Variable::getTypeAsString(scriptMethod->getArgumentTypes()[0].type) ||
-			className != scriptMethod->getArgumentTypes()[0].name) continue;
-		//
+		if (className != MiniScript::Variable::getTypeAsString(scriptMethod->getArgumentTypes()[0].type)) continue;		//
 		allMethods.insert(method);
 	}
 	//
 	return allMethods;
 }
 
-const vector<string> Transpiler::getAllMethodNamesSorted(MiniScript* miniScript) {
-	auto allMethods = getAllMethodNames(miniScript);
+const vector<string> Transpiler::getAllClassesMethodNamesSorted(MiniScript* miniScript) {
+	auto allMethods = getAllClassesMethodNames(miniScript);
 	//
 	vector<string> result;
 	for (auto method: allMethods) result.push_back(method);
@@ -60,22 +59,22 @@ const vector<string> Transpiler::getAllMethodNamesSorted(MiniScript* miniScript)
 	return result;
 }
 
-const unordered_map<string, vector<string>> Transpiler::getAllClassesMethodNames(MiniScript* miniScript) {
+const unordered_map<string, vector<string>> Transpiler::getClassesMethodNames(MiniScript* miniScript) {
 	unordered_map<string, vector<string>> methodByClasses;
 	for (auto scriptMethod: miniScript->getMethods()) {
 		string className;
-		if (scriptMethod->getMethodName().rfind('.') != string::npos) className = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind('.'));
+		if (scriptMethod->getMethodName().rfind("::") != string::npos) className = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind("::"));
+		if (className.empty() == true) continue;
 		string method =
 			StringTools::substring(
 				scriptMethod->getMethodName(),
-				className.empty() == true?0:className.size() + 1,
+				className.size() + 2,
 				scriptMethod->getMethodName().size());
 		// first argument name of method must equal the name of the class
 		if (scriptMethod->getArgumentTypes().empty() == true ||
-			scriptMethod->getArgumentTypes()[0].name != className) continue;
+			scriptMethod->getArgumentTypes()[0].name != StringTools::toLowerCase(className)) continue;
 		// first argument of method must be of type of the class
-		if (className != MiniScript::Variable::getTypeAsString(scriptMethod->getArgumentTypes()[0].type) ||
-			className != scriptMethod->getArgumentTypes()[0].name) continue;
+		if (className != MiniScript::Variable::getTypeAsString(scriptMethod->getArgumentTypes()[0].type)) continue;
 		//
 		methodByClasses[className].push_back(method);
 	}
@@ -498,8 +497,8 @@ void Transpiler::generateMiniScriptEvaluateMemberAccessArrays(
 ) {
 	//
 	auto scriptMethods = miniScript->getMethods();
-	auto allMethods = Transpiler::getAllMethodNamesSorted(miniScript);
-	auto methodsByClasses = Transpiler::getAllClassesMethodNames(miniScript);
+	auto allMethods = Transpiler::getAllClassesMethodNamesSorted(miniScript);
+	auto methodsByClasses = Transpiler::getClassesMethodNames(miniScript);
 	generatedDeclarations.push_back("// evaluate member access constants");
 	generatedDeclarations.push_back("static constexpr int EVALUATEMEMBERACCESSARRAYIDX_NONE { -1 };");
 	auto methodIdx = 0;
@@ -529,7 +528,7 @@ void Transpiler::generateMiniScriptEvaluateMemberAccessArrays(
 				continue;
 			}
 			//
-			generatedDefinitions.push_back("evaluateMemberAccessArrays[" + to_string(typeIdx - static_cast<int>(MiniScript::TYPE_STRING)) + "][" + "EVALUATEMEMBERACCESSARRAYIDX_" + StringTools::toUpperCase(method) + "] = getMethod(\"" + className + "." + method + "\");");
+			generatedDefinitions.push_back("evaluateMemberAccessArrays[" + to_string(typeIdx - static_cast<int>(MiniScript::TYPE_STRING)) + "][" + "EVALUATEMEMBERACCESSARRAYIDX_" + StringTools::toUpperCase(method) + "] = getMethod(\"" + className + "::" + method + "\");");
 			methodIdx++;
 		}
 	}
@@ -1074,10 +1073,10 @@ bool Transpiler::transpileScriptStatement(
 	if (depth == 0) {
 		generatedCode+= minIndentString + depthIndentString + "\t" + "// statement setup" + "\n";
 		if (scriptConditionIdx != MiniScript::SCRIPTIDX_NONE) {
-			generatedCode+= minIndentString + depthIndentString + "\t" + "const Statement& statement = scripts[" + to_string(scriptConditionIdx) + "].conditionStatement;" + "\n";
+			generatedCode+= minIndentString + depthIndentString + "\t" + "const auto& statement = scripts[" + to_string(scriptConditionIdx) + "].conditionStatement;" + "\n";
 		} else
 		if (scriptIdx != MiniScript::SCRIPTIDX_NONE) {
-			generatedCode+= minIndentString + depthIndentString + "\t" + "const Statement& statement = scripts[" + to_string(scriptIdx) + "].statements[" + to_string(statement.statementIdx) + "];" + "\n";
+			generatedCode+= minIndentString + depthIndentString + "\t" + "const auto& statement = scripts[" + to_string(scriptIdx) + "].statements[" + to_string(statement.statementIdx) + "];" + "\n";
 		}
 		generatedCode+= minIndentString + depthIndentString + "\t" + "getScriptState().statementIdx = statement.statementIdx;" + "\n";
 	}
@@ -1086,7 +1085,7 @@ bool Transpiler::transpileScriptStatement(
 	{
 		vector<string> argumentsCode;
 		if (depth > 0) {
-			argumentsCode.push_back("Variable& returnValue = argumentsD" + to_string(depth - 1) + (parentArgumentIdx != MiniScript::ARGUMENTIDX_NONE?"AIDX" + to_string(parentArgumentIdx):"") + "[" + to_string(argumentIdx) + "];");
+			argumentsCode.push_back("auto& returnValue = argumentsD" + to_string(depth - 1) + (parentArgumentIdx != MiniScript::ARGUMENTIDX_NONE?"AIDX" + to_string(parentArgumentIdx):"") + "[" + to_string(argumentIdx) + "];");
 		} else {
 			argumentsCode.push_back("Variable returnValue;");
 		}

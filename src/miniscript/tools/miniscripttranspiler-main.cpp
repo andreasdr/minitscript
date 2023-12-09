@@ -121,7 +121,7 @@ static void processFile(const string& scriptFileName, const string& transpilatio
 
 	//
 	unordered_map<string, vector<string>> methodCodeMap;
-	auto allMethods = Transpiler::getAllMethodNames(miniScript.get());
+	auto allMethods = Transpiler::getAllClassesMethodNames(miniScript.get());
 
 	//
 	vector<string> transpilationUnitIncludes;
