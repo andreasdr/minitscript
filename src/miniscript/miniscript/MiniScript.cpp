@@ -2731,7 +2731,7 @@ void MiniScript::registerMethods() {
 							#if defined(__MINISCRIPT_TRANSPILATION__)
 								method = evaluateMemberAccessArrays[static_cast<int>(arguments[1].getType()) - static_cast<int>(MiniScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
 							#else
-								method = miniScript->getMethod(className + "." + member);
+								method = miniScript->getMethod(className + "::" + member);
 							#endif
 						}
 						if (method != nullptr || functionIdx != MiniScript::SCRIPTIDX_NONE) {

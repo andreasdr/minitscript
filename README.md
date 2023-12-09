@@ -293,7 +293,7 @@ Initializing a byte array by constructor:
 ...
 ```
 
-Pushing values using ByteArray.push():
+Pushing values using ByteArray::push():
 ```
 ...
 	$byteArray->push(5, 6, 7)
@@ -309,7 +309,7 @@ Pushing values using [] operator:
 ...
 ```
 
-Iterating byte arrays using ByteArray.length() and ByteArray.get():
+Iterating byte arrays using ByteArray::length() and ByteArray::get():
 ```
 ...
 	$i = 0
@@ -320,7 +320,7 @@ Iterating byte arrays using ByteArray.length() and ByteArray.get():
 ...
 ```
 
-Iterating byte arrays using ByteArray.length() and [] operator:
+Iterating byte arrays using ByteArray::length() and [] operator:
 ```
 ...
 	$i = 0
@@ -331,7 +331,7 @@ Iterating byte arrays using ByteArray.length() and [] operator:
 ...
 ```
 
-Removing from byte arrays using a index with ByteArray.remove():
+Removing from byte arrays using a index with ByteArray::remove():
 ```
 ...
 	$byteArray->remove(2)
@@ -365,7 +365,7 @@ Initializing an array by constructor:
 ...
 ```
 
-Pushing values using Array.push():
+Pushing values using Array::push():
 ```
 ...
 	$array->push(5, 6, 7)
@@ -381,7 +381,7 @@ Pushing values using [] operator:
 ...
 ```
 
-Removing values from arrays using Array.removeOf():
+Removing values from arrays using Array::removeOf():
 ```
 ...
 	$array->removeOf(6)
@@ -389,13 +389,13 @@ Removing values from arrays using Array.removeOf():
 ...
 ```
 
-Removing from arrays using a index with Array.remove():
+Removing from arrays using a index with Array::remove():
 ```
 ...
 	$array->remove(2)
 ...
 ```
-Iterating arrays using Array.length() and Array.get():
+Iterating arrays using Array::length() and Array::get():
 ```
 ...
 	$i = 0
@@ -406,7 +406,7 @@ Iterating arrays using Array.length() and Array.get():
 ...
 ```
 
-Iterating arrays using Array.length() and [] operator:
+Iterating arrays using Array::length() and [] operator:
 ```
 ...
 	$i = 0
@@ -417,7 +417,7 @@ Iterating arrays using Array.length() and [] operator:
 ...
 ```
 
-Iterating arrays using Array.forEach() and a lamda function
+Iterating arrays using Array::forEach() and a lamda function
 ```
 ...
 	$array->forEach(($value) -> { console.log($value) })
@@ -442,7 +442,7 @@ Initializing a map by map constructor:
 ...
 ```
 
-Setting map key, value pairs using Map.set():
+Setting map key, value pairs using Map::set():
 ```
 ...
 	$map->set("test1", 123)
@@ -452,14 +452,14 @@ Setting map key, value pairs using Map.set():
 ...
 ```
 
-Removing from map using Map.remove() and a given key:
+Removing from map using Map::remove() and a given key:
 ```
 ...
 	$map->remove("test2")
 ...
 ```
 
-Reading values from map using Map.get() and given keys:
+Reading values from map using Map::get() and given keys:
 ```
 ...
 	console.log("map value for test1 key using map.get(): ", $map->get("test1"))
@@ -501,7 +501,7 @@ Reading map values:
 ...
 ```
 
-Reading all keys and values from map using Map.get() and Map.getKeys()
+Reading all keys and values from map using Map::get() and Map::getKeys()
 ```
 ...
 	$mapKeys = $map->getKeys()
@@ -513,7 +513,7 @@ Reading all keys and values from map using Map.get() and Map.getKeys()
 ...
 ```
 
-Iterating maps using Map.forEach() and a lamda function
+Iterating maps using Map::forEach() and a lamda function
 ```
 ...
 	$map->forEach(($key, $value) -> { console.log($key + " = " + $value) })
@@ -538,7 +538,7 @@ Initializing a set by set constructor
 ...
 ```
 
-Inserting keys into set using Set.insert():
+Inserting keys into set using Set::insert():
 ```
 ...
 	$set->insert("test1")
@@ -547,14 +547,14 @@ Inserting keys into set using Set.insert():
 ...
 ```
 
-Removing keys from set using Set.remove():
+Removing keys from set using Set::remove():
 ```
 ...
 	$set->remove("test2")
 ...
 ```
 
-Checking if keys exist in set using Set.has() and given keys:
+Checking if keys exist in set using Set::has() and given keys:
 ```
 ...
 	console.log("set does have test1 key using set.has(): ", $set->has("test1"))
@@ -594,7 +594,7 @@ Reading all keys as array from set:
 ...
 ```
 
-Iterating sets using Set.forEach() and a lamda function
+Iterating sets using Set::forEach() and a lamda function
 ```
 ...
 	$set->forEach(($key) -> { console.log($key) })
@@ -731,11 +731,11 @@ end
 | Create string                                                                                    |
 | <sub><b>static</b> String($string: String): String</sub>                                         |
 | Concatenate strings                                                                              |
-| <sub><b>static</b> String.concatenate(...): String</sub>                                         |
+| <sub><b>static</b> String::concatenate(...): String</sub>                                        |
 | Create string from byte array                                                                    |
-| <sub><b>static</b> String.fromByteArray($byteArray: ByteArray): String</sub>                     |
+| <sub><b>static</b> String::fromByteArray($byteArray: ByteArray): String</sub>                    |
 | Create spaces as string                                                                          |
-| <sub><b>static</b> String.space([$spaces: Integer]): String</sub>                                |
+| <sub><b>static</b> String::space([$spaces: Integer]): String</sub>                               |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Return character of string at given position                                                     |

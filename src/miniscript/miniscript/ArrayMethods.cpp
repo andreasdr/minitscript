@@ -56,7 +56,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.length";
+				return "Array::length";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_ARRAY) {
@@ -84,7 +84,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.push";
+				return "Array::push";
 			}
 			bool isVariadic() const override {
 				return true;
@@ -119,7 +119,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.get";
+				return "Array::get";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
@@ -151,7 +151,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.set";
+				return "Array::set";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
@@ -182,7 +182,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.remove";
+				return "Array::remove";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
@@ -214,7 +214,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.removeOf";
+				return "Array::removeOf";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
@@ -256,7 +256,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.indexOf";
+				return "Array::indexOf";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
@@ -298,7 +298,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.sort";
+				return "Array::sort";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
@@ -350,7 +350,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.reverse";
+				return "Array::reverse";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 1 ||
@@ -383,7 +383,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.clear";
+				return "Array::clear";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_ARRAY) {
@@ -413,7 +413,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.forEach";
+				return "Array::forEach";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
@@ -462,7 +462,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array.forRange";
+				return "Array::forRange";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;

@@ -126,7 +126,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 	//
 	for (auto scriptMethod: scriptMethods) {
 		string className;
-		if (scriptMethod->getMethodName().rfind('.') != string::npos) className = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind('.'));
+		if (scriptMethod->getMethodName().rfind("::") != string::npos) className = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind("::"));
 		if (className.empty() == true && allClassMethods.find(scriptMethod->getMethodName()) == allClassMethods.end()) continue;
 		//
 		auto _class = false;
@@ -143,7 +143,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		string method =
 			StringTools::substring(
 				scriptMethod->getMethodName(),
-				className.empty() == true?0:className.size() + 1,
+				className.empty() == true?0:className.size() + 2,
 				scriptMethod->getMethodName().size());
 		// no arguments or no "this" argument
 		auto _static =
@@ -161,7 +161,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		//
 		string result;
 		string className;
-		if (scriptMethod->getMethodName().rfind('.') != string::npos) className = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind('.'));
+		if (scriptMethod->getMethodName().rfind("::") != string::npos) className = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind("::"));
 		// constructors
 		auto _static = false;
 		if (className.empty() == true) {
@@ -194,7 +194,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		if (_static == true) {
 			method+= "<b>static</b> ";
 		}
-		method+= _static == true?scriptMethod->getMethodName():StringTools::substring(scriptMethod->getMethodName(), className.size() + 1, scriptMethod->getMethodName().size());
+		method+= _static == true?scriptMethod->getMethodName():StringTools::substring(scriptMethod->getMethodName(), className.size() + 2, scriptMethod->getMethodName().size());
 		method+= "(";
 		method+= scriptMethod->getArgumentsInformation(_static == true?0:1);
 		method+= "): ";

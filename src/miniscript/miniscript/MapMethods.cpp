@@ -52,7 +52,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Map.set";
+				return "Map::set";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
@@ -85,7 +85,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Map.has";
+				return "Map::has";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
@@ -118,7 +118,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Map.get";
+				return "Map::get";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
@@ -151,7 +151,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Map.remove";
+				return "Map::remove";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
@@ -183,7 +183,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Map.getKeys";
+				return "Map::getKeys";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
@@ -217,7 +217,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Map.getValues";
+				return "Map::getValues";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
@@ -251,7 +251,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Map.clear";
+				return "Map::clear";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_MAP) {
@@ -281,7 +281,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Map.forEach";
+				return "Map::forEach";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;

@@ -62,7 +62,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "ByteArray.length";
+				return "ByteArray::length";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
@@ -90,7 +90,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "ByteArray.push";
+				return "ByteArray::push";
 			}
 			bool isVariadic() const override {
 				return true;
@@ -128,7 +128,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "ByteArray.get";
+				return "ByteArray::get";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
@@ -160,7 +160,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "ByteArray.set";
+				return "ByteArray::set";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
@@ -194,7 +194,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "ByteArray.remove";
+				return "ByteArray::remove";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
@@ -225,7 +225,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "ByteArray.appendByteArray";
+				return "ByteArray::appendByteArray";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 2 ||
@@ -261,7 +261,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "ByteArray.extractByteArray";
+				return "ByteArray::extractByteArray";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
@@ -298,7 +298,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "ByteArray.clear";
+				return "ByteArray::clear";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
