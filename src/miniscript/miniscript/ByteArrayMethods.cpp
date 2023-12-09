@@ -35,8 +35,8 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				returnValue.setType(MiniScript::TYPE_BYTEARRAY);
 				uint8_t value;
-				for (const auto& argumentValue: arguments) {
-					if (argumentValue.getByteValue(miniScript, value, &statement) == true) {
+				for (const auto& argument: arguments) {
+					if (argument.getByteValue(miniScript, value, &statement) == true) {
 						returnValue.pushByteArrayEntry(value);
 					} else {
 						Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));

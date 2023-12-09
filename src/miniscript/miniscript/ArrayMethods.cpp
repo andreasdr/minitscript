@@ -34,8 +34,8 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				returnValue.setType(MiniScript::TYPE_ARRAY);
-				for (const auto& argumentValue: arguments) {
-					returnValue.pushArrayEntry(argumentValue);
+				for (const auto& argument: arguments) {
+					returnValue.pushArrayEntry(argument);
 				}
 			}
 		};

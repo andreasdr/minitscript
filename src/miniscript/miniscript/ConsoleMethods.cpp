@@ -25,8 +25,8 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				return "console.log";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				for (const auto& argumentValue: arguments) {
-					Console::print(argumentValue.getValueAsString());
+				for (const auto& argument: arguments) {
+					Console::print(argument.getValueAsString());
 				}
 				Console::println();
 			}

@@ -679,8 +679,8 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string result;
-				for (const auto& argumentValue: arguments) {
-					result+= argumentValue.getValueAsString();
+				for (const auto& argument: arguments) {
+					result+= argument.getValueAsString();
 				}
 				returnValue.setValue(result);
 			}
