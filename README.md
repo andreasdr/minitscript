@@ -282,14 +282,14 @@ Initializing a byte array by constructor:
 
 ```
 ...
-	$byteArray = bytearray()
+	$byteArray = ByteArray()
 ...
 ```
 
 ... or initialize and push values to it:
 ```
 ...
-	$byteArray = bytearray(1, 2, 3)
+	$byteArray = ByteArray(1, 2, 3)
 ...
 ```
 
@@ -354,18 +354,18 @@ Initializing an array by constructor:
 
 ```
 ...
-	$array = array()
+	$array = Array()
 ...
 ```
 
 ... or initialize and push values to it:
 ```
 ...
-	$array = array(1, 2, 3)
+	$array = Array(1, 2, 3)
 ...
 ```
 
-Pushing values using array.push():
+Pushing values using Array.push():
 ```
 ...
 	$array->push(5, 6, 7)
@@ -381,7 +381,7 @@ Pushing values using [] operator:
 ...
 ```
 
-Removing values from arrays using array.removeOf():
+Removing values from arrays using Array.removeOf():
 ```
 ...
 	$array->removeOf(6)
@@ -389,13 +389,13 @@ Removing values from arrays using array.removeOf():
 ...
 ```
 
-Removing from arrays using a index with array.remove():
+Removing from arrays using a index with Array.remove():
 ```
 ...
 	$array->remove(2)
 ...
 ```
-Iterating arrays using array.length() and array.get():
+Iterating arrays using Array.length() and Array.get():
 ```
 ...
 	$i = 0
@@ -406,7 +406,7 @@ Iterating arrays using array.length() and array.get():
 ...
 ```
 
-Iterating arrays using array.length() and [] operator:
+Iterating arrays using Array.length() and [] operator:
 ```
 ...
 	$i = 0
@@ -417,7 +417,7 @@ Iterating arrays using array.length() and [] operator:
 ...
 ```
 
-Iterating arrays using array.forEach() and a lamda function
+Iterating arrays using Array.forEach() and a lamda function
 ```
 ...
 	$array->forEach(($value) -> { console.log($value) })
@@ -438,11 +438,11 @@ Initializing a map by map initializer
 Initializing a map by map constructor:
 ```
 ...
-	$map = map()
+	$map = Map()
 ...
 ```
 
-Setting map key, value pairs using map.set():
+Setting map key, value pairs using Map.set():
 ```
 ...
 	$map->set("test1", 123)
@@ -452,14 +452,14 @@ Setting map key, value pairs using map.set():
 ...
 ```
 
-Removing from map using map.remove() and a given key:
+Removing from map using Map.remove() and a given key:
 ```
 ...
 	$map->remove("test2")
 ...
 ```
 
-Reading values from map using map.get() and given keys:
+Reading values from map using Map.get() and given keys:
 ```
 ...
 	console.log("map value for test1 key using map.get(): ", $map->get("test1"))
@@ -501,7 +501,7 @@ Reading map values:
 ...
 ```
 
-Reading all keys and values from map using map.get() and map.getKeys()
+Reading all keys and values from map using Map.get() and Map.getKeys()
 ```
 ...
 	$mapKeys = $map->getKeys()
@@ -513,7 +513,7 @@ Reading all keys and values from map using map.get() and map.getKeys()
 ...
 ```
 
-Iterating maps using map.forEach() and a lamda function
+Iterating maps using Map.forEach() and a lamda function
 ```
 ...
 	$map->forEach(($key, $value) -> { console.log($key + " = " + $value) })
@@ -534,11 +534,11 @@ Initializing a set by set initializer
 Initializing a set by set constructor
 ```
 ...
-	$set = set()
+	$set = Set()
 ...
 ```
 
-Inserting keys into set using set.insert():
+Inserting keys into set using Set.insert():
 ```
 ...
 	$set->insert("test1")
@@ -547,14 +547,14 @@ Inserting keys into set using set.insert():
 ...
 ```
 
-Removing keys from set using set.remove():
+Removing keys from set using Set.remove():
 ```
 ...
 	$set->remove("test2")
 ...
 ```
 
-Checking if keys exist in map using map.has() and given keys:
+Checking if keys exist in map using Map.has() and given keys:
 ```
 ...
 	console.log("set does have test1 key using set.has(): ", $set->has("test1"))
@@ -729,13 +729,13 @@ end
 | &nbsp;                                    |
 | <b>STATIC METHODS</b>                     |
 | Create string                                                                                    |
-| <sub><b>static</b> string($string: String): String</sub>                                         |
+| <sub><b>static</b> String($string: String): String</sub>                                         |
 | Concatenate strings                                                                              |
-| <sub><b>static</b> string.concatenate(...): String</sub>                                         |
+| <sub><b>static</b> String.concatenate(...): String</sub>                                         |
 | Create string from byte array                                                                    |
-| <sub><b>static</b> string.fromByteArray($byteArray: ByteArray): String</sub>                     |
+| <sub><b>static</b> String.fromByteArray($byteArray: ByteArray): String</sub>                     |
 | Create spaces as string                                                                          |
-| <sub><b>static</b> string.space([$spaces: Integer]): String</sub>                                |
+| <sub><b>static</b> String.space([$spaces: Integer]): String</sub>                                |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Return character of string at given position                                                     |
@@ -790,7 +790,7 @@ end
 | &nbsp;                                    |
 | <b>STATIC METHODS</b>                     |
 | Create a byte array                                                                              |
-| <sub><b>static</b> bytearray(...): ByteArray</sub>                                               |
+| <sub><b>static</b> ByteArray(...): ByteArray</sub>                                               |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Append another byte array to this byte array                                                     |
@@ -817,7 +817,7 @@ end
 | &nbsp;                                    |
 | <b>STATIC METHODS</b>                     |
 | Create array                                                                                     |
-| <sub><b>static</b> array(...): Array</sub>                                                       |
+| <sub><b>static</b> Array(...): Array</sub>                                                       |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Clear array                                                                                      |
@@ -852,7 +852,7 @@ end
 | &nbsp;                                    |
 | <b>STATIC METHODS</b>                     |
 | Create map                                                                                       |
-| <sub><b>static</b> map(): Map</sub>                                                              |
+| <sub><b>static</b> Map(): Map</sub>                                                              |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Clear map                                                                                        |
@@ -879,7 +879,7 @@ end
 | &nbsp;                                    |
 | <b>STATIC METHODS</b>                     |
 | Create set                                                                                       |
-| <sub><b>static</b> set(): Set</sub>                                                              |
+| <sub><b>static</b> Set(): Set</sub>                                                              |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Clear set                                                                                        |

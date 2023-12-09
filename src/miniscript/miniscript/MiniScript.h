@@ -278,11 +278,6 @@ public:
 		}
 
 		/**
-		 * @return class name
-		 */
-		virtual const string& getClassName() const = 0;
-
-		/**
 		 * @return type as string
 		 */
 		virtual const string& getTypeAsString() const = 0;
@@ -661,12 +656,19 @@ public:
 
 	public:
 		// class names
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_NONE;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_STRING;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_BYTEARRAY;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_ARRAY;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_MAP;
-		MINISCRIPT_STATIC_DLL_IMPEXT static const string CLASSNAME_SET;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_NONE;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_NULL;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_BOOLEAN;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_INTEGER;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_FLOAT;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_FUNCTION;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_NUMBER;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_MIXED;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_STRING;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_BYTEARRAY;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_ARRAY;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_MAP;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_SET;
 
 		/**
 		 * Create reference variable
@@ -1812,71 +1814,34 @@ public:
 		}
 
 		/**
-		 * @return class name of given variable type
-		 */
-		inline const string& getClassName() {
-			return getClassName(getType());
-		}
-
-		/**
-		 * Return class name of given variable type
-		 * @param type type
-		 * @return class name of given variable type
-		 */
-		inline static const string& getClassName(VariableType type) {
-			switch (type) {
-				case TYPE_NULL: return CLASSNAME_NONE;
-				case TYPE_BOOLEAN: return CLASSNAME_NONE;
-				case TYPE_INTEGER: return CLASSNAME_NONE;
-				case TYPE_FLOAT: return CLASSNAME_NONE;
-				case TYPE_FUNCTION_CALL: return CLASSNAME_NONE;
-				case TYPE_FUNCTION_ASSIGNMENT: return CLASSNAME_NONE;
-				case TYPE_PSEUDO_NUMBER: return CLASSNAME_NONE;
-				case TYPE_PSEUDO_MIXED: return CLASSNAME_NONE;
-				case TYPE_STRING: return CLASSNAME_STRING;
-				case TYPE_BYTEARRAY: return CLASSNAME_BYTEARRAY;
-				case TYPE_ARRAY: return CLASSNAME_ARRAY;
-				case TYPE_MAP: return CLASSNAME_MAP;
-				case TYPE_SET: return CLASSNAME_SET;
-				default:
-					// custom data types
-					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
-					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
-						return CLASSNAME_NONE;
-					}
-					return MiniScript::dataTypes[dataTypeIdx]->getClassName();
-			}
-		}
-
-		/**
 		 * Returns given variable type as string
 		 * @param type type
 		 * @return variable type as string
 		 */
-		inline static const string getTypeAsString(VariableType type) {
+		inline static const string& getTypeAsString(VariableType type) {
 			switch(type) {
-				case TYPE_NULL: return "Null";
-				case TYPE_BOOLEAN: return "Boolean";
-				case TYPE_INTEGER: return "Integer";
-				case TYPE_FLOAT: return "Float";
-				case TYPE_FUNCTION_CALL: return string();
-				case TYPE_FUNCTION_ASSIGNMENT: return "Function";
-				case TYPE_PSEUDO_NUMBER: return "Number";
-				case TYPE_PSEUDO_MIXED: return "Mixed";
-				case TYPE_STRING: return "String";
-				case TYPE_BYTEARRAY: return "ByteArray";
-				case TYPE_ARRAY: return "Array";
-				case TYPE_MAP: return "Map";
-				case TYPE_SET: return "Set";
+				case TYPE_NULL: return TYPENAME_NULL;
+				case TYPE_BOOLEAN: return TYPENAME_BOOLEAN;
+				case TYPE_INTEGER: return TYPENAME_INTEGER;
+				case TYPE_FLOAT: return TYPENAME_FLOAT;
+				case TYPE_FUNCTION_CALL: return TYPENAME_NONE;
+				case TYPE_FUNCTION_ASSIGNMENT: return TYPENAME_FUNCTION;
+				case TYPE_PSEUDO_NUMBER: return TYPENAME_NUMBER;
+				case TYPE_PSEUDO_MIXED: return TYPENAME_MIXED;
+				case TYPE_STRING: return TYPENAME_STRING;
+				case TYPE_BYTEARRAY: return TYPENAME_BYTEARRAY;
+				case TYPE_ARRAY: return TYPENAME_ARRAY;
+				case TYPE_MAP: return TYPENAME_MAP;
+				case TYPE_SET: return TYPENAME_SET;
 				default:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
-						return CLASSNAME_NONE;
+						return TYPENAME_NONE;
 					}
 					return MiniScript::dataTypes[dataTypeIdx]->getTypeAsString();
 			}
-			return string();
+			return TYPENAME_NONE;
 		}
 
 		/**
@@ -3181,7 +3146,7 @@ public:
 	 */
 	inline static DataType* getDataTypeByClassName(const string& className) {
 		for (const auto dataType: dataTypes) {
-			if (dataType->getClassName() == className) return dataType;
+			if (dataType->getTypeAsString() == className) return dataType;
 		}
 		return nullptr;
 	}

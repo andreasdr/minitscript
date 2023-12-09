@@ -119,7 +119,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 	auto scriptMethods = miniScript->getMethods();
 	//
 	for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
-		const auto& className = MiniScript::Variable::getClassName(static_cast<MiniScript::VariableType>(typeIdx));
+		const auto& className = MiniScript::Variable::getTypeAsString(static_cast<MiniScript::VariableType>(typeIdx));
 		if (className.empty() == true) break;
 		allClassMethods.insert(className);
 	}
@@ -131,7 +131,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		//
 		auto _class = false;
 		for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
-			const auto& classNameCandidate = MiniScript::Variable::getClassName(static_cast<MiniScript::VariableType>(typeIdx));
+			const auto& classNameCandidate = MiniScript::Variable::getTypeAsString(static_cast<MiniScript::VariableType>(typeIdx));
 			if (classNameCandidate.empty() == true) break;
 			if (classNameCandidate == className) {
 				_class = true;
@@ -148,8 +148,8 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		// no arguments or no "this" argument
 		auto _static =
 			scriptMethod->getArgumentTypes().empty() == true ||
-			scriptMethod->getArgumentTypes()[0].name != className ||
-			MiniScript::Variable::getClassName(scriptMethod->getArgumentTypes()[0].type) != className;
+			scriptMethod->getArgumentTypes()[0].name != StringTools::toLowerCase(className) ||
+			MiniScript::Variable::getTypeAsString(scriptMethod->getArgumentTypes()[0].type) != className;
 		//
 		allClassMethods.insert(scriptMethod->getMethodName());
 	}
@@ -166,7 +166,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		auto _static = false;
 		if (className.empty() == true) {
 			for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
-				const auto& classNameCandidate = MiniScript::Variable::getClassName(static_cast<MiniScript::VariableType>(typeIdx));
+				const auto& classNameCandidate = MiniScript::Variable::getTypeAsString(static_cast<MiniScript::VariableType>(typeIdx));
 				if (classNameCandidate.empty() == true) break;
 				if (scriptMethod->getMethodName() == classNameCandidate) {
 					className = classNameCandidate;
@@ -179,8 +179,8 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 		if (_static == false) {
 			_static =
 				scriptMethod->getArgumentTypes().empty() == true ||
-				scriptMethod->getArgumentTypes()[0].name != className ||
-				MiniScript::Variable::getClassName(scriptMethod->getArgumentTypes()[0].type) != className;
+				scriptMethod->getArgumentTypes()[0].name != StringTools::toLowerCase(className) ||
+				MiniScript::Variable::getTypeAsString(scriptMethod->getArgumentTypes()[0].type) != className;
 		}
 		//
 		string description;
@@ -209,7 +209,7 @@ static void generateMiniScriptClassesDocumentation(const string& heading, int ma
 	//
 	auto classIdx = 1;
 	for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
-		const auto& className = MiniScript::Variable::getClassName(static_cast<MiniScript::VariableType>(typeIdx));
+		const auto& className = MiniScript::Variable::getTypeAsString(static_cast<MiniScript::VariableType>(typeIdx));
 		if (className.empty() == true) break;
 		auto classNameDescription = descriptions.get("miniscript.baseclass." + (className.empty() == true?"No class":className), "Not documented");
 		//

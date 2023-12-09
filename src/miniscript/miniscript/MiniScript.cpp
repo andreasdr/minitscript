@@ -101,12 +101,19 @@ const string MiniScript::METHOD_SCRIPTCALL = "script.call";
 const string MiniScript::METHOD_ENABLENAMEDCONDITION = "script.enableNamedCondition";
 const string MiniScript::METHOD_DISABLENAMEDCONDITION = "script.disableNamedCondition";
 
-const string MiniScript::Variable::CLASSNAME_NONE = "";
-const string MiniScript::Variable::CLASSNAME_STRING = "string";
-const string MiniScript::Variable::CLASSNAME_BYTEARRAY = "bytearray";
-const string MiniScript::Variable::CLASSNAME_ARRAY = "array";
-const string MiniScript::Variable::CLASSNAME_MAP = "map";
-const string MiniScript::Variable::CLASSNAME_SET = "set";
+const string MiniScript::Variable::TYPENAME_NONE = "";
+const string MiniScript::Variable::TYPENAME_NULL = "Null";
+const string MiniScript::Variable::TYPENAME_BOOLEAN = "Boolean";
+const string MiniScript::Variable::TYPENAME_INTEGER = "Integer";
+const string MiniScript::Variable::TYPENAME_FLOAT = "Float";
+const string MiniScript::Variable::TYPENAME_FUNCTION = "Function";
+const string MiniScript::Variable::TYPENAME_NUMBER = "Number";
+const string MiniScript::Variable::TYPENAME_MIXED = "Mixed";
+const string MiniScript::Variable::TYPENAME_STRING = "String";
+const string MiniScript::Variable::TYPENAME_BYTEARRAY = "ByteArray";
+const string MiniScript::Variable::TYPENAME_ARRAY = "Array";
+const string MiniScript::Variable::TYPENAME_MAP = "Map";
+const string MiniScript::Variable::TYPENAME_SET = "Set";
 
 const vector<string> MiniScript::Method::CONTEXTFUNCTIONS_ALL = {};
 
@@ -2715,7 +2722,7 @@ void MiniScript::registerMethods() {
 						}
 					}
 					//
-					const auto& className = arguments[1].getClassName();
+					const auto& className = arguments[1].getTypeAsString();
 					//
 					if (className.empty() == false || functionIdx != MiniScript::SCRIPTIDX_NONE) {
 						//

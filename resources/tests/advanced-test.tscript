@@ -25,8 +25,8 @@ on: nothing
 	console.log("---------")
 	console.log("ByteArrays")
 	console.log("---------")
-	$byteArray = bytearray(1, 2, 3)
-	console.log("byte array initialized with: $byteArray = bytearray(1, 2, 3): " + $byteArray)
+	$byteArray = ByteArray(1, 2, 3)
+	console.log("byte array initialized with: $byteArray = ByteArray(1, 2, 3): " + $byteArray)
 	$byteArray->push(4, 5, 6)
 	console.log("byte array pushed values with: $byteArray->push(4, 5, 6)")
 	console.log("byte array now looks like: ", $byteArray)
@@ -58,7 +58,7 @@ on: nothing
 	end
 	$byteArray->remove(1)
 	console.log("removed byte array entry @ 1: " + $byteArray)
-	$byteArray->appendByteArray(bytearray(101, 102, 103))
+	$byteArray->appendByteArray(ByteArray(101, 102, 103))
 	console.log("appended bytearray(101, 102, 103): " + $byteArray)
 	console.log("extracting bytearray from bytearray index 2, length 3: " + $byteArray->extractByteArray(2, 3))
 	console.log("---------")
@@ -66,16 +66,16 @@ on: nothing
 	console.log("---------")
 	$array = [1, 2, 3, [1, 2, 3], {a: xxx, b: yyy, c: zzz}, {a, b, c}]
 	console.log("array initialized with: $array = [1, 2, 3, [1, 2, 3], {a: xxx, b: yyy, c: zzz}, {a, b, c}]: " + $array)
-	$array = array(1, 2, 3)
-	console.log("array initialized with: $array = array(1, 2, 3): " + $array)
+	$array = Array(1, 2, 3)
+	console.log("array initialized with: $array = Array(1, 2, 3): " + $array)
 	$array->push(8, 9, 10, 99, 10)
 	console.log("array pushed values with: $array->push(8, 9, 10, 99, 10)")
 	console.log("array now looks like: ", $array)
 	$array[] = 123
 	$array[] = 1234
 	$array[] = 12345
-	$array[] = array(1,2,3)
-	console.log("array values added with [] operator: 123, 1234, 12345, array(1,2,3)")
+	$array[] = Array(1,2,3)
+	console.log("array values added with [] operator: 123, 1234, 12345, Array(1,2,3)")
 	console.log("array now looks like: ", $array)
 	$array[11][] = 50
 	$array[11][] = 60
@@ -114,7 +114,7 @@ on: nothing
 	console.log("array now looks like: ", $array)
 	console.log("array indexOf 10: ", $array->indexOf(10))
 	console.log("array indexOf 10 beginning to search from 6: ", $array->indexOf(10, 6))
-	console.log("sorting of array('abc', 'def', 'ghi', 'jkl', 'mno'): ", $array = array("abc", "def", "ghi", "jkl", "mno"))
+	console.log("sorting of array('abc', 'def', 'ghi', 'jkl', 'mno'): ", $array = Array("abc", "def", "ghi", "jkl", "mno"))
 	$array->sort("sortFunctionDesc")
 	console.log("$array->sort('sortFunctionDesc'): ", $array)
 	$array->sort("sortFunctionAsc")
@@ -126,13 +126,13 @@ on: nothing
 	console.log("----------")
 	$map = {test1: 123, test2: 456, test3: 789, test4: [1, 2, 3], test5: {a: xxx, b: yyy, c: zzz}, test6: {a, b, c}}
 	console.log("map initialized with: $map = {test1: 123, test2: 456, test3: 789, test4: [1, 2, 3], test5: {a: xxx, b: yyy, c: zzz}, test6: {a, b, c}}: " + $map)
-	$map = map()
+	$map = Map()
 	console.log("map initialized with: $map = map(): " + $map)
 	console.log("put some key value pairs into map: map->set()")
 	$map->set("test1", 123)
 	$map->set("test2", 456)
 	$map->set("test3", 789)
-	$map->set("test4", array(1,2,3))
+	$map->set("test4", Array(1,2,3))
 	$map->set("test5", "Yaaaa")
 	console.log("map now looks like: ", $map)
 	console.log("remove test2 via $map->remove: ")
@@ -170,7 +170,7 @@ on: nothing
 	console.log("----------")
 	$set = {test1, test2, test3, test4, test5}
 	console.log("set initialized with: $set = {test1, test2, test3, test4, test5}: " + $set)
-	$set = set()
+	$set = Set()
 	console.log("set initialized with: $set = set(): " + $set)
 	console.log("put some keys into set: $set->insert()")
 	$set->insert("test1")
