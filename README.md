@@ -293,7 +293,7 @@ Initializing a byte array by constructor:
 ...
 ```
 
-Pushing values using bytearray.push():
+Pushing values using ByteArray.push():
 ```
 ...
 	$byteArray->push(5, 6, 7)
@@ -309,7 +309,7 @@ Pushing values using [] operator:
 ...
 ```
 
-Iterating byte arrays using bytearray.length() and bytearray.get():
+Iterating byte arrays using ByteArray.length() and ByteArray.get():
 ```
 ...
 	$i = 0
@@ -320,7 +320,7 @@ Iterating byte arrays using bytearray.length() and bytearray.get():
 ...
 ```
 
-Iterating byte arrays using bytearray.length() and [] operator:
+Iterating byte arrays using ByteArray.length() and [] operator:
 ```
 ...
 	$i = 0
@@ -331,7 +331,7 @@ Iterating byte arrays using bytearray.length() and [] operator:
 ...
 ```
 
-Removing from byte arrays using a index with bytearray.remove():
+Removing from byte arrays using a index with ByteArray.remove():
 ```
 ...
 	$byteArray->remove(2)
@@ -554,7 +554,7 @@ Removing keys from set using Set.remove():
 ...
 ```
 
-Checking if keys exist in map using Map.has() and given keys:
+Checking if keys exist in set using Set.has() and given keys:
 ```
 ...
 	console.log("set does have test1 key using set.has(): ", $set->has("test1"))
@@ -566,7 +566,7 @@ Checking if keys exist in map using Map.has() and given keys:
 ```
 
 
-Checking if keys exist in map using dot operator and given keys:
+Checking if keys exist in set using dot operator and given keys:
 ```
 ...
 	console.log("set key for test1 using set dot operator: ", $set.test1)
@@ -594,7 +594,7 @@ Reading all keys as array from set:
 ...
 ```
 
-Iterating sets using set.forEach() and a lamda function
+Iterating sets using Set.forEach() and a lamda function
 ```
 ...
 	$set->forEach(($key) -> { console.log($key) })
