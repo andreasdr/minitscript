@@ -1918,194 +1918,193 @@ int MiniScript::determineNamedScriptIdxToStart() {
 	return SCRIPTIDX_NONE;
 }
 
-inline const string MiniScript::trimArgument(const string& argument) {
-	auto processedArgument = StringTools::trim(argument);
-	if (StringTools::startsWith(processedArgument, "(") == true && StringTools::endsWith(processedArgument, ")") == true) {
-		processedArgument = StringTools::substring(processedArgument, 1, processedArgument.size() - 1);
-	}
-	return processedArgument;
-}
-
-inline const string MiniScript::findRightArgument(const string& statement, int position, int& length, string& brackets) {
-	//
-	auto bracketCount = 0;
-	auto squareBracketCount = 0;
-	auto curlyBracketCount = 0;
-	auto quote = '\0';
-	auto lc = '\0';
-	string argument;
-	length = 0;
-	for (auto i = position; i < statement.size(); i++) {
-		auto c = statement[i];
-		// quote?
-		if ((c == '"' || c == '\'') && lc != '\\') {
-			if (quote == '\0') {
-				quote = c;
-			} else
-			if (quote == c) {
-				quote = '\0';
-			}
-			argument+= c;
-		} else
-		// no quote
-		if (quote == '\0') {
-			if (c == '(') {
-				bracketCount++;
-				argument+= c;
-			} else
-			if (c == '[') {
-				squareBracketCount++;
-				argument+= c;
-			} else
-			if (c == '{') {
-				curlyBracketCount++;
-				argument+= c;
-			} else
-			if (c == ')') {
-				bracketCount--;
-				if (bracketCount < 0) {
-					brackets = "()";
-					return trimArgument(argument);
-				}
-				argument+= c;
-			} else
-			if (c == ']') {
-				squareBracketCount--;
-				// array initializer?
-				if (StringTools::startsWith(argument, "[") == false) {
-					// no
-					if (squareBracketCount < 0) {
-						brackets = "[]";
-						return trimArgument(argument);
-					}
-				}
-				argument+= c;
-			} else
-			if (c == '}') {
-				curlyBracketCount--;
-				if (curlyBracketCount < 0) {
-					brackets = "{}";
-					return trimArgument(argument);
-				}
-				argument+= c;
-			} else
-			if (squareBracketCount == 0 && curlyBracketCount == 0 && c == ',') {
-				if (bracketCount == 0) return trimArgument(argument);
-				//
-				if (argument.empty() == true && (c == ' ' || c == '\t' || c == '\n')) {
-					// no op
-				} else {
-					argument+= c;
-				}
-			} else {
-				//
-				if (argument.empty() == true && (c == ' ' || c == '\t' || c == '\n')) {
-					// no op
-				} else {
-					argument+= c;
-				}
-			}
-		} else
-		if (quote != '\0') {
-			argument+= c;
-		}
-		length++;
-		//
-		lc = c;
-	}
-	//
-	return trimArgument(argument);
-}
-
-inline const string MiniScript::findLeftArgument(const string& statement, int position, int& length, string& brackets) {
-	// adapt code similar to findRightArguument related to array and map/initializer
-	//
-	auto bracketCount = 0;
-	auto squareBracketCount = 0;
-	auto curlyBracketCount = 0;
-	auto quote = '\0';
-	auto lc = '\0';
-	string argument;
-	length = 0;
-	for (int i = position; i >= 0; i--) {
-		auto c = statement[i];
-		if ((c == '"' || c == '\'') && lc != '\\') {
-			if (quote == '\0') {
-				quote = c;
-			} else
-			if (quote == c) {
-				quote = '\0';
-			}
-			argument = c + argument;
-		} else
-		if (quote == '\0') {
-			if (c == ')') {
-				bracketCount++;
-				argument = c + argument;
-			} else
-			if (c == ']') {
-				squareBracketCount++;
-				argument = c + argument;
-			} else
-			if (c == '}') {
-				curlyBracketCount++;
-				argument = c + argument;
-			} else
-			if (c == '(') {
-				bracketCount--;
-				if (bracketCount < 0) {
-					brackets = "()";
-					return trimArgument(argument);
-				}
-				argument = c + argument;
-			} else
-			if (c == ':' &&
-				bracketCount == 0 &&
-				squareBracketCount == 0 &&
-				curlyBracketCount == 0) {
-				//
-				brackets = "";
-				return trimArgument(argument);
-			} else
-			if (c == '[') {
-				squareBracketCount--;
-				if (squareBracketCount < 0) {
-					brackets = "[]";
-					return trimArgument(argument);
-				}
-				argument = c + argument;
-			} else
-			if (c == '{') {
-				curlyBracketCount--;
-				if (curlyBracketCount < 0) {
-					brackets = "{}";
-					return trimArgument(argument);
-				}
-				argument = c + argument;
-			} else
-			if (squareBracketCount == 0 && curlyBracketCount == 0 && c == ',') {
-				if (bracketCount == 0) return trimArgument(argument);
-				argument = c + argument;
-			} else {
-				argument = c + argument;
-			}
-		} else
-		if (quote != '\0') {
-			argument = c + argument;
-		}
-		length++;
-		//
-		lc = c;
-	}
-	return trimArgument(argument);
-}
-
 const string MiniScript::doStatementPreProcessing(const string& processedStatement, const Statement& statement) {
 	auto preprocessedStatement = processedStatement;
 	//
 	struct StatementOperator {
 		int idx { OPERATORIDX_NONE };
 		Operator operator_;
+	};
+	//
+	auto trimArgument = [&](const string& argument) -> const string {
+		auto processedArgument = StringTools::trim(argument);
+		if (StringTools::startsWith(processedArgument, "(") == true && StringTools::endsWith(processedArgument, ")") == true) {
+			processedArgument = StringTools::substring(processedArgument, 1, processedArgument.size() - 1);
+		}
+		return processedArgument;
+	};
+	//
+	auto findLeftArgument = [&](const string& statement, int position, int& length, string& brackets) -> const string {
+		//
+		auto bracketCount = 0;
+		auto squareBracketCount = 0;
+		auto curlyBracketCount = 0;
+		auto quote = '\0';
+		auto lc = '\0';
+		string argument;
+		length = 0;
+		for (int i = position; i >= 0; i--) {
+			auto c = statement[i];
+			if ((c == '"' || c == '\'') && lc != '\\') {
+				if (quote == '\0') {
+					quote = c;
+				} else
+				if (quote == c) {
+					quote = '\0';
+				}
+				argument = c + argument;
+			} else
+			if (quote == '\0') {
+				if (c == ')') {
+					bracketCount++;
+					argument = c + argument;
+				} else
+				if (c == ']') {
+					squareBracketCount++;
+					argument = c + argument;
+				} else
+				if (c == '}') {
+					curlyBracketCount++;
+					argument = c + argument;
+				} else
+				if (c == '(') {
+					bracketCount--;
+					if (bracketCount < 0) {
+						brackets = "()";
+						return trimArgument(argument);
+					}
+					argument = c + argument;
+				} else
+				if (c == ':' &&
+					bracketCount == 0 &&
+					squareBracketCount == 0 &&
+					curlyBracketCount == 0) {
+					//
+					brackets = "";
+					return trimArgument(argument);
+				} else
+				if (c == '[') {
+					squareBracketCount--;
+					if (squareBracketCount < 0) {
+						brackets = "[]";
+						return trimArgument(argument);
+					}
+					argument = c + argument;
+				} else
+				if (c == '{') {
+					curlyBracketCount--;
+					if (curlyBracketCount < 0) {
+						brackets = "{}";
+						return trimArgument(argument);
+					}
+					argument = c + argument;
+				} else
+				if (squareBracketCount == 0 && curlyBracketCount == 0 && c == ',') {
+					if (bracketCount == 0) return trimArgument(argument);
+					argument = c + argument;
+				} else {
+					argument = c + argument;
+				}
+			} else
+			if (quote != '\0') {
+				argument = c + argument;
+			}
+			length++;
+			//
+			lc = c;
+		}
+		return trimArgument(argument);
+	};
+	//
+	auto findRightArgument = [&](const string& statement, int position, int& length, string& brackets) -> const string {
+		//
+		auto bracketCount = 0;
+		auto squareBracketCount = 0;
+		auto curlyBracketCount = 0;
+		auto quote = '\0';
+		auto lc = '\0';
+		string argument;
+		length = 0;
+		for (auto i = position; i < statement.size(); i++) {
+			auto c = statement[i];
+			// quote?
+			if ((c == '"' || c == '\'') && lc != '\\') {
+				if (quote == '\0') {
+					quote = c;
+				} else
+				if (quote == c) {
+					quote = '\0';
+				}
+				argument+= c;
+			} else
+			// no quote
+			if (quote == '\0') {
+				if (c == '(') {
+					bracketCount++;
+					argument+= c;
+				} else
+				if (c == '[') {
+					squareBracketCount++;
+					argument+= c;
+				} else
+				if (c == '{') {
+					curlyBracketCount++;
+					argument+= c;
+				} else
+				if (c == ')') {
+					bracketCount--;
+					if (bracketCount < 0) {
+						brackets = "()";
+						return trimArgument(argument);
+					}
+					argument+= c;
+				} else
+				if (c == ']') {
+					squareBracketCount--;
+					// array initializer?
+					if (StringTools::startsWith(argument, "[") == false) {
+						// no
+						if (squareBracketCount < 0) {
+							brackets = "[]";
+							return trimArgument(argument);
+						}
+					}
+					argument+= c;
+				} else
+				if (c == '}') {
+					curlyBracketCount--;
+					if (curlyBracketCount < 0) {
+						brackets = "{}";
+						return trimArgument(argument);
+					}
+					argument+= c;
+				} else
+				if (squareBracketCount == 0 && curlyBracketCount == 0 && c == ',') {
+					if (bracketCount == 0) return trimArgument(argument);
+					//
+					if (argument.empty() == true && (c == ' ' || c == '\t' || c == '\n')) {
+						// no op
+					} else {
+						argument+= c;
+					}
+				} else {
+					//
+					if (argument.empty() == true && (c == ' ' || c == '\t' || c == '\n')) {
+						// no op
+					} else {
+						argument+= c;
+					}
+				}
+			} else
+			if (quote != '\0') {
+				argument+= c;
+			}
+			length++;
+			//
+			lc = c;
+		}
+		//
+		return trimArgument(argument);
 	};
 	//
 	auto getNextStatementOperator = [&](const string& processedStatement, StatementOperator& nextOperator, const Statement& statement) {

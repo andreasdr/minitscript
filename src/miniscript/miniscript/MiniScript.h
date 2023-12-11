@@ -2760,31 +2760,6 @@ private:
 	}
 
 	/**
-	 * Trim argument and remove unnessessary parenthesis
-	 * @param argument argument
-	 * @return processed argument
-	 */
-	const string trimArgument(const string& argument);
-
-	/**
-	 * Find right argument in statement beginning from position
-	 * @param statement statement
-	 * @param position position
-	 * @param length argument length
-	 * @param brackets barrier brackets
-	 */
-	const string findRightArgument(const string& statement, int position, int& length, string& brackets);
-
-	/**
-	 * Find left argument in statement beginning from position
-	 * @param statement statement
-	 * @param position position
-	 * @param length argument length
-	 * @param brackets barrier brackets
-	 */
-	const string findLeftArgument(const string& statement, int position, int& length, string& brackets);
-
-	/**
 	 * Do statement pre processing, 1) replace operators with corresponding methods
 	 * @param processedStatement statement that is currently being processed
 	 * @param statement statement
