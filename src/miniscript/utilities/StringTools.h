@@ -71,7 +71,7 @@ public:
 	 * @param beginIndex index to begin with
 	 * @return new string
 	 */
-	static const string replace(const string& src, const char what, const char by, int beginIndex = 0);
+	static const string replace(const string& src, const char what, const char by, int64_t beginIndex = 0);
 
 	/**
 	 * Replace string with another string
@@ -81,7 +81,7 @@ public:
 	 * @param beginIndex index to begin with
 	 * @return new string
 	 */
-	static const string replace(const string& src, const string& what, const string& by, int beginIndex = 0);
+	static const string replace(const string& src, const string& what, const string& by, int64_t beginIndex = 0);
 
 	/**
 	 * Finds index of given character
@@ -90,7 +90,7 @@ public:
 	 * @param beginIndex index to begin with
 	 * @return index or -1 if not found
 	 */
-	inline static int32_t indexOf(const string& src, char what, int beginIndex = 0) {
+	inline static int64_t indexOf(const string& src, char what, int64_t beginIndex = 0) {
 		return src.find(what, beginIndex);
 	}
 
@@ -101,7 +101,7 @@ public:
 	 * @param beginIndex index to begin with
 	 * @return index or -1 if not found
 	 */
-	inline static int32_t indexOf(const string& src, const string& what, int beginIndex = 0) {
+	inline static int64_t indexOf(const string& src, const string& what, int64_t beginIndex = 0) {
 		return src.find(what, beginIndex);
 	}
 
@@ -112,7 +112,7 @@ public:
 	 * @param beginIndex index to begin with
 	 * @return index or -1 if not found
 	 */
-	inline static int32_t firstIndexOf(const string& src, char what, int beginIndex = 0) {
+	inline static int64_t firstIndexOf(const string& src, char what, int64_t beginIndex = 0) {
 		return src.find_first_of(what, beginIndex);
 	}
 
@@ -123,7 +123,7 @@ public:
 	 * @param beginIndex index to begin with
 	 * @return index or -1 if not found
 	 */
-	inline static int32_t firstIndexOf(const string& src, const string& what, int beginIndex = 0) {
+	inline static int64_t firstIndexOf(const string& src, const string& what, int64_t beginIndex = 0) {
 		return src.find_first_of(what, beginIndex);
 	}
 
@@ -134,7 +134,7 @@ public:
 	 * @param beginIndex index to begin with
 	 * @return index or -1 if not found
 	 */
-	inline static int32_t lastIndexOf(const string& src, char what, int beginIndex = -1) {
+	inline static int64_t lastIndexOf(const string& src, char what, int64_t beginIndex = -1) {
 		return src.find_last_of(what, beginIndex);
 	}
 
@@ -145,7 +145,7 @@ public:
 	 * @param beginIndex index to begin with
 	 * @return index or -1 if not found
 	 */
-	inline static int32_t lastIndexOf(const string& src, const string& what, int beginIndex = -1) {
+	inline static int64_t lastIndexOf(const string& src, const string& what, int64_t beginIndex = -1) {
 		return src.find_last_of(what, beginIndex);
 	}
 
@@ -155,7 +155,7 @@ public:
 	 * @param beginIndex begin index
 	 * @return new string
 	 */
-	inline static const string substring(const string& src, int32_t beginIndex) {
+	inline static const string substring(const string& src, int64_t beginIndex) {
 		return src.substr(beginIndex);
 	}
 
@@ -165,7 +165,7 @@ public:
 	 * @param beginIndex begin index
 	 * @return new string
 	 */
-	inline static const string_view viewSubstring(const string_view& src, int32_t beginIndex) {
+	inline static const string_view viewSubstring(const string_view& src, int64_t beginIndex) {
 		return src.substr(beginIndex);
 	}
 
@@ -176,7 +176,7 @@ public:
 	 * @param endIndex end index
 	 * @return new string
 	 */
-	inline static const string substring(const string& src, int32_t beginIndex, int32_t endIndex) {
+	inline static const string substring(const string& src, int64_t beginIndex, int64_t endIndex) {
 		return src.substr(beginIndex, endIndex - beginIndex);
 	}
 
@@ -187,7 +187,7 @@ public:
 	 * @param endIndex end index
 	 * @return new string
 	 */
-	inline static const string_view viewSubstring(const string_view& src, int32_t beginIndex, int32_t endIndex) {
+	inline static const string_view viewSubstring(const string_view& src, int64_t beginIndex, int64_t endIndex) {
 		return src.substr(beginIndex, endIndex - beginIndex);
 	}
 
@@ -266,7 +266,7 @@ public:
 	 * @param by by
 	 * @param toSize to size
 	 */
-	inline static const string padLeft(const string& src, const string& by, int toSize) {
+	inline static const string padLeft(const string& src, const string& by, int64_t toSize) {
 		auto result = src;
 		while (result.size() < toSize) result = by + result;
 		return result;
@@ -278,7 +278,7 @@ public:
 	 * @param by by
 	 * @param toSize to size
 	 */
-	inline static const string padRight(const string& src, const string& by, int toSize) {
+	inline static const string padRight(const string& src, const string& by, int64_t toSize) {
 		auto result = src;
 		while (result.size() < toSize) result = result + by;
 		return result;
@@ -290,7 +290,7 @@ public:
 	 * @param with with
 	 * @param count count
 	 */
-	inline static const string indent(const string& src, const string& with, int count) {
+	inline static const string indent(const string& src, const string& with, int64_t count) {
 		string indentString;
 		for (auto i = 0; i < count; i++) indentString+= with;
 		return indentString + src;
@@ -301,7 +301,7 @@ public:
 	 * @param str string
 	 * @return utf8 string length
 	 */
-	inline static int getUtf8Length(const string& str) {
+	inline static int64_t getUtf8Length(const string& str) {
 		::miniscript::utilities::UTF8CharacterIterator u8It(str);
 		while (u8It.hasNext() == true) u8It.next();
 		return u8It.getCharacterPosition();
@@ -313,7 +313,7 @@ public:
 	 * @param charIdx character index
 	 * @return UTF binary buffer position from given character/code point index
 	 */
-	inline static int getUtf8BinaryIndex(const string& str, int charIdx) {
+	inline static int64_t getUtf8BinaryIndex(const string& str, int64_t charIdx) {
 		::miniscript::utilities::UTF8CharacterIterator u8It(str);
 		u8It.seekCharacterPosition(charIdx);
 		return u8It.getBinaryPosition();

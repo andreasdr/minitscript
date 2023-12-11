@@ -24,13 +24,13 @@ using std::transform;
 using miniscript::utilities::StringTokenizer;
 using miniscript::utilities::StringTools;
 
-const string StringTools::replace(const string& src, const char what, const char by, int beginIndex) {
+const string StringTools::replace(const string& src, const char what, const char by, int64_t beginIndex) {
 	string result = src;
 	std::replace(result.begin() + beginIndex, result.end(), what, by);
 	return result;
 }
 
-const string StringTools::replace(const string& src, const string& what, const string& by, int beginIndex) {
+const string StringTools::replace(const string& src, const string& what, const string& by, int64_t beginIndex) {
 	string result = src;
 	if (what.empty()) return result;
 	while ((beginIndex = result.find(what, beginIndex)) != std::string::npos) {
@@ -74,12 +74,12 @@ const string StringTools::trim(const string& src) {
 }
 
 const string_view StringTools::viewTrim(const string_view& src) {
-	auto start = 0;
-	for (auto i = 0; i < src.size(); i++) {
+	int64_t start = 0;
+	for (int64_t i = 0; i < src.size(); i++) {
 		if (isspace(src[i]) != 0) start++; else break;
 	}
-	auto end = 0;
-	for (int i = src.size() - 1; i >= 0; i--) {
+	int64_t end = 0;
+	for (int64_t i = src.size() - 1; i >= 0; i--) {
 		if (isspace(src[i]) != 0) end++; else break;
 	}
 	return string_view(&src[start], src.size() - start - end);

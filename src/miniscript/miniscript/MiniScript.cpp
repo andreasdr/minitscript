@@ -1718,9 +1718,9 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	//
 	string scriptCode;
 	try {
-		scriptCode = FileSystem::getContentAsString(pathName, fileName);
+		scriptCode = FileSystem::getContentAsString(scriptPathName, scriptFileName);
 	} catch (FileSystem::FileSystemException& fse)	{
-		Console::println("MiniScript::parseScript(): " + pathName + "/" + fileName + ": an error occurred: " + fse.what());
+		Console::println(scriptPathName + "/" + scriptFileName + ": an error occurred: " + fse.what());
 		//
 		scriptValid = true;
 		//
@@ -1740,7 +1740,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				startScript();
 				return;
 			} else {
-				Console::println("MiniScript::parseScript(): " + pathName + "/" + fileName + ": Script has changed. Script will be run in interpreted mode. Retranspile and recompile your script if you want to run it natively.");
+				Console::println(scriptPathName + "/" + scriptFileName + ": Script has changed. Script will be run in interpreted mode. Retranspile and recompile your script if you want to run it natively.");
 				native = false;
 			}
 		}
@@ -1792,7 +1792,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 		}
 	}
 	if (haveErrorScript == false) {
-		Console::println("MiniScript::parseScript(): '" + scriptFileName + ": script needs to define an error condition");
+		Console::println(scriptPathName + "/" + scriptFileName + ": script needs to define an error condition");
 		//
 		parseErrors.push_back("Script needs to define an error condition");
 		//
@@ -1819,7 +1819,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 void MiniScript::startScript() {
 	if (VERBOSE == true) Console::println("MiniScript::startScript(): '" + scriptFileName + ": starting script.");
 	if (scriptValid == false) {
-		Console::println("MiniScript::startScript(): " + scriptFileName + ": script not valid: not starting");
+		Console::println(scriptFileName + ": script not valid: not starting");
 		return;
 	}
 	auto& scriptState = getScriptState();

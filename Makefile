@@ -107,7 +107,9 @@ SRCS = \
 	src/miniscript/utilities/Properties.cpp \
 	src/miniscript/utilities/SHA256.cpp \
 	src/miniscript/utilities/StringTools.cpp \
-	src/miniscript/utilities/StringTokenizer.cpp
+	src/miniscript/utilities/StringTokenizer.cpp \
+	src/miniscript/utilities/UTF8StringTools.cpp \
+	src/miniscript/utilities/UTF8StringTokenizer.cpp
 
 # workaround: ext-sha256.cpp was sha256.cpp, but miniscript also comes with SHA256.cpp,
 #	which collides on Windows as we dont have subfolders for ext objects

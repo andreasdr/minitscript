@@ -68,7 +68,9 @@ SRCS = \
 	src/miniscript/utilities/Properties.cpp \
 	src/miniscript/utilities/SHA256.cpp \
 	src/miniscript/utilities/StringTools.cpp \
-	src/miniscript/utilities/StringTokenizer.cpp
+	src/miniscript/utilities/StringTokenizer.cpp \
+	src/miniscript/utilities/UTF8StringTools.cpp \
+	src/miniscript/utilities/UTF8StringTokenizer.cpp
 
 EXT_SRCS = \
 
