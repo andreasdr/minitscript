@@ -1975,14 +1975,6 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 					}
 					argument = c + argument;
 				} else
-				if (c == ':' &&
-					bracketCount == 0 &&
-					squareBracketCount == 0 &&
-					curlyBracketCount == 0) {
-					//
-					brackets = "";
-					return trimArgument(argument);
-				} else
 				if (c == '[') {
 					squareBracketCount--;
 					if (squareBracketCount < 0) {
@@ -2211,6 +2203,7 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 		} else
 		if (method->isVariadic() == true ||
 			method->getArgumentTypes().size() == 2) {
+			//
 			auto operatorString = getOperatorAsString(nextOperators.operator_);
 			// find the first argument left
 			string leftArgumentBrackets;
@@ -2235,6 +2228,7 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 				method->getMethodName() + "(" + leftArgument + ", " + rightArgument + ")" +
 				StringTools::substring(preprocessedStatement, nextOperators.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size());
 		}
+		//
 		nextOperators = StatementOperator();
 	}
 	//
