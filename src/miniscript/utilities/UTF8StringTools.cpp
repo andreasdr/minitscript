@@ -1,7 +1,5 @@
 #include <miniscript/utilities/UTF8StringTools.h>
 
-#include <algorithm>
-#include <functional>
 #include <regex>
 #include <string>
 #include <string_view>
@@ -11,19 +9,11 @@
 #include <miniscript/utilities/UTF8StringTokenizer.h>
 #include <miniscript/utilities/UTF8CharacterIterator.h>
 
-#include <miniscript/utilities/Console.h>
-
-using std::find_if;
-using std::isspace;
 using std::regex;
 using std::regex_match;
 using std::regex_replace;
-using std::replace;
 using std::string;
 using std::string_view;
-using std::tolower;
-using std::toupper;
-using std::transform;
 
 using miniscript::utilities::UTF8StringTools;
 
@@ -31,37 +21,35 @@ using miniscript::utilities::Character;
 using miniscript::utilities::UTF8StringTokenizer;
 using miniscript::utilities::UTF8CharacterIterator;
 
-using miniscript::utilities::Console;
-
 const string UTF8StringTools::replace(
-	const string& src,
+	const string& str,
 	const string& what,
 	const string& by,
 	int64_t beginIndex,
 	UTF8CharacterIterator::UTF8PositionCache* cache)
 {
-	auto u8BeginIndex = getUtf8BinaryIndex(src, beginIndex, cache);
+	auto binaryBeginIndex = getUtf8BinaryIndex(str, beginIndex, cache);
 	//
-	string result = src;
+	string result = str;
 	if (what.empty()) return result;
-	while ((u8BeginIndex = result.find(what, u8BeginIndex)) != std::string::npos) {
-		result.replace(u8BeginIndex, what.length(), by);
-		u8BeginIndex += by.length();
+	while ((binaryBeginIndex = result.find(what, binaryBeginIndex)) != std::string::npos) {
+		result.replace(binaryBeginIndex, what.length(), by);
+		binaryBeginIndex += by.length();
 	}
 	return result;
 }
 
 int64_t UTF8StringTools::firstIndexOf(
-	const string& src,
+	const string& str,
 	const string& what,
 	int64_t beginIndex,
 	UTF8CharacterIterator::UTF8PositionCache* cache
 ) {
 	// utf8 character iterator
-	UTF8CharacterIterator u8It(src, cache);
+	UTF8CharacterIterator u8It(str, cache);
 	u8It.seekCharacterPosition(beginIndex);
 	//
-	auto index = src.find(what, u8It.getBinaryPosition());
+	auto index = str.find(what, u8It.getBinaryPosition());
 	if (index == string::npos) {
 		return string::npos;
 	} else {
@@ -71,19 +59,19 @@ int64_t UTF8StringTools::firstIndexOf(
 }
 
 int64_t UTF8StringTools::lastIndexOf(
-	const string& src,
+	const string& str,
 	const string& what,
 	int64_t beginIndex,
 	::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache
 ) {
 	// utf8 character iterator
-	UTF8CharacterIterator u8It(src, cache);
+	UTF8CharacterIterator u8It(str, cache);
 	u8It.seekCharacterPosition(beginIndex);
 	auto binaryBeginIndex = u8It.getBinaryPosition();
 	//
 	int64_t index = -1;
 	while (true == true) {
-		auto binaryIndex = src.find(what, binaryBeginIndex);
+		auto binaryIndex = str.find(what, binaryBeginIndex);
 		if (binaryIndex == string::npos) {
 			return index;
 		} else {
@@ -97,14 +85,14 @@ int64_t UTF8StringTools::lastIndexOf(
 	return index;
 }
 
-int64_t UTF8StringTools::firstIndexOfChars(const string& src, const string& what, int64_t beginIndex, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache) {
+int64_t UTF8StringTools::firstIndexOfChars(const string& str, const string& what, int64_t beginIndex, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache) {
 	// utf8 character iterator
 	UTF8CharacterIterator whatU8It(what, whatCache);
 	//
 	int64_t index = -1;
 	while (whatU8It.hasNext() == true) {
 		auto whatChar = Character::toString(whatU8It.next());
-		auto whatIndex = UTF8StringTools::indexOf(src, whatChar, beginIndex, srcCache);
+		auto whatIndex = UTF8StringTools::indexOf(str, whatChar, beginIndex, srcCache);
 		if (whatIndex != string::npos) index = index == -1?whatIndex:(::miniscript::math::Math::min(index, whatIndex));
 	}
 	//
@@ -115,7 +103,7 @@ int64_t UTF8StringTools::firstIndexOfChars(const string& src, const string& what
 	}
 }
 
-int64_t UTF8StringTools::lastIndexOfChars(const string& src, const string& what, int64_t endIndex, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache) {
+int64_t UTF8StringTools::lastIndexOfChars(const string& str, const string& what, int64_t endIndex, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache) {
 	// utf8 character iterator
 	UTF8CharacterIterator whatU8It(what, whatCache);
 	//
@@ -125,7 +113,7 @@ int64_t UTF8StringTools::lastIndexOfChars(const string& src, const string& what,
 		auto hit = false;
 		while (whatU8It.hasNext() == true) {
 			auto whatChar = Character::toString(whatU8It.next());
-			auto whatIndex = UTF8StringTools::indexOf(src, whatChar, currentIndex, srcCache);
+			auto whatIndex = UTF8StringTools::indexOf(str, whatChar, currentIndex, srcCache);
 			if (whatIndex != string::npos && whatIndex < endIndex) {
 				hit = true;
 				index = ::miniscript::math::Math::max(index, whatIndex);
@@ -143,19 +131,19 @@ int64_t UTF8StringTools::lastIndexOfChars(const string& src, const string& what,
 	}
 }
 
-const string_view UTF8StringTools::viewSubstring(const string_view& src, int64_t beginIndex, int64_t endIndex, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
+const string_view UTF8StringTools::viewSubstring(const string_view& str, int64_t beginIndex, int64_t endIndex, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
 	// utf8 character iterator
-	UTF8CharacterIterator u8It(src, cache);
+	UTF8CharacterIterator u8It(str, cache);
 	u8It.seekCharacterPosition(beginIndex);
-	auto u8BeginIndex = u8It.getBinaryPosition();
+	auto binaryBeginIndex = u8It.getBinaryPosition();
 	//
 	if (endIndex == string::npos) {
-		return src.substr(u8BeginIndex);
+		return str.substr(binaryBeginIndex);
 	} else {
 		u8It.seekCharacterPosition(endIndex) ;
-		auto u8EndIndex = u8It.getBinaryPosition();
+		auto binaryEndIndex = u8It.getBinaryPosition();
 		//
-		return src.substr(u8BeginIndex, u8EndIndex - u8BeginIndex);
+		return str.substr(binaryBeginIndex, binaryEndIndex - binaryBeginIndex);
 	}
 }
 
@@ -183,14 +171,14 @@ bool UTF8StringTools::equalsIgnoreCase(
 	return false;
 }
 
-const string UTF8StringTools::trim(const string& src, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
-	auto result = viewTrim(string_view(src), cache);
+const string UTF8StringTools::trim(const string& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
+	auto result = viewTrim(string_view(str), cache);
 	return string(result.data(), result.size());
 }
 
-const string_view UTF8StringTools::viewTrim(const string_view& src, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
+const string_view UTF8StringTools::viewTrim(const string_view& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
 	// utf8 character iterator
-	UTF8CharacterIterator u8It(src, cache);
+	UTF8CharacterIterator u8It(str, cache);
 	//
 	int64_t firstNonSpace = string::npos;
 	int64_t lastNonSpace = string::npos;
@@ -204,41 +192,41 @@ const string_view UTF8StringTools::viewTrim(const string_view& src, ::miniscript
 	//
 	if (firstNonSpace == string::npos) return string();
 	//
-	return viewSubstring(src, firstNonSpace, lastNonSpace + 1);
+	return viewSubstring(str, firstNonSpace, lastNonSpace + 1);
 }
 
-const string UTF8StringTools::toLowerCase(const string& src, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
+const string UTF8StringTools::toLowerCase(const string& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
 	string result;
 	// utf8 character iterator
-	UTF8CharacterIterator u8It(src, cache);
+	UTF8CharacterIterator u8It(str, cache);
 	//
 	while (u8It.hasNext() == true) Character::appendToString(result, Character::toLowerCase(u8It.next()));
 	//
 	return result;
 }
 
-const string UTF8StringTools::toUpperCase(const string& src, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
+const string UTF8StringTools::toUpperCase(const string& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
 	string result;
 	// utf8 character iterator
-	UTF8CharacterIterator u8It(src, cache);
+	UTF8CharacterIterator u8It(str, cache);
 	//
 	while (u8It.hasNext() == true) Character::appendToString(result, Character::toUpperCase(u8It.next()));
 	//
 	return result;
 }
 
-bool UTF8StringTools::regexMatch(const string& src, const string& pattern) {
+bool UTF8StringTools::regexMatch(const string& str, const string& pattern) {
 	// TODO: return found groups
-	return regex_match(src, regex(pattern, std::regex::ECMAScript));
+	return regex_match(str, regex(pattern, std::regex::ECMAScript));
 }
 
-bool UTF8StringTools::regexSearch(const string& src, const string& pattern) {
+bool UTF8StringTools::regexSearch(const string& str, const string& pattern) {
 	// TODO: return found groups
-	return regex_search(src, regex(pattern, std::regex::ECMAScript));
+	return regex_search(str, regex(pattern, std::regex::ECMAScript));
 }
 
-const string UTF8StringTools::regexReplace(const string& src, const string& pattern, const string& by) {
-	return regex_replace(src, regex(pattern, std::regex::ECMAScript), by);
+const string UTF8StringTools::regexReplace(const string& str, const string& pattern, const string& by) {
+	return regex_replace(str, regex(pattern, std::regex::ECMAScript), by);
 }
 
 const vector<string> UTF8StringTools::tokenize(const string& str, const string& delimiters, bool emptyTokens) {
@@ -247,14 +235,14 @@ const vector<string> UTF8StringTools::tokenize(const string& str, const string& 
 	return t.getTokens();
 }
 
-const string UTF8StringTools::padLeft(const string& src, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
-	auto result = src;
+const string UTF8StringTools::padLeft(const string& str, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
+	auto result = str;
 	while (getLength(result) < toLength) result = by + result;
 	return result;
 }
 
-const string UTF8StringTools::padRight(const string& src, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
-	auto result = src;
+const string UTF8StringTools::padRight(const string& str, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
+	auto result = str;
 	UTF8CharacterIterator::UTF8PositionCache resultCache;
 	if (cache != nullptr) resultCache = *cache;
 	while (getLength(result, &resultCache) < toLength) result = result + by;
@@ -263,7 +251,7 @@ const string UTF8StringTools::padRight(const string& src, const string& by, int6
 
 int64_t UTF8StringTools::getLength(const string& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
 	::miniscript::utilities::UTF8CharacterIterator u8It(str, cache);
-	while (u8It.hasNext() == true) u8It.next();
+	u8It.seekCharacterPosition(4611686018427387903); // 2 ^ 62 - 1
 	return u8It.getCharacterPosition();
 }
 

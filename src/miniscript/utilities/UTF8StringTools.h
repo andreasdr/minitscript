@@ -21,59 +21,59 @@ class miniscript::utilities::UTF8StringTools final
 public:
 	/**
 	 * Checks if string starts with prefix
-	 * @param src source string
-     * @param prefix prefix string
-	 * @return bool
+	 * @param str string
+	 * @param prefix prefix string
+	 * @return if string starts with prefix
 	 */
-	inline static const bool startsWith(const string& src, const string& prefix) {
-		return src.find(prefix) == 0;
+	inline static const bool startsWith(const string& str, const string& prefix) {
+		return str.find(prefix) == 0;
 	}
 
 	/**
 	 * Checks if string starts with prefix
-	 * @param src source string
-     * @param prefix prefix string
-	 * @return bool
+	 * @param str string
+	 * @param prefix prefix string
+	 * @return if string starts with prefix
 	 */
-	inline static const bool viewStartsWith(const string_view& src, const string& prefix) {
-		return src.find(prefix) == 0;
+	inline static const bool viewStartsWith(const string_view& str, const string& prefix) {
+		return str.find(prefix) == 0;
 	}
 
 	/**
 	 * Checks if string ends with suffix
-	 * @param src source string
-     * @param suffix suffix string
-	 * @return bool
+	 * @param str string
+	 * @param suffix suffix string
+	 * @return if string ends with suffix
 	 */
-	inline static const bool endsWith(const string& src, const string& suffix) {
+	inline static const bool endsWith(const string& str, const string& suffix) {
 		return
-			src.size() >= suffix.size() &&
-			src.compare(src.size() - suffix.size(), suffix.size(), suffix) == 0;
+			str.size() >= suffix.size() &&
+			str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 	}
 
 	/**
 	 * Checks if string ends with suffix
-	 * @param src source string
-     * @param suffix suffix string
-	 * @return bool
+	 * @param str string
+	 * @param suffix suffix string
+	 * @return if string ends with suffix
 	 */
-	inline static const bool viewEndsWith(const string_view& src, const string& suffix) {
+	inline static const bool viewEndsWith(const string_view& str, const string& suffix) {
 		return
-			src.size() >= suffix.size() &&
-			src.compare(src.size() - suffix.size(), suffix.size(), suffix) == 0;
+			str.size() >= suffix.size() &&
+			str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 	}
 
 	/**
 	 * Replace string with another string
-	 * @param src source string to be processed
-	 * @param what what to replace
+	 * @param str string
+	 * @param what what
 	 * @param by to replace by
 	 * @param beginIndex index to begin with
-	 * @param cache src Utf8 position cache
-	 * @return new string
+	 * @param cache str UTF8 position cache
+	 * @return replace result
 	 */
 	static const string replace(
-		const string& src,
+		const string& str,
 		const string& what,
 		const string& by,
 		int64_t beginIndex = 0,
@@ -82,31 +82,31 @@ public:
 
 	/**
 	 * Finds first index of given string
-	 * @param src source string
+	 * @param str string
 	 * @param what what
-	 * @param beginIndex index to begin with
-	 * @param cache src Utf8 position cache
-	 * @return index or -1 if not found
+	 * @param beginIndex begin index
+	 * @param cache str UTF8 position cache
+	 * @return index or string::npos if not found
 	 */
 	inline static int64_t indexOf(
-		const string& src,
+		const string& str,
 		const string& what,
 		int64_t beginIndex = 0,
 		::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr
 	) {
-		return firstIndexOf(src, what, beginIndex, cache);
+		return firstIndexOf(str, what, beginIndex, cache);
 	}
 
 	/**
 	 * Finds first index of given string
-	 * @param src source string
+	 * @param str string
 	 * @param what what
-	 * @param beginIndex index to begin with
-	 * @param cache src Utf8 position cache
-	 * @return index or -1 if not found
+	 * @param beginIndex begin index
+	 * @param cache str UTF8 position cache
+	 * @return index or string::npos if not found
 	 */
 	static int64_t firstIndexOf(
-		const string& src,
+		const string& str,
 		const string& what,
 		int64_t beginIndex = 0,
 		::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr
@@ -114,14 +114,14 @@ public:
 
 	/**
 	 * Finds last index of given string
-	 * @param src source string
+	 * @param str string
 	 * @param what what
-	 * @param beginIndex index to begin with
-	 * @param cache src Utf8 position cache
-	 * @return index or -1 if not found
+	 * @param beginIndex begin index
+	 * @param cache str UTF8 position cache
+	 * @return index or string::npos if not found
 	 */
 	static int64_t lastIndexOf(
-		const string& src,
+		const string& str,
 		const string& what,
 		int64_t beginIndex = 0,
 		::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr
@@ -129,56 +129,56 @@ public:
 
 	/**
 	 * Finds first index of characters provided within given string
-	 * @param src source string
+	 * @param str string
 	 * @param what what
-	 * @param beginIndex index to begin with
-	 * @param srcCache src Utf8 position cache
-	 * @param whatCache what Utf8 position cache
-	 * @return index or -1 if not found
+	 * @param beginIndex begin index
+	 * @param srcCache str UTF8 position cache
+	 * @param whatCache what UTF8 position cache
+	 * @return index or string::npos if not found
 	 */
-	static int64_t firstIndexOfChars(const string& src, const string& what, int64_t beginIndex = 0, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache = nullptr, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache = nullptr);
+	static int64_t firstIndexOfChars(const string& str, const string& what, int64_t beginIndex = 0, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache = nullptr, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache = nullptr);
 
 	/**
 	 * Finds last index of characters provided within given string
-	 * @param src source string
+	 * @param str string
 	 * @param what what
-	 * @param endIndex index to end with
-	 * @param srcCache src Utf8 position cache
-	 * @param whatCache what Utf8 position cache
-	 * @return index or -1 if not found
+	 * @param endIndex end index or string::npos
+	 * @param srcCache str UTF8 position cache
+	 * @param whatCache what UTF8 position cache
+	 * @return index or string::npos if not found
 	 */
-	static int64_t lastIndexOfChars(const string& src, const string& what, int64_t endIndex = -1, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache = nullptr, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache = nullptr);
+	static int64_t lastIndexOfChars(const string& str, const string& what, int64_t endIndex = -1, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache = nullptr, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache = nullptr);
 
 	/**
 	 * Returns substring of given string from begin index to end index
-	 * @param src source string
+	 * @param str string
 	 * @param beginIndex begin index
-	 * @param endIndex end index or -1
-	 * @param cache src Utf8 position cache
-	 * @return new string
+	 * @param endIndex end index or string::npos
+	 * @param cache str UTF8 position cache
+	 * @return substring result
 	 */
-	inline static const string substring(const string& src, int64_t beginIndex, int64_t endIndex = string::npos, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache = nullptr, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr) {
-		auto result = viewSubstring(string_view(src), beginIndex, endIndex, cache);
+	inline static const string substring(const string& str, int64_t beginIndex, int64_t endIndex = string::npos, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache = nullptr, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr) {
+		auto result = viewSubstring(string_view(str), beginIndex, endIndex, cache);
 		return string(result.data(), result.size());
 	}
 
 	/**
 	 * Returns substring of given string from begin index to end index
-	 * @param src source string
+	 * @param str string
 	 * @param beginIndex begin index
 	 * @param endIndex end index or -1
-	 * @param cache src Utf8 position cache
-	 * @return new string
+	 * @param cache str UTF8 position cache
+	 * @return substring result
 	 */
-	static const string_view viewSubstring(const string_view& src, int64_t beginIndex, int64_t endIndex, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+	static const string_view viewSubstring(const string_view& str, int64_t beginIndex, int64_t endIndex, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
 	 * Checks if string equals ignoring case
 	 * @param string1 string 1
 	 * @param string2 string 2
-	 * @param string1Cache string1 Utf8 position cache
-	 * @param string2Cache string2 Utf8 position cache
-	 * @return equals
+	 * @param string1Cache string1 UTF8 position cache
+	 * @param string2Cache string2 UTF8 position cache
+	 * @return equality
 	 */
 	static bool equalsIgnoreCase(
 		const string& string1,
@@ -189,59 +189,60 @@ public:
 
 	/**
 	 * Trim string
-	 * @param src source string
-	 * @param cache src Utf8 position cache
+	 * @param str string
+	 * @param cache UTF8 position cache
 	 * @return trimmed string
 	 */
-	static const string trim(const string& src, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+	static const string trim(const string& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
 	 * Trim string
-	 * @param src source string
-	 * @param cache src Utf8 position cache
+	 * @param str string
+	 * @param cache UTF8 position cache
 	 * @return trimmed string
 	 */
-	static const string_view viewTrim(const string_view& src, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+	static const string_view viewTrim(const string_view& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
 	 * Transform string to lower case
-	 * @param src source string
-	 * @param cache Utf8 position cache
-	 * @return transformed string
+	 * @param str string
+	 * @param cache UTF8 position cache
+	 * @return lowercase string
 	 */
-	static const string toLowerCase(const string& src, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+	static const string toLowerCase(const string& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
 	 * Transform string to upper case
-	 * @param src source string
-	 * @param cache Utf8 position cache
-	 * @return transformed string
+	 * @param str string
+	 * @param cache UTF8 position cache
+	 * @return uppercase string
 	 */
-	static const string toUpperCase(const string& src, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+	static const string toUpperCase(const string& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
 	 * Check if pattern matches whole string
-	 * @param src source string to test
+	 * @param str string
 	 * @param pattern pattern
 	 * @return if pattern matches whole string
 	 */
-	static bool regexMatch(const string& src, const string& pattern);
+	static bool regexMatch(const string& str, const string& pattern);
 
 	/**
 	 * Do regex pattern search
-	 * @param src source string to test
+	 * @param str string
 	 * @param pattern pattern
 	 * @return if search was successful
 	 */
-	static bool regexSearch(const string& src, const string& pattern);
+	static bool regexSearch(const string& str, const string& pattern);
 
 	/**
 	 * Replace regex pattern with given string
-	 * @param src source string to operate on
-	 * @param pattern pattern to search
-	 * @param by string that will replace pattern occurrances
+	 * @param str string
+	 * @param pattern pattern
+	 * @param by replace string
+	 * @return replace result
 	 */
-	static const string regexReplace(const string& src, const string& pattern, const string& by);
+	static const string regexReplace(const string& str, const string& pattern, const string& by);
 
 	/**
 	 * Tokenize
@@ -254,38 +255,37 @@ public:
 
 	/**
 	 * Pad a string left
-	 * @param src source
+	 * @param str string
 	 * @param by by
-	 * @param toSize to size
-	 * @param cache src Utf8 position cache
+	 * @param toLength to length
+	 * @param cache str UTF8 position cache
 	 */
-	static const string padLeft(const string& src, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+	static const string padLeft(const string& str, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
 	 * Pad a string right
-	 * @param src source
+	 * @param str string
 	 * @param by by
-	 * @param toSize to size
-	 * @param cache src Utf8 position cache
+	 * @param toLength to length
+	 * @param cache str UTF8 position cache
 	 */
-	static const string padRight(const string& src, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+	static const string padRight(const string& str, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
 	 * Indent a string
-	 * @param src source
+	 * @param str string
 	 * @param with with
 	 * @param count count
 	 */
-	inline static const string indent(const string& src, const string& with, int64_t count) {
+	inline static const string indent(const string& str, const string& with, int64_t count) {
 		string result;
 		for (auto i = 0; i < count; i++) result+= with;
-		return result + src;
+		return result + str;
 	}
 
 	/**
-	 * Indent a string
-	 * @param src source
-	 * @param with with
+	 * Generate a string
+	 * @param what what
 	 * @param count count
 	 */
 	inline static const string generate(const string& what, int64_t count = 1) {
@@ -295,26 +295,26 @@ public:
 	}
 
 	/**
-	 * Get Utf8 string length
+	 * Get UTF8 string length
 	 * @param str string
-	 * @param cache str Utf8 position cache
+	 * @param cache UTF8 position cache
 	 * @return utf8 string length
 	 */
 	static int64_t getLength(const string& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
-	 * Get Utf8 character at given index
+	 * Get UTF8 character at given index
 	 * @param str string
 	 * @param index index
-	 * @param cache src Utf8 position cache
+	 * @param cache UTF8 position cache
 	 */
 	static const string getCharAt(const string& str, int64_t index, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
-	 * Get Utf8 binary buffer index
+	 * Get UTF8 binary buffer index
 	 * @param str string
 	 * @param charIdx character index
-	 * @param cache src Utf8 position cache
+	 * @param cache UTF8 position cache
 	 * @return UTF binary buffer position from given character/code point index
 	 */
 	static int64_t getUtf8BinaryIndex(const string& str, int64_t charIdx, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
