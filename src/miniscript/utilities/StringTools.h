@@ -21,174 +21,218 @@ class miniscript::utilities::StringTools final
 public:
 	/**
 	 * Checks if string starts with prefix
-	 * @param src source string
+	 * @param str string
      * @param prefix prefix string
 	 * @return bool
 	 */
-	inline static const bool startsWith(const string& src, const string& prefix) {
-		return src.find(prefix) == 0;
+	inline static const bool startsWith(const string& str, const string& prefix) {
+		return str.find(prefix) == 0;
 	}
 
 	/**
 	 * Checks if string starts with prefix
-	 * @param src source string
+	 * @param str string
      * @param prefix prefix string
 	 * @return bool
 	 */
-	inline static const bool viewStartsWith(const string_view& src, const string& prefix) {
-		return src.find(prefix) == 0;
+	inline static const bool viewStartsWith(const string_view& str, const string& prefix) {
+		return str.find(prefix) == 0;
 	}
 
 	/**
 	 * Checks if string ends with suffix
-	 * @param src source string
+	 * @param str string
      * @param suffix suffix string
 	 * @return bool
 	 */
-	inline static const bool endsWith(const string& src, const string& suffix) {
+	inline static const bool endsWith(const string& str, const string& suffix) {
 		return
-			src.size() >= suffix.size() &&
-			src.compare(src.size() - suffix.size(), suffix.size(), suffix) == 0;
+			str.size() >= suffix.size() &&
+			str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 	}
 
 	/**
 	 * Checks if string ends with suffix
-	 * @param src source string
+	 * @param str string
      * @param suffix suffix string
 	 * @return bool
 	 */
-	inline static const bool viewEndsWith(const string_view& src, const string& suffix) {
+	inline static const bool viewEndsWith(const string_view& str, const string& suffix) {
 		return
-			src.size() >= suffix.size() &&
-			src.compare(src.size() - suffix.size(), suffix.size(), suffix) == 0;
+			str.size() >= suffix.size() &&
+			str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 	}
 
 	/**
 	 * Replace char with another char
-	 * @param src source string to be processed
+	 * @param str string to be processed
 	 * @param what what to replace
 	 * @param by to replace by
 	 * @param beginIndex index to begin with
 	 * @return new string
 	 */
-	static const string replace(const string& src, const char what, const char by, int64_t beginIndex = 0);
+	static const string replace(const string& str, const char what, const char by, int64_t beginIndex = 0);
 
 	/**
 	 * Replace string with another string
-	 * @param src source string to be processed
+	 * @param str string to be processed
 	 * @param what what to replace
 	 * @param by to replace by
 	 * @param beginIndex index to begin with
 	 * @return new string
 	 */
-	static const string replace(const string& src, const string& what, const string& by, int64_t beginIndex = 0);
+	static const string replace(const string& str, const string& what, const string& by, int64_t beginIndex = 0);
 
 	/**
 	 * Finds index of given character
-	 * @param src source string
+	 * @param str string
 	 * @param what what
 	 * @param beginIndex index to begin with
-	 * @return index or -1 if not found
+	 * @return index or string::npos if not found
 	 */
-	inline static int64_t indexOf(const string& src, char what, int64_t beginIndex = 0) {
-		return src.find(what, beginIndex);
+	inline static int64_t indexOf(const string& str, char what, int64_t beginIndex = 0) {
+		return str.find(what, beginIndex);
 	}
 
 	/**
 	 * Finds first index of given string
-	 * @param src source string
+	 * @param str string
 	 * @param what what
 	 * @param beginIndex index to begin with
-	 * @return index or -1 if not found
+	 * @return index or string::npos if not found
 	 */
-	inline static int64_t indexOf(const string& src, const string& what, int64_t beginIndex = 0) {
-		return src.find(what, beginIndex);
+	inline static int64_t indexOf(const string& str, const string& what, int64_t beginIndex = 0) {
+		return str.find(what, beginIndex);
 	}
 
 	/**
 	 * Finds first index of given character
-	 * @param src source string
+	 * @param str string
 	 * @param what what
-	 * @param beginIndex index to begin with
-	 * @return index or -1 if not found
+	 * @param beginIndex begin index
+	 * @return index or string::npos if not found
 	 */
-	inline static int64_t firstIndexOf(const string& src, char what, int64_t beginIndex = 0) {
-		return src.find_first_of(what, beginIndex);
+	inline static int64_t firstIndexOf(const string& str, char what, int64_t beginIndex = 0) {
+		return indexOf(str, what, beginIndex);
 	}
 
 	/**
-	 * Finds first index of characters provided within given string
-	 * @param src source string
+	 * Finds first index of given string
+	 * @param str string
 	 * @param what what
-	 * @param beginIndex index to begin with
-	 * @return index or -1 if not found
+	 * @param beginIndex begin index
+	 * @return index or string::npos if not found
 	 */
-	inline static int64_t firstIndexOf(const string& src, const string& what, int64_t beginIndex = 0) {
-		return src.find_first_of(what, beginIndex);
+	inline static int64_t firstIndexOf(const string& str, const string& what, int64_t beginIndex = 0) {
+		return indexOf(str, what, beginIndex);
 	}
 
 	/**
 	 * Finds last index of given character
-	 * @param src source string
+	 * @param str string
+	 * @param what what
+	 * @param beginIndex begin index
+	 * @return index or string::npos if not found
+	 */
+	inline static int64_t lastIndexOf(const string& str, const char what, int64_t beginIndex = 0) {
+		return str.rfind(what, beginIndex);
+	}
+
+	/**
+	 * Finds last index of given string
+	 * @param str string
+	 * @param what what
+	 * @param beginIndex begin index
+	 * @return index or string::npos if not found
+	 */
+	inline static int64_t lastIndexOf(const string& str, const string& what, int64_t beginIndex = 0) {
+		return str.rfind(what, beginIndex);
+	}
+
+	/**
+	 * Finds first index of character provided within given string
+	 * @param str string
 	 * @param what what
 	 * @param beginIndex index to begin with
-	 * @return index or -1 if not found
+	 * @return index or string::npos if not found
 	 */
-	inline static int64_t lastIndexOf(const string& src, char what, int64_t beginIndex = -1) {
-		return src.find_last_of(what, beginIndex);
+	inline static int64_t firstIndexOfChar(const string& str, char what, int64_t beginIndex = 0) {
+		return str.find_first_of(what, beginIndex);
+	}
+
+	/**
+	 * Finds first index of characters provided within given string
+	 * @param str string
+	 * @param what what
+	 * @param beginIndex index to begin with
+	 * @return index or string::npos if not found
+	 */
+	inline static int64_t firstIndexOfChars(const string& str, const string& what, int64_t beginIndex = 0) {
+		return str.find_first_of(what, beginIndex);
+	}
+
+	/**
+	 * Finds last index of character provided within given string
+	 * @param str string
+	 * @param what what
+	 * @param beginIndex index to begin with
+	 * @return index or string::npos if not found
+	 */
+	inline static int64_t lastIndexOfChar(const string& str, char what, int64_t beginIndex = string::npos) {
+		return str.find_last_of(what, beginIndex);
 	}
 
 	/**
 	 * Finds last index of characters provided within given string
-	 * @param src source string
+	 * @param str string
 	 * @param what what
 	 * @param beginIndex index to begin with
-	 * @return index or -1 if not found
+	 * @return index or string::npos if not found
 	 */
-	inline static int64_t lastIndexOf(const string& src, const string& what, int64_t beginIndex = -1) {
-		return src.find_last_of(what, beginIndex);
+	inline static int64_t lastIndexOfChars(const string& str, const string& what, int64_t beginIndex = string::npos) {
+		return str.find_last_of(what, beginIndex);
 	}
 
 	/**
 	 * Returns substring of given string from begin index
-	 * @param src source string
+	 * @param str string
 	 * @param beginIndex begin index
 	 * @return new string
 	 */
-	inline static const string substring(const string& src, int64_t beginIndex) {
-		return src.substr(beginIndex);
+	inline static const string substring(const string& str, int64_t beginIndex) {
+		return str.substr(beginIndex);
 	}
 
 	/**
 	 * Returns substring of given string from begin index
-	 * @param src source string
+	 * @param str string
 	 * @param beginIndex begin index
 	 * @return new string
 	 */
-	inline static const string_view viewSubstring(const string_view& src, int64_t beginIndex) {
-		return src.substr(beginIndex);
+	inline static const string_view viewSubstring(const string_view& str, int64_t beginIndex) {
+		return str.substr(beginIndex);
 	}
 
 	/**
 	 * Returns substring of given string from begin index to end index
-	 * @param src source string
+	 * @param str string
 	 * @param beginIndex begin index
 	 * @param endIndex end index
 	 * @return new string
 	 */
-	inline static const string substring(const string& src, int64_t beginIndex, int64_t endIndex) {
-		return src.substr(beginIndex, endIndex - beginIndex);
+	inline static const string substring(const string& str, int64_t beginIndex, int64_t endIndex) {
+		return str.substr(beginIndex, endIndex - beginIndex);
 	}
 
 	/**
 	 * Returns substring of given string from begin index to end index
-	 * @param src source string
+	 * @param str string
 	 * @param beginIndex begin index
 	 * @param endIndex end index
 	 * @return new string
 	 */
-	inline static const string_view viewSubstring(const string_view& src, int64_t beginIndex, int64_t endIndex) {
-		return src.substr(beginIndex, endIndex - beginIndex);
+	inline static const string_view viewSubstring(const string_view& str, int64_t beginIndex, int64_t endIndex) {
+		return str.substr(beginIndex, endIndex - beginIndex);
 	}
 
 	/**
@@ -201,55 +245,55 @@ public:
 
 	/**
 	 * Trim string
-	 * @param src source string
+	 * @param str string
 	 * @return trimmed string
 	 */
-	static const string trim(const string& src);
+	static const string trim(const string& str);
 
 	/**
 	 * Trim string
-	 * @param src source string
+	 * @param str string
 	 * @return trimmed string
 	 */
-	static const string_view viewTrim(const string_view& src);
+	static const string_view viewTrim(const string_view& str);
 
 	/**
 	 * Transform string to lower case
-	 * @param src source string
+	 * @param str string
 	 * @return transformed string
 	 */
-	static const string toLowerCase(const string& src);
+	static const string toLowerCase(const string& str);
 
 	/**
 	 * Transform string to upper case
-	 * @param src source string
+	 * @param str string
 	 * @return transformed string
 	 */
-	static const string toUpperCase(const string& src);
+	static const string toUpperCase(const string& str);
 
 	/**
 	 * Check if pattern matches whole string
-	 * @param src source string to test
+	 * @param str string to test
 	 * @param pattern pattern
 	 * @return if pattern matches whole string
 	 */
-	static bool regexMatch(const string& src, const string& pattern);
+	static bool regexMatch(const string& str, const string& pattern);
 
 	/**
 	 * Do regex pattern search
-	 * @param src source string to test
+	 * @param str string to test
 	 * @param pattern pattern
 	 * @return if search was successful
 	 */
-	static bool regexSearch(const string& src, const string& pattern);
+	static bool regexSearch(const string& str, const string& pattern);
 
 	/**
 	 * Replace regex pattern with given string
-	 * @param src source string to operate on
+	 * @param str string to operate on
 	 * @param pattern pattern to search
 	 * @param by string that will replace pattern occurrances
 	 */
-	static const string regexReplace(const string& src, const string& pattern, const string& by);
+	static const string regexReplace(const string& str, const string& pattern, const string& by);
 
 	/**
 	 * Tokenize
@@ -262,38 +306,49 @@ public:
 
 	/**
 	 * Pad a string left
-	 * @param src source
+	 * @param str string
 	 * @param by by
 	 * @param toSize to size
 	 */
-	inline static const string padLeft(const string& src, const string& by, int64_t toSize) {
-		auto result = src;
+	inline static const string padLeft(const string& str, const string& by, int64_t toSize) {
+		auto result = str;
 		while (result.size() < toSize) result = by + result;
 		return result;
 	}
 
 	/**
 	 * Pad a string right
-	 * @param src source
+	 * @param str string
 	 * @param by by
 	 * @param toSize to size
 	 */
-	inline static const string padRight(const string& src, const string& by, int64_t toSize) {
-		auto result = src;
+	inline static const string padRight(const string& str, const string& by, int64_t toSize) {
+		auto result = str;
 		while (result.size() < toSize) result = result + by;
 		return result;
 	}
 
 	/**
 	 * Indent a string
-	 * @param src source
+	 * @param str string
 	 * @param with with
 	 * @param count count
 	 */
-	inline static const string indent(const string& src, const string& with, int64_t count) {
+	inline static const string indent(const string& str, const string& with, int64_t count) {
 		string indentString;
 		for (auto i = 0; i < count; i++) indentString+= with;
-		return indentString + src;
+		return indentString + str;
+	}
+
+	/**
+	 * Generate a string
+	 * @param what what
+	 * @param count count
+	 */
+	inline static const string generate(const string& what, int64_t count = 1) {
+		string result;
+		for (auto i = 0; i < count; i++) result+= what;
+		return result;
 	}
 
 	/**
