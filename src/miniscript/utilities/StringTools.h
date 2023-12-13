@@ -131,10 +131,10 @@ public:
 	 * Finds last index of given character
 	 * @param str string
 	 * @param what what
-	 * @param beginIndex begin index
+	 * @param beginIndex begin index or string::npos
 	 * @return index or string::npos if not found
 	 */
-	inline static int64_t lastIndexOf(const string& str, const char what, int64_t beginIndex = 0) {
+	inline static int64_t lastIndexOf(const string& str, const char what, int64_t beginIndex = string::npos) {
 		return str.rfind(what, beginIndex);
 	}
 
@@ -142,10 +142,10 @@ public:
 	 * Finds last index of given string
 	 * @param str string
 	 * @param what what
-	 * @param beginIndex begin index
+	 * @param beginIndex begin index or string::npos
 	 * @return index or string::npos if not found
 	 */
-	inline static int64_t lastIndexOf(const string& str, const string& what, int64_t beginIndex = 0) {
+	inline static int64_t lastIndexOf(const string& str, const string& what, int64_t beginIndex = string::npos) {
 		return str.rfind(what, beginIndex);
 	}
 
@@ -175,7 +175,7 @@ public:
 	 * Finds last index of character provided within given string
 	 * @param str string
 	 * @param what what
-	 * @param beginIndex index to begin with
+	 * @param beginIndex index to begin with or string::npos
 	 * @return index or string::npos if not found
 	 */
 	inline static int64_t lastIndexOfChar(const string& str, char what, int64_t beginIndex = string::npos) {
@@ -186,7 +186,7 @@ public:
 	 * Finds last index of characters provided within given string
 	 * @param str string
 	 * @param what what
-	 * @param beginIndex index to begin with
+	 * @param beginIndex index to begin with or string::npos
 	 * @return index or string::npos if not found
 	 */
 	inline static int64_t lastIndexOfChars(const string& str, const string& what, int64_t beginIndex = string::npos) {

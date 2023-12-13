@@ -2298,8 +2298,8 @@ public:
 	 * Script
 	 */
 	struct Script {
-		struct ScriptArgument {
-			ScriptArgument(
+		struct FunctionArgument {
+			FunctionArgument(
 				const string& name,
 				bool reference
 			):
@@ -2324,8 +2324,8 @@ public:
 			const vector<Statement>& statements,
 			const vector<SyntaxTreeNode>& syntaxTree,
 			// applies only for functions
-			bool callable,
-			const vector<ScriptArgument>& arguments
+			bool callableFunction,
+			const vector<FunctionArgument>& functionArguments
 		):
 			scriptType(scriptType),
 			line(line),
@@ -2337,8 +2337,8 @@ public:
 			emitCondition(emitCondition),
 			statements(statements),
 			syntaxTree(syntaxTree),
-			callable(callable),
-			arguments(arguments)
+			callableFunction(callableFunction),
+			functionArguments(functionArguments)
 		{}
 		ScriptType scriptType;
 		int line;
@@ -2350,8 +2350,8 @@ public:
 		bool emitCondition;
 		vector<Statement> statements;
 		vector<SyntaxTreeNode> syntaxTree;
-		bool callable;
-		vector<ScriptArgument> arguments;
+		bool callableFunction;
+		vector<FunctionArgument> functionArguments;
 	};
 
 	static constexpr int SCRIPTIDX_NONE { -1 };

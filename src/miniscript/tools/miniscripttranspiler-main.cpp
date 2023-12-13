@@ -327,14 +327,14 @@ static void processFile(const string& scriptFileName, const string& transpilatio
 			}
 			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "}," + "\n";
 			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "{},\n";
-			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + (script.callable == true?"true":"false") + ",\n";
+			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + (script.callableFunction == true?"true":"false") + ",\n";
 			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "{\n";
 			auto argumentIdx = 0;
-			for (const auto& argument: script.arguments) {
+			for (const auto& argument: script.functionArguments) {
 				initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "\t" + "Script::ScriptArgument(" + "\n";
 				initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + argument.name + "\"," + "\n";
 				initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "\t" + "\t" + (argument.reference == true?"true":"false") + "\n";
-				initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "\t" ")" + (argumentIdx != script.arguments.size() - 1?",":"") + "\n";
+				initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "\t" ")" + (argumentIdx != script.functionArguments.size() - 1?",":"") + "\n";
 				argumentIdx++;
 			}
 			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "}\n";

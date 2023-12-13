@@ -674,9 +674,9 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 	// arguments
 	vector<bool> argumentReferences(0);
 	if (functionIdx != SCRIPTIDX_NONE) {
-		argumentReferences.resize(scripts[functionIdx].arguments.size());
+		argumentReferences.resize(scripts[functionIdx].functionArguments.size());
 		auto argumentIdx = 0;
-		for (const auto& argument: scripts[functionIdx].arguments) {
+		for (const auto& argument: scripts[functionIdx].functionArguments) {
 			argumentReferences[argumentIdx++] = argument.reference;
 		}
 	} else
@@ -1380,7 +1380,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				// yes
 				haveScript = true;
 				// functions: argument names
-				vector<Script::ScriptArgument> arguments;
+				vector<Script::FunctionArgument> arguments;
 				// determine statement
 				string statement;
 				if (scriptType == Script::SCRIPTTYPE_FUNCTION) {
@@ -1759,7 +1759,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 		//
 		if (script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION) {
 			//
-			if (script.callable == true) {
+			if (script.callableFunction == true) {
 				//
 				if (validateCallable(script.condition) == false) {
 					//
@@ -2320,7 +2320,7 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 		auto& scriptState = getScriptState();
 		// also put named arguments into state context variables
 		auto argumentIdx = 0;
-		for (const auto& argument: scripts[scriptIdx].arguments) {
+		for (const auto& argument: scripts[scriptIdx].functionArguments) {
 			if (argumentIdx == arguments.size()) {
 				break;
 			}
@@ -2430,7 +2430,7 @@ const string MiniScript::getScriptInformation(int scriptIdx, bool includeStateme
 	string argumentsString;
 	switch(script.scriptType) {
 		case Script::SCRIPTTYPE_FUNCTION: {
-			for (const auto& argument: script.arguments) {
+			for (const auto& argument: script.functionArguments) {
 				if (argumentsString.empty() == false) argumentsString+= ", ";
 				if (argument.reference == true) argumentsString+= "&";
 				argumentsString+= argument.name;
@@ -2722,7 +2722,7 @@ void MiniScript::registerMethods() {
 						Method* method { nullptr };
 						if (functionIdx == MiniScript::SCRIPTIDX_NONE) {
 							#if defined(__MINISCRIPT_TRANSPILATION__)
-								method = evaluateMemberAccessArrays[static_cast<int>(arguments[1].getType()) - static_cast<int>(MiniScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
+								method = evaluateMemberAccessArrays[static_cast<int>(functionArguments[1].getType()) - static_cast<int>(MiniScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
 							#else
 								method = miniScript->getMethod(className + "::" + member);
 							#endif
@@ -2744,7 +2744,7 @@ void MiniScript::registerMethods() {
 											arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentIdx].reference);
 										} else
 										if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
-											arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionIdx].arguments.size()?false:miniScript->getScripts()[functionIdx].arguments[callArgumentIdx].reference);
+											arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionIdx].functionArguments.size()?false:miniScript->getScripts()[functionIdx].functionArguments[callArgumentIdx].reference);
 										}
 									}
 									//

@@ -1568,7 +1568,7 @@ const string Transpiler::createSourceCode(const MiniScript::SyntaxTreeNode& synt
 	return result;
 }
 
-const string Transpiler::createSourceCode(MiniScript::Script::ScriptType scriptType, const string& condition, const vector<MiniScript::Script::ScriptArgument>& arguments, const string& name, const MiniScript::SyntaxTreeNode& conditionSyntaxTree, const vector<MiniScript::SyntaxTreeNode>& syntaxTree) {
+const string Transpiler::createSourceCode(MiniScript::Script::ScriptType scriptType, const string& condition, const vector<MiniScript::Script::FunctionArgument>& functionArguments, const string& name, const MiniScript::SyntaxTreeNode& conditionSyntaxTree, const vector<MiniScript::SyntaxTreeNode>& syntaxTree) {
 	//
 	string result;
 	//
@@ -1580,7 +1580,7 @@ const string Transpiler::createSourceCode(MiniScript::Script::ScriptType scriptT
 			}
 			auto argumentIdx = 0;
 			result+= "(";
-			for (const auto& argument: arguments) {
+			for (const auto& argument: functionArguments) {
 				if (argumentIdx > 0) result+= ", ";
 				if (argument.reference == true) result+= "=";
 				result+= argument.name;
@@ -1641,7 +1641,7 @@ const string Transpiler::createSourceCode(MiniScript* miniScript) {
 	string result;
 	// create source code
 	for (const auto& script: miniScript->getScripts()) {
-		result+= createSourceCode(script.scriptType, script.emitCondition == true?script.condition:string(), script.arguments, script.name, script.conditionSyntaxTree, script.syntaxTree);
+		result+= createSourceCode(script.scriptType, script.emitCondition == true?script.condition:string(), script.functionArguments, script.name, script.conditionSyntaxTree, script.syntaxTree);
 	}
 	//
 	return result;

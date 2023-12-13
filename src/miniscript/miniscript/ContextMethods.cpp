@@ -45,7 +45,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setValue(false);
 					} else {
 						auto scriptIdx = script->getFunctionScriptIdx(callable);
-						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callable == false) {
+						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callableFunction == false) {
 							returnValue.setValue(false);
 						} else {
 							returnValue.setValue(true);
@@ -88,7 +88,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->startErrorScript();
 					} else {
 						auto scriptIdx = script->getFunctionScriptIdx(callable);
-						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callable == false) {
+						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callableFunction == false) {
 							Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": callable not found: " + callable);
 							miniScript->startErrorScript();
 						} else {

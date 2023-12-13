@@ -247,7 +247,7 @@ public:
 	 * Create source code for given syntax tree
 	 * @param scriptType script type
 	 * @param condition condition
-	 * @param arguments function arguments
+	 * @param functionArguments function arguments
 	 * @param name name of named conditions
 	 * @param conditionSyntaxTree condition syntax tree
 	 * @param syntaxTree syntax tree
@@ -255,7 +255,7 @@ public:
 	static const string createSourceCode(
 		MiniScript::Script::ScriptType scriptType,
 		const string& condition,
-		const vector<MiniScript::Script::ScriptArgument>& arguments,
+		const vector<MiniScript::Script::FunctionArgument>& functionArguments,
 		const string& name,
 		const MiniScript::SyntaxTreeNode& conditionSyntaxTree,
 		const vector<MiniScript::SyntaxTreeNode>& syntaxTree
