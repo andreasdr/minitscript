@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include <miniscript/miniscript.h>
+#include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/StringTokenizer.h>
 
 using std::find_if;
@@ -21,8 +22,10 @@ using std::tolower;
 using std::toupper;
 using std::transform;
 
-using miniscript::utilities::StringTokenizer;
 using miniscript::utilities::StringTools;
+
+using miniscript::utilities::Character;
+using miniscript::utilities::StringTokenizer;
 
 const string StringTools::replace(const string& src, const char what, const char by, int64_t beginIndex) {
 	string result = src;
@@ -115,4 +118,24 @@ const vector<string> StringTools::tokenize(const string& str, const string& deli
 	StringTokenizer t;
 	t.tokenize(str, delimiters, emptyTokens);
 	return t.getTokens();
+}
+
+int64_t StringTools::getUTF8Length(const string& str) {
+	UTF8CharacterIterator u8It(str);
+	u8It.seekCharacterPosition(4611686018427387903); // 2 ^ 62 - 1
+	return u8It.getCharacterPosition();
+}
+
+const string StringTools::getUTF8CharAt(const string& str, int64_t index) {
+	// utf8 character iterator
+	UTF8CharacterIterator u8It(str);
+	u8It.seekCharacterPosition(index);
+	//
+	return u8It.hasNext() == true?::miniscript::utilities::Character::toString(u8It.next()):string();
+}
+
+int64_t StringTools::getUTF8BinaryIndex(const string& str, int64_t charIdx) {
+	UTF8CharacterIterator u8It(str);
+	u8It.seekCharacterPosition(charIdx);
+	return u8It.getBinaryPosition();
 }

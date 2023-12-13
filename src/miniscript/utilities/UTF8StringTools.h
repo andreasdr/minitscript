@@ -66,7 +66,7 @@ public:
 	/**
 	 * Replace string with another string
 	 * @param str string
-	 * @param what what
+	 * @param what what to replace
 	 * @param by to replace by
 	 * @param beginIndex index to begin with
 	 * @param cache str UTF8 position cache
@@ -116,14 +116,14 @@ public:
 	 * Finds last index of given string
 	 * @param str string
 	 * @param what what
-	 * @param beginIndex begin index
+	 * @param endIndex end index or string::npos
 	 * @param cache str UTF8 position cache
 	 * @return index or string::npos if not found
 	 */
 	static int64_t lastIndexOf(
 		const string& str,
 		const string& what,
-		int64_t beginIndex = 0,
+		int64_t endIndex = string::npos,
 		::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr
 	);
 
@@ -147,7 +147,7 @@ public:
 	 * @param whatCache what UTF8 position cache
 	 * @return index or string::npos if not found
 	 */
-	static int64_t lastIndexOfChars(const string& str, const string& what, int64_t endIndex = -1, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache = nullptr, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache = nullptr);
+	static int64_t lastIndexOfChars(const string& str, const string& what, int64_t endIndex = string::npos, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* srcCache = nullptr, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* whatCache = nullptr);
 
 	/**
 	 * Returns substring of given string from begin index to end index
@@ -166,14 +166,14 @@ public:
 	 * Returns substring of given string from begin index to end index
 	 * @param str string
 	 * @param beginIndex begin index
-	 * @param endIndex end index or -1
+	 * @param endIndex end index or string::npos
 	 * @param cache str UTF8 position cache
 	 * @return substring result
 	 */
 	static const string_view viewSubstring(const string_view& str, int64_t beginIndex, int64_t endIndex, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
-	 * Checks if string equals ignoring case
+	 * Checks if strings equal ignoring case
 	 * @param string1 string 1
 	 * @param string2 string 2
 	 * @param string1Cache string1 UTF8 position cache
@@ -246,7 +246,7 @@ public:
 
 	/**
 	 * Tokenize
-	 * @param str string to tokenize
+	 * @param str string
 	 * @param delimiters delimiters
 	 * @param emptyTokens include empty tokens
 	 * @return tokens
@@ -259,6 +259,7 @@ public:
 	 * @param by by
 	 * @param toLength to length
 	 * @param cache str UTF8 position cache
+	 * @return padded string
 	 */
 	static const string padLeft(const string& str, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
@@ -268,6 +269,7 @@ public:
 	 * @param by by
 	 * @param toLength to length
 	 * @param cache str UTF8 position cache
+	 * @return padded string
 	 */
 	static const string padRight(const string& str, const string& by, int64_t toLength, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
@@ -276,6 +278,7 @@ public:
 	 * @param str string
 	 * @param with with
 	 * @param count count
+	 * @return resulting string
 	 */
 	inline static const string indent(const string& str, const string& with, int64_t count) {
 		string result;
@@ -287,6 +290,7 @@ public:
 	 * Generate a string
 	 * @param what what
 	 * @param count count
+	 * @return resulting string
 	 */
 	inline static const string generate(const string& what, int64_t count = 1) {
 		string result;
@@ -298,7 +302,7 @@ public:
 	 * Get UTF8 string length
 	 * @param str string
 	 * @param cache UTF8 position cache
-	 * @return utf8 string length
+	 * @return UTF8 string length
 	 */
 	static int64_t getLength(const string& str, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
@@ -317,7 +321,7 @@ public:
 	 * @param cache UTF8 position cache
 	 * @return UTF binary buffer position from given character/code point index
 	 */
-	static int64_t getUtf8BinaryIndex(const string& str, int64_t charIdx, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+	static int64_t getUTF8BinaryIndex(const string& str, int64_t charIdx, ::miniscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 };
 
