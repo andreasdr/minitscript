@@ -8,10 +8,14 @@ the requirements for high performance script execution, as well as straight forw
 MiniScript might borrow some ideas from JavaScript, Kotlin and PHP, that you might like and find familier.
 Also note the focus on easy integration into other products and easy customizability and extendability.
 
+## 1.1. MiniScript is open source
+
 - MiniScript is open source
   - please check the [license](https://github.com/Mindty-Kollektiv/miniscript/blob/master/LICENSE)
   - you find the source code at [https://github.com/Mindty-Kollektiv/miniscript](https://github.com/Mindty-Kollektiv/miniscript) 
   - here you find developer [documentation including collaboration graphs and API](https://www.mindty.com/products/miniscript/documentation/)
+
+## 1.2. Language features
 
 - Introduction to MiniScript language features:
   - very small implementation of a scripting language
