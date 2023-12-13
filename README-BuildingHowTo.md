@@ -21,8 +21,7 @@ cd miniscript
 
 ### 1.1.3. Build
 
-Note:
-- HARDWARE_THREADS should be replaced with the number of your CPU hardware threads, e.g. if you have 2 cores and hyperthreading, you can use 4
+Note: HARDWARE_THREADS should be replaced with the number of your CPU hardware threads, e.g. if you have 2 cores and hyperthreading, you can use 4
 
 ```bash
 gmake clean && gmake -j HARDWARE_THREADS mains
@@ -102,8 +101,7 @@ cd miniscript
 
 ### 1.4.3. Build
 
-Note:
-- HARDWARE_THREADS should be replaced with the number of your CPU hardware threads, e.g. if you have 2 cores and hyperthreading, you can use 4
+Note: HARDWARE_THREADS should be replaced with the number of your CPU hardware threads, e.g. if you have 2 cores and hyperthreading, you can use 4
 
 ```bash
 make clean && make -j HARDWARE_THREADS mains
@@ -124,8 +122,7 @@ cd miniscript
 
 ### 1.5.3. Build
 
-Note:
-- HARDWARE_THREADS should be replaced with the number of your CPU hardware threads, e.g. if you have 2 cores and hyperthreading, you can use 4
+Note: HARDWARE_THREADS should be replaced with the number of your CPU hardware threads, e.g. if you have 2 cores and hyperthreading, you can use 4
 
 ```bash
 make clean && make -j HARDWARE_THREADS mains
@@ -154,8 +151,7 @@ cd miniscript
 
 ### 1.6.3. Build
 
-Note:
-- HARDWARE_THREADS should be replaced with the number of your CPU hardware threads, e.g. if you have 2 cores and hyperthreading, you can use 4
+Note: HARDWARE_THREADS should be replaced with the number of your CPU hardware threads, e.g. if you have 2 cores and hyperthreading, you can use 4
 
 ```bash
 make clean && make -j HARDWARE_THREADS mains
