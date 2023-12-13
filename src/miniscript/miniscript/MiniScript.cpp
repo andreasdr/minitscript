@@ -3154,6 +3154,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 	auto lc = '\0';
 	for (; i < initializerString.size(); i++) {
 		auto c = initializerString[i];
+		auto nc = i < initializerString.size() - 1?initializerString[i + 1]:'\0';
 		// quotes
 		if (curlyBracketCount == 1 && squareBracketCount == 0 && (c == '"' || c == '\'') && lc != '\\') {
 			// we have a new quote here
@@ -3185,7 +3186,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 		} else
 		// no quote
 		if (quote == '\0') {
-			if (curlyBracketCount == 1 && squareBracketCount == 0 && bracketCount == 0 && c == ':' && lc != '\\') {
+			if (curlyBracketCount == 1 && squareBracketCount == 0 && bracketCount == 0 && c == ':' && nc != ':' && lc != ':' && lc != '\\') {
 				//
 				if (quotedMapKeyStart != string::npos) {
 					quotedMapKeyEnd = i - 1;
