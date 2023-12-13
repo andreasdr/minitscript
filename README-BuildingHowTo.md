@@ -185,7 +185,6 @@ nmake -f Makefile.nmake
 ```
 
 This will build MiniScript executables into your "miniscript" folder. You need to copy DLLs still to this folder, just that those dependencies are found.
-Also this will build Vulkan renderer plugin as well as dependencies are included in MiniScript repository and its quite cheap to do so.
 You need to adjust "miniscript" if you used a different folder.
 
 ```
