@@ -18,7 +18,7 @@ LIBS_LDFLAGS = \
 	/LIBPATH "ext\windows-msc\openssl\lib\libcrypto.lib" \
 	/LIBPATH "ext\windows-msc\openssl\lib\libssl.lib"
 
-FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi
+FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi /F 10485760
 # /NODEFAULTLIB:msvcrt
 
 LD_FLAGS =
