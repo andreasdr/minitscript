@@ -2,7 +2,7 @@ This is the home of the MiniScript language. This document and repository is WIP
 
 # 1. Introduction
 
-MiniScript was developed as part of our [3D Engine](https://github.com/Mindty-Kollektiv/tdme2) to match
+MiniScript was developed as part of our [TDME2 3D Engine](https://github.com/Mindty-Kollektiv/tdme2) to match
 the requirements for high performance script execution, as well as straight forward game logic scripting.
 
 MiniScript might borrow some ideas from JavaScript, Kotlin and PHP, that you might like and find familier.
