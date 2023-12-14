@@ -12,6 +12,7 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/math/Math.h>
 #include <miniscript/os/filesystem/FileSystem.h>
+#include <miniscript/miniscript/Context.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/miniscript/Transpiler.h>
 #include <miniscript/miniscript/Version.h>
@@ -35,6 +36,7 @@ using std::unordered_set;
 using std::vector;
 
 using miniscript::math::Math;
+using miniscript::miniscript::Context;
 using miniscript::miniscript::MiniScript;
 using miniscript::miniscript::Transpiler;
 using miniscript::miniscript::Version;
@@ -107,9 +109,10 @@ static bool replace(const vector<string> input, const string& startTag, const st
 static void processFile(const string& scriptFileName, const string& transpilationFileName, const vector<string>& miniScriptExtensionFileNames) {
 	Console::println("Processing script: " + scriptFileName);
 
-
 	//
+	auto context = make_unique<Context>();
 	auto miniScript = make_unique<MiniScript>();
+	miniScript->setContext(context.get());
 	miniScript->parseScript(
 		FileSystem::getPathName(scriptFileName),
 		FileSystem::getFileName(scriptFileName)

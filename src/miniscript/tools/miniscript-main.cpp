@@ -82,8 +82,8 @@ int main(int argc, char** argv)
 
 	// run script
 	// EngineMiniScript::registerDataTypes();
-	unique_ptr<MiniScript> script;
 	unique_ptr<Context> context;
+	unique_ptr<MiniScript> script;
 	// if no file given, then read from input stream until Ctrl+D(Unix) or Ctrl+Z(Windows) was hit
 	//	which is the standard behaviour of those kind of CLI apps
 	//	we store the file as temporary one and reuse it for execution

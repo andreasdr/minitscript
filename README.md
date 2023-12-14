@@ -1176,6 +1176,8 @@ end
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Get named conditions                                                                             |
 | <sub>script.getNamedConditions(): String</sub>                                                   |
+| Returns if script runs natively                                                                  |
+| <sub>script.isNative(): Boolean</sub>                                                            |
 | Get script variables                                                                             |
 | <sub>script.getVariables(): Map</sub>                                                            |
 | Call script callable function                                                                    |

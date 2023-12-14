@@ -26,5 +26,6 @@ on: error
 end
 
 callable: hello2($name)
+	console.log("context-test-2 runs natively: " + script.isNative())
 	console.log("Hello from context-test-2 " + $name)
 end
