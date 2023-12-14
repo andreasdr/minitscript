@@ -13,6 +13,7 @@ namespace miniscript {
 	class CryptographyMethods;
 	class FileSystemMethods;
 	class JSONMethods;
+	class Library;
 	class MathMethods;
 	class MapMethods;
 	class NetworkMethods;
