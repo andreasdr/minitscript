@@ -7,6 +7,8 @@
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/utilities/Console.h>
 
+{$library-includes}
+
 using std::make_unique;
 using std::string;
 
@@ -24,7 +26,8 @@ Library::~Library() {
 }
 
 MiniScript* Library::loadScript(const string& pathName, const string& fileName) {
-	Console::println("Library::loadScript(): " + pathName + "/" + fileName);
+	Console::println("NativeLibrary::loadScript(): " + pathName + "/" + fileName);
+	{$library-code}
 	auto script = make_unique<MiniScript>();
 	script->setContext(context);
 	script->setLibrary(this);
