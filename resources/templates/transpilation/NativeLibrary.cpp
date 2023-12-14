@@ -11,6 +11,7 @@
 
 using std::make_unique;
 using std::string;
+using std::unique_ptr;
 
 using miniscript::miniscript::Library;
 
@@ -27,8 +28,10 @@ Library::~Library() {
 
 MiniScript* Library::loadScript(const string& pathName, const string& fileName) {
 	Console::println("NativeLibrary::loadScript(): " + pathName + "/" + fileName);
+	unique_ptr<MiniScript> script;
+	//
 	{$library-code}
-	auto script = make_unique<MiniScript>();
+	//
 	script->setContext(context);
 	script->setLibrary(this);
 	script->parseScript(pathName, fileName);
