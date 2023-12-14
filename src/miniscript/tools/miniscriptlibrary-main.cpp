@@ -27,9 +27,14 @@ int main(int argc, char** argv)
 	Console::println();
 
 	//
-	if (argc != 4) {
+	if ((argc - 1) / 2 == 0 || argc % 2 == 0) {
 		Console::println("Usage: miniscriptlibrary script_filename1 script_class_name1 [script_filenameN script_class_nameN]");
 		exit(EXIT_FAILURE);
+	}
+
+	for (auto i = 0; i < (argc - 1) / 2; i++) {
+		Console::println("Script file name: " + string(argv[1 + i * 2]));
+		Console::println("Script class name: " + string(argv[1 + i * 2 + 1]));
 	}
 
 	//
