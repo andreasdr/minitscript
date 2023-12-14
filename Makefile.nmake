@@ -194,6 +194,7 @@ copy-executables:
 
 	copy $(MSCBIN)\miniscript.exe bin\miniscript\tools\.
 	copy $(MSCBIN)\miniscriptdocumentation.exe bin\miniscript\tools\.
+	copy $(MSCBIN)\miniscriptlibrary.exe bin\miniscript\tools\.
 	copy $(MSCBIN)\miniscriptmain.exe bin\miniscript\tools\.
 	copy $(MSCBIN)\miniscriptmakefile.exe bin\miniscript\tools\.
 	copy $(MSCBIN)\miniscriptnmakefile.exe bin\miniscript\tools\.
