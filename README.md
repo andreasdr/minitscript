@@ -23,7 +23,7 @@ Also note the focus on easy integration into other products and easy customizabi
   - can be easily extended by writing state machine machine states and script methods in C++ as well as custom data types
   - built-in data types: null, boolean, integer, float, string, byte array, array, map and set
   - when calling script C++ methods or script functions with arguments it does optionally use references or value by copy
-  - supports user script functions and recursion
+  - supports functions and recursion
   - supports inline/lamda functions
   - supports operators by operator to method mapping by a preprocessor run
   - supports loops and conditions
@@ -112,12 +112,12 @@ forCondition takes a single boolean value as argument. The loop will be executed
 
 # 3. Functions/Callables
 
-See this example that shows user script functions and recursion.
+See this example that shows functions and recursion.
 
 Argument variables, parsed in function declarations are populated in function context with corresponding values.
 ```
 ...
-# user script function of recursive factorial computation
+# function of recursive factorial computation
 function: factorial($value)
 	console.log("factorial(): $value = " + $value)
 	if ($value == 0) 
@@ -137,7 +137,7 @@ See &$b and &$c.
 Be aware that value by copy variables usually require more instantiation time due to the copy that needs to be made of the variable from parent variable scope to function variable scope. 
 ```
 ...
-# user script function to test references in user functions
+# function to test references in user functions
 function: assignTest($a, &$b, &$c)
 	$a = "a"
 	$b = "b"
@@ -158,7 +158,7 @@ By default variables are read from current context and if they have not been fou
 So to be sure to use a global variable in function scope, just use the "$GLOBAL." accessor.
 ```
 ...
-# user script function to test global variable access
+# function to test global variable access
 function: globalVariableTest()
 	console.log("globalVariableTest(): $GLOBAL.globalTest = " + $GLOBAL.globalTest)
 	$GLOBAL.globalTest = "Been there, done that, got the t-shirt"
