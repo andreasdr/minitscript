@@ -306,11 +306,11 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class MethodScriptStop: public MiniScript::Method {
+		class MethodScriptIsNative: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			MethodScriptStop(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_BOOLEAN),
+			MethodScriptIsNative(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_BOOLEAN),
 			miniScript(miniScript) {}
 
 			const string getMethodName() override {
@@ -320,6 +320,6 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				returnValue.setValue(miniScript->isNative());
 			}
 		};
-		miniScript->registerMethod(new MethodScriptStop(miniScript));
+		miniScript->registerMethod(new MethodScriptIsNative(miniScript));
 	}
 }
