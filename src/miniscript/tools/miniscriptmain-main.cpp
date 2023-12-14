@@ -27,8 +27,8 @@ int main(int argc, char** argv)
 	Console::println();
 
 	//
-	if (argc != 4) {
-		Console::println("Usage: miniscriptmain script_filename script_class_name main_filename");
+	if ((argc != 4 && argc != 5) || (argc == 5 && string(argv[4]) != "--use-library")) {
+		Console::println("Usage: miniscriptmain script_filename script_class_name main_filename --use-library");
 		exit(EXIT_FAILURE);
 	}
 
@@ -36,6 +36,14 @@ int main(int argc, char** argv)
 	auto pathToScript = string(argv[1]);
 	auto scriptClassName = string(argv[2]);
 	auto pathToMain = string(argv[3]);
+	auto useLibrary = argc == 5?string(argv[4]) == "--use-library":false;
+	string library;
+	if (useLibrary == true) {
+		library =
+			string() +
+			"auto library = make_unique<Library>(context.get());" + "\n" +
+			"\t" + "script->setLibrary(library.get());";
+	}
 
 	//
 	if (StringTools::endsWith(pathToMain, "-main.cpp") == false) {
@@ -50,6 +58,7 @@ int main(int argc, char** argv)
 		auto mainSource = FileSystem::getContentAsString("./resources/templates/transpilation", "script-main.cpp");
 		mainSource = StringTools::replace(mainSource, "{$script}", pathToScript);
 		mainSource = StringTools::replace(mainSource, "{$script-class}", scriptClassName);
+		mainSource = StringTools::replace(mainSource, "{$library}", library);
 		FileSystem::setContentFromString(FileSystem::getPathName(pathToMain), FileSystem::getFileName(pathToMain), mainSource);
 	} catch (Exception& exception) {
 		Console::println("An error occurred: " + string(exception.what()));
