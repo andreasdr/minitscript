@@ -62,14 +62,15 @@ int main(int argc, char** argv)
 	Console::println();
 
 	//
-	if (argc != 3) {
-		Console::println("Usage: miniscriptmakefile source_pathname makefile_filename");
+	if ((argc != 3 && argc != 4) || (argc == 4 && string(argv[1]) != "--library")) {
+		Console::println("Usage: miniscriptmakefile --library source_pathname makefile_filename");
 		exit(EXIT_FAILURE);
 	}
 
 	//
-	auto pathToSource = string(argv[1]);
-	auto pathToMakefile = string(argv[2]);
+	auto library = argc == 4 && string(argv[1]) == "--library";
+	auto pathToSource = string(argv[1 + (library == true?1:0)]);
+	auto pathToMakefile = string(argv[2 + (library == true?1:0)]);
 
 	//
 	try {
@@ -88,10 +89,10 @@ int main(int argc, char** argv)
 
 		Console::println("Generating Makefile");
 
-		auto makefileSource = FileSystem::getContentAsString("./resources/templates/makefiles", "Makefile");
+		auto makefileSource = FileSystem::getContentAsString("./resources/templates/makefiles", library == true?"Library-Makefile":"Makefile");
 		makefileSource = StringTools::replace(makefileSource, "{$source-folder}", pathToSource);
 		makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
-		makefileSource = StringTools::replace(makefileSource, "{$main-source-files}", mainSourceFilesVariable);
+		if (library == false) makefileSource = StringTools::replace(makefileSource, "{$main-source-files}", mainSourceFilesVariable);
 		FileSystem::setContentFromString(FileSystem::getPathName(pathToMakefile), FileSystem::getFileName(pathToMakefile), makefileSource);
 	} catch (Exception& exception) {
 		Console::println("An error occurred: " + string(exception.what()));
