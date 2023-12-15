@@ -37,3 +37,10 @@ MiniScript* Library::loadScript(const string& pathName, const string& fileName) 
 	script->parseScript(pathName, fileName);
 	return script.release();
 }
+
+//
+extern "C" Library* createInstance()
+{
+	Console::println("Library::createInstance(): Creating library instance!");
+	return new Library(nullptr);
+}

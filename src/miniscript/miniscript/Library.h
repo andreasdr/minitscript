@@ -30,6 +30,21 @@ public:
 	Library(_Context* context);
 
 	/**
+	 * @return context
+	 */
+	inline _Context* getContext() {
+		return context;
+	}
+
+	/**
+	 * Set context
+	 * @param context context
+	 */
+	inline void setContext(_Context* context) {
+		this->context = context;
+	}
+
+	/**
 	 * Destructor
 	 */
 	virtual ~Library();
