@@ -2,6 +2,9 @@ MSCOBJ = mscobj
 MSCOBJMAIN = mscobjmain
 MSCBIN = mscbin
 
+NAME = miniscript
+LIBNAME = lib$(NAME)
+
 INCLUDES = \
 	/I "." \
 	/I "src" \
@@ -12,7 +15,7 @@ INCLUDES = \
 # WINDOWS_SDK_DIR = %WindowsSdkDir%Lib\%WindowsSDKLibVersion%
 WINDOWS_SDK_DIR = C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0
 
-MAIN_LDFLAGS = /LIBPATH $(MSCBIN)\libminiscript.lib
+MAIN_LDFLAGS = /LIBPATH $(MSCBIN)\$(LIBNAME).lib
 LIBS_LDFLAGS = \
 	/LIBPATH "$(WINDOWS_SDK_DIR)\um\x64\ws2_32.lib" \
 	/LIBPATH "ext\windows-msc\openssl\lib\libcrypto.lib" \
@@ -112,17 +115,19 @@ compile-ext: $(EXT_SRCS)
 	cl /Fo$(MSCOBJ)/ /c $(FLAGS) $(INCLUDES) $**
 
 link1: $(MSCOBJ)/*.obj
-	lib $(LD_FLAGS) /OUT:$(MSCBIN)\libminiscript.lib $**
-	dumpbin /LINKERMEMBER $(MSCBIN)\libminiscript.lib > $(MSCBIN)\libminiscript.def.dumpbin.linkermember
-	.\ext\windows-msc\tools\msclib2dll.exe $(MSCBIN)\libminiscript.def.dumpbin.linkermember
-	del $(MSCBIN)\libminiscript.lib
+	lib $(LD_FLAGS) /OUT:$(MSCBIN)\$(LIBNAME).lib $**
+	dumpbin /LINKERMEMBER $(MSCBIN)\$(LIBNAME).lib > $(MSCBIN)\$(LIBNAME).def.dumpbin.linkermember
+	.\ext\windows-msc\tools\msclib2dll.exe $(MSCBIN)\$(LIBNAME).def.dumpbin.linkermember
+	del $(MSCBIN)\$(LIBNAME).lib
 
 link2: $(MSCOBJ)/*.obj
-	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/lib.rc libminiscript.dll $(MSCBIN)\libminiscript.dll.rc
-	rc $(MSCBIN)\libminiscript.dll.rc
-	echo LIBRARY $(MSCBIN)\libminiscript.dll > $(MSCBIN)\libminiscript.def
-	type $(MSCBIN)\libminiscript.def.dumpbin.linkermember.def >> $(MSCBIN)\libminiscript.def
-	link $(LD_FLAGS) /DLL /DEF:$(MSCBIN)\libminiscript.def /IGNORE:4197 /IGNORE:4102 $** $(MSCBIN)\libminiscript.dll.res $(LIBS_LDFLAGS) /OUT:$(MSCBIN)\libminiscript.dll
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/lib.rc $(LIBNAME).dll $(MSCBIN)\$(LIBNAME).dll.rc
+	rc $(MSCBIN)\$(LIBNAME).dll.rc
+	echo LIBRARY $(MSCBIN)\$(LIBNAME).dll > $(MSCBIN)\$(LIBNAME).def
+	type $(MSCBIN)\$(LIBNAME).def.dumpbin.linkermember.def >> $(MSCBIN)\$(LIBNAME).def
+	link $(LD_FLAGS) /DLL /DEF:$(MSCBIN)\$(LIBNAME).def /IGNORE:4102 $** $(MSCBIN)\$(LIBNAME).dll.res $(LIBS_LDFLAGS) /OUT:$(MSCBIN)\$(LIBNAME).dll
+	del /S /Q $(MSCOBJ) >nul 2>&1
+	if exist $(MSCOBJ) rmdir $(MSCOBJ)
 
 clean: 
 	del /S /Q $(MSCOBJ) >nul 2>&1
@@ -185,8 +190,8 @@ copy-executables:
 
 	mkdir lib
 	if exist vc140.pdb move vc140.pdb $(MSCBIN)\. 
-	copy $(MSCBIN)\*.dll lib\.
-	copy $(MSCBIN)\*.lib lib\.
+	copy $(MSCBIN)\libminiscript.dll lib\.
+	copy $(MSCBIN)\libminiscript.lib lib\.
 
 	mkdir bin
 	mkdir bin\miniscript

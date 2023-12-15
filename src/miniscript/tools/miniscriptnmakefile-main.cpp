@@ -61,13 +61,16 @@ int main(int argc, char** argv)
 	Console::println(Version::getCopyright());
 	Console::println();
 
-	if (argc != 3) {
-		Console::println("Usage: miniscriptnmakefile source_pathname makefile_filename");
+	//
+	if ((argc != 3 && argc != 4) || (argc == 4 && string(argv[1]) != "--library")) {
+		Console::println("Usage: miniscriptnmakefile [--library] source_pathname makefile_filename");
 		exit(EXIT_FAILURE);
 	}
 
-	auto pathToMakefile = string(argv[2]);
-	auto pathToSource = string(argv[1]);
+	//
+	auto library = argc == 4 && string(argv[1]) == "--library";
+	auto pathToSource = string(argv[1 + (library == true?1:0)]);
+	auto pathToMakefile = string(argv[2 + (library == true?1:0)]);
 
 	try {
 		Console::println("Scanning source files");
@@ -79,35 +82,44 @@ int main(int argc, char** argv)
 		string sourceFilesVariable = "\\\n";
 		for (const auto& file: sourceFiles) sourceFilesVariable+= "\t" + file + "\\\n";
 		sourceFilesVariable+= "\n";
-
 		//
-		string mainTargets;
-		for (const auto& file: mainSourceFiles) {
-			if (mainTargets.empty() == false) mainTargets+= " ";
-			mainTargets+= StringTools::substring(file, file.rfind('/') + 1, file.find("-main.cpp"));
+		string makefileSource;
+		//
+		if (library == true) {
+			Console::println("Generating Makefile");
+			//
+			makefileSource = FileSystem::getContentAsString("./resources/templates/makefiles", "Library-Makefile.nmake");
+			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
+			makefileSource+= "\n";
+		} else {
+			//
+			string mainTargets;
+			for (const auto& file: mainSourceFiles) {
+				if (mainTargets.empty() == false) mainTargets+= " ";
+				mainTargets+= StringTools::substring(file, file.rfind('/') + 1, file.find("-main.cpp"));
+			}
+			//
+			Console::println("Generating Makefile");
+			//
+			makefileSource = FileSystem::getContentAsString("./resources/templates/makefiles", "Makefile.nmake");
+			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
+			makefileSource = StringTools::replace(makefileSource, "{$main-targets}", mainTargets);
+			makefileSource+= "\n";
+
+			//
+			for (const auto& file: mainSourceFiles) {
+				auto makefileMainSource = makefileMainSourceTemplate;
+				auto mainTarget = StringTools::substring(file, file.rfind('/') + 1, file.find("-main.cpp"));
+				auto mainTargetSource = file;
+				auto mainTargetExecutable = mainTarget + ".exe";
+				makefileMainSource = StringTools::replace(makefileMainSource, "{$main-target}", mainTarget);
+				makefileMainSource = StringTools::replace(makefileMainSource, "{$main-target-source}", mainTargetSource);
+				makefileMainSource = StringTools::replace(makefileMainSource, "{$main-target-executable}", mainTargetExecutable);
+				makefileSource+= makefileMainSource + "\n";
+			}
 		}
-
-		Console::println("Generating Makefile");
-
-		//
-		auto makefileSource = FileSystem::getContentAsString("./resources/templates/makefiles", "Makefile.nmake");
-		auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/templates/makefiles", "Makefile.nmake.main");
-		makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
-		makefileSource = StringTools::replace(makefileSource, "{$main-targets}", mainTargets);
-		makefileSource+= "\n";
-
-		//
-		for (const auto& file: mainSourceFiles) {
-			auto makefileMainSource = makefileMainSourceTemplate;
-			auto mainTarget = StringTools::substring(file, file.rfind('/') + 1, file.find("-main.cpp"));
-			auto mainTargetSource = file;
-			auto mainTargetExecutable = mainTarget + ".exe";
-			makefileMainSource = StringTools::replace(makefileMainSource, "{$main-target}", mainTarget);
-			makefileMainSource = StringTools::replace(makefileMainSource, "{$main-target-source}", mainTargetSource);
-			makefileMainSource = StringTools::replace(makefileMainSource, "{$main-target-executable}", mainTargetExecutable);
-			makefileSource+= makefileMainSource + "\n";
-		}
-
 		//
 		FileSystem::setContentFromString(FileSystem::getPathName(pathToMakefile), FileSystem::getFileName(pathToMakefile), makefileSource);
 	} catch (Exception& exception) {

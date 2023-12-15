@@ -14,23 +14,27 @@ LD_FLAGS =
 MAIN_LDFLAGS = \
 	/LIBPATH libminiscript.lib
 
-FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi /D GLFW_DLL
+FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi
 # /NODEFAULTLIB:msvcrt
 
 SRCS = {$source-files}
 
 all: init compile init-mains {$main-targets} clean
 
+mains: all
+
 init:
 	mkdir $(OBJ) 
 
 init-mains:
+	del /S /Q $(BIN) >nul 2>&1
+	if exist $(BIN) rmdir $(BIN)
 	mkdir $(BIN)
 
 compile: $(SRCS)
-	cl /D TDME2_DLL_IMPORT /Fo$(OBJ)/ /c $(FLAGS) $(INCLUDES) $**
+	cl /D MINISCRIPT_DLL_IMPORT /Fo$(OBJ)/ /c $(FLAGS) $(INCLUDES) $**
 
 clean: 
 	del /S /Q $(OBJ) >nul 2>&1
-	rmdir $(OBJ)
+	if exist $(OBJ) rmdir $(OBJ)
 	

@@ -17,7 +17,6 @@ else
 	LIB_EXT = .so
 endif
 LIB := lib$(NAME)$(LIB_EXT)
-MAIN_LDFLAGS = -L $(LIB_DIR) -l $(NAME)
 
 #
 CPPVERSION = -std=c++2a
@@ -30,7 +29,6 @@ LIBS_LDFLAGS := -Llib -lminiscript
 # set platform specific flags
 ifeq ($(OS), Darwin)
 	# MacOSX
-	
 else ifeq ($(OS), FreeBSD)
 	# FreeBSD
 	INCLUDES := $(INCLUDES) -I/usr/local/include
@@ -46,6 +44,7 @@ else ifeq ($(OS), Haiku)
 else ifeq ($(OS), Linux)
 	# Linux
 else
+	# Windows/MINGW
 	INCLUDES := $(INCLUDES) -I/mingw64/include
 endif
 
