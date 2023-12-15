@@ -16,7 +16,7 @@ using miniscript::miniscript::Context;
 using miniscript::miniscript::MiniScript;
 using miniscript::utilities::Console;
 
-Library::Library(_Context* context) {
+Library::Library(Context* context) {
 	this->context = context;
 }
 
