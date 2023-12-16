@@ -46,7 +46,6 @@ public:
 	 * @param miniScript MiniScript script instance
 	 * @param descriptions descriptions
 	 * @param descriptionPrefix desscription prefix
-	 * @param categories categories
 	 * @param allClassMethods all class methods
 	 * @param omitMiniScript omit MiniScript script instance
 	 * @return documentation
@@ -57,7 +56,6 @@ public:
 		MiniScript* miniScript,
 		Properties& descriptions,
 		const string& descriptionPrefix,
-		unordered_set<string>& categories,
 		const set<string>& allClassMethods,
 		MiniScript* omitMiniScript = nullptr
 	);

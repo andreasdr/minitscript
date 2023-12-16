@@ -153,7 +153,7 @@ const string Documentation::generateClassesDocumentation(const string& heading, 
 	return result;
 }
 
-const string Documentation::generateMethodsDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, unordered_set<string>& categories, const set<string>& allClassMethods, MiniScript* omitMiniScript) {
+const string Documentation::generateMethodsDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, const set<string>& allClassMethods, MiniScript* omitMiniScript) {
 	auto scriptMethods = miniScript->getMethods();
 	map<string, vector<pair<string, string>>> methodMarkupByCategory;
 	for (auto scriptMethod: scriptMethods) {
@@ -191,6 +191,7 @@ const string Documentation::generateMethodsDocumentation(const string& heading, 
 		methodMarkupByCategory[category].push_back(make_pair(scriptMethod->getMethodName(), result));
 	}
 	// collect categories
+	unordered_set<string> categories;
 	for (const auto& [category, methodMarkup]: methodMarkupByCategory) {
 		categories.insert(category);
 	}

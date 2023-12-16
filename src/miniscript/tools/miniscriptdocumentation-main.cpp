@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 	// classes
 	auto classesDocumentation = Documentation::generateClassesDocumentation("MiniScript Classes", 6, miniScript.get(), descriptions, "miniscript.basemethod.", allClassMethods);
 	// base methods
-	auto methodsDocumentation = Documentation::generateMethodsDocumentation("MiniScript Methods", 7, miniScript.get(), descriptions, "miniscript.basemethod.", baseMethodCategories, allClassMethods);
+	auto methodsDocumentation = Documentation::generateMethodsDocumentation("MiniScript Methods", 7, miniScript.get(), descriptions, "miniscript.basemethod.", allClassMethods);
 	// base methods
 	auto operatorsDocumentation = Documentation::generateOperatorsDocumentation("MiniScript Operators", 10, miniScript.get());
 
