@@ -27,8 +27,8 @@ using miniscript::miniscript::Documentation;
 using miniscript::miniscript::MiniScript;
 using miniscript::utilities::StringTools;
 
-const string Documentation::generateClassesDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, set<string>& allClassMethods) {
-	auto scriptMethods = miniScript->getMethods();
+const set<string> Documentation::getAllClassMethods(MiniScript* miniScript) {
+	set<string> allClassMethods;
 	//
 	for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); ; typeIdx++) {
 		const auto& className = MiniScript::Variable::getTypeAsString(static_cast<MiniScript::VariableType>(typeIdx));
@@ -36,7 +36,7 @@ const string Documentation::generateClassesDocumentation(const string& heading, 
 		allClassMethods.insert(className);
 	}
 	//
-	for (auto scriptMethod: scriptMethods) {
+	for (auto scriptMethod: miniScript->getMethods()) {
 		string className;
 		if (scriptMethod->getMethodName().rfind("::") != string::npos) className = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind("::"));
 		if (className.empty() == true && allClassMethods.find(scriptMethod->getMethodName()) == allClassMethods.end()) continue;
@@ -52,7 +52,7 @@ const string Documentation::generateClassesDocumentation(const string& heading, 
 		}
 		if (_class == false) continue;
 		//
-		string method =
+		auto method =
 			StringTools::substring(
 				scriptMethod->getMethodName(),
 				className.empty() == true?0:className.size() + 2,
@@ -65,6 +65,12 @@ const string Documentation::generateClassesDocumentation(const string& heading, 
 		//
 		allClassMethods.insert(scriptMethod->getMethodName());
 	}
+	//
+	return allClassMethods;
+}
+
+const string Documentation::generateClassesDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, const set<string>& allClassMethods) {
+	auto scriptMethods = miniScript->getMethods();
 	//
 	map<string, array<map<string, string>, 2>> methodMarkupByClassName;
 	for (auto scriptMethod: scriptMethods) {

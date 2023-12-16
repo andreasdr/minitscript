@@ -21,6 +21,13 @@ using miniscript::utilities::Properties;
 class miniscript::miniscript::Documentation {
 public:
 	/**
+	 * Get all class method names
+	 * @param miniScript MiniScript script instance
+	 * @return all class method names
+	 */
+	static const set<string> getAllClassMethods(MiniScript* miniScript);
+
+	/**
 	 * Generate classes documentation
 	 * @param heading heading
 	 * @param mainHeadingIdx main heading index
@@ -36,7 +43,7 @@ public:
 		MiniScript* miniScript,
 		Properties& descriptions,
 		const string& descriptionPrefix,
-		set<string>& allClassMethods
+		const set<string>& allClassMethods
 	);
 
 	/**

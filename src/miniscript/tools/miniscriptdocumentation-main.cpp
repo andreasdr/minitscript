@@ -57,8 +57,8 @@ int main(int argc, char** argv)
 
 	//
 	unordered_set<string> baseMethodCategories;
-	set<string> allClassMethods;
-
+	//
+	auto allClassMethods = Documentation::getAllClassMethods(miniScript.get());
 	// classes
 	auto classesDocumentation = Documentation::generateClassesDocumentation("MiniScript Classes", 6, miniScript.get(), descriptions, "miniscript.basemethod.", allClassMethods);
 	// base methods
