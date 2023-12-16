@@ -21,6 +21,25 @@ using miniscript::utilities::Properties;
 class miniscript::miniscript::Documentation {
 public:
 	/**
+	 * Generate classes documentation
+	 * @param heading heading
+	 * @param mainHeadingIdx main heading index
+	 * @param miniScript MiniScript script instance
+	 * @param descriptions descriptions
+	 * @param descriptionPrefix description prefix
+	 * @param allClassMethods all class methods
+	 * @return documentation
+	 */
+	static const string generateClassesDocumentation(
+		const string& heading,
+		int mainHeadingIdx,
+		MiniScript* miniScript,
+		Properties& descriptions,
+		const string& descriptionPrefix,
+		set<string>& allClassMethods
+	);
+
+	/**
 	 * Generate methods documentation
 	 * @param heading heading
 	 * @param mainHeadingIdx main heading index
@@ -41,25 +60,6 @@ public:
 		unordered_set<string>& categories,
 		const set<string>& allClassMethods,
 		MiniScript* omitMiniScript = nullptr
-	);
-
-	/**
-	 * Generate classes documentation
-	 * @param heading heading
-	 * @param mainHeadingIdx main heading index
-	 * @param miniScript MiniScript script instance
-	 * @param descriptions descriptions
-	 * @param descriptionPrefix description prefix
-	 * @param allClassMethods all class methods
-	 * @return documentation
-	 */
-	static const string generateClassesDocumentation(
-		const string& heading,
-		int mainHeadingIdx,
-		MiniScript* miniScript,
-		Properties& descriptions,
-		const string& descriptionPrefix,
-		set<string>& allClassMethods
 	);
 
 	/**

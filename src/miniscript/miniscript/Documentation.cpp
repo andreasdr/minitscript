@@ -27,84 +27,6 @@ using miniscript::miniscript::Documentation;
 using miniscript::miniscript::MiniScript;
 using miniscript::utilities::StringTools;
 
-const string Documentation::generateMethodsDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, unordered_set<string>& categories, const set<string>& allClassMethods, MiniScript* omitMiniScript) {
-	auto scriptMethods = miniScript->getMethods();
-	map<string, vector<pair<string, string>>> methodMarkupByCategory;
-	for (auto scriptMethod: scriptMethods) {
-		if (omitMiniScript != nullptr && omitMiniScript->hasMethod(scriptMethod->getMethodName()) == true) continue;
-		if (allClassMethods.find(scriptMethod->getMethodName()) != allClassMethods.end()) continue;
-		string result;
-		string category;
-		if (scriptMethod->getMethodName().rfind('.') != string::npos) category = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind('.'));
-		string description;
-		description+= "| ";
-		description+= descriptions.get(descriptionPrefix + scriptMethod->getMethodName(), "Not documented");
-		if (scriptMethod->getContextFunctions().empty() == false) {
-			string contextFunctions;
-			for (const auto& contextFunction: scriptMethod->getContextFunctions()) {
-				if (contextFunctions.empty() == false) contextFunctions+= ", ";
-				contextFunctions+= contextFunction + "()";
-			}
-			description+= " - <i>available in " + contextFunctions + "</i>";
-		}
-		while (description.size() < 99) description+= " ";
-		description+= "|";
-		result+= description + "\n";
-		string method;
-		method+= "| <sub>";
-		method+= scriptMethod->getMethodName();
-		method+= "(";
-		method+= scriptMethod->getArgumentsInformation();
-		method+= "): ";
-		method+= MiniScript::Variable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
-		method+= "</sub>";
-		while (method.size() < 99) method+= " ";
-		method+= "|";
-		method+= "\n";
-		result+= method;
-		methodMarkupByCategory[category].push_back(make_pair(scriptMethod->getMethodName(), result));
-	}
-	// collect categories
-	for (const auto& [category, methodMarkup]: methodMarkupByCategory) {
-		categories.insert(category);
-	}
-	//
-	map<string, vector<string>> methodMarkupByCategory2;
-	for (const auto& [category, methods]: methodMarkupByCategory) {
-		if (category.empty() == true) continue;
-		for (const auto& [methodName, methodMarkup]: methods) {
-			methodMarkupByCategory2[category].push_back(methodMarkup);
-		}
-	}
-	{
-		auto emptyCategoryMethodsIt = methodMarkupByCategory.find(string());
-		if (emptyCategoryMethodsIt != methodMarkupByCategory.end()) {
-			const auto& methods = emptyCategoryMethodsIt->second;
-			for (const auto& [methodName, methodMarkup]: methods) {
-				if (categories.contains(methodName) == true) {
-					methodMarkupByCategory2[methodName].insert(methodMarkupByCategory2[methodName].begin(), methodMarkup);
-				} else {
-					methodMarkupByCategory2[string()].push_back(methodMarkup);
-				}
-			}
-		}
-	}
-	//
-	string result;
-	result+= "# " + to_string(mainHeadingIdx) + ". " + heading;
-	auto categoryIdx = 1;
-	for (const auto& [category, methodsMarkup]: methodMarkupByCategory2) {
-		auto categoryName = descriptions.get(descriptionPrefix + "group." + (category.empty() == true?"uncategorized":category), "Not documented");
-		result+= "\n";
-		result+= "## " + to_string(mainHeadingIdx) + "." + to_string(categoryIdx++) + ". " + categoryName + "\n";
-		result+= "\n";
-		result+= string() + "| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |" + "\n";
-		result+= string() + "|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" + "\n";
-		for (const auto& methodMarkup: methodsMarkup) result+= methodMarkup;
-	}
-	return result;
-}
-
 const string Documentation::generateClassesDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, set<string>& allClassMethods) {
 	auto scriptMethods = miniScript->getMethods();
 	//
@@ -228,6 +150,84 @@ const string Documentation::generateClassesDocumentation(const string& heading, 
 		}
 	}
 	//
+	return result;
+}
+
+const string Documentation::generateMethodsDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, unordered_set<string>& categories, const set<string>& allClassMethods, MiniScript* omitMiniScript) {
+	auto scriptMethods = miniScript->getMethods();
+	map<string, vector<pair<string, string>>> methodMarkupByCategory;
+	for (auto scriptMethod: scriptMethods) {
+		if (omitMiniScript != nullptr && omitMiniScript->hasMethod(scriptMethod->getMethodName()) == true) continue;
+		if (allClassMethods.find(scriptMethod->getMethodName()) != allClassMethods.end()) continue;
+		string result;
+		string category;
+		if (scriptMethod->getMethodName().rfind('.') != string::npos) category = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind('.'));
+		string description;
+		description+= "| ";
+		description+= descriptions.get(descriptionPrefix + scriptMethod->getMethodName(), "Not documented");
+		if (scriptMethod->getContextFunctions().empty() == false) {
+			string contextFunctions;
+			for (const auto& contextFunction: scriptMethod->getContextFunctions()) {
+				if (contextFunctions.empty() == false) contextFunctions+= ", ";
+				contextFunctions+= contextFunction + "()";
+			}
+			description+= " - <i>available in " + contextFunctions + "</i>";
+		}
+		while (description.size() < 99) description+= " ";
+		description+= "|";
+		result+= description + "\n";
+		string method;
+		method+= "| <sub>";
+		method+= scriptMethod->getMethodName();
+		method+= "(";
+		method+= scriptMethod->getArgumentsInformation();
+		method+= "): ";
+		method+= MiniScript::Variable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
+		method+= "</sub>";
+		while (method.size() < 99) method+= " ";
+		method+= "|";
+		method+= "\n";
+		result+= method;
+		methodMarkupByCategory[category].push_back(make_pair(scriptMethod->getMethodName(), result));
+	}
+	// collect categories
+	for (const auto& [category, methodMarkup]: methodMarkupByCategory) {
+		categories.insert(category);
+	}
+	//
+	map<string, vector<string>> methodMarkupByCategory2;
+	for (const auto& [category, methods]: methodMarkupByCategory) {
+		if (category.empty() == true) continue;
+		for (const auto& [methodName, methodMarkup]: methods) {
+			methodMarkupByCategory2[category].push_back(methodMarkup);
+		}
+	}
+	{
+		auto emptyCategoryMethodsIt = methodMarkupByCategory.find(string());
+		if (emptyCategoryMethodsIt != methodMarkupByCategory.end()) {
+			const auto& methods = emptyCategoryMethodsIt->second;
+			for (const auto& [methodName, methodMarkup]: methods) {
+				if (categories.contains(methodName) == true) {
+					methodMarkupByCategory2[methodName].insert(methodMarkupByCategory2[methodName].begin(), methodMarkup);
+				} else {
+					methodMarkupByCategory2[string()].push_back(methodMarkup);
+				}
+			}
+		}
+	}
+	//
+	string result;
+	result+= "# " + to_string(mainHeadingIdx) + ". " + heading;
+	auto categoryIdx = 1;
+	for (const auto& [category, methodsMarkup]: methodMarkupByCategory2) {
+		auto categoryName = descriptions.get(descriptionPrefix + "group." + (category.empty() == true?"uncategorized":category), "Not documented");
+		result+= "\n";
+		result+= "## " + to_string(mainHeadingIdx) + "." + to_string(categoryIdx++) + ". " + categoryName + "\n";
+		result+= "\n";
+		result+= string() + "| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |" + "\n";
+		result+= string() + "|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|" + "\n";
+		for (const auto& methodMarkup: methodsMarkup) result+= methodMarkup;
+	}
 	return result;
 }
 
