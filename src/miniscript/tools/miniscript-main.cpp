@@ -138,7 +138,7 @@ int main(int argc, char** argv)
 			if (verbose == true) Console::println(script->getInformation());
 			//
 			if (script->isValid() == false) {
-				Console::println("Script not valid. Exiting");
+				Console::println(pathToScript + ": Script not valid. Exiting!");
 			} else {
 				// TODO: we need a MiniScript startup routine
 				Network::initialize();

@@ -20,7 +20,15 @@ using miniscript::miniscript::MiniScript;
  */
 class miniscript::miniscript::Transpiler {
 public:
+	/**
+	 * Transpile MiniScript script instance
+	 * @param miniScript MiniScript script instance
+	 * @param transpilationFileName transpilation file name
+	 * @param miniScriptExtensionFileNames MiniScript extension file names
+	 */
+	static void transpile(MiniScript* miniScript, const string& transpilationFileName, const vector<string>& miniScriptExtensionFileNames);
 
+private:
 	/**
 	 * Get all classes method names
 	 * @param miniScript MiniScript instance

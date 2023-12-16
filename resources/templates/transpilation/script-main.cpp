@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 	string scriptFile = "{$script}";
 	script->parseScript(FileSystem::getPathName(scriptFile), FileSystem::getFileName(scriptFile));
 	if (script->isValid() == false) {
-		Console::println("Script not valid. Exiting");
+		Console::println("Script not valid. Exiting!");
 		return EXIT_FAILURE;
 	}
 	if (script->isNative() == false) {

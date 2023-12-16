@@ -3202,6 +3202,13 @@ public:
 	}
 
 	/**
+	 * @return script path name
+	 */
+	inline const string& getScriptPathName() {
+		return scriptPathName;
+	}
+
+	/**
 	 * @return script file name
 	 */
 	inline const string& getScriptFileName() {
