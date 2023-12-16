@@ -11,7 +11,6 @@
 #include <miniscript/math/Math.h>
 #include <miniscript/os/filesystem/FileSystem.h>
 #include <miniscript/miniscript/MiniScript.h>
-#include <miniscript/miniscript/Transpiler.h>
 #include <miniscript/miniscript/Version.h>
 #include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/Console.h>
