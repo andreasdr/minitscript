@@ -2,20 +2,21 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
 
 using std::string;
-using std::to_string;
 using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 
 using miniscript::miniscript::MiniScript;
 
 /**
- * MiniScript transpiler tool set
+ * MiniScript transpiler
  * @author Andreas Drewke
  */
 class miniscript::miniscript::Transpiler {
