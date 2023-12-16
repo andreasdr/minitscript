@@ -64,7 +64,6 @@ namespace tools {
  * @author Andreas Drewke
  */
 class miniscript::miniscript::MiniScript {
-	friend class ::miniscript::tools::TranspilerTool;
 	friend class BaseMethods;
 	friend class JSONMethods;
 	friend class ScriptMethods;
