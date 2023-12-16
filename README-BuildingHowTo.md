@@ -246,6 +246,7 @@ $ ./bin/miniscript/tools/miniscript resources/tests/base-test.tscript
 
 - MiniScript, see [README.md](./README.md)
 - MiniScript How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
+- The Mindty Kollektiv [Discord Server](https://discord.gg/Na4ACaFD)
 
 ## 3.2. Additional notes
 
