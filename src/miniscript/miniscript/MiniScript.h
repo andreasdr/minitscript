@@ -53,12 +53,6 @@ using _UTF8CharacterIterator = miniscript::utilities::UTF8CharacterIterator;
 using _Context = miniscript::miniscript::Context;
 using _Library = miniscript::miniscript::Library;
 
-namespace miniscript {
-namespace tools {
-	class TranspilerTool;
-}
-}
-
 /**
  * Miniscript
  * @author Andreas Drewke
