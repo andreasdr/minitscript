@@ -69,6 +69,20 @@ const set<string> Documentation::getAllClassMethods(MiniScript* miniScript) {
 	return allClassMethods;
 }
 
+const set<string> Documentation::getMethodsCategories(MiniScript* miniScript, const set<string>& allClassMethods, MiniScript* omitMiniScript) {
+	set<string> categories;
+	auto scriptMethods = miniScript->getMethods();
+	for (auto scriptMethod: scriptMethods) {
+		if (omitMiniScript != nullptr && omitMiniScript->hasMethod(scriptMethod->getMethodName()) == true) continue;
+		if (allClassMethods.find(scriptMethod->getMethodName()) != allClassMethods.end()) continue;
+		string result;
+		string category;
+		if (scriptMethod->getMethodName().rfind('.') != string::npos) category = StringTools::substring(scriptMethod->getMethodName(), 0, scriptMethod->getMethodName().rfind('.'));
+		categories.insert(category);
+	}
+	return categories;
+}
+
 const string Documentation::generateClassesDocumentation(const string& heading, int mainHeadingIdx, MiniScript* miniScript, Properties& descriptions, const string& descriptionPrefix, const set<string>& allClassMethods) {
 	auto scriptMethods = miniScript->getMethods();
 	//

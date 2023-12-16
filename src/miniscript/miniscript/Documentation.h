@@ -28,6 +28,18 @@ public:
 	static const set<string> getAllClassMethods(MiniScript* miniScript);
 
 	/**
+	 * Generate methods categories
+	 * @param miniScript MiniScript script instance
+	 * @param allClassMethods all class methods
+	 * @param omitMiniScript omit MiniScript script instance
+	 * @return methods categories
+	 */
+	static const set<string> getMethodsCategories(
+		MiniScript* miniScript,
+		const set<string>& allClassMethods,
+		MiniScript* omitMiniScript = nullptr);
+
+	/**
 	 * Generate classes documentation
 	 * @param heading heading
 	 * @param mainHeadingIdx main heading index
