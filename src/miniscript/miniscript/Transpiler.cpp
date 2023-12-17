@@ -44,7 +44,7 @@ using miniscript::utilities::StringTools;
 
 void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFileName, const vector<string>& miniScriptExtensionFileNames) {
 	auto scriptFileName = miniScript->getScriptPathName() + "/" + miniScript->getScriptFileName();
-	Console::println("Processing script: " + scriptFileName);
+	Console::println(scriptFileName + ": Processing script");
 	//
 	auto compare_includes = [&](const string& lhs, const string& rhs) -> bool {
 		if (StringTools::startsWith(lhs, "#include <tdme/tdme.h>") == true) return true; else
@@ -129,7 +129,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				auto bracketCount = 0;
 				string className;
 				if (StringTools::firstIndexOf(StringTools::substring(trimmedLine, 14), "new") == string::npos) {
-					Console::println("src/miniscript/utilities/MiniScript.cpp: registerMethod @ " + to_string(i) + ": '" + trimmedLine + "': unable to determine class name");
+					Console::println(transpilationUnit + ": registerMethod @ " + to_string(i) + ": '" + trimmedLine + "': unable to determine class name");
 				} else {
 					auto classNameStartIdx = trimmedLine.find("registerMethod") + 14 + 5;
 					for (auto j = classNameStartIdx; j < trimmedLine.size(); j++) {
@@ -540,15 +540,15 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		//
 		vector<string> miniScriptCPP;
 		vector<string> generatedMiniScriptCPP;
-		auto miniscriptTranspilationCPPFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".cpp";
-		if (FileSystem::exists(miniscriptTranspilationCPPFileName) == false) {
+		auto transpilationCPPFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".cpp";
+		if (FileSystem::exists(transpilationCPPFileName) == false) {
 			auto miniScriptCPPString = FileSystem::getContentAsString("./resources/templates/transpilation", "Transpilation.cpp");
 			miniScriptCPPString = StringTools::replace(miniScriptCPPString, "{$script}", scriptFileName);
 			miniScriptCPPString = StringTools::replace(miniScriptCPPString, "{$class-name}", miniScriptClassName);
 			miniScriptCPPString = StringTools::replace(miniScriptCPPString, "{$base-class}", miniScript->getBaseClass());
 			miniScriptCPP = StringTools::tokenize(miniScriptCPPString, "\n", true);
 		} else {
-			FileSystem::getContentAsStringArray(FileSystem::getPathName(miniscriptTranspilationCPPFileName), FileSystem::getFileName(miniscriptTranspilationCPPFileName), miniScriptCPP);
+			FileSystem::getContentAsStringArray(FileSystem::getPathName(transpilationCPPFileName), FileSystem::getFileName(transpilationCPPFileName), miniScriptCPP);
 		}
 		//
 		if (injectedGeneratedCode == true) {
@@ -608,12 +608,12 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		//
 		if (injectedGeneratedCode == true) {
 			FileSystem::setContentFromStringArray(
-				FileSystem::getPathName(miniscriptTranspilationCPPFileName),
-				FileSystem::getFileName(miniscriptTranspilationCPPFileName),
+				FileSystem::getPathName(transpilationCPPFileName),
+				FileSystem::getFileName(transpilationCPPFileName),
 				generatedMiniScriptCPP
 			);
 			//
-			Console::println(scriptFileName + ": Injected generated C++ code in file " + miniscriptTranspilationCPPFileName + ". Dont forget to rebuild your sources.");
+			Console::println(scriptFileName + ": Injected generated C++ code in file " + transpilationCPPFileName + ". Dont forget to rebuild your sources.");
 		}
 	}
 
@@ -622,15 +622,15 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	{
 		vector<string> miniScriptClassHeader;
 		vector<string> generatedMiniScriptClassHeader;
-		auto miniscriptTranspilationHeaderFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".h";
-		if (FileSystem::exists(miniscriptTranspilationHeaderFileName) == false) {
+		auto transpilationHeaderFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".h";
+		if (FileSystem::exists(transpilationHeaderFileName) == false) {
 			auto miniScriptHeaderString = FileSystem::getContentAsString("./resources/templates/transpilation", "Transpilation.h");
 			miniScriptHeaderString = StringTools::replace(miniScriptHeaderString, "{$script}", scriptFileName);
 			miniScriptHeaderString = StringTools::replace(miniScriptHeaderString, "{$class-name}", miniScriptClassName);
 			miniScriptHeaderString = StringTools::replace(miniScriptHeaderString, "{$base-class}", miniScript->getBaseClass());
 			miniScriptClassHeader = StringTools::tokenize(miniScriptHeaderString, "\n", true);
 		} else {
-			FileSystem::getContentAsStringArray(FileSystem::getPathName(miniscriptTranspilationHeaderFileName), FileSystem::getFileName(miniscriptTranspilationHeaderFileName), miniScriptClassHeader);
+			FileSystem::getContentAsStringArray(FileSystem::getPathName(transpilationHeaderFileName), FileSystem::getFileName(transpilationHeaderFileName), miniScriptClassHeader);
 		}
 		//
 		auto injectedGeneratedCode = replace(
@@ -646,12 +646,126 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		} else {
 			//
 			FileSystem::setContentFromStringArray(
-				FileSystem::getPathName(miniscriptTranspilationHeaderFileName),
-				FileSystem::getFileName(miniscriptTranspilationHeaderFileName),
+				FileSystem::getPathName(transpilationHeaderFileName),
+				FileSystem::getFileName(transpilationHeaderFileName),
 				generatedMiniScriptClassHeader
 			);
 			//
-			Console::println(scriptFileName + ": Injected generated C++ code in header file " + miniscriptTranspilationHeaderFileName + ". Dont forget to rebuild your sources.");
+			Console::println(scriptFileName + ": Injected generated C++ code in header file " + transpilationHeaderFileName + ". Dont forget to rebuild your sources.");
+		}
+	}
+}
+
+void Transpiler::untranspile(const string& scriptFileName, const string& transpilationFileName) {
+	Console::println(scriptFileName + ": Processing script");
+	//
+	auto replace = [&](const vector<string> input, const string& startTag, const string& endTag, const string& replacement, vector<string>& output) -> bool {
+		auto reject = false;
+		auto replaceSuccess = false;
+		for (auto i = 0; i < input.size(); i++) {
+			const auto& line = input[i];
+			auto trimmedLine = StringTools::trim(line);
+			if (StringTools::startsWith(trimmedLine, "//") == true) {
+				if (reject == false) output.push_back(line);
+				continue;
+			}
+			if (trimmedLine == startTag) {
+				reject = true;
+				output.push_back(line);
+			} else
+			if (trimmedLine == endTag) {
+				reject = false;
+				replaceSuccess = true;
+				output.push_back(replacement);
+				output.push_back(line);
+			} else {
+				if (reject == false) output.push_back(line);
+			}
+		}
+		//
+		return replaceSuccess;
+	};
+	// de-inject C++ definition code
+	{
+		vector<string> miniScriptClass;
+		vector<string> miniScriptClassNew;
+		auto transpilationCPPFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".cpp";
+		FileSystem::getContentAsStringArray(FileSystem::getPathName(transpilationCPPFileName), FileSystem::getFileName(transpilationCPPFileName), miniScriptClass);
+		//
+		auto injectedGeneratedCode = false;
+		{
+			injectedGeneratedCode = replace(
+				miniScriptClass,
+				"/*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_START__*/",
+				"/*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_END__*/",
+				string(),
+				miniScriptClassNew
+			);
+			miniScriptClass = miniScriptClassNew;
+			miniScriptClassNew.clear();
+		}
+		if (injectedGeneratedCode == true) {
+			injectedGeneratedCode = replace(
+				miniScriptClass,
+				"/*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_USINGS_START__*/",
+				"/*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_USINGS_END__*/",
+				string(),
+				miniScriptClassNew
+			);
+			miniScriptClass = miniScriptClassNew;
+			miniScriptClassNew.clear();
+		}
+		if (injectedGeneratedCode == true) {
+			injectedGeneratedCode = replace(
+				miniScriptClass,
+				"/*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DEFINITIONS_START__*/",
+				"/*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DEFINITIONS_END__*/",
+				string(),
+				miniScriptClassNew
+			);
+		}
+		//
+		if (injectedGeneratedCode == false) {
+			Console::println(scriptFileName + ": Could not remove generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DEFINITIONS_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DEFINITIONS_END__*/ markers in file " + transpilationFileName + "?");
+		} else {
+			//
+			FileSystem::setContentFromStringArray(
+				FileSystem::getPathName(transpilationCPPFileName),
+				FileSystem::getFileName(transpilationCPPFileName),
+				miniScriptClassNew
+			);
+			//
+			Console::println(scriptFileName + ": Removed generated C++ code in file " + transpilationCPPFileName + ". Dont forget to rebuild your sources.");
+		}
+	}
+	//
+	// inject C++ declaration code / header
+	{
+		vector<string> miniScriptClassHeader;
+		vector<string> miniScriptClassHeaderNew;
+		auto transpilationHeaderFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".h";
+		FileSystem::getContentAsStringArray(FileSystem::getPathName(transpilationHeaderFileName), FileSystem::getFileName(transpilationHeaderFileName), miniScriptClassHeader);
+		//
+		auto injectedGeneratedCode = false;
+		injectedGeneratedCode = replace(
+			miniScriptClassHeader,
+			"/*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DECLARATIONS_START__*/",
+			"/*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DECLARATIONS_END__*/",
+			string(),
+			miniScriptClassHeaderNew
+		);
+		//
+		if (injectedGeneratedCode == false) {
+			Console::println(scriptFileName + ": Could not remove generated C++ code, are you missing the /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DECLARATIONS_START__*/ and /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_DECLARATIONS_END__*/ markers in file " + transpilationFileName + "?");
+		} else {
+			//
+			FileSystem::setContentFromStringArray(
+				FileSystem::getPathName(transpilationHeaderFileName),
+				FileSystem::getFileName(transpilationHeaderFileName),
+				miniScriptClassHeaderNew
+			);
+			//
+			Console::println(scriptFileName + ": Removed generated C++ code in header file " + transpilationHeaderFileName + ". Dont forget to rebuild your sources.");
 		}
 	}
 }
@@ -730,7 +844,7 @@ void Transpiler::gatherMethodCode(
 	}
 	// nope
 	if (classDefinitionLine == -1) {
-		Console::println("gatherMethodCode(): did not found '" + className + "' definition");
+		Console::println("Transpiler::gatherMethodCode(): did not found '" + className + "' definition");
 		return;
 	}
 	//
@@ -847,12 +961,12 @@ void Transpiler::gatherMethodCode(
 	//
 	auto methodCodeMapIt = methodCodeMap.find(methodName);
 	if (methodCodeMapIt != methodCodeMap.end()) {
-		Console::println("gatherMethodCode(): Not registering method with methodName: '" + methodName + "': method already registered");
+		Console::println("Transpiler::gatherMethodCode(): Not registering method with methodName: '" + methodName + "': method already registered");
 		return;
 	}
 
 	//
-	Console::println("gatherMethodCode(): registering method with methodName: '" + methodName + "'");
+	Console::println("Transpiler::gatherMethodCode(): registering method with methodName: '" + methodName + "'");
 
 	//
 	methodCodeMap[methodName] = executeMethodCode;
@@ -2110,7 +2224,7 @@ bool Transpiler::transpileScriptCondition(MiniScript* miniScript, string& genera
 	const auto& script = miniScript->getScripts()[scriptIdx];
 
 	//
-	Console::println("Transpiler::transpile(): transpiling code condition for condition = '" + script.condition + "', with name '" + script.name + "'");
+	Console::println("Transpiler::transpileScriptCondition(): transpiling code condition for condition = '" + script.condition + "', with name '" + script.name + "'");
 
 	//
 	auto statementIdx = MiniScript::STATEMENTIDX_FIRST;

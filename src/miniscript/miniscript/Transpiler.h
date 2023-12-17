@@ -29,6 +29,13 @@ public:
 	 */
 	static void transpile(MiniScript* miniScript, const string& transpilationFileName, const vector<string>& miniScriptExtensionFileNames);
 
+	/**
+	 * Untranspile
+	 * @param scriptFileName script file name
+	 * @param transpilationFileName transpilation file name
+	 */
+	static void untranspile(const string& scriptFileName, const string& transpilationFileName);
+
 private:
 	/**
 	 * Get all classes method names
