@@ -77,20 +77,9 @@ SRCS = \
 	src/miniscript/utilities/UTF8StringTools.cpp \
 	src/miniscript/utilities/UTF8StringTokenizer.cpp
 
-EXT_SRCS = \
-
-# workaround: ext-sha256.cpp was sha256.cpp, but miniscript also comes with SHA256.cpp,
-#	which collides on Windows as we dont have subfolders for ext objects
-EXT_SHA256_SRCS = \
-    ext/sha256/ext-sha256.cpp
-
-EXT_SRCS = \
-	$(EXT_SHA256_SRCS)
-
 all: \
 	init \
 	compile \
-	compile-ext \
 	link1 \
 	link2 \
 	miniscript \
@@ -110,9 +99,6 @@ init:
 	mkdir $(MSCOBJMAIN)
 
 compile: $(SRCS)
-	cl /Fo$(MSCOBJ)/ /c $(FLAGS) $(INCLUDES) $**
-
-compile-ext: $(EXT_SRCS)
 	cl /Fo$(MSCOBJ)/ /c $(FLAGS) $(INCLUDES) $**
 
 link1: $(MSCOBJ)/*.obj

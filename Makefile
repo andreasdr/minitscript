@@ -62,7 +62,6 @@ CFLAGS := -g $(OFLAGS) $(EXTRAFLAGS) -pipe -MMD -MP -DNDEBUG -fPIC
 CXXFLAGS := $(CFLAGS) $(CPPVERSION)
 
 SRC = src
-SHA256 = sha256
 
 SRCS = \
 	src/miniscript/miniscript/ApplicationMethods.cpp \
@@ -113,11 +112,6 @@ SRCS = \
 	src/miniscript/utilities/UTF8StringTools.cpp \
 	src/miniscript/utilities/UTF8StringTokenizer.cpp
 
-# workaround: ext-sha256.cpp was sha256.cpp, but miniscript also comes with SHA256.cpp,
-#	which collides on Windows as we dont have subfolders for ext objects
-EXT_SHA256_SRCS = \
-	ext/sha256/ext-sha256.cpp
-
 MAIN_SRCS = \
 	src/miniscript/tools/miniscript-main.cpp \
 	src/miniscript/tools/miniscriptdocumentation-main.cpp \
@@ -130,7 +124,6 @@ MAIN_SRCS = \
 
 MAINS = $(MAIN_SRCS:$(SRC)/%-main.cpp=$(BIN)/%)
 OBJS = $(SRCS:$(SRC)/%.cpp=$(OBJ)/%.o)
-EXT_SHA256_OBJS = $(EXT_SHA256_SRCS:ext/$(SHA256)/%.cpp=$(OBJ)/%.o)
 
 define cpp-command
 @mkdir -p $(dir $@);
@@ -142,10 +135,7 @@ $(LIB_DIR)/$(LIB): $(OBJS)
 $(OBJS):$(OBJ)/%.o: $(SRC)/%.cpp | print-opts
 	$(cpp-command)
 
-$(EXT_SHA256_OBJS):$(OBJ)/%.o: ext/$(SHA256)/%.cpp | print-opts
-	$(cpp-command)
-
-$(LIB_DIR)/$(LIB): $(OBJS) $(EXT_SHA256_OBJS)
+$(LIB_DIR)/$(LIB): $(OBJS)
 	@echo Creating shared library $@
 	@mkdir -p $(dir $@)
 	@rm -f $@
