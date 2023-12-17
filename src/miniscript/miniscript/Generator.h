@@ -1,11 +1,13 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/fwd-miniscript.h>
 
+using std::pair;
 using std::string;
 using std::vector;
 
@@ -29,4 +31,15 @@ public:
 		const string& mainURI,
 		bool useLibrary
 	);
+
+	/**
+	 * Generate library CPP file
+	 * @param scriptClassPairs script class pairs
+	 * @param libraryURI library URI
+	 */
+	static void generateLibrary(
+		const vector<pair<string, string>>& scriptClassPairs,
+		const string& libraryURI
+	);
+
 };

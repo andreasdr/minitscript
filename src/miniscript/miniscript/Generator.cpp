@@ -1,6 +1,7 @@
 #include <miniscript/miniscript/Generator.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <miniscript/miniscript.h>
@@ -16,6 +17,7 @@ using miniscript::utilities::Console;
 using miniscript::utilities::Exception;
 using miniscript::utilities::StringTools;
 
+using std::pair;
 using std::string;
 using std::vector;
 
@@ -46,3 +48,33 @@ void Generator::generateMain(
 	}
 }
 
+void Generator::generateLibrary(
+	const vector<pair<string, string>>& scriptClassPairs,
+	const string& libraryURI
+) {
+	string libraryCode;
+	libraryCode+= string() + "auto scriptURI = pathName + \"/\" + fileName;" + "\n";
+	string libraryIncludes;
+	for (const auto& scriptClassPair: scriptClassPairs) {
+		auto scriptURI = scriptClassPair.first;
+		auto className = scriptClassPair.second;
+		libraryIncludes+= string() + "#include \"" + className + ".h\"" + "\n";
+		libraryCode+= string() + "\t" + "if (scriptURI == \"" + scriptURI + "\") {" + "\n";
+		libraryCode+= string() + "\t\t" + "script = make_unique<" + className + ">();" + "\n";
+		libraryCode+= string() + "\t" + "}" + "\n";
+	}
+	libraryCode+= string() + "\t" + "else {" + "\n";
+	libraryCode+= string() + "\t\t" + "script = make_unique<MiniScript>();" + "\n";
+	libraryCode+= string() + "\t" + "}";
+
+	//
+	try {
+		Console::println("Generating library C++ file");
+		auto mainSource = FileSystem::getContentAsString("./resources/miniscript/templates/transpilation", "NativeLibrary.cpp");
+		mainSource = StringTools::replace(mainSource, "{$library-includes}", libraryIncludes);
+		mainSource = StringTools::replace(mainSource, "{$library-code}", libraryCode);
+		FileSystem::setContentFromString(FileSystem::getPathName(libraryURI), FileSystem::getFileName(libraryURI), mainSource);
+	} catch (Exception& exception) {
+		Console::println("An error occurred: " + string(exception.what()));
+	}
+}
