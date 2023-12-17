@@ -46,7 +46,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	auto scriptFileName = miniScript->getScriptPathName() + "/" + miniScript->getScriptFileName();
 	Console::println(scriptFileName + ": Processing script");
 	//
-	auto compare_includes = [&](const string& lhs, const string& rhs) -> bool {
+	auto compare_includes = [](const string& lhs, const string& rhs) -> bool {
 		if (StringTools::startsWith(lhs, "#include <tdme/tdme.h>") == true) return true; else
 		if (StringTools::startsWith(rhs, "#include <tdme/tdme.h>") == true) return false;
 		auto charCount = Math::min((int32_t)lhs.size(), (int32_t)rhs.size());
@@ -73,7 +73,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		return lhs.size() < rhs.size();
 	};
 	//
-	auto replace = [&](const vector<string> input, const string& startTag, const string& endTag, const string& replacement, vector<string>& output) -> bool {
+	auto replace = [](const vector<string> input, const string& startTag, const string& endTag, const string& replacement, vector<string>& output) -> bool {
 		auto reject = false;
 		auto replaceSuccess = false;
 		for (auto i = 0; i < input.size(); i++) {
@@ -659,7 +659,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 void Transpiler::untranspile(const string& scriptFileName, const string& transpilationFileName) {
 	Console::println(scriptFileName + ": Processing script");
 	//
-	auto replace = [&](const vector<string> input, const string& startTag, const string& endTag, const string& replacement, vector<string>& output) -> bool {
+	auto replace = [](const vector<string> input, const string& startTag, const string& endTag, const string& replacement, vector<string>& output) -> bool {
 		auto reject = false;
 		auto replaceSuccess = false;
 		for (auto i = 0; i < input.size(); i++) {
