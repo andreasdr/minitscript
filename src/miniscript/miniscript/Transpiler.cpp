@@ -542,7 +542,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		vector<string> generatedMiniScriptCPP;
 		auto transpilationCPPFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".cpp";
 		if (FileSystem::exists(transpilationCPPFileName) == false) {
-			auto miniScriptCPPString = FileSystem::getContentAsString("./resources/templates/transpilation", "Transpilation.cpp");
+			auto miniScriptCPPString = FileSystem::getContentAsString("./resources/miniscript/templates/transpilation", "Transpilation.cpp");
 			miniScriptCPPString = StringTools::replace(miniScriptCPPString, "{$script}", scriptFileName);
 			miniScriptCPPString = StringTools::replace(miniScriptCPPString, "{$class-name}", miniScriptClassName);
 			miniScriptCPPString = StringTools::replace(miniScriptCPPString, "{$base-class}", miniScript->getBaseClass());
@@ -624,7 +624,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		vector<string> generatedMiniScriptClassHeader;
 		auto transpilationHeaderFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".h";
 		if (FileSystem::exists(transpilationHeaderFileName) == false) {
-			auto miniScriptHeaderString = FileSystem::getContentAsString("./resources/templates/transpilation", "Transpilation.h");
+			auto miniScriptHeaderString = FileSystem::getContentAsString("./resources/miniscript/templates/transpilation", "Transpilation.h");
 			miniScriptHeaderString = StringTools::replace(miniScriptHeaderString, "{$script}", scriptFileName);
 			miniScriptHeaderString = StringTools::replace(miniScriptHeaderString, "{$class-name}", miniScriptClassName);
 			miniScriptHeaderString = StringTools::replace(miniScriptHeaderString, "{$base-class}", miniScript->getBaseClass());

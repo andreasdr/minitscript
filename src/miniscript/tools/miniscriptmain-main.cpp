@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 	try {
 		Console::println("Generating main C++ file: " + pathToMain);
 
-		auto mainSource = FileSystem::getContentAsString("./resources/templates/transpilation", "script-main.cpp");
+		auto mainSource = FileSystem::getContentAsString("./resources/miniscript/templates/transpilation", "script-main.cpp");
 		mainSource = StringTools::replace(mainSource, "{$script}", pathToScript);
 		mainSource = StringTools::replace(mainSource, "{$script-class}", scriptClassName);
 		mainSource = StringTools::replace(mainSource, "{$library}", library);

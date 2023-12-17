@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
 	//
 	Properties descriptions;
-	descriptions.load("resources/documentation", "method-descriptions.properties");
+	descriptions.load("resources/miniscript/documentation", "method-descriptions.properties");
 
 	//
 	// MiniScript::registerDataTypes();

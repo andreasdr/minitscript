@@ -88,8 +88,8 @@ int main(int argc, char** argv)
 		if (library == true) {
 			Console::println("Generating Makefile");
 			//
-			makefileSource = FileSystem::getContentAsString("./resources/templates/makefiles", "Library-Makefile.nmake");
-			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", "Library-Makefile.nmake");
+			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", "Makefile.nmake.main");
 			makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
 			makefileSource+= "\n";
 		} else {
@@ -102,8 +102,8 @@ int main(int argc, char** argv)
 			//
 			Console::println("Generating Makefile");
 			//
-			makefileSource = FileSystem::getContentAsString("./resources/templates/makefiles", "Makefile.nmake");
-			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", "Makefile.nmake");
+			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", "Makefile.nmake.main");
 			makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
 			makefileSource = StringTools::replace(makefileSource, "{$main-targets}", mainTargets);
 			makefileSource+= "\n";

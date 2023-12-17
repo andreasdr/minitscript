@@ -17,7 +17,7 @@ on: nothing
 	console.log("Context script ids: " + context.script.getScriptIds())
 	# load context-test-2 script
 	console.log("Loading script: context-test-2.tscript")
-	context.script.loadScript("context-test-2", "resources/tests", "context-test-2.tscript")
+	context.script.loadScript("context-test-2", "resources/miniscript/tests", "context-test-2.tscript")
 	# show context script ids, it should show the "main" and "context-test-2" script
 	console.log("Context script ids: " + context.script.getScriptIds())
 	# checking if callable hello2() does exist in context-test-2

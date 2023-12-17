@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 
 		Console::println("Generating Makefile");
 
-		auto makefileSource = FileSystem::getContentAsString("./resources/templates/makefiles", library == true?"Library-Makefile":"Makefile");
+		auto makefileSource = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", library == true?"Library-Makefile":"Makefile");
 		makefileSource = StringTools::replace(makefileSource, "{$source-folder}", pathToSource);
 		makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
 		if (library == false) makefileSource = StringTools::replace(makefileSource, "{$main-source-files}", mainSourceFilesVariable);

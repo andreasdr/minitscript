@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 	//
 	try {
 		Console::println("Generating library C++ file");
-		auto mainSource = FileSystem::getContentAsString("./resources/templates/transpilation", "NativeLibrary.cpp");
+		auto mainSource = FileSystem::getContentAsString("./resources/miniscript/templates/transpilation", "NativeLibrary.cpp");
 		mainSource = StringTools::replace(mainSource, "{$library-includes}", libraryIncludes);
 		mainSource = StringTools::replace(mainSource, "{$library-code}", libraryCode);
 		FileSystem::setContentFromString(FileSystem::getPathName(pathToLibrary), FileSystem::getFileName(pathToLibrary), mainSource);
