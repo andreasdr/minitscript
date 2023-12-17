@@ -13,12 +13,10 @@ using std::string;
 using std::vector;
 
 void SHA256::encode(const string& decodedString, string& encodedString) {
-	// see: https://stackoverflow.com/questions/2262386/generate-sha256-with-openssl-and-c
 	hash((const uint8_t*)decodedString.data(), decodedString.size(), encodedString);
 }
 
 void SHA256::encode(const vector<uint8_t>& decodedData, string& encodedString) {
-	// see: https://stackoverflow.com/questions/2262386/generate-sha256-with-openssl-and-c
 	hash(decodedData.data(), decodedData.size(), encodedString);
 }
 
