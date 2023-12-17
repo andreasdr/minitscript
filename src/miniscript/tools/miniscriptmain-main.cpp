@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	}
 
 	//
-	auto pathURI = string(argv[1]);
+	auto scriptURI = string(argv[1]);
 	auto className = string(argv[2]);
 	auto mainURI = string(argv[3]);
 	auto useLibrary = argc == 5?string(argv[4]) == "--use-library":false;
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 	}
 
 	// generate
-	Generator::generateMain(pathURI, className, mainURI, useLibrary);
+	Generator::generateMain(scriptURI, className, mainURI, useLibrary);
 
 	//
 	exit(EXIT_SUCCESS);
