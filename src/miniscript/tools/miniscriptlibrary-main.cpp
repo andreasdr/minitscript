@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	}
 
 	//
-	string libraryURI = string(argv[argc - 1]);
+	auto libraryURI = string(argv[argc - 1]);
 	vector<pair<string, string>> scriptClassPairs;
 	for (auto i = 0; i < ((argc - 2) / 2); i++) {
 		auto scriptURI = string(argv[1 + i * 2]);
