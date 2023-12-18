@@ -237,7 +237,7 @@ You have to execute the binaries from miniscript root folder like:
 ```bash
 $ pwd
 /usr/home/andreas/Development/mindty.com/miniscript
-$ ./bin/miniscript/tools/miniscript resources/tests/base-test.tscript
+$ ./bin/miniscript/tools/miniscript resources/miniscript/tests/base-test.tscript
 ```
 
 # 3. Other information
