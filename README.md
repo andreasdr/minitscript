@@ -744,8 +744,10 @@ end
 | <sub><b>static</b> String::concatenate(...): String</sub>                                        |
 | Create string from byte array                                                                    |
 | <sub><b>static</b> String::fromByteArray($byteArray: ByteArray): String</sub>                    |
-| Create spaces as string                                                                          |
-| <sub><b>static</b> String::space([$spaces: Integer]): String</sub>                               |
+| Generate string                                                                                  |
+| <sub><b>static</b> String::generate($what: String[, $count: Integer]): String</sub>              |
+| Indent string                                                                                    |
+| <sub><b>static</b> String::indent($src: String, $with: String, $count: Integer): String</sub>    |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Return character of string at given position                                                     |
@@ -756,6 +758,8 @@ end
 | <sub>equalsIgnoreCase($other: String): Boolean</sub>                                             |
 | Return first index of specific string in string                                                  |
 | <sub>firstIndexOf($what: String[, $beginIndex: Integer]): Integer</sub>                          |
+| Return first index of characters provided within given string in string                          |
+| <sub>firstIndexOfChars($what: String[, $beginIndex: Integer]): Integer</sub>                     |
 | Return index of specific string in string                                                        |
 | <sub>indexOf($what: String[, $beginIndex: Integer]): Integer</sub>                               |
 | Test if string value is empty                                                                    |
@@ -766,6 +770,8 @@ end
 | <sub>isInteger(): Boolean</sub>                                                                  |
 | Return last index of specific string in string                                                   |
 | <sub>lastIndexOf($what: String[, $beginIndex: Integer]): Integer</sub>                           |
+| Return last index of characters provided within given string in string                           |
+| <sub>lastIndexOfChars($what: String[, $endIndex: Integer]): Integer</sub>                        |
 | Return string length                                                                             |
 | <sub>length(): Integer</sub>                                                                     |
 | Pad string left                                                                                  |
