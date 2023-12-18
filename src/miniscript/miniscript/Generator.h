@@ -61,11 +61,11 @@ public:
 private:
 
 	/**
-	 * Scan folder
-	 * @param folder folder
+	 * Scan path
+	 * @param path path
 	 * @param sourceFiles source files
 	 * @param mainSourceFiles main source files
 	 */
-	static void scanFolder(const string& folder, vector<string>& sourceFiles, vector<string>& mainSourceFiles);
+	static void scanPath(const string& path, vector<string>& sourceFiles, vector<string>& mainSourceFiles);
 
 };

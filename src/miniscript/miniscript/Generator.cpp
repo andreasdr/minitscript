@@ -85,7 +85,7 @@ void Generator::generateMakefile(const string& srcPath, const string& makefileUR
 		Console::println("Scanning source files");
 		vector<string> sourceFiles;
 		vector<string> mainSourceFiles;
-		scanFolder(srcPath, sourceFiles, mainSourceFiles);
+		scanPath(srcPath, sourceFiles, mainSourceFiles);
 
 		string sourceFilesVariable = "\\\n";
 		for (const auto& file: sourceFiles) sourceFilesVariable+= "\t" + file + "\\\n";
@@ -98,7 +98,7 @@ void Generator::generateMakefile(const string& srcPath, const string& makefileUR
 		Console::println("Generating Makefile");
 
 		auto makefileSource = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", library == true?"Library-Makefile":"Makefile");
-		makefileSource = StringTools::replace(makefileSource, "{$source-folder}", srcPath);
+		makefileSource = StringTools::replace(makefileSource, "{$source-path}", srcPath);
 		makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
 		if (library == false) makefileSource = StringTools::replace(makefileSource, "{$main-source-files}", mainSourceFilesVariable);
 		FileSystem::setContentFromString(FileSystem::getPathName(makefileURI), FileSystem::getFileName(makefileURI), makefileSource);
@@ -113,7 +113,7 @@ void Generator::generateNMakefile(const string& srcPath, const string& makefileU
 		Console::println("Scanning source files");
 		vector<string> sourceFiles;
 		vector<string> mainSourceFiles;
-		scanFolder(srcPath, sourceFiles, mainSourceFiles);
+		scanPath(srcPath, sourceFiles, mainSourceFiles);
 
 		//
 		string sourceFilesVariable = "\\\n";
@@ -164,7 +164,7 @@ void Generator::generateNMakefile(const string& srcPath, const string& makefileU
 	}
 }
 
-void Generator::scanFolder(const string& folder, vector<string>& sourceFiles, vector<string>& mainSourceFiles) {
+void Generator::scanPath(const string& path, vector<string>& sourceFiles, vector<string>& mainSourceFiles) {
 	class SourceFilesFilter : public virtual FileSystem::FileNameFilter {
 		public:
 			virtual ~SourceFilesFilter() {}
@@ -185,16 +185,16 @@ void Generator::scanFolder(const string& folder, vector<string>& sourceFiles, ve
 	SourceFilesFilter sourceFilesFilter;
 	vector<string> files;
 	//
-	FileSystem::list(folder, files, &sourceFilesFilter);
+	FileSystem::list(path, files, &sourceFilesFilter);
 	//
 	for (const auto& fileName: files) {
 		if (StringTools::endsWith(fileName, "-main.cpp") == true) {
-			mainSourceFiles.push_back(folder + "/" + fileName);
+			mainSourceFiles.push_back(path + "/" + fileName);
 		} else
 		if (StringTools::endsWith(fileName, ".cpp") == true) {
-			sourceFiles.push_back(folder + "/" + fileName);
+			sourceFiles.push_back(path + "/" + fileName);
 		} else {
-			scanFolder(folder + "/" + fileName, sourceFiles, mainSourceFiles);
+			scanPath(path + "/" + fileName, sourceFiles, mainSourceFiles);
 		}
 	}
 }
