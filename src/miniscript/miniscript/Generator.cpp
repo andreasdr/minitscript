@@ -78,3 +78,123 @@ void Generator::generateLibrary(
 		Console::println("An error occurred: " + string(exception.what()));
 	}
 }
+
+void Generator::generateMakefile(const string& srcPath, const string& makefileURI, bool library) {
+	//
+	try {
+		Console::println("Scanning source files");
+		vector<string> sourceFiles;
+		vector<string> mainSourceFiles;
+		scanFolder(srcPath, sourceFiles, mainSourceFiles);
+
+		string sourceFilesVariable = "\\\n";
+		for (const auto& file: sourceFiles) sourceFilesVariable+= "\t" + file + "\\\n";
+		sourceFilesVariable+= "\n";
+
+		string mainSourceFilesVariable = "\\\n";
+		for (const auto& file: mainSourceFiles) mainSourceFilesVariable+= "\t" + file + "\\\n";
+		mainSourceFilesVariable+= "\n";
+
+		Console::println("Generating Makefile");
+
+		auto makefileSource = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", library == true?"Library-Makefile":"Makefile");
+		makefileSource = StringTools::replace(makefileSource, "{$source-folder}", srcPath);
+		makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
+		if (library == false) makefileSource = StringTools::replace(makefileSource, "{$main-source-files}", mainSourceFilesVariable);
+		FileSystem::setContentFromString(FileSystem::getPathName(makefileURI), FileSystem::getFileName(makefileURI), makefileSource);
+	} catch (Exception& exception) {
+		Console::println("An error occurred: " + string(exception.what()));
+	}
+}
+
+void Generator::generateNMakefile(const string& srcPath, const string& makefileURI, bool library) {
+	//
+	try {
+		Console::println("Scanning source files");
+		vector<string> sourceFiles;
+		vector<string> mainSourceFiles;
+		scanFolder(srcPath, sourceFiles, mainSourceFiles);
+
+		//
+		string sourceFilesVariable = "\\\n";
+		for (const auto& file: sourceFiles) sourceFilesVariable+= "\t" + file + "\\\n";
+		sourceFilesVariable+= "\n";
+		//
+		string makefileSource;
+		//
+		if (library == true) {
+			Console::println("Generating Makefile");
+			//
+			makefileSource = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", "Library-Makefile.nmake");
+			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
+			makefileSource+= "\n";
+		} else {
+			//
+			string mainTargets;
+			for (const auto& file: mainSourceFiles) {
+				if (mainTargets.empty() == false) mainTargets+= " ";
+				mainTargets+= StringTools::substring(file, file.rfind('/') + 1, file.find("-main.cpp"));
+			}
+			//
+			Console::println("Generating Makefile");
+			//
+			makefileSource = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", "Makefile.nmake");
+			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/miniscript/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
+			makefileSource = StringTools::replace(makefileSource, "{$main-targets}", mainTargets);
+			makefileSource+= "\n";
+
+			//
+			for (const auto& file: mainSourceFiles) {
+				auto makefileMainSource = makefileMainSourceTemplate;
+				auto mainTarget = StringTools::substring(file, file.rfind('/') + 1, file.find("-main.cpp"));
+				auto mainTargetSource = file;
+				auto mainTargetExecutable = mainTarget + ".exe";
+				makefileMainSource = StringTools::replace(makefileMainSource, "{$main-target}", mainTarget);
+				makefileMainSource = StringTools::replace(makefileMainSource, "{$main-target-source}", mainTargetSource);
+				makefileMainSource = StringTools::replace(makefileMainSource, "{$main-target-executable}", mainTargetExecutable);
+				makefileSource+= makefileMainSource + "\n";
+			}
+		}
+		//
+		FileSystem::setContentFromString(FileSystem::getPathName(makefileURI), FileSystem::getFileName(makefileURI), makefileSource);
+	} catch (Exception& exception) {
+		Console::println("An error occurred: " + string(exception.what()));
+	}
+}
+
+void Generator::scanFolder(const string& folder, vector<string>& sourceFiles, vector<string>& mainSourceFiles) {
+	class SourceFilesFilter : public virtual FileSystem::FileNameFilter {
+		public:
+			virtual ~SourceFilesFilter() {}
+
+			bool accept(const string& pathName, const string& fileName) override {
+				if (fileName == ".") return false;
+				if (fileName == "..") return false;
+				if (FileSystem::isPath(pathName + "/" + fileName) == true) return true;
+				// skip on CPP files that gets #include ed
+				if (StringTools::endsWith(StringTools::toLowerCase(fileName), ".incl.cpp") == true) return false;
+				if (StringTools::endsWith(StringTools::toLowerCase(fileName), ".include.cpp") == true) return false;
+				// CPP hit, yes
+				if (StringTools::endsWith(StringTools::toLowerCase(fileName), ".cpp") == true) return true;
+				return false;
+			}
+	};
+	//
+	SourceFilesFilter sourceFilesFilter;
+	vector<string> files;
+	//
+	FileSystem::list(folder, files, &sourceFilesFilter);
+	//
+	for (const auto& fileName: files) {
+		if (StringTools::endsWith(fileName, "-main.cpp") == true) {
+			mainSourceFiles.push_back(folder + "/" + fileName);
+		} else
+		if (StringTools::endsWith(fileName, ".cpp") == true) {
+			sourceFiles.push_back(folder + "/" + fileName);
+		} else {
+			scanFolder(folder + "/" + fileName, sourceFiles, mainSourceFiles);
+		}
+	}
+}

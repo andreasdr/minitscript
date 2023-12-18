@@ -42,4 +42,30 @@ public:
 		const string& libraryURI
 	);
 
+	/**
+	 * Generate Makefile
+	 * @param srcPath source path
+	 * @param makefileURI makefile URI
+	 * @param library library
+	 */
+	static void generateMakefile(const string& srcPath, const string& makefileURI, bool library);
+
+	/**
+	 * Generate NMakefile
+	 * @param srcPath source path
+	 * @param makefileURI makefile URI
+	 * @param library library
+	 */
+	static void generateNMakefile(const string& srcPath, const string& makefileURI, bool library);
+
+private:
+
+	/**
+	 * Scan folder
+	 * @param folder folder
+	 * @param sourceFiles source files
+	 * @param mainSourceFiles main source files
+	 */
+	static void scanFolder(const string& folder, vector<string>& sourceFiles, vector<string>& mainSourceFiles);
+
 };
