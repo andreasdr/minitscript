@@ -212,7 +212,7 @@ $ export LD_LIBRARY_PATH=`pwd`/lib
 
 ## 2.2. MacOSX
 
-On MacOSX you need to set up DYLD_LIBRARY_PATH, just that MiniScript libraries and renderer plugins are found.
+On MacOSX you need to set up DYLD_LIBRARY_PATH, just that MiniScript libraries are found.
 
 ```bash
 $ pwd
@@ -222,7 +222,7 @@ $ export DYLD_LIBRARY_PATH=`pwd`/lib
 
 ## 2.3. MSYS2/MINGW64
 
-On MSYS2/MINGW64 you need to copy shared objects files to MiniScript folder, just that MiniScript libraries and renderer plugins are found.
+On MSYS2/MINGW64 you need to copy shared objects files to MiniScript folder, just that MiniScript libraries are found.
 
 ```bash
 $ pwd
