@@ -10,6 +10,7 @@ using std::span;
 using miniscript::miniscript::ByteArrayMethods;
 
 using miniscript::miniscript::MiniScript;
+
 using _Console = miniscript::utilities::Console;
 
 void ByteArrayMethods::registerMethods(MiniScript* miniScript) {

@@ -16,9 +16,9 @@ using miniscript::miniscript::NetworkMethods;
 
 using miniscript::miniscript::MiniScript;
 
-using _HTTPClient = miniscript::network::httpclient::HTTPClient;
 using _Console = miniscript::utilities::Console;
 using _Exception = miniscript::utilities::Exception;
+using _HTTPClient = miniscript::network::httpclient::HTTPClient;
 
 void NetworkMethods::registerMethods(MiniScript* miniScript) {
 	// network
