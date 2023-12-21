@@ -31,7 +31,7 @@ void Generator::generateMain(
 	if (useLibrary == true) {
 		library =
 			string() +
-			"auto library = make_unique<Library>(context.get());" + "\n" +
+			"auto library = make_unique<NativeLibrary>(context.get());" + "\n" +
 			"\t" + "script->setLibrary(library.get());";
 	}
 	//
@@ -63,9 +63,6 @@ void Generator::generateLibrary(
 		libraryCode+= string() + "\t\t" + "script = make_unique<" + className + ">();" + "\n";
 		libraryCode+= string() + "\t" + "} else" + "\n";
 	}
-	libraryCode+= string() + "\t" + "{" + "\n";
-	libraryCode+= string() + "\t\t" + "script = make_unique<MiniScript>();" + "\n";
-	libraryCode+= string() + "\t" + "}";
 
 	//
 	try {
@@ -85,22 +82,24 @@ void Generator::generateMakefile(const string& srcPath, const string& makefileUR
 		Console::println("Scanning source files");
 		vector<string> sourceFiles;
 		vector<string> mainSourceFiles;
-		scanPath(basePath + "/" + srcPath, sourceFiles, mainSourceFiles);
+		scanPath((basePath.empty() == true?"":basePath + "/") + srcPath, sourceFiles, mainSourceFiles);
 
 		// TODO: cut out tdme
 
 		// cut off base path
-		for (auto& sourceFile: sourceFiles) sourceFile = StringTools::substring(sourceFile, basePath.size() + 1);
-		for (auto& mainSourceFile: mainSourceFiles) mainSourceFile = StringTools::substring(mainSourceFile, basePath.size() + 1);
+		if (basePath.empty() == false) {
+			for (auto& sourceFile: sourceFiles) sourceFile = StringTools::substring(sourceFile, basePath.size() + 1);
+			for (auto& mainSourceFile: mainSourceFiles) mainSourceFile = StringTools::substring(mainSourceFile, basePath.size() + 1);
+		}
 
 		//
 		string sourceFilesVariable = "\\\n";
-		for (const auto& file: sourceFiles) sourceFilesVariable+= "\t" + file + "\\\n";
+		for (const auto& file: sourceFiles) sourceFilesVariable+= "\t" + file + " \\\n";
 		sourceFilesVariable+= "\n";
 
 		//
 		string mainSourceFilesVariable = "\\\n";
-		for (const auto& file: mainSourceFiles) mainSourceFilesVariable+= "\t" + file + "\\\n";
+		for (const auto& file: mainSourceFiles) mainSourceFilesVariable+= "\t" + file + " \\\n";
 		mainSourceFilesVariable+= "\n";
 
 		//
@@ -123,17 +122,19 @@ void Generator::generateNMakefile(const string& srcPath, const string& makefileU
 		Console::println("Scanning source files");
 		vector<string> sourceFiles;
 		vector<string> mainSourceFiles;
-		scanPath(basePath + "/" + srcPath, sourceFiles, mainSourceFiles);
+		scanPath((basePath.empty() == true?"":basePath + "/") + srcPath, sourceFiles, mainSourceFiles);
 
 		// TODO: cut out tdme
 
 		// cut off base path
-		for (auto& sourceFile: sourceFiles) sourceFile = StringTools::substring(sourceFile, basePath.size() + 1);
-		for (auto& mainSourceFile: mainSourceFiles) mainSourceFile = StringTools::substring(mainSourceFile, basePath.size() + 1);
+		if (basePath.empty() == false) {
+			for (auto& sourceFile: sourceFiles) sourceFile = StringTools::substring(sourceFile, basePath.size() + 1);
+			for (auto& mainSourceFile: mainSourceFiles) mainSourceFile = StringTools::substring(mainSourceFile, basePath.size() + 1);
+		}
 
 		//
 		string sourceFilesVariable = "\\\n";
-		for (const auto& file: sourceFiles) sourceFilesVariable+= "\t" + file + "\\\n";
+		for (const auto& file: sourceFiles) sourceFilesVariable+= "\t" + file + " \\\n";
 		sourceFilesVariable+= "\n";
 
 		//
