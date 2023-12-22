@@ -1,5 +1,6 @@
 #include <miniscript/miniscript/Generator.h>
 
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,6 +18,7 @@ using miniscript::utilities::Console;
 using miniscript::utilities::Exception;
 using miniscript::utilities::StringTools;
 
+using std::array;
 using std::pair;
 using std::string;
 using std::vector;
@@ -76,7 +78,7 @@ void Generator::generateLibrary(
 	}
 }
 
-void Generator::generateMakefile(const string& srcPath, const string& makefileURI, bool library, const string& basePath) {
+void Generator::generateMakefile(const string& srcPath, const string& makefileURI, bool library, const string& basePath, const vector<string>& excludePaths) {
 	//
 	try {
 		Console::println("Scanning source files");
@@ -84,12 +86,26 @@ void Generator::generateMakefile(const string& srcPath, const string& makefileUR
 		vector<string> mainSourceFiles;
 		scanPath((basePath.empty() == true?"":basePath + "/") + srcPath, sourceFiles, mainSourceFiles);
 
-		// TODO: cut out tdme
-
 		// cut off base path
 		if (basePath.empty() == false) {
 			for (auto& sourceFile: sourceFiles) sourceFile = StringTools::substring(sourceFile, basePath.size() + 1);
 			for (auto& mainSourceFile: mainSourceFiles) mainSourceFile = StringTools::substring(mainSourceFile, basePath.size() + 1);
+		}
+
+		// exclude paths
+		if (excludePaths.empty() == false) {
+			array<vector<string>*, 2> sourceFileSets = { &sourceFiles, &mainSourceFiles };
+			for (auto i = 0; i < sourceFileSets.size(); i++) {
+				for (auto j = 0; j < sourceFileSets[i]->size(); j++) {
+					for (const auto& excludePath: excludePaths) {
+						if (StringTools::startsWith((*sourceFileSets[i])[j], srcPath + "/" + excludePath + "/") == true) {
+							sourceFileSets[i]->erase(sourceFileSets[i]->begin() + j);
+							j--;
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		//
@@ -116,7 +132,7 @@ void Generator::generateMakefile(const string& srcPath, const string& makefileUR
 	}
 }
 
-void Generator::generateNMakefile(const string& srcPath, const string& makefileURI, bool library, const string& basePath) {
+void Generator::generateNMakefile(const string& srcPath, const string& makefileURI, bool library, const string& basePath, const vector<string>& excludePaths) {
 	//
 	try {
 		Console::println("Scanning source files");
@@ -124,12 +140,26 @@ void Generator::generateNMakefile(const string& srcPath, const string& makefileU
 		vector<string> mainSourceFiles;
 		scanPath((basePath.empty() == true?"":basePath + "/") + srcPath, sourceFiles, mainSourceFiles);
 
-		// TODO: cut out tdme
-
 		// cut off base path
 		if (basePath.empty() == false) {
 			for (auto& sourceFile: sourceFiles) sourceFile = StringTools::substring(sourceFile, basePath.size() + 1);
 			for (auto& mainSourceFile: mainSourceFiles) mainSourceFile = StringTools::substring(mainSourceFile, basePath.size() + 1);
+		}
+
+		// exclude paths
+		if (excludePaths.empty() == false) {
+			array<vector<string>*, 2> sourceFileSets = { &sourceFiles, &mainSourceFiles };
+			for (auto i = 0; i < sourceFileSets.size(); i++) {
+				for (auto j = 0; j < sourceFileSets[i]->size(); j++) {
+					for (const auto& excludePath: excludePaths) {
+						if (StringTools::startsWith((*sourceFileSets[i])[j], srcPath + "/" + excludePath + "/") == true) {
+							sourceFileSets[i]->erase(sourceFileSets[i]->begin() + j);
+							j--;
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		//
