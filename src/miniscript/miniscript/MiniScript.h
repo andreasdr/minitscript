@@ -3064,7 +3064,7 @@ private:
 			if (c == ']') {
 				squareBracketCount--;
 			} else
-			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.') {
+			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
 				return false;
 			}
 		}
@@ -3446,7 +3446,7 @@ public:
 			if (c == ']') {
 				squareBracketCount--;
 			} else
-			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.') {
+			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
 				return false;
 			}
 		}
@@ -3492,6 +3492,17 @@ public:
 				return Variable();
 			}
 		}
+	}
+
+	/**
+	 * Set constant
+	 * @param name name
+	 * @param variable variable
+	 */
+	inline void setConstant(const string& name, const Variable& variable) {
+		auto constVariable = variable;
+		setConstant(constVariable);
+		setVariable(name, constVariable);
 	}
 
 	/**
