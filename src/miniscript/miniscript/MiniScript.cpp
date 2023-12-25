@@ -2870,7 +2870,64 @@ void MiniScript::registerMethods() {
 }
 
 void MiniScript::registerVariables() {
+	//
 	for (const auto& [variableName, variable]: getRootScriptState().variables) delete variable;
+
+	//
+	miniScriptMath->registerConstants();
+
+	// base script methods
+	// 	register base methods
+	BaseMethods::registerConstants(this);
+
+	// 	register string methods
+	StringMethods::registerConstants(this);
+
+	// 	register byte array methods
+	ByteArrayMethods::registerConstants(this);
+
+	// 	register array methods
+	ArrayMethods::registerConstants(this);
+
+	// 	register map methods
+	MapMethods::registerConstants(this);
+
+	// 	register set methods
+	SetMethods::registerConstants(this);
+
+	// 	register script methods
+	ScriptMethods::registerConstants(this);
+
+	// additional script methods
+	// register application methods
+	ApplicationMethods::registerConstants(this);
+
+	// register console methods
+	ConsoleMethods::registerConstants(this);
+
+	// register context methods
+	ContextMethods::registerConstants(this);
+
+	// register cryptography methods
+	CryptographyMethods::registerConstants(this);
+
+	// register file system methods
+	FileSystemMethods::registerConstants(this);
+
+	// register JSON methods
+	JSONMethods::registerConstants(this);
+
+	// register network methods
+	NetworkMethods::registerConstants(this);
+
+	// register time methods
+	TimeMethods::registerConstants(this);
+
+	// register XML methods
+	XMLMethods::registerConstants(this);
+
+	//
+	for (const auto dataType: dataTypes) dataType->registerConstants(this);
 }
 
 void MiniScript::createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, bool populateThis, const Statement& statement) {

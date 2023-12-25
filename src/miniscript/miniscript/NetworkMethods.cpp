@@ -20,6 +20,9 @@ using _Console = miniscript::utilities::Console;
 using _Exception = miniscript::utilities::Exception;
 using _HTTPClient = miniscript::network::httpclient::HTTPClient;
 
+void NetworkMethods::registerConstants(MiniScript* miniScript) {
+}
+
 void NetworkMethods::registerMethods(MiniScript* miniScript) {
 	// network
 	{

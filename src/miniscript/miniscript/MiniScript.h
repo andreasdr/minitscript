@@ -184,6 +184,12 @@ public:
 		}
 
 		/**
+		 * Register constants
+		 * @param miniScript MiniScript instance
+		 */
+		virtual void registerConstants(MiniScript* miniScript) const = 0;
+
+		/**
 		 * Register methods
 		 * @param miniScript MiniScript instance
 		 */
