@@ -730,7 +730,7 @@ end
 
 ... TODO ...
 
-# 6. MiniScript classes
+# 6. Classes
 
 ## 6.1. String class
 
@@ -911,7 +911,7 @@ end
 | Remove key from set                                                                              |
 | <sub>remove($key: String): Null</sub>                                                            |
 
-# 7. MiniScript methods
+# 7. Methods
 
 ## 7.1. Base methods
 
@@ -1219,7 +1219,7 @@ end
 | Create XML tag                                                                                   |
 | <sub>xml.createTag($name: String[, $attributes: Map[, $innerXML: String]]): String</sub>         |
 
-# 8. MiniScript constants
+# 8. Constants
 
 | Name                                                        | Value                              |
 |-------------------------------------------------------------|------------------------------------|
@@ -1289,7 +1289,7 @@ end
 | $HTTPClient::HTTP_STATUS_USEPROXY                           | 305                                |
 | $HTTPClient::HTTP_STATUS_VARIANTALSONEGOTIATES              | 506                                |
 
-# 9. MiniScript operators
+# 9. Operators
 
 | Op | Method                                                                                      |
 |----|---------------------------------------------------------------------------------------------|
