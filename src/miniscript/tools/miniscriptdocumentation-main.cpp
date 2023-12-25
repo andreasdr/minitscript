@@ -61,13 +61,13 @@ int main(int argc, char** argv)
 	//
 	auto baseMethodCategories = Documentation::getMethodsCategories(miniScript.get(), allClassMethods);
 	// classes
-	auto classesDocumentation = Documentation::generateClassesDocumentation("MiniScript classes", 6, miniScript.get(), descriptions, "miniscript.basemethod.", allClassMethods);
+	auto classesDocumentation = Documentation::generateClassesDocumentation("Classes", 6, miniScript.get(), descriptions, "miniscript.basemethod.", allClassMethods);
 	// base methods
-	auto methodsDocumentation = Documentation::generateMethodsDocumentation("MiniScript methods", 7, miniScript.get(), descriptions, "miniscript.basemethod.", allClassMethods);
+	auto methodsDocumentation = Documentation::generateMethodsDocumentation("Methods", 7, miniScript.get(), descriptions, "miniscript.basemethod.", allClassMethods);
 	// variables
-	auto variablesDocumentation = Documentation::generateVariablesDocumentation("MiniScript constants", 8, miniScript.get());
+	auto variablesDocumentation = Documentation::generateVariablesDocumentation("Constants", 8, miniScript.get());
 	// operators
-	auto operatorsDocumentation = Documentation::generateOperatorsDocumentation("MiniScript operators", 9, miniScript.get());
+	auto operatorsDocumentation = Documentation::generateOperatorsDocumentation("Operators", 9, miniScript.get());
 
 	//
 	Console::println("Classes");
