@@ -1289,9 +1289,6 @@ end
 | $HTTPClient::HTTP_STATUS_USEPROXY                           | 305                                |
 | $HTTPClient::HTTP_STATUS_VARIANTALSONEGOTIATES              | 506                                |
 
-Operators
------------
-
 # 9. MiniScript operators
 
 | Op | Method                                                                                      |
