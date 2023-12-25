@@ -911,7 +911,7 @@ end
 | Remove key from set                                                                              |
 | <sub>remove($key: String): Null</sub>                                                            |
 
-# 7. MiniScript Methods
+# 7. MiniScript methods
 
 ## 7.1. Base methods
 
@@ -1219,7 +1219,80 @@ end
 | Create XML tag                                                                                   |
 | <sub>xml.createTag($name: String[, $attributes: Map[, $innerXML: String]]): String</sub>         |
 
-# 8. Operators
+# 8. MiniScript constants
+
+| Name                                                        | Value                              |
+|-------------------------------------------------------------|------------------------------------|
+| $HTTPClient::HTTP_STATUS_ACCEPTED                           | 202                                |
+| $HTTPClient::HTTP_STATUS_ALREADYREPORTED                    | 208                                |
+| $HTTPClient::HTTP_STATUS_BADGATEWAY                         | 502                                |
+| $HTTPClient::HTTP_STATUS_BADREQUEST                         | 400                                |
+| $HTTPClient::HTTP_STATUS_CONFLICT                           | 409                                |
+| $HTTPClient::HTTP_STATUS_CONTENTTOOLARGE                    | 413                                |
+| $HTTPClient::HTTP_STATUS_CONTINUE                           | 100                                |
+| $HTTPClient::HTTP_STATUS_CREATED                            | 201                                |
+| $HTTPClient::HTTP_STATUS_EARLYHINTS                         | 103                                |
+| $HTTPClient::HTTP_STATUS_EXPECTATIONFAILED                  | 417                                |
+| $HTTPClient::HTTP_STATUS_FAILEDDEPENDENCY                   | 424                                |
+| $HTTPClient::HTTP_STATUS_FORBIDDEN                          | 403                                |
+| $HTTPClient::HTTP_STATUS_FOUND                              | 302                                |
+| $HTTPClient::HTTP_STATUS_GATEWAYTIMEOUT                     | 504                                |
+| $HTTPClient::HTTP_STATUS_GONE                               | 410                                |
+| $HTTPClient::HTTP_STATUS_HTTPVERSIONNOTSUPPORTED            | 505                                |
+| $HTTPClient::HTTP_STATUS_IMATEAPOT                          | 418                                |
+| $HTTPClient::HTTP_STATUS_IMUSED                             | 226                                |
+| $HTTPClient::HTTP_STATUS_INSUFFICIENTSTORAGE                | 507                                |
+| $HTTPClient::HTTP_STATUS_INTERNALSERVERERROR                | 500                                |
+| $HTTPClient::HTTP_STATUS_LENGTHREQUIRED                     | 411                                |
+| $HTTPClient::HTTP_STATUS_LOCKED                             | 423                                |
+| $HTTPClient::HTTP_STATUS_LOOPDETECTED                       | 508                                |
+| $HTTPClient::HTTP_STATUS_MAX                                | 1023                               |
+| $HTTPClient::HTTP_STATUS_METHODNOTALLOWED                   | 405                                |
+| $HTTPClient::HTTP_STATUS_MISDIRECTEDREQUEST                 | 421                                |
+| $HTTPClient::HTTP_STATUS_MOVEDPERMANENTLY                   | 301                                |
+| $HTTPClient::HTTP_STATUS_MULTIPLECHOICES                    | 300                                |
+| $HTTPClient::HTTP_STATUS_MULTISTATUS                        | 207                                |
+| $HTTPClient::HTTP_STATUS_NETWORKAUTHENTICATIONREQUIRED      | 511                                |
+| $HTTPClient::HTTP_STATUS_NOCONTENT                          | 204                                |
+| $HTTPClient::HTTP_STATUS_NONAUTHORITATIVEINFORMATION        | 203                                |
+| $HTTPClient::HTTP_STATUS_NOTACCEPTABLE                      | 406                                |
+| $HTTPClient::HTTP_STATUS_NOTEXTENDED                        | 510                                |
+| $HTTPClient::HTTP_STATUS_NOTFOUND                           | 404                                |
+| $HTTPClient::HTTP_STATUS_NOTIMPLEMENTED                     | 501                                |
+| $HTTPClient::HTTP_STATUS_NOTMODIFIED                        | 304                                |
+| $HTTPClient::HTTP_STATUS_OK                                 | 200                                |
+| $HTTPClient::HTTP_STATUS_PARTIALCONTENT                     | 206                                |
+| $HTTPClient::HTTP_STATUS_PAYLOADTOOLARGE                    | 413                                |
+| $HTTPClient::HTTP_STATUS_PAYMENTREQUIRED                    | 402                                |
+| $HTTPClient::HTTP_STATUS_PERMANENTREDIRECT                  | 308                                |
+| $HTTPClient::HTTP_STATUS_PRECONDITIONFAILED                 | 412                                |
+| $HTTPClient::HTTP_STATUS_PRECONDITIONREQUIRED               | 428                                |
+| $HTTPClient::HTTP_STATUS_PROCESSING                         | 102                                |
+| $HTTPClient::HTTP_STATUS_PROXYAUTHENTICATIONREQUIRED        | 407                                |
+| $HTTPClient::HTTP_STATUS_RANGENOTSATISFIABLE                | 416                                |
+| $HTTPClient::HTTP_STATUS_REQUESTHEADERFIELDSTOOLARGE        | 431                                |
+| $HTTPClient::HTTP_STATUS_REQUESTTIMEOUT                     | 408                                |
+| $HTTPClient::HTTP_STATUS_RESETCONTENT                       | 205                                |
+| $HTTPClient::HTTP_STATUS_SEEOTHER                           | 303                                |
+| $HTTPClient::HTTP_STATUS_SERVICEUNAVAILABLE                 | 503                                |
+| $HTTPClient::HTTP_STATUS_SWITCHINGPROTOCOLS                 | 101                                |
+| $HTTPClient::HTTP_STATUS_TEMPORARYREDIRECT                  | 307                                |
+| $HTTPClient::HTTP_STATUS_TOOEARLY                           | 425                                |
+| $HTTPClient::HTTP_STATUS_TOOMANYREQUESTS                    | 429                                |
+| $HTTPClient::HTTP_STATUS_UNAUTHORIZED                       | 401                                |
+| $HTTPClient::HTTP_STATUS_UNAVAILABLEFORLEGALREASONS         | 451                                |
+| $HTTPClient::HTTP_STATUS_UNPROCESSABLECONTENT               | 422                                |
+| $HTTPClient::HTTP_STATUS_UNPROCESSABLEENTITY                | 422                                |
+| $HTTPClient::HTTP_STATUS_UNSUPPORTEDMEDIATYPE               | 415                                |
+| $HTTPClient::HTTP_STATUS_UPGRADEREQUIRED                    | 426                                |
+| $HTTPClient::HTTP_STATUS_URITOOLONG                         | 414                                |
+| $HTTPClient::HTTP_STATUS_USEPROXY                           | 305                                |
+| $HTTPClient::HTTP_STATUS_VARIANTALSONEGOTIATES              | 506                                |
+
+Operators
+-----------
+
+# 9. MiniScript operators
 
 | Op | Method                                                                                      |
 |----|---------------------------------------------------------------------------------------------|
@@ -1245,13 +1318,13 @@ end
 | ^  | bitwiseXor($a: Integer, $b: Integer): Integer                                               |
 | ~  | bitwiseNot($value: Integer): Integer                                                        |
 
-# 9. Other information
+# 10. Other information
 
-## 9.1. Links
+## 10.1. Links
 
 - MiniScript, see [README.md](./README.md)
 - MiniScript How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
 - The Mindty Kollektiv [Discord Server](https://discord.gg/Na4ACaFD)
 
-# 10. Donation 
+# 11. Donation 
 - I have to pay my bills, beer and stuff, so if you have any use for this open source project, like educational, productive or fun, ..., consider a donation here [PayPal](https://www.paypal.me/andreasdrewke), here [GitHub Sponsors](https://github.com/sponsors/andreasdr) or via [Amazon Wishlist](https://www.amazon.de/hz/wishlist/ls/250IBUL4JSZVR?ref_=wl_share)
