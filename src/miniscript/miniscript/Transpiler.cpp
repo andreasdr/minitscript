@@ -44,6 +44,7 @@ using miniscript::utilities::StringTools;
 
 void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFileName, const vector<string>& miniScriptExtensionFileNames) {
 	auto scriptFileName = miniScript->getScriptPathName() + "/" + miniScript->getScriptFileName();
+	//
 	Console::println(scriptFileName + ": Processing script");
 	//
 	auto compare_includes = [](const string& lhs, const string& rhs) -> bool {
@@ -155,9 +156,16 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	Console::println(miniScript->getInformation());
 
 	//
+	const auto& scripts = miniScript->getScripts();
+
+	// determine variables
+	unordered_set<string> globalVariables;
+	vector<unordered_set<string>> localVariables(scripts.size());
+	determineVariables(miniScript, globalVariables, localVariables);
+
+	//
 	string headerIndent = "\t";
 	string methodCodeIndent = "\t";
-	const auto& scripts = miniScript->getScripts();
 	string generatedExecuteCode;
 	{
 		auto scriptIdx = 0;
@@ -391,6 +399,16 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			// transpile definition
 			generatedDefinitions+= "void " + miniScriptClassName + "::" + methodName + "(int miniScriptGotoStatementIdx) {" + "\n";
 			string generatedSubCode;
+
+			//
+			if (localVariables[scriptIdx].empty() == false) {
+				generatedDefinitions+= string() + "\t" + "// local script variables" + "\n";
+				for (const auto& variable: localVariables[scriptIdx]) {
+					generatedDefinitions+= string() + "\t" + "auto " + createLocalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
+				}
+			}
+
+			//
 			Transpiler::transpile(miniScript, generatedSubCode, scriptIdx, methodCodeMap, allMethods);
 			generatedDefinitions+= generatedSubCode;
 			generatedDefinitions+= string() + "}" + "\n\n";
@@ -520,6 +538,14 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	generatedDeclarations+= arrayAccessMethodsDeclarations;
 	// inject array/map/set initializer declarations into declarations
 	generatedDeclarations+= arrayMapSetInitializerDeclarations;
+
+	//
+	if (globalVariables.empty() == false) {
+		generatedDeclarations+= headerIndent + "// global script variables" + "\n";
+		for (const auto& variable: globalVariables) {
+			generatedDeclarations+= headerIndent + "Variable " + createGlobalVariableName(variable) + ";" + "\n";
+		}
+	}
 
 	// sum up definitions
 	generatedDefinitions =
@@ -825,6 +851,77 @@ const unordered_map<string, vector<string>> Transpiler::getClassesMethodNames(Mi
 	}
 	//
 	return methodByClasses;
+}
+
+void Transpiler::determineVariables(MiniScript* miniScript, unordered_set<string>& globalVariables, vector<unordered_set<string>>& localVariables) {
+	// TODO:
+	//	Problem: Variables can be set before read  or read before set
+	//		we allow to read from GLOBAL variable also if local variable has not been found
+	//		One fix would be to: Dont look variable up in parent context, but rather also need a $GLOBAL accessor
+	//
+	const auto& scripts = miniScript->getScripts();
+	//
+	{
+		auto scriptIdx = 0;
+		for (const auto& script: scripts) {
+			//
+			determineVariables(MiniScript::SCRIPTIDX_NONE, script.conditionSyntaxTree, globalVariables, localVariables);
+			//
+			for (auto statementIdx = 0; statementIdx < script.statements.size(); statementIdx++) {
+				determineVariables(
+					script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
+					script.syntaxTree[statementIdx],
+					globalVariables,
+					localVariables
+				);
+			}
+			//
+			scriptIdx++;
+		}
+	}
+}
+
+void Transpiler::determineVariables(int scriptIdx, const MiniScript::SyntaxTreeNode& syntaxTreeNode, unordered_set<string>& globalVariables, vector<unordered_set<string>>& localVariables) {
+	//
+	switch (syntaxTreeNode.type) {
+		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
+			{
+				break;
+			}
+		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+			{
+				for (const auto& argument: syntaxTreeNode.arguments) determineVariables(scriptIdx, argument, globalVariables, localVariables);
+				//
+				break;
+			}
+		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
+
+			{
+				if ((syntaxTreeNode.value.getValueAsString() == "getVariable" ||
+					syntaxTreeNode.value.getValueAsString() == "getVariableReference" ||
+					syntaxTreeNode.value.getValueAsString() == "setVariable") &&
+					syntaxTreeNode.arguments.empty() == false &&
+					syntaxTreeNode.arguments[0].type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
+					//
+					const auto variable = syntaxTreeNode.arguments[0].value.getValueAsString();
+					if (scriptIdx == MiniScript::SCRIPTIDX_NONE || StringTools::startsWith(variable, "$GLOBAL.") == true) {
+						if (StringTools::startsWith(variable, "$GLOBAL.") == true) {
+							globalVariables.insert("$" + StringTools::substring(variable, string_view("$GLOBAL.").size()));
+						} else {
+							globalVariables.insert(variable);
+						}
+					} else {
+						localVariables[scriptIdx].insert(variable);
+					}
+				}
+				//
+				for (const auto& argument: syntaxTreeNode.arguments) determineVariables(scriptIdx, argument, globalVariables, localVariables);
+				//
+				break;
+			}
+		default:
+			break;
+	}
 }
 
 void Transpiler::gatherMethodCode(

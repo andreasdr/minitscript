@@ -7,6 +7,7 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/MiniScript.h>
+#include <miniscript/utilities/StringTools.h>
 
 using std::string;
 using std::unordered_map;
@@ -14,6 +15,7 @@ using std::unordered_set;
 using std::vector;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::utilities::StringTools;
 
 /**
  * MiniScript transpiler
@@ -38,6 +40,32 @@ public:
 
 private:
 	/**
+	 * Create global variable name
+	 * @param variable variable
+	 * @return CPP variable name
+	 */
+	inline static const string createGlobalVariableName(const string& variable) {
+		auto cppVariableName = "_GS_" + variable;
+		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
+		cppVariableName = StringTools::replace(cppVariableName, ".", "_");
+		cppVariableName = StringTools::replace(cppVariableName, ":", ":");
+		return cppVariableName;
+	}
+
+	/**
+	 * Create local variable name
+	 * @param variable variable
+	 * @return CPP variable name
+	 */
+	inline static const string createLocalVariableName(const string& variable) {
+		auto cppVariableName = "_LS_" + variable;
+		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
+		cppVariableName = StringTools::replace(cppVariableName, ".", "_");
+		cppVariableName = StringTools::replace(cppVariableName, ":", ":");
+		return cppVariableName;
+	}
+
+	/**
 	 * Get all classes method names
 	 * @param miniScript MiniScript instance
 	 * @return all classes method names
@@ -57,6 +85,23 @@ private:
 	 * @return method names per classes
 	 */
 	static const unordered_map<string, vector<string>> getClassesMethodNames(MiniScript* miniScript);
+
+	/**
+	 * Determine variables
+	 * @param miniScript MiniScript script instance
+	 * @param globalVariables global variables
+	 * @param localVariables local variables per script index
+	 */
+	static void determineVariables(MiniScript* miniScript, unordered_set<string>& globalVariables, vector<unordered_set<string>>& localVariables);
+
+	/**
+	 * Determine variables within syntax tree
+	 * @param scriptIdx script index
+	 * @param syntaxTreeNode syntax tree node
+	 * @param globalVariables global variables
+	 * @param localVariables local variables per script index
+	 */
+	static void determineVariables(int scriptIdx, const MiniScript::SyntaxTreeNode& syntaxTreeNode, unordered_set<string>& globalVariables, vector<unordered_set<string>>& localVariables);
 
 	/**
 	 * Gather method code
