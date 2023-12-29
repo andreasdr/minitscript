@@ -216,6 +216,13 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	generatedDeclarations+= string() + "public:" + "\n";
 	generatedDeclarations+= headerIndent + "// overridden methods" + "\n";
 	generatedDeclarations+= headerIndent + "void registerMethods() override;" + "\n";
+	generatedDeclarations+= headerIndent + "inline void registerVariables() override {" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "\t" + miniScript->getBaseClass() + "::registerVariables();" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "\t" + "// global script variables" + "\n";
+	for (const auto& variable: globalVariables) {
+		generatedDeclarations+= headerIndent + "\t" + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + "; " + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
+	}
+	generatedDeclarations+= headerIndent + "}" + "\n";
 	generatedDeclarations+= headerIndent + "void emit(const string& condition) override;" + "\n";
 	generatedDeclarations+= headerIndent + "inline void startScript() override {" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "if (native == false) {" + "\n";
@@ -404,7 +411,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			if (localVariables[scriptIdx].empty() == false) {
 				generatedDefinitions+= string() + "\t" + "// local script variables" + "\n";
 				for (const auto& variable: localVariables[scriptIdx]) {
-					generatedDefinitions+= string() + "\t" + "auto " + createLocalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
+					generatedDefinitions+= string() + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + "; auto " + createLocalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
 				}
 			}
 
@@ -899,11 +906,12 @@ void Transpiler::determineVariables(int scriptIdx, const MiniScript::SyntaxTreeN
 			{
 				if ((syntaxTreeNode.value.getValueAsString() == "getVariable" ||
 					syntaxTreeNode.value.getValueAsString() == "getVariableReference" ||
-					syntaxTreeNode.value.getValueAsString() == "setVariable") &&
+					syntaxTreeNode.value.getValueAsString() == "setVariable" ||
+					syntaxTreeNode.value.getValueAsString() == "setConstant") &&
 					syntaxTreeNode.arguments.empty() == false &&
 					syntaxTreeNode.arguments[0].type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
 					//
-					const auto variable = syntaxTreeNode.arguments[0].value.getValueAsString();
+					const auto variable = createVariableName(syntaxTreeNode.arguments[0].value.getValueAsString());
 					if (scriptIdx == MiniScript::SCRIPTIDX_NONE || StringTools::startsWith(variable, "$GLOBAL.") == true) {
 						if (StringTools::startsWith(variable, "$GLOBAL.") == true) {
 							globalVariables.insert("$" + StringTools::substring(variable, string_view("$GLOBAL.").size()));
@@ -1098,7 +1106,8 @@ void Transpiler::generateArrayAccessMethods(
 			{
 				if (syntaxTree.value.getValueAsString() == "getVariable" ||
 					syntaxTree.value.getValueAsString() == "getVariableReference" ||
-					syntaxTree.value.getValueAsString() == "setVariable") {
+					syntaxTree.value.getValueAsString() == "setVariable" ||
+					syntaxTree.value.getValueAsString() == "setConstant") {
 					//
 					for (auto argumentIdx = 0; argumentIdx < syntaxTree.arguments.size(); argumentIdx++) {
 						auto argumentString = StringTools::replace(StringTools::replace(syntaxTree.arguments[argumentIdx].value.getValueAsString(), "\\", "\\\\"), "\"", "\\\"");
@@ -1795,7 +1804,8 @@ bool Transpiler::transpileScriptStatement(
 				scriptIdx != MiniScript::SCRIPTIDX_NONE) &&
 				(syntaxTree.value.getValueAsString() == "getVariable" ||
 				syntaxTree.value.getValueAsString() == "getVariableReference" ||
-				syntaxTree.value.getValueAsString() == "setVariable")) {
+				syntaxTree.value.getValueAsString() == "setVariable" ||
+				syntaxTree.value.getValueAsString() == "setConstant")) {
 				//
 				for (auto argumentIdx = 0; argumentIdx < syntaxTree.arguments.size(); argumentIdx++) {
 					//
@@ -2135,46 +2145,109 @@ bool Transpiler::transpileScriptStatement(
 		}
 	}
 
-	// generate code
-	generatedCode+= minIndentString + depthIndentString + "\t" + "// method code: " + string(method) + "\n";
-	for (auto codeLine: methodCode) {
-		codeLine = StringTools::replace(codeLine, "getMethodName()", "string(\"" + string(method) + "\")");
-		// replace returns with gotos
-		if (StringTools::regexMatch(codeLine, "[\\ \\t]*return[\\ \\t]*;.*") == true) {
-			Console::println("Transpiler::transpileScriptStatement(): method '" + string(method) + "': return statement not supported!");
-			return false;
-		} else
-		if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->gotoStatementGoto[\\ \\t]*\\([\\ \\t]*statement[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
-			if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
-				 // find indent
-				int indent = 0;
-				for (auto i = 0; i < codeLine.size(); i++) {
-					auto c = codeLine[i];
-					if (c == '\t') {
-						indent++;
-					} else {
-						break;
-					}
+	// do we have a variable look up or setting a variable?
+	// 	transfer to use local method and global class variables
+	if (syntaxTree.type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD &&
+		(syntaxTree.value.getValueAsString() == "getVariable" ||
+		syntaxTree.value.getValueAsString() == "getVariableReference" ||
+		syntaxTree.value.getValueAsString() == "setVariable" ||
+		syntaxTree.value.getValueAsString() == "setConstant") &&
+		syntaxTree.arguments.empty() == false &&
+		syntaxTree.arguments[0].type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
+		//
+		generatedCode+= minIndentString + depthIndentString + "\t" + "// variable access using " + syntaxTree.value.getValueAsString() + "\n";
+		//
+		auto haveFunction = false;
+		auto haveScript = (scriptConditionIdx != MiniScript::SCRIPTIDX_NONE || scriptIdx != MiniScript::SCRIPTIDX_NONE);
+		if (haveScript == true) {
+			const auto& script = miniScript->getScripts()[scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
+			haveFunction = script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION;
+		}
+		//
+		auto getVariable = syntaxTree.value.getValueAsString() == "getVariable";
+		auto getVariableReference = syntaxTree.value.getValueAsString() == "getVariableReference";
+		auto setVariable = syntaxTree.value.getValueAsString() == "setVariable" || syntaxTree.value.getValueAsString() == "setConstant";
+		//
+		const auto variable = syntaxTree.arguments[0].value.getValueAsString();
+		if (haveFunction == true || StringTools::startsWith(variable, "$GLOBAL.") == true) {
+			//
+			if (StringTools::startsWith(variable, "$GLOBAL.") == true) {
+				const auto globalVariable = "$" + StringTools::substring(variable, string_view("$GLOBAL.").size());
+				if (getVariable == true) {
+					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = evaluateVariableAccess(&" + createGlobalVariableName(globalVariable) + ", arguments[0], statement, false);" + "\n";
+				} else
+				if (getVariableReference == true) {
+					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = evaluateVariableAccess(&" + createGlobalVariableName(globalVariable) + ", arguments[0], statement, true);" + "\n";
+				} else
+				if (setVariable == true) {
+					generatedCode+= minIndentString + depthIndentString + "\t" + createGlobalVariableName(globalVariable) + " = arguments[1]; returnValue = arguments[1];" + "\n";
 				}
-				string indentString;
-				for (auto i = 0; i < indent; i++) indentString+= "\t";
-				generatedCode+= minIndentString + indentString + depthIndentString + "\t" + "goto miniscript_statement_" + to_string(statement.gotoStatementIdx) + ";\n";
+			} else {
+				const auto& localVariable = variable;
+				if (getVariable == true) {
+					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createNonReferenceVariable(&" + createLocalVariableName(variable) + ");" + "\n";
+				} else
+				if (getVariableReference == true) {
+					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createReferenceVariable(&" + createLocalVariableName(variable) + ");" + "\n";
+				} else
+				if (setVariable == true) {
+					generatedCode+= minIndentString + depthIndentString + "\t" + createLocalVariableName(variable) + " = arguments[1]; returnValue = arguments[1];" + "\n";
+				}
 			}
-		} else
-		if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->startErrorScript[\\ \\t]*\\([\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true ||
-			StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->emit[\\ \\t]*\\([\\ \\t]*[a-zA-Z0-9]*[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
-			generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + " return" + (returnValue.empty() == false?" " + returnValue:"") + ";\n";
 		} else {
-			if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*miniScript[\\ \\t]*->[\\ \\t]*setScriptStateState[\\ \\t]*\\([\\ \\t]*.+[\\ \\t]*\\);.*") == true) {
-				scriptStateChanged = true;
-			}
-			if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*miniScript[\\ \\t]*->[\\ \\t]*stopScriptExecutation[\\ \\t]*\\([\\ \\t]*\\);.*") == true) {
-				scriptStopped = true;
+			const auto& globalVariable = variable;
+			if (getVariable == true) {
+				generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createNonReferenceVariable(&" + createGlobalVariableName(globalVariable) + ");" + "\n";
 			} else
-			if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*miniScript[\\ \\t]*->[\\ \\t]*stopRunning[\\ \\t]*\\([\\ \\t]*\\);.*") == true) {
-				scriptStopped = true;
+			if (getVariableReference == true) {
+				generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createReferenceVariable(&" + createGlobalVariableName(globalVariable) + ");" + "\n";
+			} else
+			if (setVariable == true) {
+				generatedCode+= minIndentString + depthIndentString + "\t" + createGlobalVariableName(globalVariable) + " = arguments[1]; returnValue = arguments[1];" + "\n";
 			}
-			generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + "\n";
+		}
+	} else {
+		// generate code
+		generatedCode+= minIndentString + depthIndentString + "\t" + "// method code: " + string(method) + "\n";
+		for (auto codeLine: methodCode) {
+			codeLine = StringTools::replace(codeLine, "getMethodName()", "string(\"" + string(method) + "\")");
+			// replace returns with gotos
+			if (StringTools::regexMatch(codeLine, "[\\ \\t]*return[\\ \\t]*;.*") == true) {
+				Console::println("Transpiler::transpileScriptStatement(): method '" + string(method) + "': return statement not supported!");
+				return false;
+			} else
+			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->gotoStatementGoto[\\ \\t]*\\([\\ \\t]*statement[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
+				if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
+					 // find indent
+					int indent = 0;
+					for (auto i = 0; i < codeLine.size(); i++) {
+						auto c = codeLine[i];
+						if (c == '\t') {
+							indent++;
+						} else {
+							break;
+						}
+					}
+					string indentString;
+					for (auto i = 0; i < indent; i++) indentString+= "\t";
+					generatedCode+= minIndentString + indentString + depthIndentString + "\t" + "goto miniscript_statement_" + to_string(statement.gotoStatementIdx) + ";\n";
+				}
+			} else
+			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->startErrorScript[\\ \\t]*\\([\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true ||
+				StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->emit[\\ \\t]*\\([\\ \\t]*[a-zA-Z0-9]*[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
+				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + " return" + (returnValue.empty() == false?" " + returnValue:"") + ";\n";
+			} else {
+				if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*miniScript[\\ \\t]*->[\\ \\t]*setScriptStateState[\\ \\t]*\\([\\ \\t]*.+[\\ \\t]*\\);.*") == true) {
+					scriptStateChanged = true;
+				}
+				if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*miniScript[\\ \\t]*->[\\ \\t]*stopScriptExecutation[\\ \\t]*\\([\\ \\t]*\\);.*") == true) {
+					scriptStopped = true;
+				} else
+				if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*miniScript[\\ \\t]*->[\\ \\t]*stopRunning[\\ \\t]*\\([\\ \\t]*\\);.*") == true) {
+					scriptStopped = true;
+				}
+				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + "\n";
+			}
 		}
 	}
 
@@ -2263,7 +2336,7 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 			generatedCode+= methodIndent + "\t" + "auto scriptIdxToStart = determineNamedScriptIdxToStart();" + "\n";
 			generatedCode+= methodIndent + "\t" + "if (scriptIdxToStart != SCRIPTIDX_NONE && scriptIdxToStart != getScriptState().scriptIdx) {" + "\n";
 			generatedCode+= methodIndent + "\t" + "resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
-			generatedCode+= methodIndent + "\t" + "timeEnabledConditionsCheckLast = Time::getCurrentMillis();" + "\n";
+			generatedCode+= methodIndent + "\t" + "timeEnabledConditionsCheckLast = _Time::getCurrentMillis();" + "\n";
 			generatedCode+= methodIndent + "\t" + "return;" + "\n";
 			generatedCode+= methodIndent + "\t" + "}" + "\n";
 			generatedCode+= methodIndent + "}" + "\n";

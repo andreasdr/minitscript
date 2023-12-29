@@ -40,28 +40,61 @@ public:
 
 private:
 	/**
-	 * Create global variable name
-	 * @param variable variable
-	 * @return CPP variable name
+	 * Check if variable has access statement
+	 * @param variableStatement variable statement
+	 * @return variable has statement
 	 */
-	inline static const string createGlobalVariableName(const string& variable) {
-		auto cppVariableName = "_GS_" + variable;
+	inline static bool variableHasStatement(const string& variableStatement) {
+		auto dotIdx = StringTools::indexOf(variableStatement, ".");
+		if (dotIdx != string::npos) return true;
+		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
+		if (squareBracketIdx != string::npos) return true;
+		return false;
+	}
+
+	/**
+	 * Create variable name
+	 * @param variableStatement variable statement
+	 * @return variable name
+	 */
+	inline static const string createVariableName(const string& variableStatement) {
+		auto dotIdx = StringTools::indexOf(variableStatement, ".");
+		if (dotIdx == string::npos) dotIdx = variableStatement.size();
+		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
+		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
+		auto cppVariableName = StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
+		return cppVariableName;
+	}
+
+	/**
+	 * Create global variable name
+	 * @param variableStatement variable statement
+	 * @return global CPP variable name
+	 */
+	inline static const string createGlobalVariableName(const string& variableStatement) {
+		auto dotIdx = StringTools::indexOf(variableStatement, ".");
+		if (dotIdx == string::npos) dotIdx = variableStatement.size();
+		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
+		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
+		auto cppVariableName = "_GS_" + StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
-		cppVariableName = StringTools::replace(cppVariableName, ".", "_");
-		cppVariableName = StringTools::replace(cppVariableName, ":", ":");
+		cppVariableName = StringTools::replace(cppVariableName, ":", "_");
 		return cppVariableName;
 	}
 
 	/**
 	 * Create local variable name
-	 * @param variable variable
-	 * @return CPP variable name
+	 * @param variableStatement variable statement
+	 * @return local CPP variable name
 	 */
-	inline static const string createLocalVariableName(const string& variable) {
-		auto cppVariableName = "_LS_" + variable;
+	inline static const string createLocalVariableName(const string& variableStatement) {
+		auto dotIdx = StringTools::indexOf(variableStatement, ".");
+		if (dotIdx == string::npos) dotIdx = variableStatement.size();
+		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
+		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
+		auto cppVariableName = "_LS_" + StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
-		cppVariableName = StringTools::replace(cppVariableName, ".", "_");
-		cppVariableName = StringTools::replace(cppVariableName, ":", ":");
+		cppVariableName = StringTools::replace(cppVariableName, ":", "_");
 		return cppVariableName;
 	}
 
