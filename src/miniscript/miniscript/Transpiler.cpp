@@ -213,14 +213,21 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	//
 	string miniScriptClassName = FileSystem::getFileName(transpilationFileName);
 	string generatedDeclarations = "\n";
-	generatedDeclarations+= string() + "public:" + "\n";
+	generatedDeclarations+= headerIndent + "inline ~" + miniScriptClassName + "() {" + "\n";
+	for (const auto& variable: globalVariables) {
+		generatedDeclarations+= headerIndent + "\t" + createGlobalVariableName(variable) + ".unsetReference();" + "\n";
+	}
+	generatedDeclarations+= headerIndent + "}" + "\n";
+	generatedDeclarations+= "\n";
 	generatedDeclarations+= headerIndent + "// overridden methods" + "\n";
 	generatedDeclarations+= headerIndent + "void registerMethods() override;" + "\n";
 	generatedDeclarations+= headerIndent + "inline void registerVariables() override {" + "\n";
-	generatedDeclarations+= headerIndent + "\t" + "\t" + miniScript->getBaseClass() + "::registerVariables();" + "\n";
-	generatedDeclarations+= headerIndent + "\t" + "\t" + "// global script variables" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + miniScript->getBaseClass() + "::registerVariables();" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "// global script variables" + "\n";
 	for (const auto& variable: globalVariables) {
-		generatedDeclarations+= headerIndent + "\t" + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + "; " + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
+		generatedDeclarations+= headerIndent + "\t" + createGlobalVariableName(variable) + ".unsetReference();" + "\n";
+		generatedDeclarations+= headerIndent + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + ";" + "\n";
+		generatedDeclarations+= headerIndent + "\t" + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
 	}
 	generatedDeclarations+= headerIndent + "}" + "\n";
 	generatedDeclarations+= headerIndent + "void emit(const string& condition) override;" + "\n";
@@ -229,9 +236,6 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	generatedDeclarations+= headerIndent + "\t" + "\t" + miniScript->getBaseClass() + "::startScript();" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "\t" + "return;" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "}" + "\n";
-	generatedDeclarations+= headerIndent + "\t" + "auto& scriptState = getScriptState();" + "\n";
-	generatedDeclarations+= headerIndent + "\t" + "for (const auto& [scriptVariableName, scriptVariable]: scriptState.variables) delete scriptVariable;" + "\n";
-	generatedDeclarations+= headerIndent + "\t" + "scriptState.variables.clear();" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "getScriptState().running = true;" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "registerVariables();" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "resetScriptExecutationState(" + to_string(initializeScriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
@@ -412,6 +416,17 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				generatedDefinitions+= string() + "\t" + "// local script variables" + "\n";
 				for (const auto& variable: localVariables[scriptIdx]) {
 					generatedDefinitions+= string() + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + "; auto " + createLocalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
+				}
+				//
+				generatedDefinitions+= string() + "\t" + "class VariableRAII {" + "\n";
+				generatedDefinitions+= string() + "\t" + "private:" + "\n";
+				generatedDefinitions+= string() + "\t" + "\t" + "Variable& variable;" + "\n";
+				generatedDefinitions+= string() + "\t" + "public:" + "\n";
+				generatedDefinitions+= string() + "\t" + "\t" + "VariableRAII(Variable& variable): variable(variable) {}" + "\n";
+				generatedDefinitions+= string() + "\t" + "\t" + "~VariableRAII() { variable.unsetReference(); }" + "\n";
+				generatedDefinitions+= string() + "\t" + "};" + "\n";
+				for (const auto& variable: localVariables[scriptIdx]) {
+					generatedDefinitions+= string() + "\t" + "VariableRAII " + "variableRAII" + createLocalVariableName(variable) + "(" + createLocalVariableName(variable) + ");" + "\n";
 				}
 			}
 

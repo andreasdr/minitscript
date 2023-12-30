@@ -2872,6 +2872,7 @@ void MiniScript::registerMethods() {
 void MiniScript::registerVariables() {
 	//
 	for (const auto& [variableName, variable]: getRootScriptState().variables) delete variable;
+	getRootScriptState().variables.clear();
 
 	//
 	miniScriptMath->registerConstants();
