@@ -76,7 +76,7 @@ private:
 		if (dotIdx == string::npos) dotIdx = variableStatement.size();
 		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
 		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
-		auto cppVariableName = "_GS_" + StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
+		auto cppVariableName = "_G" + StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
 		cppVariableName = StringTools::replace(cppVariableName, ":", "_");
 		return cppVariableName;
@@ -92,7 +92,7 @@ private:
 		if (dotIdx == string::npos) dotIdx = variableStatement.size();
 		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
 		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
-		auto cppVariableName = "_LS_" + StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
+		auto cppVariableName = "_L" + StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
 		cppVariableName = StringTools::replace(cppVariableName, ":", "_");
 		return cppVariableName;
