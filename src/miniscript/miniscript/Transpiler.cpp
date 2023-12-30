@@ -2169,41 +2169,78 @@ bool Transpiler::transpileScriptStatement(
 		auto setVariable = syntaxTree.value.getValueAsString() == "setVariable" || syntaxTree.value.getValueAsString() == "setConstant";
 		//
 		const auto variable = syntaxTree.arguments[0].value.getValueAsString();
+		auto haveVariableStatement = variableHasStatement(variable);
 		if (haveFunction == true || StringTools::startsWith(variable, "$GLOBAL.") == true) {
 			//
 			if (StringTools::startsWith(variable, "$GLOBAL.") == true) {
 				const auto globalVariable = "$" + StringTools::substring(variable, string_view("$GLOBAL.").size());
 				if (getVariable == true) {
-					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), &statement, false);" + "\n";
+					if (haveVariableStatement == true) {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), &statement, false);" + "\n";
+					} else {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createNonReferenceVariable(&" + createGlobalVariableName(globalVariable) + ");" + "\n";
+					}
 				} else
 				if (getVariableReference == true) {
-					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), &statement, true);" + "\n";
+					if (haveVariableStatement == true) {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), &statement, true);" + "\n";
+					} else {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createReferenceVariable(&" + createGlobalVariableName(globalVariable) + ");" + "\n";
+					}
 				} else
 				if (setVariable == true) {
-					generatedCode+= minIndentString + depthIndentString + "\t" + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), arguments[1], &statement); returnValue = arguments[1];" + "\n";
+					if (haveVariableStatement == true) {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), arguments[1], &statement); returnValue = arguments[1];" + "\n";
+					} else {
+						generatedCode+= minIndentString + depthIndentString + "\t" + createGlobalVariableName(globalVariable) + " = arguments[1]; returnValue = arguments[1];" + "\n";
+					}
 				}
 			} else {
 				const auto& localVariable = variable;
 				if (getVariable == true) {
-					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createLocalVariableName(localVariable) + ", arguments[0].getValueAsString(), &statement, false);" + "\n";
+					if (haveVariableStatement == true) {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createLocalVariableName(localVariable) + ", arguments[0].getValueAsString(), &statement, false);" + "\n";
+					} else {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createNonReferenceVariable(&" + createLocalVariableName(localVariable) + ");" + "\n";
+					}
 				} else
 				if (getVariableReference == true) {
-					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createLocalVariableName(localVariable) + ", arguments[0].getValueAsString(), &statement, true);" + "\n";
+					if (haveVariableStatement == true) {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createLocalVariableName(localVariable) + ", arguments[0].getValueAsString(), &statement, true);" + "\n";
+					} else {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createReferenceVariable(&" + createLocalVariableName(localVariable) + ");" + "\n";
+					}
 				} else
 				if (setVariable == true) {
-					generatedCode+= minIndentString + depthIndentString + "\t" + "setVariable(&" + createLocalVariableName(localVariable) + ", arguments[0].getValueAsString(), arguments[1], &statement); returnValue = arguments[1];" + "\n";
+					if (haveVariableStatement == true) {
+						generatedCode+= minIndentString + depthIndentString + "\t" + "setVariable(&" + createLocalVariableName(localVariable) + ", arguments[0].getValueAsString(), arguments[1], &statement); returnValue = arguments[1];" + "\n";
+					} else {
+						generatedCode+= minIndentString + depthIndentString + "\t" + createLocalVariableName(localVariable) + " = arguments[1]; returnValue = arguments[1];" + "\n";
+					}
 				}
 			}
 		} else {
 			const auto& globalVariable = variable;
 			if (getVariable == true) {
-				generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), &statement, false);" + "\n";
+				if (haveVariableStatement == true) {
+					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), &statement, false);" + "\n";
+				} else {
+					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createNonReferenceVariable(&" + createGlobalVariableName(globalVariable) + ");" + "\n";
+				}
 			} else
 			if (getVariableReference == true) {
-				generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), &statement, true);" + "\n";
+				if (haveVariableStatement == true) {
+					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), &statement, true);" + "\n";
+				} else {
+					generatedCode+= minIndentString + depthIndentString + "\t" + "returnValue = Variable::createReferenceVariable(&" + createGlobalVariableName(globalVariable) + ");" + "\n";
+				}
 			} else
 			if (setVariable == true) {
-				generatedCode+= minIndentString + depthIndentString + "\t" + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), arguments[1], &statement); returnValue = arguments[1];" + "\n";
+				if (haveVariableStatement == true) {
+					generatedCode+= minIndentString + depthIndentString + "\t" + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), arguments[1], &statement); returnValue = arguments[1];" + "\n";
+				} else {
+					generatedCode+= minIndentString + depthIndentString + "\t" + createGlobalVariableName(globalVariable) + " = arguments[1]; returnValue = arguments[1];" + "\n";
+				}
 			}
 		}
 	} else {

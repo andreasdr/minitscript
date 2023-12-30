@@ -2611,9 +2611,13 @@ protected:
 	 * Pop script state
 	 */
 	inline void popScriptState() {
+		_Console::println("MiniScript::popScriptState(): " + to_string(scriptStateStack.size()));
 		if (scriptStateStack.empty() == true) return;
 		const auto& scriptState = getScriptState();
-		for (const auto& [variableName, variable]: scriptState.variables) delete variable;
+		for (const auto& [variableName, variable]: scriptState.variables) {
+			_Console::println("\t" + variableName + " @ " + to_string((uint64_t)variable));
+			delete variable;
+		}
 		scriptStateStack.erase(scriptStateStack.begin() + scriptStateStack.size() - 1);
 	}
 
