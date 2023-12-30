@@ -3492,9 +3492,9 @@ public:
 		//
 		string variableName;
 		// global accessor
-		string globalVariableName;
+		string globalVariableStatement;
 		if (_StringTools::startsWith(name, "$GLOBAL.") == true) {
-			globalVariableName = "$" + _StringTools::trim(_StringTools::substring(name, 8));
+			globalVariableStatement = "$" + _StringTools::substring(name, 8);
 		}
 
 		//
@@ -3502,7 +3502,7 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		auto variablePtr = getVariableIntern(globalVariableName.empty() == true?name:globalVariableName, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, false, globalVariableName.empty() == false);
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?name:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, false, globalVariableStatement.empty() == false);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return true;
@@ -3532,9 +3532,9 @@ public:
 		//
 		string variableName;
 		// global accessor
-		string globalVariableName;
+		string globalVariableStatement;
 		if (_StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
-			globalVariableName = "$" + _StringTools::trim(_StringTools::substring(variableStatement, 8));
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 
 		//
@@ -3542,7 +3542,7 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		auto variablePtr = getVariableIntern(globalVariableName.empty() == true?variableStatement:globalVariableName, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, true, globalVariableName.empty() == false);
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, true, globalVariableStatement.empty() == false);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return Variable(setAccessBool == SETACCESSBOOL_TRUE);
@@ -3621,9 +3621,9 @@ public:
 	inline void setVariable(const string& variableStatement, const Variable& variable, const Statement* statement = nullptr, bool createReference = false) {
 		string variableName;
 		// global accessor
-		string globalVariableName;
+		string globalVariableStatement;
 		if (_StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
-			globalVariableName = "$" + _StringTools::trim(_StringTools::substring(variableStatement, 8));
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 
 		//
@@ -3631,13 +3631,13 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		auto variablePtr = getVariableIntern(globalVariableName.empty() == true?variableStatement:globalVariableName, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, false, globalVariableName.empty() == false);
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, false, globalVariableStatement.empty() == false);
 
 		// set variable if not yet done
 		if (variablePtr == nullptr && parentVariable == nullptr) {
 			// default
-			auto& scriptState = globalVariableName.empty() == true?getScriptState():getRootScriptState();
-			auto variableIt = scriptState.variables.find(globalVariableName.empty() == true?variableStatement:globalVariableName);
+			auto& scriptState = globalVariableStatement.empty() == true?getScriptState():getRootScriptState();
+			auto variableIt = scriptState.variables.find(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement);
 			if (variableIt != scriptState.variables.end()) {
 				auto& existingVariable = variableIt->second;
 				if (existingVariable->isConstant() == false) {
@@ -3649,7 +3649,7 @@ public:
 				return;
 			} else {
 				// if we set a variable in variable scope that did not exist before, we keep things as they are regarding constness
-				scriptState.variables[globalVariableName.empty() == true?variableStatement:globalVariableName] =
+				scriptState.variables[globalVariableStatement.empty() == true?variableStatement:globalVariableStatement] =
 					createReference == false?Variable::createNonReferenceVariablePointer(&variable):Variable::createReferenceVariablePointer(&variable);
 			}
 		} else {
@@ -3668,9 +3668,9 @@ public:
 	inline void setVariable(Variable* variablePtr, const string& variableStatement, const Variable& variable, const Statement* statement = nullptr, bool createReference = false) {
 		string variableName;
 		// global accessor
-		string globalVariableName;
+		string globalVariableStatement;
 		if (_StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
-			globalVariableName = "$" + _StringTools::trim(_StringTools::substring(variableStatement, 8));
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 
 		//
@@ -3678,7 +3678,7 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		variablePtr = evaluateVariableAccessIntern(variablePtr, globalVariableName.empty() == true?variableStatement:globalVariableName, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, false);
+		variablePtr = evaluateVariableAccessIntern(variablePtr, globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, false);
 
 		// set variable if not yet done
 		setVariableInternal(variableStatement, parentVariable, variablePtr, arrayIdx, key, variable, statement, createReference);
