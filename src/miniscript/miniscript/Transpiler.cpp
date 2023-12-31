@@ -215,17 +215,22 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	string generatedDeclarations = "\n";
 	generatedDeclarations+= headerIndent + "inline ~" + miniScriptClassName + "() {" + "\n";
 	for (const auto& variable: globalVariables) {
-		generatedDeclarations+= headerIndent + "\t" + createGlobalVariableName(variable) + ".unsetReference();" + "\n";
+		generatedDeclarations+= headerIndent + "\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
 	}
 	generatedDeclarations+= headerIndent + "}" + "\n";
 	generatedDeclarations+= "\n";
 	generatedDeclarations+= headerIndent + "// overridden methods" + "\n";
 	generatedDeclarations+= headerIndent + "void registerMethods() override;" + "\n";
 	generatedDeclarations+= headerIndent + "inline void registerVariables() override {" + "\n";
+	if (globalVariables.empty() == false) {
+		for (const auto& variable: globalVariables) {
+			generatedDeclarations+= headerIndent + "\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
+		}
+		generatedDeclarations+= headerIndent + "\t" + "//" + "\n";
+	}
 	generatedDeclarations+= headerIndent + "\t" + miniScript->getBaseClass() + "::registerVariables();" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "// global script variables" + "\n";
 	for (const auto& variable: globalVariables) {
-		generatedDeclarations+= headerIndent + "\t" + createGlobalVariableName(variable) + ".unsetReference();" + "\n";
 		generatedDeclarations+= headerIndent + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + ";" + "\n";
 		generatedDeclarations+= headerIndent + "\t" + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
 	}
@@ -418,13 +423,15 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					generatedDefinitions+= string() + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + "; auto " + createLocalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
 				}
 				//
+				generatedDefinitions+= string() + "\t" + "//" + "\n";
 				generatedDefinitions+= string() + "\t" + "class VariableRAII {" + "\n";
 				generatedDefinitions+= string() + "\t" + "private:" + "\n";
 				generatedDefinitions+= string() + "\t" + "\t" + "Variable& variable;" + "\n";
 				generatedDefinitions+= string() + "\t" + "public:" + "\n";
 				generatedDefinitions+= string() + "\t" + "\t" + "VariableRAII(Variable& variable): variable(variable) {}" + "\n";
-				generatedDefinitions+= string() + "\t" + "\t" + "~VariableRAII() { variable.unsetReference(); }" + "\n";
+				generatedDefinitions+= string() + "\t" + "\t" + "~VariableRAII() { variable.unset(); }" + "\n";
 				generatedDefinitions+= string() + "\t" + "};" + "\n";
+				generatedDefinitions+= string() + "\t" + "//" + "\n";
 				for (const auto& variable: localVariables[scriptIdx]) {
 					generatedDefinitions+= string() + "\t" + "VariableRAII " + "variableRAII" + createLocalVariableName(variable) + "(" + createLocalVariableName(variable) + ");" + "\n";
 				}

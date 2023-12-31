@@ -487,6 +487,14 @@ public:
 		}
 
 		/**
+		 * @return unset reference
+		 */
+		inline void unsetReference() {
+			typeReferenceConstantBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE;
+			ir.reference = nullptr;
+		}
+
+		/**
 		 * Set reference
 		 * @param variable variable
 		 */
@@ -670,11 +678,14 @@ public:
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_SET;
 
 		/**
-		 * @return unset reference
+		 * Unset variable
 		 */
-		inline void unsetReference() {
-			typeReferenceConstantBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE;
-			ir.reference = nullptr;
+		inline void unset() {
+			if (isReference() == true) {
+				ir.reference->releaseReference();
+				unsetReference();
+			}
+			setType(TYPE_NULL);
 		}
 
 		/**
@@ -2611,13 +2622,9 @@ protected:
 	 * Pop script state
 	 */
 	inline void popScriptState() {
-		_Console::println("MiniScript::popScriptState(): " + to_string(scriptStateStack.size()));
 		if (scriptStateStack.empty() == true) return;
 		auto& scriptState = getScriptState();
-		for (const auto& [variableName, variable]: scriptState.variables) {
-			_Console::println("\t" + variableName + " @ " + to_string((uint64_t)variable));
-			delete variable;
-		}
+		for (const auto& [variableName, variable]: scriptState.variables) delete variable;
 		scriptState.variables.clear();
 		scriptStateStack.erase(scriptStateStack.begin() + scriptStateStack.size() - 1);
 	}
