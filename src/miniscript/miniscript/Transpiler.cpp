@@ -366,7 +366,9 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	string generatedDetermineScriptIdxToStartDefinition = "\n";
 	generatedDetermineScriptIdxToStartDefinition+= "int " + miniScriptClassName + "::determineScriptIdxToStart() {" + "\n";
 	generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "if (native == false) return MiniScript::determineScriptIdxToStart();" + "\n";
+	generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "// MiniScript setup" + "\n";
 	generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "auto miniScript = this;" + "\n";
+	generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "//" + "\n";
 	string generatedDetermineNamedScriptIdxToStartDefinition = "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= "int " + miniScriptClassName + "::determineNamedScriptIdxToStart() {" + "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "if (native == false) return MiniScript::determineNamedScriptIdxToStart();" + "\n";
@@ -443,18 +445,24 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 
 			//
 			for (auto statementIdx = 0; statementIdx < script.statements.size(); statementIdx++) {
+				string statementArrayMapSetInitializerDefinitions;
 				//
 				Transpiler::generateArrayMapSetInitializer(
 					miniScript,
-					arrayMapSetInitializerDefinitions,
+					statementArrayMapSetInitializerDefinitions,
 					miniScriptClassName,
 					methodName,
 					script.syntaxTree[statementIdx],
 					script.statements[statementIdx],
 					methodCodeMap,
 					allMethods,
-					false
+					false,
+					{},
+					1
 				);
+				if (statementArrayMapSetInitializerDefinitions.empty() == false) statementArrayMapSetInitializerDefinitions+= "\n";
+				arrayMapSetInitializerDefinitions+= statementArrayMapSetInitializerDefinitions;
+				//
 				Transpiler::generateArrayAccessMethods(
 					miniScript,
 					arrayAccessMethodsDefinitions,
@@ -464,12 +472,14 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					script.statements[statementIdx],
 					methodCodeMap,
 					allMethods,
-					false
+					false,
+					{},
+					1
 				);
 			}
 
 			//
-			generatedDefinitions+= arrayMapSetInitializerDefinitions + "\n";
+			generatedDefinitions+= arrayMapSetInitializerDefinitions;
 			generatedDefinitions+= arrayAccessMethodsDefinitions;
 
 			//
@@ -484,7 +494,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "// next statements belong to tested enabled named condition with name \"" + script.name + "\"" + "\n";
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "if (enabledNamedCondition == \"" + script.name + "\") {" + "\n";
 				} else {
-					generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "\t" + "{" + "\n";
+					generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "{" + "\n";
 				}
 				//
 				string arrayMapSetInitializerDefinitions;
@@ -499,8 +509,12 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					script.conditionStatement,
 					methodCodeMap,
 					allMethods,
-					true
+					true,
+					{},
+					script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED?3:2
 				);
+				if (arrayMapSetInitializerDefinitions.empty() == false) arrayMapSetInitializerDefinitions+= "\n";
+				//
 				Transpiler::generateArrayAccessMethods(
 					miniScript,
 					arrayAccessMethodsDefinitions,
@@ -510,7 +524,9 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					script.conditionStatement,
 					methodCodeMap,
 					allMethods,
-					true
+					true,
+					{},
+					script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED?3:2
 				);
 				//
 				if (script.scriptType == MiniScript::Script::SCRIPTTYPE_ON) {
@@ -535,7 +551,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				if (script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "}" + "\n";
 				} else {
-					generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "\t" + "}" + "\n";
+					generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "}" + "\n";
 				}
 			}
 
@@ -1117,9 +1133,6 @@ void Transpiler::generateArrayAccessMethods(
 	int depth
 	) {
 	//
-	string headerIndent = "\t";
-
-	//
 	switch (syntaxTree.type) {
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
 			{
@@ -1132,7 +1145,7 @@ void Transpiler::generateArrayAccessMethods(
 					syntaxTree.value.getValueAsString() == "setVariable" ||
 					syntaxTree.value.getValueAsString() == "setConstant") {
 					//
-					auto lamdaIndent = string() + "\t";
+					auto lamdaIndent = StringTools::indent(string(), "\t", depth);
 					//
 					for (auto argumentIdx = 0; argumentIdx < syntaxTree.arguments.size(); argumentIdx++) {
 						auto argumentString = StringTools::replace(StringTools::replace(syntaxTree.arguments[argumentIdx].value.getValueAsString(), "\\", "\\\\"), "\"", "\\\"");
@@ -1308,7 +1321,7 @@ void Transpiler::generateArrayAccessMethods(
 						allMethods,
 						condition,
 						nextArgumentIndices,
-						depth + 1
+						depth
 					);
 					//
 					argumentIdx++;
@@ -1334,7 +1347,7 @@ void Transpiler::generateArrayAccessMethods(
 						allMethods,
 						condition,
 						nextArgumentIndices,
-						depth + 1
+						depth
 					);
 					//
 					argumentIdx++;
@@ -1406,7 +1419,7 @@ void Transpiler::generateArrayMapSetVariable(
 ) {
 	//
 	string headerIndent = "\t";
-	auto indent = StringTools::indent(string(), "\t", initializerDepth + 1);
+	auto indent = StringTools::indent(string(), "\t", initializerDepth + depth);
 	switch (variable.getType()) {
 		case MiniScript::TYPE_NULL:
 			{
@@ -1607,8 +1620,7 @@ void Transpiler::generateArrayMapSetInitializer(
 	int depth
 	) {
 	//
-	string headerIndent = "\t";
-
+	auto indent = StringTools::indent(string(), "\t", depth);
 	//
 	switch (syntaxTree.type) {
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
@@ -1635,8 +1647,8 @@ void Transpiler::generateArrayMapSetInitializer(
 								"return variableD0;"
 							);
 							//
-							generatedDefinitions+= string() + "\t" + "// Miniscript transpilation for array/map/set initializer, statement index " + to_string(statement.statementIdx) + ", argument indices " + MiniScript::getArgumentIndicesAsString(argumentIndices, ", ") + "\n";
-							generatedDefinitions+= string() + "\t" + "auto initializer_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(argumentIndices, "_") + " = [&](const Statement& statement) -> Variable ";
+							generatedDefinitions+= indent + "// Miniscript transpilation for array/map/set initializer, statement index " + to_string(statement.statementIdx) + ", argument indices " + MiniScript::getArgumentIndicesAsString(argumentIndices, ", ") + "\n";
+							generatedDefinitions+= indent + "auto initializer_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(argumentIndices, "_") + " = [&](const Statement& statement) -> Variable ";
 							generatedDefinitions+= generatedInitializerDefinitions;
 							//
 							break;
@@ -1665,7 +1677,7 @@ void Transpiler::generateArrayMapSetInitializer(
 						allMethods,
 						condition,
 						nextArgumentIndices,
-						depth + 1
+						depth
 					);
 					//
 					argumentIdx++;
@@ -1691,7 +1703,7 @@ void Transpiler::generateArrayMapSetInitializer(
 						allMethods,
 						condition,
 						nextArgumentIndices,
-						depth + 1
+						depth
 					);
 					//
 					argumentIdx++;
@@ -2461,7 +2473,7 @@ bool Transpiler::transpileScriptCondition(MiniScript* miniScript, string& genera
 		{},
 		returnValue,
 		injectCode,
-		depth + 2
+		depth + 1
 	);
 
 	//
