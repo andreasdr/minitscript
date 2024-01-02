@@ -153,7 +153,6 @@ private:
 	/**
 	 * Generate array access methods
 	 * @param miniScript MiniScript instance
-	 * @param generatedDeclarations generated declarations
 	 * @param generatedDefinitions generated definitions
 	 * @param miniScriptClassName MiniScript class name
 	 * @param methodName method name
@@ -167,7 +166,6 @@ private:
 	 */
 	static void generateArrayAccessMethods(
 		MiniScript* miniScript,
-		string& generatedDeclarations,
 		string& generatedDefinitions,
 		const string& miniScriptClassName,
 		const string& methodName,
@@ -201,7 +199,6 @@ private:
 	 * @param methodName method name
 	 * @param condition condition
 	 * @param miniScriptClassName MiniScript class name
-	 * @param generatedDeclarations generated declarations
 	 * @param generatedDefinitions generated definitions
 	 * @param depth depth
 	 * @param initializerDepth initializer depth
@@ -215,7 +212,6 @@ private:
 		const string& methodName,
 		bool condition,
 		const string& miniScriptClassName,
-		string& generatedDeclarations,
 		string& generatedDefinitions,
 		int depth = 0,
 		int initializerDepth = 0,
@@ -225,7 +221,6 @@ private:
 	/**
 	 * Generate array/map/set variable
 	 * @param miniScript MiniScript instance
-	 * @param generatedDeclarations generated declarations
 	 * @param generatedDefinitions generated definitions
 	 * @param miniScriptClassName MiniScript class name
 	 * @param methodName method name
@@ -239,7 +234,6 @@ private:
 	 */
 	static void generateArrayMapSetInitializer(
 		MiniScript* miniScript,
-		string& generatedDeclarations,
 		string& generatedDefinitions,
 		const string& miniScriptClassName,
 		const string& methodName,
