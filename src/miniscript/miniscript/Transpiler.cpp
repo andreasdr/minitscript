@@ -482,7 +482,9 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				if (script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\n";
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "// next statements belong to tested enabled named condition with name \"" + script.name + "\"" + "\n";
-					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "if (enabledNamedCondition == \"" + script.name + "\")" + "\n";
+					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "if (enabledNamedCondition == \"" + script.name + "\") {" + "\n";
+				} else {
+					generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "\t" + "{" + "\n";
 				}
 				//
 				string arrayMapSetInitializerDefinitions;
@@ -529,6 +531,12 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					"bool returnValueBool; returnValue.getBooleanValue(returnValueBool); if (returnValueBool == true) return " + to_string(scriptIdx) + ";",
 					script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED?1:0
 				);
+				//
+				if (script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
+					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "}" + "\n";
+				} else {
+					generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "\t" + "}" + "\n";
+				}
 			}
 
 			//
@@ -1180,7 +1188,7 @@ void Transpiler::generateArrayAccessMethods(
 												bool booleanValue;
 												if (arrayAccessStatementAsScriptVariable.getBooleanValue(booleanValue) == true) {
 													generatedDefinitions+= lamdaIndent + "// Miniscript transpilation for a " + (condition == true?"condition":"statement") + " array access statement, statement index " + to_string(statement.statementIdx) + ", argument indices " + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, ", ") + ", array access statement index " + to_string(arrayAccessStatementIdx) + "\n";
-													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + (condition == true?"c":"s") + "_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
+													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
 													generatedDefinitions+= lamdaIndent + "	return Variable(" + (booleanValue == true?"true":"false") + ");" + "\n";
 													generatedDefinitions+= lamdaIndent + "};" + "\n";
 												}
@@ -1194,7 +1202,7 @@ void Transpiler::generateArrayAccessMethods(
 												int64_t integerValue;
 												if (arrayAccessStatementAsScriptVariable.getIntegerValue(integerValue) == true) {
 													generatedDefinitions+= lamdaIndent + "// Miniscript transpilation for a " + (condition == true?"condition":"statement") + " array access statement, statement index " + to_string(statement.statementIdx) + ", argument indices " + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, ", ") + ", array access statement index " + to_string(arrayAccessStatementIdx) + "\n";
-													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + (condition == true?"c":"s") + "_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
+													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
 													generatedDefinitions+= lamdaIndent + "	return Variable(static_cast<int64_t>(" + to_string(integerValue) + "ll));" + "\n";
 													generatedDefinitions+= lamdaIndent + "};" + "\n";
 												}
@@ -1208,7 +1216,7 @@ void Transpiler::generateArrayAccessMethods(
 												float floatValue;
 												if (arrayAccessStatementAsScriptVariable.getFloatValue(floatValue) == true) {
 													generatedDefinitions+= lamdaIndent + "// Miniscript transpilation for a " + (condition == true?"condition":"statement") + " array access statement, statement index " + to_string(statement.statementIdx) + ", argument indices " + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, ", ") + ", array access statement index " + to_string(arrayAccessStatementIdx) + "\n";
-													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + (condition == true?"c":"s") + "_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
+													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
 													generatedDefinitions+= lamdaIndent + "	return Variable(static_cast<int64_t>(" + to_string(static_cast<int64_t>(floatValue)) + "ll));" + "\n"; + "\n";
 													generatedDefinitions+= lamdaIndent + "};" + "\n";
 												}
@@ -1269,8 +1277,8 @@ void Transpiler::generateArrayAccessMethods(
 										"return returnValue;",
 										1
 									);
-									generatedDefinitions+= lamdaIndent + "// Miniscript transpilation for a " + (condition == true?"condition":"statement") + " array access statement, statement index " + to_string(statement.statementIdx) + ", argument indices " + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, ", ") + ", array access statement index " + to_string(arrayAccessStatementIdx) + "\n";
-									generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + (condition == true?"c":"s") + "_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
+									generatedDefinitions+= lamdaIndent + "// Miniscript transpilation for array access statement, statement index " + to_string(statement.statementIdx) + ", argument indices " + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, ", ") + ", array access statement index " + to_string(arrayAccessStatementIdx) + "\n";
+									generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
 									generatedDefinitions+= lamdaIndent + "\t" + "// MiniScript setup" + "\n";
 									generatedDefinitions+= lamdaIndent + "\t" + "auto miniScript = this;" + "\n";
 									generatedDefinitions+= transpiledCode;
@@ -1854,7 +1862,7 @@ bool Transpiler::transpileScriptStatement(
 								//
 								const auto& script = miniScript->getScripts()[scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
 								//
-								auto arrayAccessStatementMethod = string() + "array_access_statement_" + (scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?"c":"s") + "_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx);
+								auto arrayAccessStatementMethod = string() + "array_access_statement_" + to_string(statement.statementIdx) + "_" + MiniScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx);
 								//
 								generatedCode+= minIndentString + depthIndentString + "// we will use " + arrayAccessStatementMethod + "() to determine array access index"+ "\n";
 								//
@@ -2453,7 +2461,7 @@ bool Transpiler::transpileScriptCondition(MiniScript* miniScript, string& genera
 		{},
 		returnValue,
 		injectCode,
-		depth + 1
+		depth + 2
 	);
 
 	//
