@@ -166,13 +166,13 @@ public:
 
 	protected:
 		bool mathDataType { false };
-		int type { TYPE_NULL };
+		MiniScript::VariableType type { TYPE_NULL };
 
 		/**
 		 * Set type
 		 * @param type type
 		 */
-		inline void setType(int type) {
+		inline void setType(MiniScript::VariableType type) {
 			this->type = type;
 		}
 
@@ -280,7 +280,7 @@ public:
 		/**
 		 * @return type
 		 */
-		inline int getType() const {
+		inline MiniScript::VariableType getType() const {
 			return type;
 		}
 
@@ -1083,19 +1083,19 @@ public:
 		/**
 		 * @return value pointer
 		 */
-		inline const uint64_t getValuePtr() const {
-			return isReference() == true?ir.reference->valuePtr:valuePtr;
+		inline void* getValuePtr() const {
+			return (void*)(isReference() == true?ir.reference->valuePtr:valuePtr);
 		}
 
 		/**
 		 * Set value pointer
 		 * @param valuePtr value pointer
 		 */
-		inline void setValuePtr(uint64_t valuePtr) {
+		inline void setValuePtr(void* valuePtr) {
 			if (isReference() == true) {
-				ir.reference->valuePtr = valuePtr;
+				ir.reference->valuePtr = (uint64_t)valuePtr;
 			} else {
-				this->valuePtr = valuePtr;
+				this->valuePtr = (uint64_t)valuePtr;
 			}
 		}
 
@@ -3697,15 +3697,6 @@ public:
 	}
 
 	/**
-	 * Unset variable
-	 * @param name name
-	 * @param statement optional statement the variable is unset in
-	 */
-	inline void unsetVariable(const string& name, const Statement* statement = nullptr) {
-		// TODO:
-	}
-
-	/**
 	 * Parse script
 	 * @param pathName path name
 	 * @param fileName file name
@@ -3785,7 +3776,6 @@ public:
 		// lookup function
 		auto functionIt = functions.find(function);
 		if (functionIt == functions.end()) {
-			// _Console::println("MiniScript::call(): Script user function not found: " + function);
 			return false;
 		}
 		//
