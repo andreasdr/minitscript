@@ -3473,11 +3473,18 @@ public:
 	/**
 	 * Returns if a given string is a variable name
 	 * @param candidate candidate
+	 * @param statement statement
 	 * @return if string is a variable name
 	 */
-	inline static bool isVariableAccess(const string& candidate) {
-		if (candidate.size() == 0) return false;
-		if (candidate[0] != '$') return false;
+	inline bool isVariableAccess(const string& candidate, const Statement* statement = nullptr) {
+		if (candidate.size() == 0) {
+			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": empty variable statement");
+			return false;
+		}
+		if (candidate[0] != '$') {
+			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must begin with an $");
+			return false;
+		}
 		auto squareBracketCount = 0;
 		for (auto i = 1; i < candidate.size(); i++) {
 			auto c = candidate[i];
@@ -3488,25 +3495,30 @@ public:
 				squareBracketCount--;
 			} else
 			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
+				_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": invalid character in variable statement: '" + c + "'");
 				return false;
 			}
+		}
+		if (candidate.size() == 7 && string_view(candidate) == string_view("$GLOBAL")) {
+			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $GLOBAL");
+			return false;
 		}
 		return true;
 	}
 
 	/**
 	 * Returns if variable with given name exists
-	 * @param name name
+	 * @param variableStatement variable statement
 	 * @param statement optional statement the variable is read in
 	 * @return variable exists
 	 */
-	inline bool hasVariable(const string& name, const Statement* statement = nullptr) {
+	inline bool hasVariable(const string& variableStatement, const Statement* statement = nullptr) {
 		//
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::startsWith(name, "$GLOBAL.") == true) {
-			globalVariableStatement = "$" + _StringTools::substring(name, 8);
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.")) == true) {
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 
 		//
@@ -3514,7 +3526,7 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?name:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, false, globalVariableStatement.empty() == false);
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, false, globalVariableStatement.empty() == false);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return true;
@@ -3542,10 +3554,12 @@ public:
 	 */
 	inline const Variable getVariable(const string& variableStatement, const Statement* statement = nullptr, bool createReference = false) {
 		//
+		if (isVariableAccess(variableStatement, statement) == false) return Variable();
+		//
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.")) == true) {
 			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 
@@ -3585,6 +3599,8 @@ public:
 	 * @return variable
 	 */
 	inline const Variable getVariable(Variable* variablePtr, const string& variableStatement, const Statement* statement = nullptr, bool createReference = false) {
+		//
+		if (isVariableAccess(variableStatement, statement) == false) return Variable();
 		//
 		Variable* parentVariable = nullptr;
 		string key;
@@ -3631,10 +3647,13 @@ public:
 	 * @param createReference optional flag for creating variable references
 	 */
 	inline void setVariable(const string& variableStatement, const Variable& variable, const Statement* statement = nullptr, bool createReference = false) {
+		//
+		if (isVariableAccess(variableStatement, statement) == false) return;
+		//
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.")) == true) {
 			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 
@@ -3678,10 +3697,13 @@ public:
 	 * @param createReference optional flag for creating variable references
 	 */
 	inline void setVariable(Variable* variablePtr, const string& variableStatement, const Variable& variable, const Statement* statement = nullptr, bool createReference = false) {
+		//
+		if (isVariableAccess(variableStatement, statement) == false) return;
+		//
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.")) == true) {
 			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 
