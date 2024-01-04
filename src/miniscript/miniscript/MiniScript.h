@@ -3499,11 +3499,11 @@ public:
 				return false;
 			}
 		}
-		if (candidate.size() == 2 && string_view(candidate) == string_view("$$")) {
+		if (candidate.size() == 2 && string_view(candidate) == string_view("$$", 2)) {
 			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $$");
 			return false;
 		}
-		if (candidate.size() == 7 && string_view(candidate) == string_view("$GLOBAL")) {
+		if (candidate.size() == 7 && string_view(candidate) == string_view("$GLOBAL", 7)) {
 			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $GLOBAL");
 			return false;
 		}
