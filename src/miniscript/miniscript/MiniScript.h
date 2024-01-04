@@ -3094,10 +3094,12 @@ private:
 	 * @return if string is a variable name
 	 */
 	inline static bool viewIsVariableAccess(const string_view& candidate) {
-		if (candidate.size() == 0) return false;
-		if (candidate[0] != '$') return false;
+		if (candidate.size() < 2) return false;
+		auto i = 0;
+		if (candidate[i++] != '$') return false;
+		if (candidate[i] == '$') i++;
 		auto squareBracketCount = 0;
-		for (auto i = 1; i < candidate.size(); i++) {
+		for (; i < candidate.size(); i++) {
 			auto c = candidate[i];
 			if (c == '[') {
 				squareBracketCount++;
@@ -3477,16 +3479,19 @@ public:
 	 * @return if string is a variable name
 	 */
 	inline bool isVariableAccess(const string& candidate, const Statement* statement = nullptr) {
-		if (candidate.size() == 0) {
+		if (candidate.size() < 2) {
 			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": empty variable statement");
 			return false;
 		}
-		if (candidate[0] != '$') {
+		auto i = 0;
+		if (candidate[i++] != '$') {
 			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must begin with an $");
 			return false;
 		}
+		if (candidate[i] == '$') i++;
+		//
 		auto squareBracketCount = 0;
-		for (auto i = 1; i < candidate.size(); i++) {
+		for (; i < candidate.size(); i++) {
 			auto c = candidate[i];
 			if (c == '[') {
 				squareBracketCount++;
