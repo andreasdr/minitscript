@@ -3499,6 +3499,10 @@ public:
 				return false;
 			}
 		}
+		if (candidate.size() == 2 && string_view(candidate) == string_view("$$")) {
+			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $$");
+			return false;
+		}
 		if (candidate.size() == 7 && string_view(candidate) == string_view("$GLOBAL")) {
 			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $GLOBAL");
 			return false;
@@ -3517,10 +3521,12 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.")) == true) {
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		} else
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
 			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
-
 		//
 		Variable* parentVariable = nullptr;
 		string key;
@@ -3559,7 +3565,10 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.")) == true) {
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		} else
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
 			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 
@@ -3653,7 +3662,10 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.")) == true) {
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		} else
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
 			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 
@@ -3703,7 +3715,10 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.")) == true) {
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		} else
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
 			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
 		}
 

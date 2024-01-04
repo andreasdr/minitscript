@@ -153,9 +153,9 @@ end
 ...
 ``` 
 
-Global variables can always be accessed by using the "$GLOBAL." accessor.
+Global variables can always be accessed by using the "$$." or "$GLOBAL." accessor.
 By default variables are read from current context and if they have not been found from root context.
-So to be sure to use a global variable in function scope, just use the "$GLOBAL." accessor.
+So to be sure to use a global variable in function scope, just use the "$$." or "$GLOBAL." accessor.
 ```
 ...
 # function to test global variable access
