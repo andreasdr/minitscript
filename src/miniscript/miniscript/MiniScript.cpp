@@ -233,6 +233,22 @@ bool MiniScript::parseStatement(const string_view& executableStatement, string_v
 	auto quotedArgumentEnd = string::npos;
 	auto lc  = '\0';
 	//
+	auto viewIsStringMethodAccess = [](const string_view& candidate) -> bool {
+		if (candidate.size() == 0) return false;
+		//
+		auto i = 0;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		// -
+		if (candidate[i++] != '-') return false;
+		//
+		if (i >= candidate.size()) return false;
+		// >
+		if (candidate[i++] != '>') return false;
+		//
+		return true;
+	};
+	//
 	for (auto i = executableStatementStartIdx; i < executableStatement.size(); i++) {
 		auto c = executableStatement[i];
 		// quotes
@@ -287,7 +303,16 @@ bool MiniScript::parseStatement(const string_view& executableStatement, string_v
 				bracketCount--;
 				if (bracketCount == 0) {
 					if (quotedArgumentStart != string::npos) {
-						if (quotedArgumentEnd == string::npos) quotedArgumentEnd = i - 1;
+						// do we have a quoted argument end
+						if (quotedArgumentEnd == string::npos) {
+							quotedArgumentEnd = i - 1;
+						} else
+						// extend string with string method access if feasible
+						if (quotedArgumentEnd + 1 < executableStatement.size() &&
+							viewIsStringMethodAccess(string_view(&executableStatement[quotedArgumentEnd + 1], executableStatement.size() - (quotedArgumentEnd + 1))) == true) {
+							quotedArgumentEnd = i - 1;
+						}
+						//
 						auto argumentLength = quotedArgumentEnd - quotedArgumentStart + 1;
 						if (argumentLength > 0) arguments.push_back(_StringTools::viewTrim(string_view(&executableStatement[quotedArgumentStart], argumentLength)));
 						quotedArgumentStart = string::npos;
@@ -357,7 +382,15 @@ bool MiniScript::parseStatement(const string_view& executableStatement, string_v
 				if (c == ',') {
 					if (bracketCount == 1) {
 						if (quotedArgumentStart != string::npos) {
-							if (quotedArgumentEnd == string::npos) quotedArgumentEnd = i - 1;
+							// do we have a quoted argument end
+							if (quotedArgumentEnd == string::npos) {
+								quotedArgumentEnd = i - 1;
+							} else
+							// extend string with string method access if feasible
+							if (quotedArgumentEnd + 1 < executableStatement.size() &&
+								viewIsStringMethodAccess(string_view(&executableStatement[quotedArgumentEnd + 1], executableStatement.size() - (quotedArgumentEnd + 1))) == true) {
+								quotedArgumentEnd = i - 1;
+							}
 							auto argumentLength = quotedArgumentEnd - quotedArgumentStart + 1;
 							if (argumentLength > 0) arguments.push_back(_StringTools::viewTrim(string_view(&executableStatement[quotedArgumentStart], argumentLength)));
 							quotedArgumentStart = string::npos;
@@ -394,10 +427,12 @@ bool MiniScript::parseStatement(const string_view& executableStatement, string_v
 		//
 		lc = c;
 	}
+
 	// extract method name
 	if (methodStart != string::npos && methodEnd != string::npos) {
 		methodName = _StringTools::viewTrim(string_view(&executableStatement[methodStart], methodEnd - methodStart + 1));
 	}
+
 	// handle object member access and generate internal.script.evaluateMemberAccess call
 	if (objectMemberAccess == true) {
 		// construct executable statement and arguments
@@ -1932,7 +1967,7 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 		Operator operator_;
 	};
 	//
-	auto trimArgument = [&](const string& argument) -> const string {
+	auto trimArgument = [](const string& argument) -> const string {
 		auto processedArgument = _StringTools::trim(argument);
 		if (_StringTools::startsWith(processedArgument, "(") == true && _StringTools::endsWith(processedArgument, ")") == true) {
 			processedArgument = _StringTools::substring(processedArgument, 1, processedArgument.size() - 1);
@@ -2103,6 +2138,75 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 		}
 		//
 		return trimArgument(argument);
+	};
+	//
+	auto viewIsLamdaFunction = [](const string_view& candidate) -> bool {
+		if (candidate.size() == 0) return false;
+		//
+		auto i = 0;
+		// (
+		if (candidate[i++] != '(') return false;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		//
+		auto argumentStartIdx = string::npos;
+		auto argumentEndIdx = string::npos;
+		//
+		for (; i < candidate.size(); i++) {
+			auto c = candidate[i];
+			if (c == '&') {
+				if (argumentStartIdx == string::npos) {
+					argumentStartIdx = i;
+				} else {
+					return false;
+				}
+			} else
+			if (c == '$') {
+				if (argumentStartIdx == string::npos) {
+					argumentStartIdx = i;
+				} else
+				if (argumentStartIdx == i - 1 && candidate[argumentStartIdx] == '&') {
+					// no op
+				} else {
+					return false;
+				}
+			} else
+			if (c == ',' || c == ')') {
+				if (argumentEndIdx == string::npos) {
+					if (argumentStartIdx != string::npos) {
+						argumentEndIdx = i;
+					}
+					//
+					argumentStartIdx = string::npos;
+					argumentEndIdx = string::npos;
+				} else {
+					return false;
+				}
+				if (c == ')') {
+					i++;
+					break;
+				}
+			} else
+			if (argumentStartIdx != string::npos && _Character::isAlphaNumeric(candidate[i]) == false && c != '_') {
+				return false;
+			}
+		}
+		//
+		if (i >= candidate.size()) return false;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		// -
+		if (candidate[i++] != '-') return false;
+		//
+		if (i >= candidate.size()) return false;
+		// >
+		if (candidate[i++] != '>') return false;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		//
+		if (candidate[i++] != '{') return false;
+		//
+		return true;
 	};
 	//
 	auto getNextStatementOperator = [&](const string& processedStatement, StatementOperator& nextOperator, const Statement& statement) {
