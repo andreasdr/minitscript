@@ -1844,7 +1844,7 @@ public:
 			if (viewIsVariableAccess(value) == true) {
 				setFunctionCallStatement("getVariable(\"" + string(value) + "\")", miniScript, statement);
 			} else {
-				setValue(string(value));
+				setValue(deescape(value));
 			}
 		}
 
@@ -2915,6 +2915,26 @@ private:
 	  * @return initialized variable
 	  */
 	const Variable initializeVariable(const Variable& variable);
+
+	/**
+	 * Deescape string
+	 * @param str string
+	 * @return deescaped string
+	 */
+	inline static const string deescape(const string_view& str) {
+		string deescapedStr;
+		auto lc = '\0';
+		for (auto i = 0; i < str.size(); i++) {
+			auto c = str[i];
+			if (c != '\\' || lc == '\\') {
+				deescapedStr+= c;
+				lc = '\0';
+				continue;
+			}
+			lc = c;
+		}
+		return deescapedStr;
+	}
 
 	/**
 	 * Returns if a given string is a inline/lambda function

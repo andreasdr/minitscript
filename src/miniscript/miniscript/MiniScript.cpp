@@ -760,7 +760,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 		if (viewIsVariableAccess(argument) == true) {
 			//
 			Variable value;
-			value.setValue(string(argument));
+			value.setValue(deescape(argument));
 
 			// look up getVariable method
 			string methodName = argumentIdx >= argumentReferences.size() || argumentReferences[argumentIdx] == false?"getVariable":"getVariableReference";
@@ -780,7 +780,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 
 			syntaxTree.arguments.emplace_back(
 				SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD,
-				MiniScript::Variable(methodName),
+				MiniScript::Variable(deescape(methodName)),
 				method,
 				initializer_list<SyntaxTreeNode>
 					{
@@ -828,7 +828,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 				_StringTools::viewEndsWith(argument, "'") == true)) {
 				//
 				Variable value;
-				value.setValue(string(_StringTools::viewSubstring(argument, 1, argument.size() - 1)));
+				value.setValue(deescape(_StringTools::viewSubstring(argument, 1, argument.size() - 1)));
 				//
 				syntaxTree.arguments.emplace_back(
 					SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
@@ -855,7 +855,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 	// try first user functions
 	if (functionIdx != SCRIPTIDX_NONE) {
 		syntaxTree.type = SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION;
-		syntaxTree.value.setValue(string(methodName));
+		syntaxTree.value.setValue(deescape(methodName));
 		syntaxTree.setFunctionScriptIdx(functionIdx);
 		//
 		return true;
@@ -863,7 +863,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 	// try methods next
 	if (method != nullptr) {
 		syntaxTree.type = SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD;
-		syntaxTree.value.setValue(string(methodName));
+		syntaxTree.value.setValue(deescape(methodName));
 		syntaxTree.setMethod(method);
 		//
 		return true;
