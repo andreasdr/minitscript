@@ -2791,10 +2791,11 @@ private:
 	 * @param executableStatement executable statement
 	 * @param object object
 	 * @param method method
+	 * @param methodStartIdx method start index
 	 * @param statement statement
 	 * @return statement has a object member access
 	 */
-	bool getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, const Statement& statement);
+	bool getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, int& methodStartIdx, const Statement& statement);
 
 	/**
 	 * Get access operator left and right indices

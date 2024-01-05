@@ -219,8 +219,8 @@ bool MiniScript::parseStatement(const string_view& executableStatement, string_v
 	if (VERBOSE == true) _Console::println("MiniScript::parseScriptStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
 	string_view objectMemberAccessObject;
 	string_view objectMemberAccessMethod;
-	auto objectMemberAccess = getObjectMemberAccess(executableStatement, objectMemberAccessObject, objectMemberAccessMethod, statement);
-	auto executableStatementStartIdx = objectMemberAccess == true?objectMemberAccessObject.size() + 2:0;
+	int executableStatementStartIdx = 0;
+	auto objectMemberAccess = getObjectMemberAccess(executableStatement, objectMemberAccessObject, objectMemberAccessMethod, executableStatementStartIdx, statement);
 	auto bracketCount = 0;
 	auto squareBracketCount = 0;
 	auto curlyBracketCount = 0;
@@ -697,6 +697,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 		// object member access
 		string_view accessObjectMemberObject;
 		string_view accessObjectMemberMethod;
+		int accessObjectMemberStartIdx;
 		vector<string_view> lamdaFunctionArguments;
 		string_view lamdaFunctionScriptCode;
 		if (viewIsLamdaFunction(argument, lamdaFunctionArguments, lamdaFunctionScriptCode) == true) {
@@ -705,7 +706,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 			SyntaxTreeNode subSyntaxTree(SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {});
 			syntaxTree.arguments.push_back(subSyntaxTree);
 		} else
-		if (getObjectMemberAccess(argument, accessObjectMemberObject, accessObjectMemberMethod, statement) == true) {
+		if (getObjectMemberAccess(argument, accessObjectMemberObject, accessObjectMemberMethod, accessObjectMemberStartIdx, statement) == true) {
 			// method call
 			string_view subMethodName;
 			vector<string_view> subArguments;
@@ -2240,9 +2241,7 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 	return preprocessedStatement;
 }
 
-bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, const Statement& statement) {
-	// TODO: "xxx"->toUpperString()
-	// _Console::println("oma: " + string(executableStatement));
+bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, int& methodStartIdx, const Statement& statement) {
 	//
 	auto objectMemberAccess = false;
 	auto objectStartIdx = string::npos;
@@ -2297,11 +2296,9 @@ bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, s
 			memberCallStartIdx = i + 1;
 			memberCallEndIdx = executableStatement.size();
 			//
-			object = string_view(&executableStatement[objectStartIdx], objectEndIdx - objectStartIdx);
-			method = string_view(&executableStatement[memberCallStartIdx], memberCallEndIdx - memberCallStartIdx);
-			//
-			// _Console::println("\t" + string(object) + " / " + string(method));
-			//
+			object = _StringTools::viewTrim(string_view(&executableStatement[objectStartIdx], objectEndIdx - objectStartIdx));
+			method = _StringTools::viewTrim(string_view(&executableStatement[memberCallStartIdx], memberCallEndIdx - memberCallStartIdx));
+			methodStartIdx = memberCallStartIdx;
 			objectMemberAccess = true;
 			// dont break here, we can have multiple member access operators here, but we want the last one in this step
 		}
