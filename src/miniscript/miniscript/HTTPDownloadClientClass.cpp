@@ -297,6 +297,7 @@ void HTTPDownloadClientClass::unsetVariableValue(MiniScript::Variable& variable)
 
 void HTTPDownloadClientClass::setVariableValue(MiniScript::Variable& variable) const {
 	auto sharedPtr = make_shared<_HTTPDownloadClient>();
+	instances.push_back(sharedPtr);
 	variable.setValuePtr(new shared_ptr<_HTTPDownloadClient>(sharedPtr));
 }
 
