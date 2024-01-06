@@ -21,7 +21,7 @@ using _HTTPDownloadClient = miniscript::network::httpclient::HTTPDownloadClient;
  * HTTP download client
  * @author Andreas Drewke
  */
-class miniscript::miniscript::HTTPDownloadClient final: public MiniScript::DataType {
+class miniscript::miniscript::HTTPDownloadClientClass final: public MiniScript::DataType {
 private:
 	MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPE_NAME;
 	MINISCRIPT_STATIC_DLL_IMPEXT static vector<shared_ptr<_HTTPDownloadClient>> instances;
@@ -40,7 +40,7 @@ private:
 
 public:
 	// forbid class copy
-	FORBID_CLASS_COPY(HTTPDownloadClient)
+	FORBID_CLASS_COPY(HTTPDownloadClientClass)
 
 	/**
 	 * Initialize
@@ -50,7 +50,7 @@ public:
 	/**
 	 * MiniScript Vector2 data type
 	 */
-	HTTPDownloadClient(): MiniScript::DataType(false) {
+	HTTPDownloadClientClass(): MiniScript::DataType(false) {
 		//
 	}
 

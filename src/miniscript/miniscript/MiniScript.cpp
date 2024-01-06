@@ -27,7 +27,7 @@
 #include <miniscript/miniscript/ConsoleMethods.h>
 #include <miniscript/miniscript/ContextMethods.h>
 #include <miniscript/miniscript/FileSystemMethods.h>
-#include <miniscript/miniscript/HTTPDownloadClient.h>
+#include <miniscript/miniscript/HTTPDownloadClientClass.h>
 #include <miniscript/miniscript/JSONMethods.h>
 #include <miniscript/miniscript/MapMethods.h>
 #include <miniscript/miniscript/MathMethods.h>
@@ -78,7 +78,7 @@ using miniscript::miniscript::CryptographyMethods;
 using miniscript::miniscript::ConsoleMethods;
 using miniscript::miniscript::ContextMethods;
 using miniscript::miniscript::FileSystemMethods;
-using miniscript::miniscript::HTTPDownloadClient;
+using miniscript::miniscript::HTTPDownloadClientClass;
 using miniscript::miniscript::JSONMethods;
 using miniscript::miniscript::MapMethods;
 using miniscript::miniscript::MathMethods;
@@ -123,9 +123,9 @@ const vector<string> MiniScript::Method::CONTEXTFUNCTIONS_ALL = {};
 
 void MiniScript::initialize() {
 	//
-	registerDataType(new HTTPDownloadClient());
+	registerDataType(new HTTPDownloadClientClass());
 	//
-	HTTPDownloadClient::initialize();
+	HTTPDownloadClientClass::initialize();
 }
 
 const string MiniScript::getBaseClassHeader() {
