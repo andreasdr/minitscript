@@ -48,6 +48,25 @@ public:
 	static void initialize();
 
 	/**
+	 * Get HTTPDownloadClient value from given variable
+	 * @param arguments arguments
+	 * @param idx argument index
+	 * @param value value
+	 * @param optional optional
+	 * @return success
+	 */
+	static inline bool getHTTPDownloadClientValue(const span<MiniScript::Variable>& arguments, int idx, shared_ptr<_HTTPDownloadClient>& value, bool optional = false) {
+		if (idx >= arguments.size()) return optional;
+		const auto& argument = arguments[idx];
+		if (argument.getType() == MiniScript::TYPE_HTTPDOWNLOADCLIENT) {
+			value = *static_cast<shared_ptr<_HTTPDownloadClient>*>(argument.getValuePtr());
+			return true;
+		}
+		return optional;
+
+	}
+
+	/**
 	 * MiniScript Vector2 data type
 	 */
 	HTTPDownloadClientClass(): MiniScript::DataType(false) {
