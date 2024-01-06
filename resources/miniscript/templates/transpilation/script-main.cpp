@@ -19,6 +19,7 @@ using miniscript::os::filesystem::FileSystem;
 using miniscript::utilities::Console;
 
 int main(int argc, char *argv[]) {
+	MiniScript::initialize();
 	auto context = make_unique<Context>();
 	auto script = make_unique<{$script-class}>();
 	script->setContext(context.get());

@@ -146,6 +146,7 @@ const vector<string> MiniScript::getTranspilationUnits() {
 		"src/miniscript/miniscript/ContextMethods.cpp",
 		"src/miniscript/miniscript/CryptographyMethods.cpp",
 		"src/miniscript/miniscript/FileSystemMethods.cpp",
+		"src/miniscript/miniscript/HTTPDownloadClientClass.cpp",
 		"src/miniscript/miniscript/JSONMethods.cpp",
 		"src/miniscript/miniscript/MapMethods.cpp",
 		"src/miniscript/miniscript/MathMethods.cpp",
@@ -2597,49 +2598,43 @@ const string MiniScript::getInformation() {
 	result+= "\n";
 
 	//
-	if (native == false) {
-		//
-		result+= "Methods:\n";
-		{
-			vector<string> methods;
-			for (const auto& [methodName, method]: this->methods) {
-				if (method->isPrivate() == true) continue;
-				string methodDescription;
-				methodDescription+= method->getMethodName();
-				methodDescription+= "(";
-				methodDescription+= method->getArgumentsInformation();
-				methodDescription+= "): ";
-				methodDescription+= Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable());
-				methods.push_back(methodDescription);
-			}
-			sort(methods.begin(), methods.end());
-			for (const auto& method: methods) result+= method + "\n";
+	result+= "Methods:\n";
+	{
+		vector<string> methods;
+		for (const auto& [methodName, method]: this->methods) {
+			if (method->isPrivate() == true) continue;
+			string methodDescription;
+			methodDescription+= method->getMethodName();
+			methodDescription+= "(";
+			methodDescription+= method->getArgumentsInformation();
+			methodDescription+= "): ";
+			methodDescription+= Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable());
+			methods.push_back(methodDescription);
 		}
-		result+= "\n";
-
-		//
-		result+= "Operators:\n";
-		{
-			vector<string> operators;
-			for (const auto& [operatorId, method]: this->operators) {
-				string operatorString;
-				operatorString+= getOperatorAsString(method->getOperator());
-				operatorString+= " --> ";
-				operatorString+= method->getMethodName();
-				operatorString+= "(";
-				operatorString+= method->getArgumentsInformation();
-				operatorString+= "): ";
-				operatorString+= Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable());
-				operators.push_back(operatorString);
-			}
-			sort(operators.begin(), operators.end());
-			for (const auto& method: operators) result+= method + "\n";
-		}
-		result+= "\n";
-	} else {
-		result+= "Methods:\n\trunning natively\n\n";
-		result+= "Operators:\n\trunning natively\n\n";
+		sort(methods.begin(), methods.end());
+		for (const auto& method: methods) result+= method + "\n";
 	}
+	result+= "\n";
+
+	//
+	result+= "Operators:\n";
+	{
+		vector<string> operators;
+		for (const auto& [operatorId, method]: this->operators) {
+			string operatorString;
+			operatorString+= getOperatorAsString(method->getOperator());
+			operatorString+= " --> ";
+			operatorString+= method->getMethodName();
+			operatorString+= "(";
+			operatorString+= method->getArgumentsInformation();
+			operatorString+= "): ";
+			operatorString+= Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable());
+			operators.push_back(operatorString);
+		}
+		sort(operators.begin(), operators.end());
+		for (const auto& method: operators) result+= method + "\n";
+	}
+	result+= "\n";
 
 	//
 	result+= "Variables:\n";
@@ -2817,7 +2812,12 @@ void MiniScript::registerMethods() {
 						string thisVariableName;
 						if (arguments[0].getType() != MiniScript::TYPE_NULL && arguments[0].getStringValue(thisVariableName) == true) {
 							// yep, looks like that, we always use a reference here
-							arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
+							#if defined(__MINISCRIPT_TRANSPILATION__)
+								// TODO: we should use the real variable here
+							#else
+								// TODO: does not work
+								arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
+							#endif
 						}
 					}
 					// check if map, if so fetch function assignment of member property
@@ -2856,9 +2856,11 @@ void MiniScript::registerMethods() {
 									if (arguments[argumentIdx].getType() != MiniScript::TYPE_NULL && arguments[argumentIdx].getStringValue(argumentVariableName) == true) {
 										// yep, looks like that
 										if (method != nullptr) {
+											// TODO: we should use the real variable here
 											arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentIdx].reference);
 										} else
 										if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
+											// TODO: we should use the real variable here
 											arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionIdx].functionArguments.size()?false:miniScript->getScripts()[functionIdx].functionArguments[callArgumentIdx].reference);
 										}
 									}
