@@ -852,19 +852,11 @@ public:
 		 */
 		inline Variable& operator=(const Variable& variable) {
 			// set up new variable
+			unset();
+			//
 			if (variable.isReference() == true) {
-				// release current reference
-				if (isReference() == true) {
-					ir.reference->releaseReference();
-					unsetReference();
-				}
-				//
-				setType(TYPE_NULL);
-				//
 				setReference(variable.ir.reference);
 			} else {
-				setType(TYPE_NULL);
-				//
 				copyVariable(*this, variable);
 			}
 			//
