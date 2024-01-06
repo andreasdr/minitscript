@@ -27,6 +27,7 @@
 #include <miniscript/miniscript/ConsoleMethods.h>
 #include <miniscript/miniscript/ContextMethods.h>
 #include <miniscript/miniscript/FileSystemMethods.h>
+#include <miniscript/miniscript/HTTPDownloadClient.h>
 #include <miniscript/miniscript/JSONMethods.h>
 #include <miniscript/miniscript/MapMethods.h>
 #include <miniscript/miniscript/MathMethods.h>
@@ -77,6 +78,7 @@ using miniscript::miniscript::CryptographyMethods;
 using miniscript::miniscript::ConsoleMethods;
 using miniscript::miniscript::ContextMethods;
 using miniscript::miniscript::FileSystemMethods;
+using miniscript::miniscript::HTTPDownloadClient;
 using miniscript::miniscript::JSONMethods;
 using miniscript::miniscript::MapMethods;
 using miniscript::miniscript::MathMethods;
@@ -118,6 +120,13 @@ const string MiniScript::Variable::TYPENAME_MAP = "Map";
 const string MiniScript::Variable::TYPENAME_SET = "Set";
 
 const vector<string> MiniScript::Method::CONTEXTFUNCTIONS_ALL = {};
+
+void MiniScript::initialize() {
+	//
+	registerDataType(new HTTPDownloadClient());
+	//
+	HTTPDownloadClient::initialize();
+}
 
 const string MiniScript::getBaseClassHeader() {
 	return "miniscript/miniscript/MiniScript.h";
@@ -2978,54 +2987,54 @@ void MiniScript::registerVariables() {
 	//
 	miniScriptMath->registerConstants();
 
-	// base script methods
-	// 	register base methods
+	// base script constants
+	// 	register base constants
 	BaseMethods::registerConstants(this);
 
-	// 	register string methods
+	// 	register string constants
 	StringMethods::registerConstants(this);
 
-	// 	register byte array methods
+	// 	register byte array constants
 	ByteArrayMethods::registerConstants(this);
 
-	// 	register array methods
+	// 	register array constants
 	ArrayMethods::registerConstants(this);
 
-	// 	register map methods
+	// 	register map constants
 	MapMethods::registerConstants(this);
 
-	// 	register set methods
+	// 	register set constants
 	SetMethods::registerConstants(this);
 
-	// 	register script methods
+	// 	register script constants
 	ScriptMethods::registerConstants(this);
 
-	// additional script methods
-	// register application methods
+	// additional script constants
+	// register application constants
 	ApplicationMethods::registerConstants(this);
 
-	// register console methods
+	// register console constants
 	ConsoleMethods::registerConstants(this);
 
-	// register context methods
+	// register context constants
 	ContextMethods::registerConstants(this);
 
-	// register cryptography methods
+	// register cryptography constants
 	CryptographyMethods::registerConstants(this);
 
-	// register file system methods
+	// register file system constants
 	FileSystemMethods::registerConstants(this);
 
-	// register JSON methods
+	// register JSON constants
 	JSONMethods::registerConstants(this);
 
-	// register network methods
+	// register network constants
 	NetworkMethods::registerConstants(this);
 
-	// register time methods
+	// register time constants
 	TimeMethods::registerConstants(this);
 
-	// register XML methods
+	// register XML constants
 	XMLMethods::registerConstants(this);
 
 	//

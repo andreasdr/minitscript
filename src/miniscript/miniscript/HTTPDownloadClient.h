@@ -1,15 +1,21 @@
 #pragma once
 
+#include <memory>
 #include <span>
+#include <vector>
 
 #include <miniscript/miniscript/MiniScript.h>
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/fwd-miniscript.h>
+#include <miniscript/network/httpclient/HTTPDownloadClient.h>
 
+using std::shared_ptr;
 using std::span;
+using std::vector;
 
 using miniscript::miniscript::MiniScript;
+using _HTTPDownloadClient = miniscript::network::httpclient::HTTPDownloadClient;
 
 /**
  * HTTP download client
@@ -17,6 +23,9 @@ using miniscript::miniscript::MiniScript;
  */
 class miniscript::miniscript::HTTPDownloadClient final: public MiniScript::DataType {
 private:
+	MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPE_NAME;
+	MINISCRIPT_STATIC_DLL_IMPEXT static vector<shared_ptr<_HTTPDownloadClient>> instances;
+
 	// overridden methods
 	void registerConstants(MiniScript* miniScript) const override;
 	void registerMethods(MiniScript* miniScript) const override;
@@ -30,20 +39,18 @@ private:
 	bool sub(MiniScript* miniScript, const span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) const override;
 
 public:
-	MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPE_NAME;
+	// forbid class copy
+	FORBID_CLASS_COPY(HTTPDownloadClient)
 
 	/**
 	 * Initialize
 	 */
 	static void initialize();
 
-	// forbid class copy
-	FORBID_CLASS_COPY(HTTPDownloadClient)
-
 	/**
 	 * MiniScript Vector2 data type
 	 */
-	HTTPDownloadClient(): MiniScript::DataType(true) {
+	HTTPDownloadClient(): MiniScript::DataType(false) {
 		//
 	}
 

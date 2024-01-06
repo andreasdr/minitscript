@@ -134,23 +134,24 @@ public:
 
 	enum VariableType {
 		// primitives
-		TYPE_NULL,
-		TYPE_BOOLEAN,
-		TYPE_INTEGER,
-		TYPE_FLOAT,
+		TYPE_NULL = 0,
+		TYPE_BOOLEAN = 1,
+		TYPE_INTEGER = 2,
+		TYPE_FLOAT = 3,
 		// special
-		TYPE_FUNCTION_CALL,
-		TYPE_FUNCTION_ASSIGNMENT,
+		TYPE_FUNCTION_CALL = 4,
+		TYPE_FUNCTION_ASSIGNMENT = 5,
 		// pseudo
-		TYPE_PSEUDO_NUMBER,
-		TYPE_PSEUDO_MIXED,
+		TYPE_PSEUDO_NUMBER = 6,
+		TYPE_PSEUDO_MIXED = 7,
 		// classes
-		TYPE_STRING,
-		TYPE_BYTEARRAY,
-		TYPE_ARRAY,
-		TYPE_MAP,
-		TYPE_SET,
-		TYPE_PSEUDO_CUSTOM_DATATYPES,
+		TYPE_STRING = 8,
+		TYPE_BYTEARRAY = 9,
+		TYPE_ARRAY = 10,
+		TYPE_MAP = 11,
+		TYPE_SET = 12,
+		TYPE_HTTPDOWNLOADCLIENT = 13,
+		TYPE_PSEUDO_CUSTOM_DATATYPES = 13
 	};
 
 	//
@@ -3056,6 +3057,11 @@ private:
 	static bool viewIsKey(const string_view& candidate);
 
 public:
+	/**
+	 * Initialize
+	 */
+	static void initialize();
+
 	/**
 	 * Set variable recursively to be a constant
 	 * @param variable variable
