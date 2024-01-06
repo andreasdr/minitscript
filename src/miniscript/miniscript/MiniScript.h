@@ -852,11 +852,11 @@ public:
 		 */
 		inline Variable& operator=(const Variable& variable) {
 			// set up new variable
+			unset();
+			//
 			if (variable.isReference() == true) {
-				unset();
 				setReference(variable.ir.reference);
 			} else {
-				setType(TYPE_NULL);
 				copyVariable(*this, variable);
 			}
 			//
