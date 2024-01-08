@@ -2814,7 +2814,7 @@ void MiniScript::registerMethods() {
 							// yep, looks like that, we always use a reference here
 							#if defined(__MINISCRIPT_TRANSPILATION__)
 								// TODO: we should use the real variable here
-								arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
+								arguments[1] = Variable::createReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENT0);
 							#else
 								// TODO: does not work
 								arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
@@ -2855,15 +2855,19 @@ void MiniScript::registerMethods() {
 									// do we have a this variable name?
 									string argumentVariableName;
 									if (arguments[argumentIdx].getType() != MiniScript::TYPE_NULL && arguments[argumentIdx].getStringValue(argumentVariableName) == true) {
-										// yep, looks like that
-										if (method != nullptr) {
-											// TODO: we should use the real variable here
-											arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentIdx].reference);
-										} else
-										if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
-											// TODO: we should use the real variable here
-											arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionIdx].functionArguments.size()?false:miniScript->getScripts()[functionIdx].functionArguments[callArgumentIdx].reference);
-										}
+										#if defined(__MINISCRIPT_TRANSPILATION__)
+											arguments[argumentIdx + 1] = Variable::createReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]);
+										#else
+											// yep, looks like that
+											if (method != nullptr) {
+												// TODO: we should use the real variable here
+												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentIdx].reference);
+											} else
+											if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
+												// TODO: we should use the real variable here
+												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionIdx].functionArguments.size()?false:miniScript->getScripts()[functionIdx].functionArguments[callArgumentIdx].reference);
+											}
+										#endif
 									}
 									//
 									callArguments[callArgumentIdx] = move(arguments[argumentIdx + 1]);
