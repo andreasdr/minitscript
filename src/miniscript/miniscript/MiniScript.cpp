@@ -2814,6 +2814,7 @@ void MiniScript::registerMethods() {
 							// yep, looks like that, we always use a reference here
 							#if defined(__MINISCRIPT_TRANSPILATION__)
 								// TODO: we should use the real variable here
+								arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
 							#else
 								// TODO: does not work
 								arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
@@ -2880,7 +2881,7 @@ void MiniScript::registerMethods() {
 							}
 							// write back arguments from call arguments
 							//	this
-							arguments[1] = move(callArgumentsSpan[0]);
+							arguments[1].setValue(callArgumentsSpan[0]);
 							//	additional arguments
 							{
 								auto callArgumentIdx = 1;

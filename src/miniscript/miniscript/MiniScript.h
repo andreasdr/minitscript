@@ -1266,6 +1266,14 @@ public:
 		}
 
 		/**
+		 * Set value from given variable into variable
+		 * @param variable variable
+		 */
+		inline void setValue(const Variable& variable) {
+			copyVariable(*this, variable);
+		}
+
+		/**
 		 * Set boolean value from given value into variable
 		 * @param value value
 		 */

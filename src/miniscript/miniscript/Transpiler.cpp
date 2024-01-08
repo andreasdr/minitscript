@@ -2251,7 +2251,7 @@ bool Transpiler::transpileScriptStatement(
 					if (haveVariableStatement == true) {
 						generatedCode+= minIndentString + depthIndentString + "\t" + "setVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[0].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[1], &statement); returnValue = arguments[1];" + "\n";
 					} else {
-						generatedCode+= minIndentString + depthIndentString + "\t" + createGlobalVariableName(globalVariable) + " = arguments[1]; returnValue = arguments[1];" + "\n";
+						generatedCode+= minIndentString + depthIndentString + "\t" + createGlobalVariableName(globalVariable) + ".setValue(arguments[1]); returnValue = arguments[1];" + "\n";
 					}
 				}
 			} else {
@@ -2275,7 +2275,7 @@ bool Transpiler::transpileScriptStatement(
 					if (haveVariableStatement == true) {
 						generatedCode+= minIndentString + depthIndentString + "\t" + "setVariable(&" + createLocalVariableName(localVariable) + ", arguments[0].getValueAsString(), arguments[1], &statement); returnValue = arguments[1];" + "\n";
 					} else {
-						generatedCode+= minIndentString + depthIndentString + "\t" + createLocalVariableName(localVariable) + " = arguments[1]; returnValue = arguments[1];" + "\n";
+						generatedCode+= minIndentString + depthIndentString + "\t" + createLocalVariableName(localVariable) + ".setValue(arguments[1]); returnValue = arguments[1];" + "\n";
 					}
 				}
 			}
@@ -2301,7 +2301,7 @@ bool Transpiler::transpileScriptStatement(
 				if (haveVariableStatement == true) {
 					generatedCode+= minIndentString + depthIndentString + "\t" + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[0].getValueAsString(), arguments[1], &statement); returnValue = arguments[1];" + "\n";
 				} else {
-					generatedCode+= minIndentString + depthIndentString + "\t" + createGlobalVariableName(globalVariable) + " = arguments[1]; returnValue = arguments[1];" + "\n";
+					generatedCode+= minIndentString + depthIndentString + "\t" + createGlobalVariableName(globalVariable) + ".setValue(arguments[1]); returnValue = arguments[1];" + "\n";
 				}
 			}
 		}
