@@ -23,14 +23,6 @@ using _HTTPDownloadClient = miniscript::network::httpclient::HTTPDownloadClient;
 
 const string HTTPDownloadClientClass::TYPE_NAME = "HTTPDownloadClient";
 
-void* HTTPDownloadClientClass::createScriptContext() {
-	return new ScriptContext();
-}
-
-void HTTPDownloadClientClass::deleteScriptContext(void* context) {
-	delete static_cast<ScriptContext*>(context);
-}
-
 void HTTPDownloadClientClass::initialize() {
 }
 
@@ -343,6 +335,14 @@ const string& HTTPDownloadClientClass::getTypeAsString() const {
 const string HTTPDownloadClientClass::getValueAsString(const MiniScript::Variable& variable) const {
 	const auto& httpDownloadClient = *static_cast<shared_ptr<_HTTPDownloadClient>*>(variable.getValuePtr());
 	return "HTTPDownloadClientClass(url: " + httpDownloadClient->getURL() + ", file: " + httpDownloadClient->getFile() + ")";
+}
+
+void* HTTPDownloadClientClass::createScriptContext() const {
+	return new ScriptContext();
+}
+
+void HTTPDownloadClientClass::deleteScriptContext(void* context) const {
+	delete static_cast<ScriptContext*>(context);
 }
 
 void HTTPDownloadClientClass::garbageCollection(void* context) const {

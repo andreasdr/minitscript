@@ -42,6 +42,7 @@ on: nothing
 	$httpDownloadClient->execute()
 	forCondition($httpDownloadClient->isFinished() == false)
 		console.log($httpDownloadClient->getProgress())
+		script.wait(1000)
 	end
 	#
 	script.stop()
