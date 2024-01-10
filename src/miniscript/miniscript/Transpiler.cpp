@@ -1163,7 +1163,7 @@ void Transpiler::generateVariableAccess(
 				if (haveVariableStatement == true) {
 					generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				} else {
-					generatedCode+= indent + createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(getArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+					generatedCode+= indent + createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				}
 			}
 		} else {
