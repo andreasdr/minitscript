@@ -18,10 +18,10 @@ using std::unique_ptr;
 using std::unordered_map;
 using std::vector;
 
-using miniscript::network::httpclient::HTTPClientException;
-using miniscript::os::network::NetworkException;
-using miniscript::os::threading::Mutex;
-using miniscript::os::threading::Thread;
+using _HTTPClientException = miniscript::network::httpclient::HTTPClientException;
+using _NetworkException = miniscript::os::network::NetworkException;
+using _Mutex = miniscript::os::threading::Mutex;
+using _Thread = miniscript::os::threading::Thread;
 
 /**
  * HTTP download client
@@ -41,8 +41,8 @@ private:
 	int16_t statusCode { -1 };
 	unordered_map<string, string> responseHeaders;
 
-	unique_ptr<Thread> downloadThread;
-	Mutex downloadThreadMutex;
+	unique_ptr<_Thread> downloadThread;
+	_Mutex downloadThreadMutex;
 	bool haveHeaders { false };
 	bool haveContentSize { false };
 	uint64_t headerSize { 0LL };

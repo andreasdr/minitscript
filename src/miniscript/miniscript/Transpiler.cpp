@@ -47,33 +47,6 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	//
 	Console::println(scriptFileName + ": Processing script");
 	//
-	auto compare_includes = [](const string& lhs, const string& rhs) -> bool {
-		if (StringTools::startsWith(lhs, "#include <tdme/tdme.h>") == true) return true; else
-		if (StringTools::startsWith(rhs, "#include <tdme/tdme.h>") == true) return false;
-		auto charCount = Math::min((int32_t)lhs.size(), (int32_t)rhs.size());
-		for (auto i = 0; i < charCount; i++) {
-			if (lhs[i] == rhs[i]) {
-				// no op
-			} else {
-				auto charLHS = lhs[i];
-				auto charLCLHS = Character::toLowerCase(lhs[i]);
-				auto charLHSLowerCase = charLHS == charLCLHS;
-				auto charRHS = rhs[i];
-				auto charLCRHS = Character::toLowerCase(rhs[i]);
-				auto charRHSLowerCase = charRHS == charLCRHS;
-				if (charLHSLowerCase == true && charRHSLowerCase == false) {
-					return true;
-				} else
-				if (charLHSLowerCase == false && charRHSLowerCase == true) {
-					return false;
-				} else {
-					return lhs < rhs;
-				}
-			}
-		}
-		return lhs.size() < rhs.size();
-	};
-	//
 	auto replace = [](const vector<string> input, const string& startTag, const string& endTag, const string& replacement, vector<string>& output) -> bool {
 		auto reject = false;
 		auto replaceSuccess = false;
@@ -145,11 +118,11 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		}
 	}
 	//
-	sort(transpilationUnitIncludes.begin(), transpilationUnitIncludes.end(), compare_includes);
+	sort(transpilationUnitIncludes.begin(), transpilationUnitIncludes.end());
 	transpilationUnitIncludes.erase(unique(transpilationUnitIncludes.begin(), transpilationUnitIncludes.end()), transpilationUnitIncludes.end());
 
 	//
-	sort(transpilationUnitUsings.begin(), transpilationUnitUsings.end(), compare_includes);
+	sort(transpilationUnitUsings.begin(), transpilationUnitUsings.end());
 	transpilationUnitUsings.erase(unique(transpilationUnitUsings.begin(), transpilationUnitUsings.end()), transpilationUnitUsings.end());
 
 	//
@@ -1513,11 +1486,11 @@ void Transpiler::generateMiniScriptEvaluateMemberAccessArrays(
 		"array<array<Method*, " +
 		to_string(methodIdx) +
 		">, " +
-		to_string((static_cast<int>(MiniScript::TYPE_PSEUDO_CUSTOM_DATATYPES + MiniScript::getDataTypes().size()) - static_cast<int>(MiniScript::TYPE_STRING))) +
+		to_string((static_cast<int>(MiniScript::TYPE_PSEUDO_DATATYPES + MiniScript::getDataTypes().size()) - static_cast<int>(MiniScript::TYPE_STRING))) +
 		"> evaluateMemberAccessArrays {};"
 	);
 	generatedDefinitions.push_back("evaluateMemberAccessArrays = {};");
-	for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); typeIdx < static_cast<int>(MiniScript::TYPE_PSEUDO_CUSTOM_DATATYPES + MiniScript::getDataTypes().size()); typeIdx++) {
+	for (auto typeIdx = static_cast<int>(MiniScript::TYPE_STRING); typeIdx < static_cast<int>(MiniScript::TYPE_PSEUDO_DATATYPES + MiniScript::getDataTypes().size()); typeIdx++) {
 		const auto& className = MiniScript::Variable::getTypeAsString(static_cast<MiniScript::VariableType>(typeIdx));
 		const auto& methods = methodsByClasses[className];
 		auto methodIdx = 0;
@@ -2300,18 +2273,22 @@ bool Transpiler::transpileScriptStatement(
 		//
 		auto callArgumentIdx = 0;
 		//
-		generateVariableAccess(
-			miniScript,
-			generatedCode,
-			scriptConditionIdx,
-			scriptIdx,
-			syntaxTree.arguments[0].value.getValueAsString(),
-			minIndentString + depthIndentString + "\t",
-			false,
-			true,
-			false,
-			"auto EVALUATEMEMBERACCESS_ARGUMENT" + to_string(callArgumentIdx) + " = "
-		);
+		if (syntaxTree.arguments[0].value.getType() != MiniScript::TYPE_NULL) {
+			generateVariableAccess(
+				miniScript,
+				generatedCode,
+				scriptConditionIdx,
+				scriptIdx,
+				syntaxTree.arguments[0].value.getValueAsString(),
+				minIndentString + depthIndentString + "\t",
+				false,
+				true,
+				false,
+				"auto EVALUATEMEMBERACCESS_ARGUMENT" + to_string(callArgumentIdx) + " = "
+			);
+		} else {
+			generatedCode+= minIndentString + depthIndentString + "\t" + "auto EVALUATEMEMBERACCESS_ARGUMENT" + to_string(callArgumentIdx) + " = Variable();" + "\n";
+		}
 		//
 		callArgumentIdx++;
 		//
@@ -2320,16 +2297,14 @@ bool Transpiler::transpileScriptStatement(
 			// do we have a this variable name?
 			argumentVariables.push_back(string());
 			//
-			string argumentVariableName;
-			if (syntaxTree.arguments[argumentIdx].value.getType() != MiniScript::TYPE_NULL &&
-				syntaxTree.arguments[argumentIdx].value.getStringValue(argumentVariableName) == true) {
+			if (syntaxTree.arguments[argumentIdx].value.getType() != MiniScript::TYPE_NULL) {
 				//
 				generateVariableAccess(
 					miniScript,
 					argumentVariables[argumentVariables.size() - 1],
 					scriptConditionIdx,
 					scriptIdx,
-					argumentVariableName,
+					syntaxTree.arguments[argumentIdx].value.getValueAsString(),
 					minIndentString + depthIndentString + "\t\t",
 					false,
 					true,
@@ -2372,7 +2347,7 @@ bool Transpiler::transpileScriptStatement(
 			scriptConditionIdx,
 			scriptIdx,
 			syntaxTree.arguments[0].value.getValueAsString(),
-			minIndentString + depthIndentString,
+			minIndentString + depthIndentString + "\t",
 			syntaxTree.value.getValueAsString() == "getVariable",
 			syntaxTree.value.getValueAsString() == "getVariableReference",
 			syntaxTree.value.getValueAsString() == "setVariable" || syntaxTree.value.getValueAsString() == "setConstant"

@@ -193,7 +193,7 @@ void MiniScript::registerMethod(Method* method) {
 }
 
 void MiniScript::registerDataType(DataType* dataType) {
-	dataType->setType(static_cast<VariableType>(TYPE_PSEUDO_CUSTOM_DATATYPES + dataTypes.size()));
+	dataType->setType(static_cast<VariableType>(TYPE_PSEUDO_DATATYPES + dataTypes.size()));
 	dataTypes.push_back(dataType);
 }
 
@@ -2813,10 +2813,8 @@ void MiniScript::registerMethods() {
 						if (arguments[0].getType() != MiniScript::TYPE_NULL && arguments[0].getStringValue(thisVariableName) == true) {
 							// yep, looks like that, we always use a reference here
 							#if defined(__MINISCRIPT_TRANSPILATION__)
-								// TODO: we should use the real variable here
 								arguments[1] = Variable::createReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENT0);
 							#else
-								// TODO: does not work
 								arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
 							#endif
 						}
@@ -2856,15 +2854,24 @@ void MiniScript::registerMethods() {
 									string argumentVariableName;
 									if (arguments[argumentIdx].getType() != MiniScript::TYPE_NULL && arguments[argumentIdx].getStringValue(argumentVariableName) == true) {
 										#if defined(__MINISCRIPT_TRANSPILATION__)
-											arguments[argumentIdx + 1] = Variable::createReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]);
+											if (method != nullptr) {
+												arguments[argumentIdx + 1] =
+													callArgumentIdx >= method->getArgumentTypes().size() || method->getArgumentTypes()[callArgumentIdx].reference == false?
+														Variable::createNonReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]):
+														Variable::createReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]);
+											} else
+											if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
+												arguments[argumentIdx + 1] =
+													callArgumentIdx >= miniScript->getScripts()[functionIdx].functionArguments.size() || miniScript->getScripts()[functionIdx].functionArguments[callArgumentIdx].reference == false?
+														Variable::createNonReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]):
+														Variable::createReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]);
+											}
 										#else
 											// yep, looks like that
 											if (method != nullptr) {
-												// TODO: we should use the real variable here
 												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentIdx].reference);
 											} else
 											if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
-												// TODO: we should use the real variable here
 												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionIdx].functionArguments.size()?false:miniScript->getScripts()[functionIdx].functionArguments[callArgumentIdx].reference);
 											}
 										#endif
@@ -2890,7 +2897,7 @@ void MiniScript::registerMethods() {
 							{
 								auto callArgumentIdx = 1;
 								for (auto argumentIdx = 3; argumentIdx < arguments.size(); argumentIdx+=2) {
-									arguments[argumentIdx] = move(callArgumentsSpan[callArgumentIdx].getValueAsString());
+									arguments[argumentIdx] = move(callArgumentsSpan[callArgumentIdx]);
 									callArgumentIdx++;
 								}
 							}

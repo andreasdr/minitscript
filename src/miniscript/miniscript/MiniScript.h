@@ -150,8 +150,9 @@ public:
 		TYPE_ARRAY = 10,
 		TYPE_MAP = 11,
 		TYPE_SET = 12,
+		TYPE_PSEUDO_DATATYPES = 13,
 		TYPE_HTTPDOWNLOADCLIENT = 13,
-		TYPE_PSEUDO_CUSTOM_DATATYPES = 13
+		TYPE_PSEUDO_CUSTOM_DATATYPES = 14
 	};
 
 	//
@@ -516,11 +517,11 @@ public:
 		 * Release reference
 		 */
 		inline void releaseReference() {
-			if (isReference() == true) {
-				ir.reference->releaseReference();
-			}
 			if (--referenceCounter == 0) {
-				if (isReference() == true) unsetReference();
+				if (isReference() == true) {
+					ir.reference->releaseReference();
+					unsetReference();
+				}
 				setType(TYPE_NULL);
 				delete this;
 			}
@@ -679,6 +680,13 @@ public:
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_SET;
 
 		/**
+		 * @return reference count
+		 */
+		inline int32_t getReferenceCount() {
+			return referenceCounter;
+		}
+
+		/**
 		 * Unset variable
 		 */
 		inline void unset() {
@@ -695,11 +703,12 @@ public:
 		 * @returns reference variable
 		 */
 		inline static Variable createReferenceVariable(const Variable* variable) {
-			// copy a reference variable is cheap
-			if (variable->isReference() == true) return *variable;
-			//
 			Variable referenceVariable;
-			referenceVariable.setReference((Variable*)variable);
+			if (variable->isReference() == true) {
+				referenceVariable.setReference(variable->ir.reference);
+			} else {
+				referenceVariable.setReference((Variable*)variable);
+			}
 			return referenceVariable;
 		}
 
@@ -709,11 +718,12 @@ public:
 		 * @returns reference variable
 		 */
 		inline static Variable* createReferenceVariablePointer(const Variable* variable) {
-			// copy a reference variable is cheap
-			if (variable->isReference() == true) return new Variable(*variable);
-			//
-			Variable* referenceVariable = new Variable();
-			referenceVariable->setReference((Variable*)variable);
+			auto referenceVariable = new Variable();
+			if (variable->isReference() == true) {
+				referenceVariable->setReference(variable->ir.reference);
+			} else {
+				referenceVariable->setReference((Variable*)variable);
+			}
 			return referenceVariable;
 		}
 
@@ -723,9 +733,6 @@ public:
 		 * @returns reference variable
 		 */
 		inline static Variable createNonReferenceVariable(const Variable* variable) {
-			// copy a non reference variable is cheap
-			if (variable->isReference() == false) return *variable;
-			// otherwise do the copy
 			Variable nonReferenceVariable;
 			//
 			copyVariable(nonReferenceVariable, *variable);
@@ -739,10 +746,7 @@ public:
 		 * @returns reference variable
 		 */
 		inline static Variable* createNonReferenceVariablePointer(const Variable* variable) {
-			// copy a non reference variable is cheap
-			if (variable->isReference() == false) return new Variable(*variable);
-			// otherwise do the copy
-			Variable* nonReferenceVariable = new Variable();
+			auto nonReferenceVariable = new Variable();
 			//
 			copyVariable(*nonReferenceVariable, *variable);
 			//
@@ -810,7 +814,7 @@ public:
 					break;
 				default:
 					// custom data type
-					auto dataTypeIdx = static_cast<int>(from.getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
+					auto dataTypeIdx = static_cast<int>(from.getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						_Console::println("ScriptVariable::copyScriptVariable(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
@@ -890,11 +894,9 @@ public:
 		inline ~Variable() {
 			if (isReference() == true) {
 				ir.reference->releaseReference();
+				unsetReference();
 			}
-			if (--referenceCounter == 0) {
-				if (isReference() == true) unsetReference();
-				setType(TYPE_NULL);
-			}
+			setType(TYPE_NULL);
 		}
 
 		/**
@@ -1000,7 +1002,7 @@ public:
 					break;
 				default:
 					// custom data type
-					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
+					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						_Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
@@ -1056,7 +1058,7 @@ public:
 					break;
 				default:
 					// custom data type
-					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
+					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						_Console::println("ScriptVariable::setType(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return;
@@ -1360,7 +1362,7 @@ public:
 		 */
 		inline void setValue(const void* value) {
 			// custom data type
-			auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
+			auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_DATATYPES;
 			if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 				_Console::println("ScriptVariable::setValue(): unknown custom data type with id " + to_string(dataTypeIdx));
 				return;
@@ -1889,7 +1891,7 @@ public:
 				case TYPE_SET: return TYPENAME_SET;
 				default:
 					// custom data types
-					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_CUSTOM_DATATYPES;
+					auto dataTypeIdx = static_cast<int>(type) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						return TYPENAME_NONE;
 					}
@@ -2107,7 +2109,7 @@ public:
 					}
 				default:
 					// custom data types
-					auto dataTypeIdx = static_cast<int>(getType()) - TYPE_PSEUDO_CUSTOM_DATATYPES;
+					auto dataTypeIdx = static_cast<int>(getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
 						_Console::println("ScriptVariable::getValueAsString(): unknown custom data type with id " + to_string(dataTypeIdx));
 						return result;
@@ -3538,7 +3540,7 @@ public:
 		// we have a pointer to a ordinary variable
 		if (variablePtr != nullptr) {
 			// if we return any variable we can safely remove the constness, a reference can of course keep its constness
-			auto variable = createReference == false?*variablePtr:Variable::createReferenceVariable(variablePtr);
+			auto variable = createReference == false?Variable::createNonReferenceVariable(variablePtr):Variable::createReferenceVariable(variablePtr);
 			variable.unsetConstant();
 			return variable;
 		} else {
@@ -3576,7 +3578,7 @@ public:
 		// we have a pointer to a ordinary variable
 		if (variablePtr != nullptr) {
 			// if we return any variable we can safely remove the constness, a reference can of course keep its constness
-			auto variable = createReference == false?*variablePtr:Variable::createReferenceVariable(variablePtr);
+			auto variable = createReference == false?Variable::createNonReferenceVariable(variablePtr):Variable::createReferenceVariable(variablePtr);
 			variable.unsetConstant();
 			return variable;
 		} else {
