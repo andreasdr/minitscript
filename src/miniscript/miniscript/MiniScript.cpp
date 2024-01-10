@@ -100,7 +100,10 @@ using _SHA256 = miniscript::utilities::SHA256;
 using _Time = miniscript::utilities::Time;
 
 const string MiniScript::OPERATOR_CHARS = "+-!~/%<>=&^|";
+
 vector<MiniScript::DataType*> MiniScript::dataTypes;
+MiniScript::ShutdownRAII MiniScript::shutdownRAII(MiniScript::dataTypes);
+
 const string MiniScript::METHOD_SCRIPTCALL = "script.call";
 const string MiniScript::METHOD_ENABLENAMEDCONDITION = "script.enableNamedCondition";
 const string MiniScript::METHOD_DISABLENAMEDCONDITION = "script.disableNamedCondition";

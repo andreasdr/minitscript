@@ -680,13 +680,6 @@ public:
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_SET;
 
 		/**
-		 * @return reference count
-		 */
-		inline int32_t getReferenceCount() {
-			return referenceCounter;
-		}
-
-		/**
 		 * Unset variable
 		 */
 		inline void unset() {
@@ -2710,9 +2703,33 @@ protected:
 private:
 	static constexpr bool VERBOSE { false };
 
+	/**
+	 * Shutdown RAII
+	 */
+	class ShutdownRAII {
+		public:
+			/**
+			 * Constructor
+			 * @param dataTypes data types
+			 */
+			ShutdownRAII(vector<DataType*>& dataTypes): dataTypes(dataTypes) {}
+
+			/**
+			 * Destructor
+			 */
+			~ShutdownRAII() {
+				for (const auto dataType: dataTypes) delete dataType;
+				dataTypes.clear();
+			}
+		private:
+			vector<DataType*>& dataTypes;
+	};
+
 	//
 	MINISCRIPT_STATIC_DLL_IMPEXT static const string OPERATOR_CHARS;
 	MINISCRIPT_STATIC_DLL_IMPEXT static vector<DataType*> dataTypes;
+	MINISCRIPT_STATIC_DLL_IMPEXT static ShutdownRAII shutdownRAII;
+
 
 	// TODO: maybe we need a better naming for this
 	// functions defined by script itself
