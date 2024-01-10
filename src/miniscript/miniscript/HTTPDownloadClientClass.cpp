@@ -13,6 +13,7 @@ using std::make_shared;
 using std::shared_ptr;
 using std::span;
 using std::string;
+using std::to_string;
 
 using miniscript::miniscript::HTTPDownloadClientClass;
 
@@ -21,7 +22,14 @@ using _Console = miniscript::utilities::Console;
 using _HTTPDownloadClient = miniscript::network::httpclient::HTTPDownloadClient;
 
 const string HTTPDownloadClientClass::TYPE_NAME = "HTTPDownloadClient";
-vector<shared_ptr<_HTTPDownloadClient>> HTTPDownloadClientClass::instances;
+
+void* HTTPDownloadClientClass::createScriptContext() {
+	return new ScriptContext();
+}
+
+void HTTPDownloadClientClass::deleteScriptContext(void* context) {
+	delete static_cast<ScriptContext*>(context);
+}
 
 void HTTPDownloadClientClass::initialize() {
 }
@@ -44,7 +52,11 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 				return "HTTPDownloadClient";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				auto& scriptContext = *static_cast<ScriptContext*>(miniScript->getDataTypeScriptContext(MiniScript::TYPE_HTTPDOWNLOADCLIENT));
+				//
 				auto httpDownloadClient = make_shared<_HTTPDownloadClient>();
+				scriptContext.instances.push_back(httpDownloadClient);
+				//
 				returnValue.setType(MiniScript::TYPE_HTTPDOWNLOADCLIENT);
 				returnValue.setValue(&httpDownloadClient);
 			}
@@ -296,9 +308,7 @@ void HTTPDownloadClientClass::unsetVariableValue(MiniScript::Variable& variable)
 }
 
 void HTTPDownloadClientClass::setVariableValue(MiniScript::Variable& variable) const {
-	auto sharedPtr = make_shared<_HTTPDownloadClient>();
-	instances.push_back(sharedPtr);
-	variable.setValuePtr(new shared_ptr<_HTTPDownloadClient>(sharedPtr));
+	variable.setValuePtr(new shared_ptr<_HTTPDownloadClient>(nullptr));
 }
 
 void HTTPDownloadClientClass::setVariableValue(MiniScript::Variable& variable, const void* value) const {
@@ -335,3 +345,14 @@ const string HTTPDownloadClientClass::getValueAsString(const MiniScript::Variabl
 	return "HTTPDownloadClientClass(url: " + httpDownloadClient->getURL() + ", file: " + httpDownloadClient->getFile() + ")";
 }
 
+void HTTPDownloadClientClass::garbageCollection(void* context) const {
+	auto& scriptContext = *static_cast<ScriptContext*>(context);
+	for (auto i = 0; i < scriptContext.instances.size(); i++) {
+		auto& instance = scriptContext.instances[i];
+		if (instance.use_count() == 1 && instance->isFinished() == true) {
+			instance->join();
+			scriptContext.instances.erase(scriptContext.instances.begin() + i);
+			i--;
+		}
+	}
+}
