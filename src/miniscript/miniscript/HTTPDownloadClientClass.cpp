@@ -44,7 +44,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 				return "HTTPDownloadClient";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				auto& scriptContext = *static_cast<ScriptContext*>(miniScript->getDataTypeScriptContext(MiniScript::TYPE_HTTPDOWNLOADCLIENT));
+				auto& scriptContext = *static_cast<HTTPDownloadClientClass::ScriptContext*>(miniScript->getDataTypeScriptContext(MiniScript::TYPE_HTTPDOWNLOADCLIENT));
 				//
 				auto httpDownloadClient = make_shared<_HTTPDownloadClient>();
 				scriptContext.instances.push_back(httpDownloadClient);

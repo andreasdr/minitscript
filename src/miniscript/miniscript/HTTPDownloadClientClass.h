@@ -25,13 +25,6 @@ class miniscript::miniscript::HTTPDownloadClientClass final: public MiniScript::
 private:
 	MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPE_NAME;
 
-	/**
-	 * Script context
-	 */
-	struct ScriptContext {
-		vector<shared_ptr<_HTTPDownloadClient>> instances;
-	};
-
 	// overridden methods
 	void registerConstants(MiniScript* miniScript) const override;
 	void registerMethods(MiniScript* miniScript) const override;
@@ -48,6 +41,13 @@ private:
 	void garbageCollection(void* context) const override;
 
 public:
+	/**
+	 * Script context
+	 */
+	struct ScriptContext {
+		vector<shared_ptr<_HTTPDownloadClient>> instances;
+	};
+
 	// forbid class copy
 	FORBID_CLASS_COPY(HTTPDownloadClientClass)
 
