@@ -1265,6 +1265,7 @@ public:
 		 * @param variable variable
 		 */
 		inline void setValue(const Variable& variable) {
+			setType(TYPE_NULL);
 			copyVariable(*this, variable);
 		}
 
