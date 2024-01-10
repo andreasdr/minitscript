@@ -2904,6 +2904,9 @@ void MiniScript::registerMethods() {
 									callArgumentIdx++;
 								}
 							}
+						} else {
+							_Console::println(miniScript->getStatementInformation(statement) + ": class/object member not found: " + member + "()");
+							miniScript->startErrorScript();
 						}
 					} else {
 						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()) + ": invalid variable type");
