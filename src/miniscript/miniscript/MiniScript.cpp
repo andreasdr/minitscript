@@ -4078,7 +4078,7 @@ inline bool MiniScript::evaluateAccess(const string& variableStatement, const st
 	return true;
 }
 
-void MiniScript::setConstant(Variable& variable) {
+void MiniScript::setConstantInternal(Variable& variable) {
 	variable.setConstant();
 	switch (variable.getType()) {
 		case TYPE_ARRAY:

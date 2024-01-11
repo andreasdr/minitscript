@@ -3126,6 +3126,12 @@ private:
 	 */
 	static bool viewIsKey(const string_view& candidate);
 
+	/**
+	 * Set variable recursively to be a constant
+	 * @param variable variable
+	 */
+	static void setConstantInternal(Variable& variable);
+
 public:
 	/**
 	 * Initialize
@@ -3136,7 +3142,10 @@ public:
 	 * Set variable recursively to be a constant
 	 * @param variable variable
 	 */
-	static void setConstant(Variable& variable);
+	inline static void setConstant(Variable& variable) {
+		if (variable.isConstant() == true) return;
+		setConstantInternal(variable);
+	}
 
 	/**
 	 * Return data type script context
@@ -3616,7 +3625,7 @@ public:
 		if (variablePtr != nullptr) {
 			// if we return any variable we can safely remove the constness, a reference can of course keep its constness
 			auto variable = createReference == false?Variable::createNonReferenceVariable(variablePtr):Variable::createReferenceVariable(variablePtr);
-			variable.unsetConstant();
+			if (createReference == false) variable.unsetConstant();
 			return variable;
 		} else {
 			// special case for accessing byte array entries at given array index
@@ -3654,7 +3663,7 @@ public:
 		if (variablePtr != nullptr) {
 			// if we return any variable we can safely remove the constness, a reference can of course keep its constness
 			auto variable = createReference == false?Variable::createNonReferenceVariable(variablePtr):Variable::createReferenceVariable(variablePtr);
-			variable.unsetConstant();
+			if (createReference == false) variable.unsetConstant();
 			return variable;
 		} else {
 			// special case for accessing byte array entries at given array index
