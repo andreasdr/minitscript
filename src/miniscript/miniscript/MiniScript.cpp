@@ -2476,6 +2476,8 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 	}
 	// done, pop the function script state
 	popScriptState();
+	// try garbage collection
+	tryGarbageCollection();
 	//
 	return true;
 }

@@ -2722,6 +2722,22 @@ protected:
 	 */
 	static const Variable initializeMapSet(const string_view& initializerString, MiniScript* miniScript, const Statement& statement);
 
+	/**
+	 * Try garbage collection
+	 */
+	inline void tryGarbageCollection() {
+		auto now = _Time::getCurrentMillis();
+		if (dataTypesGCTime == -1ll || now - dataTypesGCTime >= GARBAGE_COLLECTION_INTERVAL) {
+			garbageCollection();
+			dataTypesGCTime = now;
+		}
+	}
+
+	/**
+	 * Issue garbage collection
+	 */
+	void garbageCollection();
+
 private:
 	static constexpr bool VERBOSE { false };
 	static constexpr int64_t GARBAGE_COLLECTION_INTERVAL { 1000ll };
@@ -3109,22 +3125,6 @@ private:
 	 * @return if string is a valid map key name
 	 */
 	static bool viewIsKey(const string_view& candidate);
-
-	/**
-	 * Try garbage collection
-	 */
-	inline void tryGarbageCollection() {
-		auto now = _Time::getCurrentMillis();
-		if (dataTypesGCTime == -1ll || now - dataTypesGCTime >= GARBAGE_COLLECTION_INTERVAL) {
-			garbageCollection();
-			dataTypesGCTime = now;
-		}
-	}
-
-	/**
-	 * Issue garbage collection
-	 */
-	void garbageCollection();
 
 public:
 	/**
