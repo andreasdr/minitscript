@@ -478,15 +478,6 @@ public:
 		ir ir {};									// 8 bytes
 
 		/**
-		 * @return is constant
-		 */
-		inline bool isConstant() const {
-			return
-				(typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE ||
-				(isReference() == true && (ir.reference->typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE);
-		}
-
-		/**
 		 * Set constant
 		 */
 		inline void setConstant() {
@@ -697,6 +688,15 @@ public:
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_ARRAY;
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_MAP;
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_SET;
+
+		/**
+		 * @return is constant
+		 */
+		inline bool isConstant() const {
+			return
+				(typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE ||
+				(isReference() == true && (ir.reference->typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE);
+		}
 
 		/**
 		 * Unset variable
