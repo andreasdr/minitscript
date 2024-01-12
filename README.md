@@ -837,12 +837,14 @@ end
 | <sub>size(): Integer</sub>                                                                       |
 | Write bool value and advance write position by 1 byte                                            |
 | <sub>writeBool($value: Boolean): Null</sub>                                                      |
+| Not documented                                                                                   |
+| <sub>writeFloat($value: Integer): Null</sub>                                                     |
 | Write 16 bit integer value and advance write position by 2 byte                                  |
-| <sub>writeInt16($value: Integer, ...): Null</sub>                                                |
+| <sub>writeInt16($value: Integer): Null</sub>                                                     |
 | Write 32 bit integer value and advance write position by 4 byte                                  |
-| <sub>writeInt32($value: Integer, ...): Null</sub>                                                |
+| <sub>writeInt32($value: Integer): Null</sub>                                                     |
 | Write 64 bit integer value and advance write position by 4 byte                                  |
-| <sub>writeInt64($value: Integer, ...): Null</sub>                                                |
+| <sub>writeInt64($value: Integer): Null</sub>                                                     |
 | Write 8 bit integer value and advance write position by 1 byte                                   |
 | <sub>writeInt8($value: Integer): Null</sub>                                                      |
 
@@ -930,6 +932,33 @@ end
 | <sub>insert($key: String): Null</sub>                                                            |
 | Remove key from set                                                                              |
 | <sub>remove($key: String): Null</sub>                                                            |
+
+## 6.6. HTTP download client class
+
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| &nbsp;                                    |
+| <b>STATIC METHODS</b>                     |
+| HTTP Download Client                                                                             |
+| <sub><b>static</b> HTTPDownloadClient(): HTTPDownloadClient</sub>                                |
+| &nbsp;                                    |
+| <b>NON STATIC METHODS</b>                 |
+| Execute request                                                                                  |
+| <sub>execute(): Null</sub>                                                                       |
+| Get file URI                                                                                     |
+| <sub>getFile(): String</sub>                                                                     |
+| Get progress                                                                                     |
+| <sub>getProgress(): Float</sub>                                                                  |
+| Get URL                                                                                          |
+| <sub>getURL(): String</sub>                                                                      |
+| Returns if download has been finished                                                            |
+| <sub>isFinished(): Boolean</sub>                                                                 |
+| Reset HTTP download client                                                                       |
+| <sub>reset(): Null</sub>                                                                         |
+| Set file                                                                                         |
+| <sub>setFile($url: String): Null</sub>                                                           |
+| Set URL                                                                                          |
+| <sub>setURL($url: String): Null</sub>                                                            |
 
 # 7. Methods
 

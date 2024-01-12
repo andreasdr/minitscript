@@ -564,9 +564,6 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			const string getMethodName() override {
 				return "ByteArray::writeInt16";
 			}
-			bool isVariadic() const override {
-				return true;
-			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				// TODO: value bounds check
 				int64_t value;
@@ -602,9 +599,6 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "ByteArray::writeInt32";
-			}
-			bool isVariadic() const override {
-				return true;
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				// TODO: value bounds check
@@ -643,9 +637,6 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "ByteArray::writeInt64";
-			}
-			bool isVariadic() const override {
-				return true;
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				// TODO: value bounds check
@@ -688,9 +679,6 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "ByteArray::writeFloat";
-			}
-			bool isVariadic() const override {
-				return true;
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				// TODO: value bounds check
