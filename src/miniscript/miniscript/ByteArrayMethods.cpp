@@ -17,33 +17,7 @@ void ByteArrayMethods::registerConstants(MiniScript* miniScript) {
 }
 
 void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
-	// clear
-
-	// seekRead
-	// readBool
-	// readInt8
-	// readInt16
-	// readInt32
-	// readInt64
-	// readFloat
-	// readSmallString
-	// readMediumString
-	// readLargeString
-
-	// seekWrite
-	// writeBool
-	// writeInt8
-	// writeInt16
-	// writeInt32
-	// writeInt64
-	// writeFloat
-	// writeString
-
-	// writeSmallString
-	// writeMediumString
-	// writeLargeString
-
-	// array methods
+	// byte array methods
 	{
 		//
 		class MethodByteArray: public MiniScript::Method {
