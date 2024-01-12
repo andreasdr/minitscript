@@ -324,6 +324,9 @@ Writing values using ByteArray::write*():
 	$byteArray->writeInt32(3)
 	$byteArray->writeInt64(4)
 	$byteArray->writeFloat(1234.5678)
+	$byteArray->writeSmallString("Hi there! I am a small sized string.")
+	$byteArray->writeMediumString("Hi there! I am a medium sized string.")
+	$byteArray->writeLargeString("Hi there! I am a large sized string.")
 ...
 ```
 
@@ -337,6 +340,9 @@ Reading values using ByteArray::read*():
 	console.log($byteArray->readInt32())
 	console.log($byteArray->readInt64())
 	console.log($byteArray->readFloat())
+	console.log($byteArray->readSmallString())
+	console.log($byteArray->readMediumString())
+	console.log($byteArray->readLargeString())
 ...
 ```
 
