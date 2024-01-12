@@ -843,7 +843,7 @@ end
 | <sub>writeInt16($value: Integer): Null</sub>                                                     |
 | Write 32 bit integer value and advance write position by 4 byte                                  |
 | <sub>writeInt32($value: Integer): Null</sub>                                                     |
-| Write 64 bit integer value and advance write position by 4 byte                                  |
+| Write 64 bit integer value and advance write position by 8 byte                                  |
 | <sub>writeInt64($value: Integer): Null</sub>                                                     |
 | Write 8 bit integer value and advance write position by 1 byte                                   |
 | <sub>writeInt8($value: Integer): Null</sub>                                                      |
