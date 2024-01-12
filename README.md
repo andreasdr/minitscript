@@ -283,7 +283,22 @@ The primitive data types can also be assigned by using initialization methods th
 ## 4.2. Byte arrays
 
 A byte array is a sequence of byte values. Bytes are the smallest atomic values a CPU does handle.
-A byte has a value of 0...255. Using bit math you can also manipulate byte values at bit scope.
+Using bit math you can also manipulate byte values at bit scope.
+
+To write and read from byte array you can use the read*() and write() methods.
+
+Available data types are
+- bool (true or false)
+- int8 (-128 .. 127)
+- int16 (-32768 .. 32767)
+- int32 (-2147483646 .. 2147483647)
+- int64 (-9,223,372,036,854,775,806 .. -9,223,372,036,854,775,807)
+- float (floating point number)
+
+You can get/set the position for reading from and writing to byte array by using the getReadPosition()/setReadPosition() and
+getWritePosition()/setWritePosition().
+
+If you read from or write to byte array the corresponding position will be advanced automatically. 
 
 Usually byte arrays can be used to exchange/construct network packets/streams, texture data, mesh data, ...
 Also, using a byte array instead of a generic array for byte storage, results in using much less memory space.
