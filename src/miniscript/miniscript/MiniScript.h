@@ -3630,6 +3630,8 @@ public:
 		if (variablePtr != nullptr) {
 			return true;
 		}
+		//
+		return false;
 	}
 
 	/**
