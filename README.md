@@ -282,11 +282,11 @@ The primitive data types can also be assigned by using initialization methods th
 
 ## 4.2. Byte arrays
 
-A byte array is a collection/sequence of byte values which can be accessed by indices. Bytes are the smallest atomic values a CPU does handle.
+A byte array is a sequence of byte values. Bytes are the smallest atomic values a CPU does handle.
 A byte has a value of 0...255. Using bit math you can also manipulate byte values at bit scope.
 
 Usually byte arrays can be used to exchange/construct network packets/streams, texture data, mesh data, ...
-Also, using a byte array instead of a generic array for byte storage, results in using much less memory space. 
+Also, using a byte array instead of a generic array for byte storage, results in using much less memory space.
 
 Initializing a byte array by constructor:
 
@@ -296,61 +296,52 @@ Initializing a byte array by constructor:
 ...
 ```
 
-... or initialize and push values to it:
+Writing values using ByteArray::write*():
 ```
 ...
-	$byteArray = ByteArray(1, 2, 3)
-...
-```
-
-Pushing values using ByteArray::push():
-```
-...
-	$byteArray->push(5, 6, 7)
-...
-```
-
-Pushing values using [] operator:
-```
-...
-	$byteArray[] = 8
-	$byteArray[] = 9
-	$byteArray[] = 10
+	$byteArray->setWritePosition(0)
+	$byteArray->writeBool(true)
+	$byteArray->writeInt8(1)
+	$byteArray->writeInt16(2)
+	$byteArray->writeInt32(3)
+	$byteArray->writeInt64(4)
+	$byteArray->writeFloat(1234.5678)
 ...
 ```
 
-Iterating byte arrays using ByteArray::length() and ByteArray::get():
+Reading values using ByteArray::read*():
 ```
 ...
-	$i = 0
-	forCondition($i < $byteArray->length())
-		console.log($i + ": " + $byteArray->get($i))
-		++$i
+	$byteArray->setReadPosition(0)
+	console.log($byteArray->readBool())
+	console.log($byteArray->readInt8())
+	console.log($byteArray->readInt16())
+	console.log($byteArray->readInt32())
+	console.log($byteArray->readInt64())
+	console.log($byteArray->readFloat())
+...
+```
+
+Reading byte arrays using ByteArray::length() and ByteArray::readInt8():
+```
+...
+	$byteArray->setReadPosition(0)
+	forCondition($byteArray->getReadPosition() < $byteArray->length())
+		console.log($i + ": " + $byteArray->readInt8($i))
 	end
 ...
 ```
 
-Iterating byte arrays using ByteArray::length() and [] operator:
+Removing from byte arrays using a index and number of bytes to remove with ByteArray::remove():
 ```
 ...
-	$i = 0
-	forCondition($i < $byteArray->length())
-		console.log($i + ": " + $byteArray[$i])
-		++$i
-	end
-...
-```
-
-Removing from byte arrays using a index with ByteArray::remove():
-```
-...
-	$byteArray->remove(2)
+	$byteArray->remove(2, 3)
 ...
 ```
 
 ## 4.3. Arrays
 
-An array is a collection/sequence of values which can be accessed by indices.
+An array is a sequence of values which can be accessed by indices.
 
 Initializing an array by array initializer:
 
