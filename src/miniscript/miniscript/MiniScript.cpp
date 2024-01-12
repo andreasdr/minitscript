@@ -3789,7 +3789,7 @@ inline void MiniScript::setVariableInternal(const string& variableStatement, Var
 	// common case
 	if (variablePtr != nullptr) {
 		if (variablePtr->isConstant() == false) {
-			*variablePtr = variable;
+			variablePtr->setValue(variable);
 		} else {
 			_Console::println(getStatementInformation(*statement) + ": constant: " + variableStatement + ": Assignment of constant is not allowed");
 		}
