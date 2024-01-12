@@ -805,26 +805,46 @@ end
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | &nbsp;                                    |
 | <b>STATIC METHODS</b>                     |
-| Create a byte array                                                                              |
-| <sub><b>static</b> ByteArray(...): ByteArray</sub>                                               |
+| Create byte array                                                                                |
+| <sub><b>static</b> ByteArray(): ByteArray</sub>                                                  |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
-| Append another byte array to this byte array                                                     |
-| <sub>appendByteArray(&$other: ByteArray): Null</sub>                                             |
 | Clear byte array                                                                                 |
 | <sub>clear(): Null</sub>                                                                         |
-| Extract a byte array from this byte array                                                        |
-| <sub>extractByteArray($index: Integer, $length: Integer): ByteArray</sub>                        |
-| Get byte array entry                                                                             |
-| <sub>get($index: Integer): Integer</sub>                                                         |
-| Get byte array length                                                                            |
-| <sub>length(): Integer</sub>                                                                     |
-| Add entry to byte array                                                                          |
-| <sub>push(...): Null</sub>                                                                       |
-| Remove entry from byte array                                                                     |
-| <sub>remove($index: Integer): Null</sub>                                                         |
-| Set byte array entry                                                                             |
-| <sub>set($index: Integer, $value: Integer): Null</sub>                                           |
+| Get read position                                                                                |
+| <sub>getReadPosition(): Integer</sub>                                                            |
+| Get write position                                                                               |
+| <sub>getWritePosition(): Integer</sub>                                                           |
+| Read bool value and advance read position by 1 byte                                              |
+| <sub>readBool(): ?Boolean</sub>                                                                  |
+| Read 32 bit float value and advance read position by 4 byte                                      |
+| <sub>readFloat(): ?Float</sub>                                                                   |
+| Read 16 bit integer value and advance read position by 2 byte                                    |
+| <sub>readInt16(): ?Integer</sub>                                                                 |
+| Read 16 bit integer value and advance read position by 4 byte                                    |
+| <sub>readInt32(): ?Integer</sub>                                                                 |
+| Read 64 bit integer value and advance read position by 8 byte                                    |
+| <sub>readInt64(): ?Integer</sub>                                                                 |
+| Read 8 bit integer value and advance read position by 1 byte                                     |
+| <sub>readInt8(): ?Integer</sub>                                                                  |
+| Remove values from byte array                                                                    |
+| <sub>remove($index: Integer, $size: Integer): Null</sub>                                         |
+| Set read position                                                                                |
+| <sub>setReadPosition($position: Integer): Null</sub>                                             |
+| Set write position                                                                               |
+| <sub>setWritePosition($position: Integer): Null</sub>                                            |
+| Return size of byte array                                                                        |
+| <sub>size(): Integer</sub>                                                                       |
+| Write bool value and advance write position by 1 byte                                            |
+| <sub>writeBool($value: Boolean): Null</sub>                                                      |
+| Write 16 bit integer value and advance write position by 2 byte                                  |
+| <sub>writeInt16($value: Integer, ...): Null</sub>                                                |
+| Write 32 bit integer value and advance write position by 4 byte                                  |
+| <sub>writeInt32($value: Integer, ...): Null</sub>                                                |
+| Write 64 bit integer value and advance write position by 4 byte                                  |
+| <sub>writeInt64($value: Integer, ...): Null</sub>                                                |
+| Write 8 bit integer value and advance write position by 1 byte                                   |
+| <sub>writeInt8($value: Integer): Null</sub>                                                      |
 
 ## 6.3. Array class
 

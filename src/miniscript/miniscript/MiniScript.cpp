@@ -3702,13 +3702,13 @@ inline MiniScript::Variable* MiniScript::evaluateVariableAccessIntern(MiniScript
 						//
 						return nullptr;
 					} else
-					if (arrayIdx >= ARRAYIDX_FIRST && arrayIdx < variablePtr->getByteArrayValueReference().size()) {
+					if (arrayIdx >= ARRAYIDX_FIRST && arrayIdx < variablePtr->getByteArrayValueReference().value.size()) {
 						// we have our parent and will handle the access in calling method
 						parentVariable = variablePtr;
 						//
 						return nullptr;
 					} else {
-						_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + variableStatement + ": index out of bounds: 0 <= " + to_string(arrayIdx) + " < " + to_string(variablePtr->getByteArrayValueReference().size()));
+						_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + variableStatement + ": index out of bounds: 0 <= " + to_string(arrayIdx) + " < " + to_string(variablePtr->getByteArrayValueReference().value.size()));
 						return nullptr;
 					}
 				} else
