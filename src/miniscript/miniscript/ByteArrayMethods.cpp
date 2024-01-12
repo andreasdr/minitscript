@@ -478,6 +478,144 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	//
 	{
 		//
+		class MethodByteArrayReadSmallString: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodByteArrayReadSmallString(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
+					},
+					MiniScript::TYPE_STRING,
+					true
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "ByteArray::readSmallString";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
+					if ((*byteArrayReadPtr) + 1 > arguments[0].getByteArraySize()) {
+						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 8 bit string size, because of read position " + to_string(*byteArrayReadPtr) + " + 1 >= " + to_string(arguments[0].getByteArraySize()));
+					} else {
+						string value;
+						auto size = static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++));
+						if ((*byteArrayReadPtr) + size > arguments[0].getByteArraySize()) {
+							_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading string bytes, because of read position " + to_string(*byteArrayReadPtr) + " + " + to_string(size) + " >= " + to_string(arguments[0].getByteArraySize()));
+						} else {
+							value.resize(size);
+							for (auto i = 0; i < size; i++) value.data()[i] = arguments[0].getByteArrayEntry((*byteArrayReadPtr)++);
+							returnValue.setValue(value);
+						}
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodByteArrayReadSmallString(miniScript));
+	}
+	//
+	{
+		//
+		class MethodByteArrayReadMediumString: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodByteArrayReadMediumString(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
+					},
+					MiniScript::TYPE_STRING,
+					true
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "ByteArray::readMediumString";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
+					if ((*byteArrayReadPtr) + 2 > arguments[0].getByteArraySize()) {
+						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 16 bit string size, because of read position " + to_string(*byteArrayReadPtr) + " + 2 >= " + to_string(arguments[0].getByteArraySize()));
+					} else {
+						string value;
+						auto size =
+							static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) +
+							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 8);
+						if ((*byteArrayReadPtr) + size > arguments[0].getByteArraySize()) {
+							_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading string bytes, because of read position " + to_string(*byteArrayReadPtr) + " + " + to_string(size) + " >= " + to_string(arguments[0].getByteArraySize()));
+						} else {
+							value.resize(size);
+							for (auto i = 0; i < size; i++) value.data()[i] = arguments[0].getByteArrayEntry((*byteArrayReadPtr)++);
+							returnValue.setValue(value);
+						}
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodByteArrayReadMediumString(miniScript));
+	}
+	//
+	{
+		//
+		class MethodByteArrayReadLargeString: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodByteArrayReadLargeString(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
+					},
+					MiniScript::TYPE_STRING,
+					true
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "ByteArray::readLargeString";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
+					if ((*byteArrayReadPtr) + 4 > arguments[0].getByteArraySize()) {
+						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 32 bit string size, because of read position " + to_string(*byteArrayReadPtr) + " + 4 >= " + to_string(arguments[0].getByteArraySize()));
+					} else {
+						string value;
+						auto size =
+							static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) +
+							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 8) +
+							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 16) +
+							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 24);
+						if ((*byteArrayReadPtr) + size > arguments[0].getByteArraySize()) {
+							_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading string bytes, because of read position " + to_string(*byteArrayReadPtr) + " + " + to_string(size) + " >= " + to_string(arguments[0].getByteArraySize()));
+						} else {
+							value.resize(size);
+							for (auto i = 0; i < size; i++) value.data()[i] = arguments[0].getByteArrayEntry((*byteArrayReadPtr)++);
+							returnValue.setValue(value);
+						}
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodByteArrayReadLargeString(miniScript));
+	}
+	//
+	{
+		//
 		class MethodByteArrayWriteBool: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
@@ -699,6 +837,133 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 		};
 		miniScript->registerMethod(new MethodByteArrayWriteFloat(miniScript));
+	}
+	//
+	{
+		//
+		class MethodByteArrayWriteSmallString: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodByteArrayWriteSmallString(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_NULL
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "ByteArray::writeSmallString";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string value;
+				if (arguments.size() != 2 ||
+					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
+					MiniScript::getStringValue(arguments, 1, value, false) == false) {
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					if (value.size() > 255) {
+						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding small string size of 255 bytes: " + to_string(value.size()) + " > 255");
+					} else {
+						const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
+						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value.size());
+						for (auto i = 0; i < value.size(); i++) {
+							arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value[i]);
+						}
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodByteArrayWriteSmallString(miniScript));
+	}
+	//
+	{
+		//
+		class MethodByteArrayWriteMediumString: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodByteArrayWriteMediumString(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_NULL
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "ByteArray::writeMediumString";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string value;
+				if (arguments.size() != 2 ||
+					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
+					MiniScript::getStringValue(arguments, 1, value, false) == false) {
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					if (value.size() > 65535) {
+						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding medium string size of 65535 bytes: " + to_string(value.size()) + " > 65535");
+					} else {
+						const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
+						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value.size() & 0xff);
+						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value.size() >> 8) & 0xff);
+						for (auto i = 0; i < value.size(); i++) {
+							arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value[i]);
+						}
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodByteArrayWriteMediumString(miniScript));
+	}
+	//
+	{
+		//
+		class MethodByteArrayWriteLargeString: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodByteArrayWriteLargeString(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_NULL
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "ByteArray::writeLargeString";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string value;
+				if (arguments.size() != 2 ||
+					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
+					MiniScript::getStringValue(arguments, 1, value, false) == false) {
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					if (value.size() > 4294967295) {
+						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding medium string size of 4294967295 bytes: " + to_string(value.size()) + " > 4294967295");
+					} else {
+						const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
+						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value.size() & 0xff);
+						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value.size() >> 8) & 0xff);
+						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value.size() >> 16) & 0xff);
+						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value.size() >> 24) & 0xff);
+						for (auto i = 0; i < value.size(); i++) {
+							arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value[i]);
+						}
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodByteArrayWriteLargeString(miniScript));
 	}
 	//
 	{

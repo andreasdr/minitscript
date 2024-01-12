@@ -294,6 +294,9 @@ Available data types are
 - int32 (-2147483646 .. 2147483647)
 - int64 (-9,223,372,036,854,775,806 .. -9,223,372,036,854,775,807)
 - float (floating point number)
+- small string (string with maximum size of 255 bytes)
+- medium string (string with maximum size of 65535 bytes)
+- large string (string with maximum size of 4294967295 bytes)
 
 You can get/set the position for reading from and writing to byte array by using the getReadPosition()/setReadPosition() and
 getWritePosition()/setWritePosition().
@@ -833,6 +836,12 @@ end
 | <sub>readInt64(): ?Integer</sub>                                                                 |
 | Read 8 bit integer value and advance read position by 1 byte                                     |
 | <sub>readInt8(): ?Integer</sub>                                                                  |
+| Read a string with maximum size of 255 bytes                                                     |
+| <sub>readLargeString(): ?String</sub>                                                            |
+| Read a string with maximum size of 65535 bytes                                                   |
+| <sub>readMediumString(): ?String</sub>                                                           |
+| Read a string with maximum size of 4294967295 bytes                                              |
+| <sub>readSmallString(): ?String</sub>                                                            |
 | Remove values from byte array                                                                    |
 | <sub>remove($index: Integer, $size: Integer): Null</sub>                                         |
 | Set read position                                                                                |
@@ -853,6 +862,12 @@ end
 | <sub>writeInt64($value: Integer): Null</sub>                                                     |
 | Write 8 bit integer value and advance write position by 1 byte                                   |
 | <sub>writeInt8($value: Integer): Null</sub>                                                      |
+| Write a string with maximum size of 255 bytes                                                    |
+| <sub>writeLargeString($value: String): Null</sub>                                                |
+| Write a string with maximum size of 65535 bytes                                                  |
+| <sub>writeMediumString($value: String): Null</sub>                                               |
+| Write a string with maximum size of 4294967295 bytes                                             |
+| <sub>writeSmallString($value: String): Null</sub>                                                |
 
 ## 6.3. Array class
 
