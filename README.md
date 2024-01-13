@@ -761,8 +761,6 @@ end
 | <sub><b>static</b> String::fromByteArray($byteArray: ByteArray): String</sub>                    |
 | Generate string                                                                                  |
 | <sub><b>static</b> String::generate($what: String[, $count: Integer]): String</sub>              |
-| Indent string                                                                                    |
-| <sub><b>static</b> String::indent($src: String, $with: String, $count: Integer): String</sub>    |
 | &nbsp;                                    |
 | <b>NON STATIC METHODS</b>                 |
 | Return character of string at given position                                                     |
@@ -775,6 +773,8 @@ end
 | <sub>firstIndexOf($what: String[, $beginIndex: Integer]): Integer</sub>                          |
 | Return first index of characters provided within given string in string                          |
 | <sub>firstIndexOfChars($what: String[, $beginIndex: Integer]): Integer</sub>                     |
+| Indent string                                                                                    |
+| <sub>indent($with: String, $count: Integer): String</sub>                                        |
 | Return index of specific string in string                                                        |
 | <sub>indexOf($what: String[, $beginIndex: Integer]): Integer</sub>                               |
 | Test if string value is empty                                                                    |
@@ -858,7 +858,7 @@ end
 | <sub>size(): Integer</sub>                                                                       |
 | Write bool value and advance write position by 1 byte                                            |
 | <sub>writeBool($value: Boolean): Null</sub>                                                      |
-| Not documented                                                                                   |
+| Write 32 bit float value and advance write position by 4 byte                                    |
 | <sub>writeFloat($value: Integer): Null</sub>                                                     |
 | Write 16 bit integer value and advance write position by 2 byte                                  |
 | <sub>writeInt16($value: Integer): Null</sub>                                                     |

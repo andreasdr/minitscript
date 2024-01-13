@@ -3758,7 +3758,7 @@ public:
 				auto& existingVariable = variableIt->second;
 				if (existingVariable->isConstant() == false) {
 					// if we set a variable in variable scope that did exist before, we can safely remove the constness
-					*existingVariable = variable;
+					existingVariable->setValue(variable);
 				} else {
 					_Console::println(getStatementInformation(*statement) + ": constant: " + variableStatement + ": Assignment of constant is not allowed");
 				}
