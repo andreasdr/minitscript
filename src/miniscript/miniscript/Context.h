@@ -21,6 +21,7 @@ class miniscript::miniscript::Context
 {
 private:
 	unordered_map<string, MiniScript*> scriptsById;
+	vector<MiniScript*> scriptCallStack;
 
 public:
 	// forbid class copy
@@ -69,6 +70,21 @@ public:
 			result.push_back(scriptId);
 		}
 		return result;
+	}
+
+	/**
+	 * Add to script call stack
+	 * @param script script
+	 */
+	inline void push(MiniScript* script) {
+		scriptCallStack.push_back(script);
+	}
+
+	/**
+	 * Remove from script call stack
+	 */
+	inline void pop() {
+		scriptCallStack.erase(scriptCallStack.begin() + scriptCallStack.size() - 1);
 	}
 
 };

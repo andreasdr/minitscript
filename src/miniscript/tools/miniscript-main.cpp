@@ -148,11 +148,13 @@ int main(int argc, char** argv)
 				#endif
 				// add script to context
 				auto scriptPtr = script.get();
+				context->push(scriptPtr);
 				context->addScript("main", script.release());
 				//
 				while (scriptPtr->isRunning() == true) {
 					scriptPtr->execute();
 				}
+				context->pop();
 			}
 		}
 	} else
