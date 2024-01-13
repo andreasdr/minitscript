@@ -999,8 +999,6 @@ end
 | <sub>getVariable($variable: String): Mixed</sub>                                                 |
 | Set variable                                                                                     |
 | <sub>setVariable($variable: String, $value: Mixed): Mixed</sub>                                  |
-| Unset variable                                                                                   |
-| <sub>unsetVariable($variable: String): Null</sub>                                                |
 | Add                                                                                              |
 | <sub>add($a: Mixed, $b: Mixed): Mixed</sub>                                                      |
 | Logical and                                                                                      |
@@ -1015,6 +1013,10 @@ end
 | <sub>bitwiseXor($a: Integer, $b: Integer): Integer</sub>                                         |
 | Create bool                                                                                      |
 | <sub>bool($bool: Boolean): Boolean</sub>                                                         |
+| Break out of current forCondition or forTime loop                                                |
+| <sub>break(): Null</sub>                                                                         |
+| Continue to next iteration of forCondition or forTime loop                                       |
+| <sub>continue(): Null</sub>                                                                      |
 | Divide                                                                                           |
 | <sub>div($a: Mixed, $b: Mixed): Mixed</sub>                                                      |
 | Else                                                                                             |

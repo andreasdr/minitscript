@@ -2553,7 +2553,26 @@ protected:
 	static constexpr int64_t TIME_NONE { -1LL };
 
 	struct ScriptState {
-		enum EndType { ENDTYPE_BLOCK, ENDTYPE_FOR, ENDTYPE_IF };
+		enum BlockType { BLOCKTYPE_NONE, BLOCKTYPE_BLOCK, BLOCKTYPE_FOR, BLOCKTYPE_IF };
+		struct Block {
+			Block():
+				type(BLOCKTYPE_NONE),
+				continueStatement(nullptr),
+				breakStatement(nullptr)
+			{}
+			Block(
+				BlockType type,
+				const Statement* continueStatement,
+				const Statement* breakStatement
+			):
+				type(type),
+				continueStatement(continueStatement),
+				breakStatement(breakStatement)
+			{}
+			BlockType type;
+			const Statement* continueStatement;
+			const Statement* breakStatement;
+		};
 		enum ConditionType {
 			SCRIPT,
 			CONDITIONTYPE_FORTIME
@@ -2571,7 +2590,7 @@ protected:
 		unordered_map<string, Variable*> variables;
 		unordered_map<int, int64_t> forTimeStarted;
 		stack<bool> conditionStack;
-		stack<EndType> endTypeStack;
+		vector<Block> blockStack;
 		// applies for functions only
 		Variable returnValue;
 	};
@@ -2614,6 +2633,14 @@ protected:
 	 */
 	inline void setNativeHash(const string& nativeHash) {
 		this->nativeHash = nativeHash;
+	}
+
+	/**
+	 * Go to statement
+	 * @param statement statement
+	 */
+	void gotoStatement(const Statement& statement) {
+		getScriptState().gotoStatementIdx = statement.statementIdx;
 	}
 
 	/**
@@ -2662,8 +2689,8 @@ protected:
 		if (isFunctionRunning() == false) enabledNamedConditions.clear();
 		scriptState.forTimeStarted.clear();
 		while (scriptState.conditionStack.empty() == false) scriptState.conditionStack.pop();
-		while (scriptState.endTypeStack.empty() == false) scriptState.endTypeStack.pop();
-		if (scriptIdx != SCRIPTIDX_NONE) scriptState.endTypeStack.push(ScriptState::ENDTYPE_BLOCK);
+		scriptState.blockStack.clear();
+		if (scriptIdx != SCRIPTIDX_NONE) scriptState.blockStack.emplace_back(ScriptState::BLOCKTYPE_BLOCK, nullptr, nullptr);
 		scriptState.id.clear();
 		scriptState.scriptIdx = scriptIdx;
 		scriptState.statementIdx = STATEMENTIDX_FIRST;
