@@ -30,6 +30,6 @@ callable: hello2($name)
 	console.log("Hello from context-test-2 " + $name)
 	console.log("context-test-2: Trying to remove script 'context-test-2'")
 	context.script.removeScript("context-test-2")
-	console.log("context-test-2: Trying to remove script 'main'")
-	context.script.removeScript("main")
+	console.log("context-test-2: Trying to remove script 'application'")
+	context.script.removeScript("application")
 end

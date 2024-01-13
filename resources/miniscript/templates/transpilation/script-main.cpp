@@ -21,8 +21,17 @@ using miniscript::utilities::Console;
 int main(int argc, char *argv[]) {
 	// initialize MiniScript
 	MiniScript::initialize();
-	// create context
+	// create context and argument values
 	auto context = make_unique<Context>();
+	//
+	{
+		// create main argument values
+		vector<string> argumentValues;
+		for (auto i = 0; i < argc; i++) {
+			argumentValues.push_back(string(argv[i]));
+		}
+		context->setArgumentValues(argumentValues);
+	}
 	// load script and set context
 	auto script = make_unique<{$script-class}>();
 	script->setContext(context.get());
@@ -42,7 +51,7 @@ int main(int argc, char *argv[]) {
 	}
 	// add script to context, push it to miniscript stack
 	auto scriptPtr = script.get();
-	scriptPtr->getContext()->addScript("main", script.release());
+	scriptPtr->getContext()->addScript("application", script.release());
 	scriptPtr->getContext()->push(scriptPtr);
 	while (scriptPtr->isRunning() == true) {
 		scriptPtr->execute();
