@@ -1053,6 +1053,10 @@ end
 | <sub>notEqual($a: Mixed, $b: Mixed): Boolean</sub>                                               |
 | Logical or                                                                                       |
 | <sub>or($a: Boolean, $b: Boolean): Boolean</sub>                                                 |
+| Postfix decrement                                                                                |
+| <sub>postfixDecrement(&$variable: Integer): Integer</sub>                                        |
+| Postfix increment                                                                                |
+| <sub>postfixIncrement(&$variable: Integer): Integer</sub>                                        |
 | Prefix decrement                                                                                 |
 | <sub>prefixDecrement(&$variable: Integer): Integer</sub>                                         |
 | Prefix increment                                                                                 |
@@ -1380,8 +1384,10 @@ end
 | && | and($a: Boolean, $b: Boolean): Boolean                                                      |
 | *  | mul($a: Mixed, $b: Mixed): Mixed                                                            |
 | +  | add($a: Mixed, $b: Mixed): Mixed                                                            |
+| ++ | postfixIncrement(&$variable: Integer): Integer                                              |
 | ++ | prefixIncrement(&$variable: Integer): Integer                                               |
 | -  | sub($a: Mixed, $b: Mixed): Mixed                                                            |
+| -- | postfixDecrement(&$variable: Integer): Integer                                              |
 | -- | prefixDecrement(&$variable: Integer): Integer                                               |
 | /  | div($a: Mixed, $b: Mixed): Mixed                                                            |
 | <  | lesser($a: Mixed, $b: Mixed): Boolean                                                       |

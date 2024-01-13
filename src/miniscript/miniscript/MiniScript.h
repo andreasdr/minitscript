@@ -68,9 +68,11 @@ public:
 		// see: https://en.cppreference.com/w/cpp/language/operator_precedence
 		OPERATOR_NONE,
 		// priority 2
-		OPERATOR_INCREMENT,
-		OPERATOR_DECREMENT,
+		OPERATOR_POSTFIX_INCREMENT,
+		OPERATOR_POSTFIX_DECREMENT,
 		// priority 3
+		OPERATOR_PREFIX_INCREMENT,
+		OPERATOR_PREFIX_DECREMENT,
 		OPERATOR_NOT,
 		OPERATOR_BITWISENOT,
 		// priority 5
@@ -3478,8 +3480,10 @@ public:
 	inline static string getOperatorAsString(Operator operator_) {
 		switch(operator_) {
 			case(OPERATOR_NONE): return "NONE";
-			case(OPERATOR_INCREMENT): return "++";
-			case(OPERATOR_DECREMENT): return "--";
+			case(OPERATOR_POSTFIX_INCREMENT): return "++";
+			case(OPERATOR_POSTFIX_DECREMENT): return "--";
+			case(OPERATOR_PREFIX_INCREMENT): return "++";
+			case(OPERATOR_PREFIX_DECREMENT): return "--";
 			case(OPERATOR_NOT): return "!";
 			case(OPERATOR_BITWISENOT): return "~";
 			case(OPERATOR_MULTIPLICATION): return "*";
@@ -3963,6 +3967,20 @@ public:
 	 * @return methods
 	 */
 	const vector<Method*> getMethods();
+
+	/**
+	 * Get method by operator
+	 * @param operator_ operator
+	 * @return method or nullptr
+	 */
+	inline Method* getOperatorMethod(Operator operator_) {
+		auto methodIt = operators.find(operator_);
+		if (methodIt != operators.end()) {
+			return methodIt->second;
+		} else {
+			return nullptr;
+		}
+	}
 
 	/**
 	 * @return operator methods

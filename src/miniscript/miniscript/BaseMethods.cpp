@@ -1029,11 +1029,77 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class MethodIncrement: public MiniScript::Method {
+		class MethodPostfixIncrement: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			MethodIncrement(MiniScript* miniScript):
+			MethodPostfixIncrement(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_INTEGER, .name = "variable", .optional = false, .reference = true, .nullable = false },
+					},
+					MiniScript::TYPE_INTEGER
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "postfixIncrement";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				int64_t value;
+				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					arguments[0].setValue(value + 1);
+					returnValue.setValue(value);
+				}
+			}
+			MiniScript::Operator getOperator() const override {
+				return MiniScript::OPERATOR_POSTFIX_INCREMENT;
+			}
+		};
+		miniScript->registerMethod(new MethodPostfixIncrement(miniScript));
+	}
+	{
+		//
+		class MethodPostfixDecrement: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodPostfixDecrement(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_INTEGER, .name = "variable", .optional = false, .reference = true, .nullable = false },
+					},
+					MiniScript::TYPE_INTEGER
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "postfixDecrement";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				int64_t value;
+				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					arguments[0].setValue(value - 1);
+					returnValue.setValue(value);
+				}
+			}
+			MiniScript::Operator getOperator() const override {
+				return MiniScript::OPERATOR_POSTFIX_DECREMENT;
+			}
+		};
+		miniScript->registerMethod(new MethodPostfixDecrement(miniScript));
+	}
+	{
+		//
+		class MethodPrefixIncrement: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodPrefixIncrement(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "variable", .optional = false, .reference = true, .nullable = false },
@@ -1056,18 +1122,18 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 			MiniScript::Operator getOperator() const override {
-				return MiniScript::OPERATOR_INCREMENT;
+				return MiniScript::OPERATOR_PREFIX_INCREMENT;
 			}
 		};
-		miniScript->registerMethod(new MethodIncrement(miniScript));
+		miniScript->registerMethod(new MethodPrefixIncrement(miniScript));
 	}
 	{
 		//
-		class MethodDecrement: public MiniScript::Method {
+		class MethodPrefixDecrement: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			MethodDecrement(MiniScript* miniScript):
+			MethodPrefixDecrement(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_INTEGER, .name = "variable", .optional = false, .reference = true, .nullable = false },
@@ -1090,10 +1156,10 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 			MiniScript::Operator getOperator() const override {
-				return MiniScript::OPERATOR_DECREMENT;
+				return MiniScript::OPERATOR_PREFIX_DECREMENT;
 			}
 		};
-		miniScript->registerMethod(new MethodDecrement(miniScript));
+		miniScript->registerMethod(new MethodPrefixDecrement(miniScript));
 	}
 	//
 	{
