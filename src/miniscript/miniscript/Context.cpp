@@ -36,11 +36,9 @@ void Context::addScript(const string& id, MiniScript* script) {
 	}
 	// no, add it
 	scriptsById[id] = script;
-	Console::println("Context::addScript(): " + id);
 }
 
 void Context::removeScript(const string& id) {
-	Console::println("Context::removeScript(): " + id);
 	// get script
 	auto scriptsIt = scriptsById.find(id);
 	if (scriptsIt == scriptsById.end()) {
