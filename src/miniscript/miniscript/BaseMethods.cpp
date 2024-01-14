@@ -409,19 +409,20 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					miniScript->startErrorScript();
 				} else {
 					//
-					bool match = false;
 					auto& scriptState = miniScript->getScriptState();
 					auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
 					if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_SWITCH) {
 						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": case without switch");
 						miniScript->startErrorScript();
-					} else
-					if (blockStack.match == true || (match = (arguments[0].getValueAsString() == blockStack.switchVariable.getValueAsString())) == false) {
-						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
-						miniScript->gotoStatementGoto(statement);
 					} else {
-						blockStack.match = match;
-						scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_CASE, false, nullptr, nullptr, MiniScript::Variable());
+						auto match = arguments[0].getValueAsString() == blockStack.switchVariable.getValueAsString();
+						if (blockStack.match == true || match == false) {
+							miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
+							miniScript->gotoStatementGoto(statement);
+						} else {
+							blockStack.match = match;
+							scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_CASE, false, nullptr, nullptr, MiniScript::Variable());
+						}
 					}
 				}
 			}

@@ -2566,13 +2566,13 @@ protected:
 			{}
 			Block(
 				BlockType type,
-				bool condition,
+				bool match,
 				const Statement* continueStatement,
 				const Statement* breakStatement,
 				const Variable& switchVariable
 			):
 				type(type),
-				match(condition),
+				match(match),
 				continueStatement(continueStatement),
 				breakStatement(breakStatement),
 				switchVariable(switchVariable)
