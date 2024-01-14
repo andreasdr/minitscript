@@ -63,7 +63,7 @@ See an example of if and else and end:
 ...
 ```
 
-See an example of if, elseif, else and end:
+See an example of if, elseif, else:
 
 ```
 ...
@@ -83,7 +83,36 @@ See an example of if, elseif, else and end:
 ...
 ```
 
-## 2.2. forTime, forCondition
+## 2.2. Switch, case and default
+
+Switch, case, and default are flow control methods too. Please see the usage below.
+
+See an example:
+
+```
+...
+	#
+	$i = 1
+	switch($i)
+		case(0)
+			console.log("$i = 0")
+		end
+		case(1)
+			console.log("$i = 1")
+		end
+		case(2)
+			console.log("$i = 2")
+		end
+		default
+			console.log("default: $i = " + $i)
+		end
+	end
+...
+```
+
+Please note, default block is optional.
+
+## 2.3. forTime, forCondition
 
 forTime and forCondition are loops and belong to flow control also:
 

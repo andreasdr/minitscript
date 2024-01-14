@@ -13,5 +13,6 @@
 ./bin/miniscript/tools/miniscript resources/miniscript/tests/loop-test.tscript
 ./bin/miniscript/tools/miniscript resources/miniscript/tests/network-test.tscript
 ./bin/miniscript/tools/miniscript resources/miniscript/tests/preprocessor-test.tscript
+./bin/miniscript/tools/miniscript resources/miniscript/tests/switch-test.tscript
 ./bin/miniscript/tools/miniscript resources/miniscript/tests/utf8-test.tscript
 

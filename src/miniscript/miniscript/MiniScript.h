@@ -2555,25 +2555,33 @@ protected:
 	static constexpr int64_t TIME_NONE { -1LL };
 
 	struct ScriptState {
-		enum BlockType { BLOCKTYPE_NONE, BLOCKTYPE_BLOCK, BLOCKTYPE_FOR, BLOCKTYPE_IF };
+		enum BlockType { BLOCKTYPE_NONE, BLOCKTYPE_BLOCK, BLOCKTYPE_FOR, BLOCKTYPE_FORTIME, BLOCKTYPE_IF, BLOCKTYPE_SWITCH, BLOCKTYPE_CASE };
 		struct Block {
 			Block():
 				type(BLOCKTYPE_NONE),
+				match(false),
 				continueStatement(nullptr),
-				breakStatement(nullptr)
+				breakStatement(nullptr),
+				switchVariable(Variable())
 			{}
 			Block(
 				BlockType type,
+				bool condition,
 				const Statement* continueStatement,
-				const Statement* breakStatement
+				const Statement* breakStatement,
+				const Variable& switchVariable
 			):
 				type(type),
+				match(condition),
 				continueStatement(continueStatement),
-				breakStatement(breakStatement)
+				breakStatement(breakStatement),
+				switchVariable(switchVariable)
 			{}
 			BlockType type;
+			bool match;
 			const Statement* continueStatement;
 			const Statement* breakStatement;
+			Variable switchVariable;
 		};
 		enum ConditionType {
 			SCRIPT,
@@ -2591,7 +2599,6 @@ protected:
 		string id;
 		unordered_map<string, Variable*> variables;
 		unordered_map<int, int64_t> forTimeStarted;
-		stack<bool> conditionStack;
 		vector<Block> blockStack;
 		// applies for functions only
 		Variable returnValue;
@@ -2690,9 +2697,8 @@ protected:
 		auto& scriptState = getScriptState();
 		if (isFunctionRunning() == false) enabledNamedConditions.clear();
 		scriptState.forTimeStarted.clear();
-		while (scriptState.conditionStack.empty() == false) scriptState.conditionStack.pop();
 		scriptState.blockStack.clear();
-		if (scriptIdx != SCRIPTIDX_NONE) scriptState.blockStack.emplace_back(ScriptState::BLOCKTYPE_BLOCK, nullptr, nullptr);
+		if (scriptIdx != SCRIPTIDX_NONE) scriptState.blockStack.emplace_back(ScriptState::BLOCKTYPE_BLOCK, false, nullptr, nullptr, Variable());
 		scriptState.id.clear();
 		scriptState.scriptIdx = scriptIdx;
 		scriptState.statementIdx = STATEMENTIDX_FIRST;

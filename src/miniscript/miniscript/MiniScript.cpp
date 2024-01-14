@@ -1309,7 +1309,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 	auto lineIdx = LINE_FIRST;
 	auto currentLineIdx = 0;
 	auto statementIdx = STATEMENTIDX_FIRST;
-	enum GotoStatementType { GOTOSTATEMENTTYPE_FOR, GOTOSTATEMENTTYPE_IF, GOTOSTATEMENTTYPE_ELSE, GOTOSTATEMENTTYPE_ELSEIF };
+	enum GotoStatementType { GOTOSTATEMENTTYPE_FOR, GOTOSTATEMENTTYPE_IF, GOTOSTATEMENTTYPE_ELSE, GOTOSTATEMENTTYPE_ELSEIF, GOTOSTATEMENTTYPE_SWITCH, GOTOSTATEMENTTYPE_CASE, GOTOSTATEMENTTYPE_DEFAULT };
 	struct GotoStatementStruct {
 		GotoStatementType type;
 		int statementIdx;
@@ -1538,9 +1538,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					arguments
 				);
 			} else {
-				_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": expecting 'on:', 'on-enabled:', 'on-function:' script condition");
+				_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": expecting 'on:', 'on-enabled:', 'function:', 'callable:'");
 				//
-				parseErrors.push_back(to_string(currentLineIdx) + ": expecting 'on:', 'on-enabled:', 'on-function:' script condition");
+				parseErrors.push_back(to_string(currentLineIdx) + ": expecting 'on:', 'on-enabled:', 'function:', 'callable:'");
 				//
 				scriptValid = false;
 			}
@@ -1582,6 +1582,23 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						case GOTOSTATEMENTTYPE_ELSEIF:
 							{
 								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size();
+								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+							}
+							break;
+						case GOTOSTATEMENTTYPE_SWITCH:
+							{
+								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+							}
+							break;
+						case GOTOSTATEMENTTYPE_CASE:
+							{
+								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size() + 1;
+								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+							}
+							break;
+						case GOTOSTATEMENTTYPE_DEFAULT:
+							{
+								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size() + 1;
 								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
@@ -1695,6 +1712,30 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					gotoStatementStack.push(
 						{
 							.type = GOTOSTATEMENTTYPE_IF,
+							.statementIdx = statementIdx
+						}
+					);
+				} else
+				if (_StringTools::regexMatch(executableStatement, "^switch[\\s]*\\(.*\\)$") == true) {
+					gotoStatementStack.push(
+						{
+							.type = GOTOSTATEMENTTYPE_SWITCH,
+							.statementIdx = STATEMENTIDX_NONE
+						}
+					);
+				} else
+				if (_StringTools::regexMatch(executableStatement, "^case[\\s]*\\(.*\\)$") == true) {
+					gotoStatementStack.push(
+						{
+							.type = GOTOSTATEMENTTYPE_CASE,
+							.statementIdx = statementIdx
+						}
+					);
+				}
+				if (_StringTools::regexMatch(executableStatement, "^default[\\s]*$") == true) {
+					gotoStatementStack.push(
+						{
+							.type = GOTOSTATEMENTTYPE_DEFAULT,
 							.statementIdx = statementIdx
 						}
 					);
