@@ -1550,9 +1550,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				_StringTools::startsWith(statementCode, "on-enabled:") == true ||
 				_StringTools::startsWith(statementCode, "callable:") == true
 			) {
-				_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": unbalanced forXXX/if/elseif/else/end");
+				_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 				//
-				parseErrors.push_back(to_string(currentLineIdx) + ": unbalanced forXXX/if/elseif/else/end");
+				parseErrors.push_back(to_string(currentLineIdx) + ": unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 				//
 				scriptValid = false;
 			} else
@@ -1746,11 +1746,11 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 		}
 	}
 
-	// check for unbalanced forXXX/if/elseif/else/end
+	// check for unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end
 	if (scriptValid == true && gotoStatementStack.empty() == false) {
-		_Console::println(scriptFileName + ": unbalanced forXXX/if/elseif/else/end");
+		_Console::println(scriptFileName + ": unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 		//
-		parseErrors.push_back("Unbalanced forXXX/if/elseif/else/end");
+		parseErrors.push_back("Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 		//
 		scriptValid = false;
 		//

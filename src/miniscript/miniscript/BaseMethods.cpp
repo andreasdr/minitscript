@@ -68,7 +68,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (miniScript->getScriptState().blockStack.empty() == true) {
-					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": break without forXXX");
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": break without forCondition/forTime");
 					miniScript->startErrorScript();
 				} else {
 					auto& blockStack = miniScript->getScriptState().blockStack;
@@ -81,7 +81,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 					if (endType.type == MiniScript::ScriptState::BLOCKTYPE_NONE) {
-						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": break without forXXX");
+						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": break without forCondition/forTime");
 					} else
 					if (endType.continueStatement != nullptr) {
 						miniScript->gotoStatement(*endType.breakStatement);
@@ -105,7 +105,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (miniScript->getScriptState().blockStack.empty() == true) {
-					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": continue without forXXX");
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": continue without forCondition, forTime");
 					miniScript->startErrorScript();
 				} else {
 					auto& blockStack = miniScript->getScriptState().blockStack;
@@ -118,7 +118,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 					if (endType == nullptr) {
-						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": continue without forXXX");
+						_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": continue without forCondition, forTime");
 					} else
 					if (endType->continueStatement != nullptr) {
 						miniScript->gotoStatement(*endType->continueStatement);
@@ -142,7 +142,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (miniScript->getScriptState().blockStack.empty() == true) {
-					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": end without block/forXXX/if");
+					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": end without if/elseif/else/switch/case/default/forCondition/forTime/end");
 					miniScript->startErrorScript();
 				} else {
 					auto& blockStack = miniScript->getScriptState().blockStack;
