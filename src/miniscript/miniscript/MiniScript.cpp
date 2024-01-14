@@ -1465,14 +1465,14 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					auto rightBracketIdx = statement.find(')');
 					if (leftBracketIdx != string::npos || leftBracketIdx != string::npos) {
 						if (leftBracketIdx == string::npos) {
-							_Console::println("MiniScript::parseScriptInternal(): " + scriptFileName + ": @" + to_string(currentLineIdx) + ": 'function:': unbalanced bracket count");
+							_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": 'function:': unbalanced bracket count");
 							//
 							parseErrors.push_back(to_string(currentLineIdx) + ": 'function:': unbalanced bracket count");
 							//
 							scriptValid = false;
 						} else
 						if (rightBracketIdx == string::npos) {
-							_Console::println("MiniScript::parseScriptInternal(): " + scriptFileName + ": @" + to_string(currentLineIdx) + ": 'function:': unbalanced bracket count");
+							_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": 'function:': unbalanced bracket count");
 							//
 							parseErrors.push_back(to_string(currentLineIdx) + ": 'function:': unbalanced bracket count");
 							//
@@ -1494,7 +1494,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 										reference
 									);
 								} else {
-									_Console::println("MiniScript::parseScriptInternal(): " + scriptFileName + ": @" + to_string(currentLineIdx) + ": 'function:': invalid argument name: '" + argumentNameTrimmed + "'");
+									_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": 'function:': invalid argument name: '" + argumentNameTrimmed + "'");
 									//
 									parseErrors.push_back(to_string(currentLineIdx) + ": 'function:': invalid argument name: '" + argumentNameTrimmed + "'");
 									//
@@ -1538,7 +1538,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					arguments
 				);
 			} else {
-				_Console::println("MiniScript::parseScriptInternal(): " + scriptFileName + ": @" + to_string(currentLineIdx) + ": expecting 'on:', 'on-enabled:', 'on-function:' script condition");
+				_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": expecting 'on:', 'on-enabled:', 'on-function:' script condition");
 				//
 				parseErrors.push_back(to_string(currentLineIdx) + ": expecting 'on:', 'on-enabled:', 'on-function:' script condition");
 				//
@@ -1550,7 +1550,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				_StringTools::startsWith(statementCode, "on-enabled:") == true ||
 				_StringTools::startsWith(statementCode, "callable:") == true
 			) {
-				_Console::println("MiniScript::parseScriptInternal(): " + scriptFileName + ": @" + to_string(currentLineIdx) + ": unbalanced forXXX/if/elseif/else/end");
+				_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": unbalanced forXXX/if/elseif/else/end");
 				//
 				parseErrors.push_back(to_string(currentLineIdx) + ": unbalanced forXXX/if/elseif/else/end");
 				//
@@ -1609,7 +1609,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							}
 							break;
 						default:
-							_Console::println("MiniScript::parseScriptInternal(): '" + scriptFileName + ": @" + to_string(currentLineIdx) + ": else without if/elseif");
+							_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": else without if/elseif");
 							//
 							parseErrors.push_back(to_string(currentLineIdx) + ": else without if/elseif");
 							//
@@ -1623,7 +1623,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						}
 					);
 				} else {
-					_Console::println("MiniScript::parseScriptInternal(): '" + scriptFileName + ": @" + to_string(currentLineIdx) + ": else without if");
+					_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": else without if");
 					//
 					parseErrors.push_back(to_string(currentLineIdx) + ": else without if");
 					//
@@ -1656,7 +1656,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							}
 							break;
 						default:
-							_Console::println("MiniScript::parseScriptInternal(): '" + scriptFileName + ": @" + to_string(currentLineIdx) + ": elseif without if");
+							_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": elseif without if");
 							scriptValid = false;
 							break;
 					}
@@ -1667,7 +1667,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						}
 					);
 				} else {
-					_Console::println("MiniScript::parseScriptInternal(): '" + scriptFileName + ": @" + to_string(currentLineIdx) + ": elseif without if");
+					_Console::println(scriptFileName + ": @" + to_string(currentLineIdx) + ": elseif without if");
 					//
 					parseErrors.push_back(to_string(currentLineIdx) + ": elseif without if");
 					//
@@ -1707,7 +1707,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 
 	// check for unbalanced forXXX/if/elseif/else/end
 	if (scriptValid == true && gotoStatementStack.empty() == false) {
-		_Console::println("MiniScript::parseScriptInternal(): '" + scriptFileName + ": unbalanced forXXX/if/elseif/else/end");
+		_Console::println(scriptFileName + ": unbalanced forXXX/if/elseif/else/end");
 		//
 		parseErrors.push_back("Unbalanced forXXX/if/elseif/else/end");
 		//
