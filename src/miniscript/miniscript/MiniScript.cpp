@@ -164,7 +164,16 @@ const vector<string> MiniScript::getTranspilationUnits() {
 }
 
 MiniScript::MiniScript() {
-	for (auto datatype: dataTypes) dataTypeScriptContexts.push_back(datatype->createScriptContext());
+	for (auto dataType: dataTypes) {
+		if (dataType->isRequiringGarbageCollection() == false) continue;
+		// create script context
+		auto scriptContext = dataType->createScriptContext();
+		scriptContext->setMiniScript(this);
+		scriptContext->setIndex(garbageCollectionDataTypes.size());
+		//
+		garbageCollectionDataTypes.emplace_back(dataType,scriptContext);
+		garbageCollectionScriptContextsByDataType[dataType->getType()] = scriptContext;
+	}
 	setNative(false);
 	pushScriptState();
 }
@@ -174,8 +183,7 @@ MiniScript::~MiniScript() {
 	for (const auto& [stateMachineStateId, stateMachineState]: this->stateMachineStates) delete stateMachineState;
 	while (scriptStateStack.empty() == false) popScriptState();
 	garbageCollection();
-	for (auto i = 0; i < dataTypes.size(); i++) dataTypes[i]->deleteScriptContext(dataTypeScriptContexts[i]);
-	dataTypeScriptContexts.clear();
+	for (auto& garbageCollectionDataType: garbageCollectionDataTypes) garbageCollectionDataType.dataType->deleteScriptContext(garbageCollectionDataType.context);
 }
 
 void MiniScript::registerStateMachineState(StateMachineState* state) {
@@ -4165,5 +4173,9 @@ void MiniScript::setConstantInternal(Variable& variable) {
 }
 
 void MiniScript::garbageCollection() {
-	for (auto i = 0; i < dataTypes.size(); i++) dataTypes[i]->garbageCollection(dataTypeScriptContexts[i]);
+	auto garbageCollectionDataTypesIndicesCopy = garbageCollectionDataTypesIndices;
+	for (auto index: garbageCollectionDataTypesIndicesCopy) {
+		auto& garbageCollectionDataType = garbageCollectionDataTypes[index];
+		garbageCollectionDataType.dataType->garbageCollection(garbageCollectionDataType.context);
+	}
 }
