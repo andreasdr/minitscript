@@ -1,10 +1,12 @@
 #pragma once
 
+#include <string>
 #include <string_view>
 
 #include <miniscript/miniscript.h>
 #include <miniscript/utilities/fwd-miniscript.h>
 
+using std::string;
 using std::string_view;
 
 /**
@@ -31,5 +33,10 @@ public:
 	 * Print new line to console
 	 */
 	static void println();
+
+	/**
+	 * Read from console
+	 */
+	static const string readln();
 
 };

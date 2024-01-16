@@ -1142,10 +1142,16 @@ end
 | <sub>console.dump($value: Mixed): Null</sub>                                                     |
 | Print to console                                                                                 |
 | <sub>console.log(...): Null</sub>                                                                |
-| Print to console                                                                                 |
+| Print to console without trainling new line                                                      |
 | <sub>console.print(...): Null</sub>                                                              |
 | Print to console with a trailing new line                                                        |
 | <sub>console.println(...): Null</sub>                                                            |
+| Read all input into string value                                                                 |
+| <sub>console.readAll(): String</sub>                                                             |
+| Read all input into array of strings                                                             |
+| <sub>console.readAllAsArray(): Array</sub>                                                       |
+| Read a line from input                                                                           |
+| <sub>console.readln(): String</sub>                                                              |
 
 ## 7.4. Script container and interoperability methods
 

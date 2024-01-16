@@ -1,11 +1,14 @@
 #include <iostream>
 #include <string>
+#include <string_view>
 
 #include <miniscript/miniscript.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Time.h>
 
-using namespace std;
+using std::cin;
+using std::cout;
+using std::endl;
 
 using miniscript::utilities::Console;
 
@@ -25,4 +28,11 @@ void Console::println()
 {
 	cout << endl;
 	cout.flush();
+}
+
+const string Console::readln()
+{
+	string str;
+	cin >> str;
+	return str;
 }
