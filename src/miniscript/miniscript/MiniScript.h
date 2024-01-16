@@ -58,6 +58,7 @@ using _Library = miniscript::miniscript::Library;
  * @author Andreas Drewke
  */
 class miniscript::miniscript::MiniScript {
+	friend class ApplicationMethods;
 	friend class BaseMethods;
 	friend class JSONMethods;
 	friend class ScriptMethods;

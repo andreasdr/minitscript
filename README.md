@@ -1133,6 +1133,8 @@ end
 | <sub>application.getArguments(): Array</sub>                                                     |
 | Execute Application                                                                              |
 | <sub>application.execute($command: String): String</sub>                                         |
+| Exit application with optional exit code                                                         |
+| <sub>application.exit([$exitCode: Integer]): Null</sub>                                          |
 
 ## 7.3. Console methods
 
@@ -1385,6 +1387,10 @@ end
 
 | Name                                                        | Value                              |
 |-------------------------------------------------------------|------------------------------------|
+| $APPLICATION::CPU                                           | e.g. X64                           |
+| $APPLICATION::EXITCODE_FAILURE                              | 1                                  |
+| $APPLICATION::EXITCODE_SUCCESS                              | 0                                  |
+| $APPLICATION::OS                                            | e.g. Windows-MSC                   |
 | $HTTPClient::HTTP_STATUS_ACCEPTED                           | 202                                |
 | $HTTPClient::HTTP_STATUS_ALREADYREPORTED                    | 208                                |
 | $HTTPClient::HTTP_STATUS_BADGATEWAY                         | 502                                |
@@ -1450,6 +1456,10 @@ end
 | $HTTPClient::HTTP_STATUS_URITOOLONG                         | 414                                |
 | $HTTPClient::HTTP_STATUS_USEPROXY                           | 305                                |
 | $HTTPClient::HTTP_STATUS_VARIANTALSONEGOTIATES              | 506                                |
+
+Please note:
+- $APPLICATION::CPU can have the following values: FreeBSD, Haiku, Linux, MacOSX, NetBSD, OpenBSD, Windows-MSC, Windows-MINGW, Unknown
+- $APPLICATION::OS can have the following values: X64, IA64, ARM64, ARM, PPC64, PPC, Unknown
 
 # 9. Operators
 

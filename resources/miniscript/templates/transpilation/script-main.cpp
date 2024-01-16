@@ -59,5 +59,5 @@ int main(int argc, char *argv[]) {
 	// done
 	scriptPtr->getContext()->pop();
 	//
-	return EXIT_SUCCESS;
+	return scriptPtr->getContext()->getExitCode();
 }
