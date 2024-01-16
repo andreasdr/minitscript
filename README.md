@@ -1161,7 +1161,7 @@ end
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Print to error console/stream without trainling new line                                         |
 | <sub>console.error.print(...): Null</sub>                                                        |
-| Print to console/stream with a trailing new line                                                 |
+| Print to error console/stream with a trailing new line                                                 |
 | <sub>console.error.println(...): Null</sub>                                                      |
 
 ## 7.5. Script container and interoperability methods
