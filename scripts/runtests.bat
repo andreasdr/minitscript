@@ -15,5 +15,6 @@ chcp 65001
 .\bin\miniscript\tools\miniscript resources\miniscript\tests\network-test.tscript
 .\bin\miniscript\tools\miniscript resources\miniscript\tests\pipe-test.tscript < scripts\pipe-test.input
 .\bin\miniscript\tools\miniscript resources\miniscript\tests\preprocessor-test.tscript
+.\bin\miniscript\tools\miniscript resources\miniscript\tests\string-test.tscript
 .\bin\miniscript\tools\miniscript resources\miniscript\tests\switch-test.tscript
 .\bin\miniscript\tools\miniscript resources\miniscript\tests\utf8-test.tscript
