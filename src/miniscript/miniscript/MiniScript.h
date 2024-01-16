@@ -3182,19 +3182,13 @@ private:
 					auto j = 0;
 					auto valid = true;
 					for (i++; i < str.size() && j < 8; i++ && j++) {
-						auto c = str[i];
-						auto valid =
-							(c >= '0' && c <= '9') ||
-							(c >= 'a' && c <= 'f') ||
-							(c >= 'A' && c <= 'F');
-						if (valid == false) {
-							break;
-						} else {
-							unicodeHexadecimalSequence+= c;
-						}
+						c = str[i];
+						unicodeHexadecimalSequence+= c;
+						if (((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) == false) break;
 					}
+					i--;
 					if (valid == false || j != 8) {
-						_Console::println(getStatementInformation(statement) + ": Invalid hexadecimal unicode character sequence");
+						_Console::println(getStatementInformation(statement) + ": Invalid hexadecimal unicode character sequence: " + unicodeHexadecimalSequence);
 					} else {
 						_Character::appendToString(deescapedStr, _Hex::decodeInt(unicodeHexadecimalSequence));
 					}
