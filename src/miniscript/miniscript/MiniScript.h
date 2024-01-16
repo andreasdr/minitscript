@@ -3160,23 +3160,24 @@ private:
 			auto c = str[i];
 			if (c != '\\' || lc == '\\') {
 				// escape sequences
-				// \0 	null character
+				//	see: https://en.cppreference.com/w/cpp/language/escape
+				// \0 null character
 				if (lc == '\\' && c == '0') deescapedStr+= '\0'; else
-				// \a 	audible bell
+				// \a audible bell
 				if (lc == '\\' && c == 'a') deescapedStr+= '\a'; else
-				// \b 	backspace
+				// \b backspace
 				if (lc == '\\' && c == 'b') deescapedStr+= '\b'; else
-				// \f 	form feed - new page
+				// \f form feed - new page
 				if (lc == '\\' && c == 'f') deescapedStr+= '\f'; else
-				// \n 	line feed - new line
+				// \n line feed - new line
 				if (lc == '\\' && c == 'n') deescapedStr+= '\n'; else
-				// \r 	carriage return
+				// \r carriage return
 				if (lc == '\\' && c == 'r') deescapedStr+= '\r'; else
-				// \t 	horizontal tab
+				// \t horizontal tab
 				if (lc == '\\' && c == 't') deescapedStr+= '\t'; else
-				// \v 	vertical tab
+				// \v vertical tab
 				if (lc == '\\' && c == 'v') deescapedStr+= '\v'; else
-				// unicode \unnnn or \Unnnnnnnn
+				// unicode \Unnnnnnnn
 				if (lc == '\\' && c == 'U') {
 					string unicodeHexadecimalSequence;
 					auto j = 0;
