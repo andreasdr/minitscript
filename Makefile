@@ -103,6 +103,7 @@ SRCS = \
 	src/miniscript/os/network/TCPSocket.cpp \
 	src/miniscript/utilities/Base64.cpp \
 	src/miniscript/utilities/Console.cpp \
+	src/miniscript/utilities/ErrorConsole.cpp \
 	src/miniscript/utilities/ExceptionBase.cpp \
 	src/miniscript/utilities/Float.cpp \
 	src/miniscript/utilities/Hex.cpp \

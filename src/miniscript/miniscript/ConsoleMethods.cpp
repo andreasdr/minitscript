@@ -5,6 +5,7 @@
 #include <miniscript/miniscript/ConsoleMethods.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/utilities/Console.h>
+#include <miniscript/utilities/ErrorConsole.h>
 
 using std::cin;
 using std::getline;
@@ -15,6 +16,7 @@ using miniscript::miniscript::ConsoleMethods;
 using miniscript::miniscript::MiniScript;
 
 using _Console = miniscript::utilities::Console;
+using _ErrorConsole = miniscript::utilities::ErrorConsole;
 
 void ConsoleMethods::registerConstants(MiniScript* miniScript) {
 }
@@ -128,9 +130,7 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				return "console.readln";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				string line;
-				getline(cin, line);
-				returnValue.setValue(line);
+				returnValue.setValue(_Console::readln());
 			}
 		};
 		miniScript->registerMethod(new MethodConsoleReadln(miniScript));
@@ -150,12 +150,7 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				return "console.readAll";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				string line;
-				string result;
-				while (cin.eof() == false && getline(cin, line)) {
-					result+= line + "\n";
-				}
-				returnValue.setValue(result);
+				returnValue.setValue(_Console::readAll());
 			}
 		};
 		miniScript->registerMethod(new MethodConsoleReadAll(miniScript));
@@ -176,12 +171,54 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				returnValue.setType(MiniScript::TYPE_ARRAY);
-				string line;
-				while (cin.eof() == false && getline(cin, line)) {
-					returnValue.pushArrayEntry(MiniScript::Variable(line));
-				}
+				const auto input = _Console::readAllAsArray();
+				for (const auto& line: input) returnValue.pushArrayEntry(MiniScript::Variable(line));
 			}
 		};
 		miniScript->registerMethod(new MethodConsoleReadAllAsArray(miniScript));
 	}
+	{
+		//
+		class MethodConsoleErrorPrint: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodConsoleErrorPrint(MiniScript* miniScript): MiniScript::Method(), miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "console.error.print";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				for (const auto& argument: arguments) {
+					_ErrorConsole::print(argument.getValueAsString());
+				}
+			}
+			bool isVariadic() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodConsoleErrorPrint(miniScript));
+	}
+	{
+		//
+		class MethodConsoleErrorPrintln: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodConsoleErrorPrintln(MiniScript* miniScript): MiniScript::Method(), miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "console.error.println";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				for (const auto& argument: arguments) {
+					_ErrorConsole::print(argument.getValueAsString());
+				}
+				_ErrorConsole::println();
+			}
+			bool isVariadic() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodConsoleErrorPrintln(miniScript));
+	}
 }
+

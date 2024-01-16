@@ -15,6 +15,8 @@ on: nothing
 	console.print("Whats your name: ")
 	$name = console.readln()
 	console.println("You have the mighty name: " + $name)
+	console.error.print("Now printing your name to error console: ")
+	console.error.println($name)
 	script.stop()
 end
 

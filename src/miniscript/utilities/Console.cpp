@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include <miniscript/miniscript.h>
 #include <miniscript/utilities/Console.h>
@@ -9,6 +10,10 @@
 using std::cin;
 using std::cout;
 using std::endl;
+using std::getline;
+using std::string;
+using std::string_view;
+using std::vector;
 
 using miniscript::utilities::Console;
 
@@ -32,7 +37,25 @@ void Console::println()
 
 const string Console::readln()
 {
-	string str;
-	cin >> str;
-	return str;
+	string line;
+	getline(cin, line);
+	return line;
+}
+
+const string Console::readAll() {
+	string line;
+	string result;
+	while (cin.eof() == false && getline(cin, line)) {
+		result+= line + "\n";
+	}
+	return line;
+}
+
+const vector<string> Console::readAllAsArray() {
+	vector<string> result;
+	string line;
+	while (cin.eof() == false && getline(cin, line)) {
+		result.push_back(line);
+	}
+	return result;
 }
