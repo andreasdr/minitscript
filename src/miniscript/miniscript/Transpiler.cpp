@@ -146,7 +146,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			// method name
 			string methodName =
 				(script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?
-					"":
+					"function_":
 					(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
 				) +
 				(script.name.empty() == false?script.name:(
@@ -355,7 +355,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			// method name
 			string methodName =
 				(script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?
-					"":
+					"function_":
 					(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
 				) +
 				(script.name.empty() == false?script.name:(
@@ -2168,7 +2168,7 @@ bool Transpiler::transpileScriptStatement(
 										const auto& script = miniScript->getScripts()[scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
 										string methodName =
 											(script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?
-												"":
+												"function_":
 												(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
 											) +
 											(script.name.empty() == false?script.name:(
@@ -2482,7 +2482,7 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 	// method name
 	string methodName =
 		(script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?
-			"":
+			"function_":
 			(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
 		) +
 		(script.name.empty() == false?script.name:(
