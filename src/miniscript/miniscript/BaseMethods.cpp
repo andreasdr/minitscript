@@ -241,7 +241,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
 					} else {
-						miniScript->getScriptState().blockStack.emplace_back(
+						auto& scriptState = miniScript->getScriptState();
+						scriptState.blockStack.emplace_back(
 							MiniScript::ScriptState::BLOCKTYPE_FOR,
 							false,
 							&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx - 1],
