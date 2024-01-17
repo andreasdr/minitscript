@@ -116,7 +116,18 @@ public:
 		STATEMACHINESTATE_WAIT_FOR_CONDITION
 	};
 
+	/**
+	 * Statement
+	 */
 	struct Statement {
+		/**
+		 * Constructor
+		 * @param line line
+		 * @param statementIdx statement index
+		 * @param statement statement
+		 * @param executableStatement executable statement
+		 * @param gotoStatementIdx goto statement index
+		 */
 		Statement(
 			int line,
 			int statementIdx,
@@ -130,6 +141,7 @@ public:
 			executableStatement(executableStatement),
 			gotoStatementIdx(gotoStatementIdx)
 		{}
+		//
 		int line;
 		int statementIdx;
 		string statement;
@@ -2426,6 +2438,9 @@ public:
 		bool returnValueNullable;
 	};
 
+	/**
+	 * Syntax Tree Node
+	 */
 	struct SyntaxTreeNode {
 		enum Type {
 			SCRIPTSYNTAXTREENODE_NONE,
@@ -2433,12 +2448,22 @@ public:
 			SCRIPTSYNTAXTREENODE_EXECUTE_METHOD,
 			SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION
 		};
+		/**
+		 * Constructor
+		 */
 		SyntaxTreeNode():
 			type(SCRIPTSYNTAXTREENODE_NONE),
 			value(Variable()),
 			pointer(0ll),
 			arguments({})
 		{}
+		/**
+		 * Constructor
+		 * @param type type
+		 * @param value value
+		 * @param pointer pointer to method
+		 * @param arguments arguments
+		 */
 		SyntaxTreeNode(
 			Type type,
 			const Variable& value,
@@ -2450,6 +2475,13 @@ public:
 			pointer((uint64_t)method),
 			arguments(arguments)
 		{}
+		/**
+		 * Constructor
+		 * @param type type
+		 * @param value value
+		 * @param functionIdx function index
+		 * @param arguments arguments
+		 */
 		SyntaxTreeNode(
 			Type type,
 			const Variable& value,
@@ -2461,18 +2493,33 @@ public:
 			pointer(functionIdx),
 			arguments(arguments)
 		{}
+		/**
+		 * @return method
+		 */
 		inline Method* getMethod() const {
 			return (Method*)pointer;
 		}
+		/**
+		 * Set method
+		 * @param method method
+		 */
 		inline void setMethod(Method* method) {
 			pointer = (uint64_t)method;
 		}
+		/**
+		 * @return function script index
+		 */
 		inline uint64_t getFunctionScriptIdx() const {
 			return pointer;
 		}
+		/**
+		 * Set function script index
+		 * @param scriptIdx script index
+		 */
 		inline void setFunctionScriptIdx(uint64_t scriptIdx) {
 			pointer = scriptIdx;
 		}
+		//
 		Type type;
 		Variable value;
 		uint64_t pointer;
@@ -2483,7 +2530,15 @@ public:
 	 * Script
 	 */
 	struct Script {
+		/**
+		 * Function Argument
+		 */
 		struct FunctionArgument {
+			/**
+			 * Constructor
+			 * @param name name
+			 * @param reference reference
+			 */
 			FunctionArgument(
 				const string& name,
 				bool reference
@@ -2491,10 +2546,27 @@ public:
 				name(name),
 				reference(reference)
 			{}
+			//
 			string name;
 			bool reference;
 		};
+		//
 		enum ScriptType { SCRIPTTYPE_NONE, SCRIPTTYPE_FUNCTION, SCRIPTTYPE_ON, SCRIPTTYPE_ONENABLED };
+		/**
+		 * Constructor
+		 * @param scriptType script type
+		 * @param line line
+		 * @param condition condition
+		 * @param executableCondition executable condition
+		 * @param conditionStatement condition statement
+		 * @param conditionSyntaxTree condition syntax tree
+		 * @param name name
+		 * @param emitCondition emit condition
+		 * @param statements statements
+		 * @param syntaxTree syntax tree
+		 * @param callableFunction callable function
+		 * @param functionArguments function arguments
+		 */
 		Script(
 			ScriptType scriptType,
 			int line,
@@ -2525,6 +2597,7 @@ public:
 			callableFunction(callableFunction),
 			functionArguments(functionArguments)
 		{}
+		//
 		ScriptType scriptType;
 		int line;
 		string condition;
@@ -2618,9 +2691,18 @@ protected:
 	static constexpr int LINE_FIRST { 1 };
 	static constexpr int64_t TIME_NONE { -1LL };
 
+	/**
+	 * Script state
+	 */
 	struct ScriptState {
 		enum BlockType { BLOCKTYPE_NONE, BLOCKTYPE_BLOCK, BLOCKTYPE_FOR, BLOCKTYPE_FORTIME, BLOCKTYPE_IF, BLOCKTYPE_SWITCH, BLOCKTYPE_CASE };
+		/**
+		 * Block
+		 */
 		struct Block {
+			/**
+			 * Constructor
+			 */
 			Block():
 				type(BLOCKTYPE_NONE),
 				match(false),
@@ -2628,6 +2710,14 @@ protected:
 				breakStatement(nullptr),
 				switchVariable(Variable())
 			{}
+			/**
+			 * Constructor
+			 * @param type type
+			 * @param match match
+			 * @param continueStatement continue statement
+			 * @param breakStatement break statement
+			 * @param switchVariable switch variable
+			 */
 			Block(
 				BlockType type,
 				bool match,
@@ -2641,6 +2731,7 @@ protected:
 				breakStatement(breakStatement),
 				switchVariable(switchVariable)
 			{}
+			//
 			BlockType type;
 			bool match;
 			const Statement* continueStatement;
