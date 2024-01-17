@@ -131,6 +131,7 @@ const vector<string> MiniScript::Method::CONTEXTFUNCTIONS_ALL = {};
 void MiniScript::initialize() {
 	//
 	#if defined(_MSC_VER)
+		// set Microsoft Windows console to use UTF-8
 		SetConsoleOutputCP(65001);
 	#endif
 	//
