@@ -37,11 +37,11 @@ Also note the focus on easy integration into other products and easy customizabi
 
 # 2. Flow control
 
-## 2.1. If, elseif, else and end
+## 2.1. If, elseif, else
 
-If, elseif, else and end are flow control methods. Please see the usage below.
+If, elseif and else are flow control methods. Please see the usage below.
 
-See an example of if and end:
+See an example of if:
 ```
 ...
 	$i = 1
@@ -51,7 +51,7 @@ See an example of if and end:
 ...
 ```
 
-See an example of if and else and end:
+See an example of if and else:
 ```
 ...
 	$i = 2
@@ -63,7 +63,7 @@ See an example of if and else and end:
 ...
 ```
 
-See an example of if, elseif, else:
+See an example of if, elseif and else:
 
 ```
 ...
