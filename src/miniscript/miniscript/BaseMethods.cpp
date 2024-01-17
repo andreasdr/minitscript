@@ -147,14 +147,10 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				} else {
 					auto& blockStack = miniScript->getScriptState().blockStack;
 					auto& block = blockStack[blockStack.size() - 1];
-					switch(block.type) {
-						case MiniScript::ScriptState::BLOCKTYPE_BLOCK:
-							if (miniScript->isFunctionRunning() == true && miniScript->scriptStateStack.size() == 2) {
-								miniScript->stopRunning();
-							}
-							break;
-						default:
-							break;
+					if (block.type == MiniScript::ScriptState::BLOCKTYPE_BLOCK &&
+						miniScript->isFunctionRunning() == true &&
+						miniScript->scriptStateStack.size() == 2) {
+						miniScript->stopRunning();
 					}
 					blockStack.erase(blockStack.begin() + blockStack.size() - 1);
 					if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
@@ -245,8 +241,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
 					} else {
-						auto& scriptState = miniScript->getScriptState();
-						scriptState.blockStack.emplace_back(
+						miniScript->getScriptState().blockStack.emplace_back(
 							MiniScript::ScriptState::BLOCKTYPE_FOR,
 							false,
 							&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx - 1],
@@ -281,8 +276,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					_Console::println(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					auto& scriptState = miniScript->getScriptState();
-					scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_IF, booleanValue, nullptr, nullptr, MiniScript::Variable());
+					miniScript->getScriptState().blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_IF, booleanValue, nullptr, nullptr, MiniScript::Variable());
 					if (booleanValue == false) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
