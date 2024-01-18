@@ -1142,18 +1142,16 @@ end
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Pretty print variable to console                                                                 |
 | <sub>console.dump($value: Mixed): Null</sub>                                                     |
-| Print to console                                                                                 |
-| <sub>console.log(...): Null</sub>                                                                |
 | Print to console without trainling new line                                                      |
 | <sub>console.print(...): Null</sub>                                                              |
 | Print to console with a trailing new line                                                        |
-| <sub>console.println(...): Null</sub>                                                            |
+| <sub>console.printLine(...): Null</sub>                                                          |
 | Read all input into string value                                                                 |
 | <sub>console.readAll(): String</sub>                                                             |
 | Read all input into array of strings                                                             |
 | <sub>console.readAllAsArray(): Array</sub>                                                       |
 | Read a line from input                                                                           |
-| <sub>console.readln(): String</sub>                                                              |
+| <sub>console.readLine(): String</sub>                                                            |
 
 ## 7.4. Error console/stream methods
 
@@ -1161,8 +1159,8 @@ end
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Print to error console/stream without trainling new line                                         |
 | <sub>console.error.print(...): Null</sub>                                                        |
-| Print to error console/stream with a trailing new line                                                 |
-| <sub>console.error.println(...): Null</sub>                                                      |
+| Print to error console/stream with a trailing new line                                           |
+| <sub>console.error.printLine(...): Null</sub>                                                    |
 
 ## 7.5. Script container and interoperability methods
 

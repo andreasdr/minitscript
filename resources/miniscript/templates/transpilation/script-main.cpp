@@ -41,13 +41,13 @@ int main(int argc, char *argv[]) {
 	// script valid?
 	if (script->isValid() == false) {
 		// nope, exit here
-		Console::println("Script not valid. Exiting!");
+		Console::printLine("Script not valid. Exiting!");
 		return EXIT_FAILURE;
 	}
 	// does it run in native mode?
 	if (script->isNative() == false) {
 		// nope, print out a warning
-		Console::println("Warning: Script not executed natively: " + scriptFile);
+		Console::printLine("Warning: Script not executed natively: " + scriptFile);
 	}
 	// add script to context, push it to miniscript stack
 	auto scriptPtr = script.get();

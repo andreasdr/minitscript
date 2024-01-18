@@ -23,12 +23,12 @@ using _Library = miniscript::miniscript::Library;
 using _Console = miniscript::utilities::Console;
 
 MiniScript* NativeLibrary::loadScript(const string& pathName, const string& fileName, const string& basePathName) {
-	_Console::println("NativeLibrary::loadScript(): " + pathName + "/" + fileName + (basePathName.empty() == false?" @ " + basePathName:""));
+	_Console::printLine("NativeLibrary::loadScript(): " + pathName + "/" + fileName + (basePathName.empty() == false?" @ " + basePathName:""));
 	unique_ptr<MiniScript> script;
 	//
 	{$library-code}
 	{
-		_Console::println("NativeLibrary::loadScript(): " + pathName + "/" + fileName + (basePathName.empty() == false?" @ " + basePathName:"") + ": native script not found");
+		_Console::printLine("NativeLibrary::loadScript(): " + pathName + "/" + fileName + (basePathName.empty() == false?" @ " + basePathName:"") + ": native script not found");
 		return nullptr;
 	}
 	//
@@ -41,6 +41,6 @@ MiniScript* NativeLibrary::loadScript(const string& pathName, const string& file
 //
 extern "C" _Library* createInstance()
 {
-	_Console::println("NativeLibrary::createInstance(): Creating script library instance!");
+	_Console::printLine("NativeLibrary::createInstance(): Creating script library instance!");
 	return new NativeLibrary(nullptr);
 }

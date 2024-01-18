@@ -915,7 +915,7 @@ public:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(from.getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
-						_Console::println("ScriptVariable::copyScriptVariable(): unknown data type with id " + to_string(dataTypeIdx));
+						_Console::printLine("ScriptVariable::copyScriptVariable(): unknown data type with id " + to_string(dataTypeIdx));
 						return;
 					}
 					MiniScript::dataTypes[dataTypeIdx]->copyVariable(to, from);
@@ -1103,7 +1103,7 @@ public:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
-						_Console::println("ScriptVariable::setType(): unknown data type with id " + to_string(dataTypeIdx));
+						_Console::printLine("ScriptVariable::setType(): unknown data type with id " + to_string(dataTypeIdx));
 						return;
 					}
 					MiniScript::dataTypes[dataTypeIdx]->unsetVariableValue(*this);
@@ -1159,7 +1159,7 @@ public:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
-						_Console::println("ScriptVariable::setType(): unknown data type with id " + to_string(dataTypeIdx));
+						_Console::printLine("ScriptVariable::setType(): unknown data type with id " + to_string(dataTypeIdx));
 						return;
 					}
 					MiniScript::dataTypes[dataTypeIdx]->setVariableValue(*this);
@@ -1240,7 +1240,7 @@ public:
 					value = getIntegerValueReference();
 					return true;
 				case TYPE_FLOAT:
-					_Console::println("MiniScript::getIntegerValue(): converting float to integer: precision loss");
+					_Console::printLine("MiniScript::getIntegerValue(): converting float to integer: precision loss");
 					value = getFloatValueReference();
 					return true;
 				case TYPE_STRING:
@@ -1251,7 +1251,7 @@ public:
 							return true;
 						} else
 						if (_Float::is(stringValue) == true) {
-							_Console::println("MiniScript::getIntegerValue(): converting float to integer: precision loss");
+							_Console::printLine("MiniScript::getIntegerValue(): converting float to integer: precision loss");
 							value = static_cast<int64_t>(_Float::parse(stringValue));
 							return true;
 						} else {
@@ -1336,9 +1336,9 @@ public:
 				return true;
 			} else {
 				if (statement != nullptr) {
-					_Console::println(miniScript->getStatementInformation(*statement) + ": expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
+					_Console::printLine(miniScript->getStatementInformation(*statement) + ": expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
 				} else {
-					_Console::println(miniScript->getScriptFileName() + ": expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
+					_Console::printLine(miniScript->getScriptFileName() + ": expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
 				}
 			}
 			return false;
@@ -1464,7 +1464,7 @@ public:
 			// custom data type
 			auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_DATATYPES;
 			if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
-				_Console::println("ScriptVariable::setValue(): unknown data type with id " + to_string(dataTypeIdx));
+				_Console::printLine("ScriptVariable::setValue(): unknown data type with id " + to_string(dataTypeIdx));
 				return;
 			}
 			MiniScript::dataTypes[dataTypeIdx]->setVariableValue(*this, value);
@@ -2252,7 +2252,7 @@ public:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MiniScript::dataTypes.size()) {
-						_Console::println("ScriptVariable::getValueAsString(): unknown data type with id " + to_string(dataTypeIdx));
+						_Console::printLine("ScriptVariable::getValueAsString(): unknown data type with id " + to_string(dataTypeIdx));
 						return result;
 					}
 					return MiniScript::dataTypes[dataTypeIdx]->getValueAsString(*this);
@@ -3280,7 +3280,7 @@ private:
 					}
 					i--;
 					if (valid == false || j != 8) {
-						_Console::println(getStatementInformation(statement) + ": Invalid hexadecimal unicode character sequence: " + unicodeHexadecimalSequence);
+						_Console::printLine(getStatementInformation(statement) + ": Invalid hexadecimal unicode character sequence: " + unicodeHexadecimalSequence);
 					} else {
 						_Character::appendToString(deescapedStr, _Hex::decodeInt(unicodeHexadecimalSequence));
 					}
@@ -3681,7 +3681,7 @@ public:
 	inline const string getArgumentInformation(const string& methodName) {
 		auto scriptMethod = getMethod(methodName);
 		if (scriptMethod == nullptr) {
-			_Console::println("MiniScript::getArgumentInformation(): method not found: " + methodName);
+			_Console::printLine("MiniScript::getArgumentInformation(): method not found: " + methodName);
 			return "No information available";
 		}
 		return scriptMethod->getArgumentsInformation();
@@ -3810,12 +3810,12 @@ public:
 	 */
 	inline bool isVariableAccess(const string& candidate, const Statement* statement = nullptr) {
 		if (candidate.size() < 2) {
-			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": empty variable statement");
+			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": empty variable statement");
 			return false;
 		}
 		auto i = 0;
 		if (candidate[i++] != '$') {
-			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must begin with an $");
+			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must begin with an $");
 			return false;
 		}
 		if (candidate[i] == '$') i++;
@@ -3830,16 +3830,16 @@ public:
 				squareBracketCount--;
 			} else
 			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
-				_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": invalid character in variable statement: '" + c + "'");
+				_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": invalid character in variable statement: '" + c + "'");
 				return false;
 			}
 		}
 		if (candidate.size() == 2 && string_view(candidate) == string_view("$$", 2)) {
-			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $$");
+			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $$");
 			return false;
 		}
 		if (candidate.size() == 7 && string_view(candidate) == string_view("$GLOBAL", 7)) {
-			_Console::println((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $GLOBAL");
+			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $GLOBAL");
 			return false;
 		}
 		return true;
@@ -4006,7 +4006,7 @@ public:
 					// if we set a variable in variable scope that did exist before, we can safely remove the constness
 					existingVariable->setValue(variable);
 				} else {
-					_Console::println(getStatementInformation(*statement) + ": constant: " + variableStatement + ": Assignment of constant is not allowed");
+					_Console::printLine(getStatementInformation(*statement) + ": constant: " + variableStatement + ": Assignment of constant is not allowed");
 				}
 				return;
 			} else {
