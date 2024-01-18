@@ -314,7 +314,7 @@ The primitive data types can also be assigned by using initialization methods th
 A byte array is a sequence of byte values. Bytes are the smallest atomic values a CPU does handle.
 Using bit math you can also manipulate byte values at bit scope.
 
-To write and read from byte array you can use the read*() and write() methods.
+To write and read from byte array you can use the read*() and write*() methods.
 
 Available data types are
 - bool (true or false)
