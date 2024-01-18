@@ -46,7 +46,7 @@ See an example of if:
 ...
 	$i = 1
 	if ($i == 1)
-		console.log("i -> 1")
+		console.printLine("i -> 1")
 	end
 ...
 ```
@@ -56,9 +56,9 @@ See an example of if and else:
 ...
 	$i = 2
 	if ($i == 1)
-		console.log("i -> 1")
+		console.printLine("i -> 1")
 	else
-		console.log("else: ", $i)
+		console.printLine("else: ", $i)
 	end
 ...
 ```
@@ -68,17 +68,17 @@ See an example of if, elseif and else:
 ```
 ...
 	$i = 2
-	console.log($i, ":")
+	console.printLine($i, ":")
 	if ($i == 0)
-		console.log("i -> 0")
+		console.printLine("i -> 0")
 	elseif ($i == 1)
-		console.log("i -> 1")
+		console.printLine("i -> 1")
 	elseif ($i == 2)
-		console.log("i -> 2")
+		console.printLine("i -> 2")
 	elseif ($i == 3)
-		console.log("i -> 3")
+		console.printLine("i -> 3")
 	else
-		console.log("else: ", $i)
+		console.printLine("else: ", $i)
 	end
 ...
 ```
@@ -95,16 +95,16 @@ See an example:
 	$i = 1
 	switch($i)
 		case(0)
-			console.log("$i = 0")
+			console.printLine("$i = 0")
 		end
 		case(1)
-			console.log("$i = 1")
+			console.printLine("$i = 1")
 		end
 		case(2)
-			console.log("$i = 2")
+			console.printLine("$i = 2")
 		end
 		default
-			console.log("default: $i = " + $i)
+			console.printLine("default: $i = " + $i)
 		end
 	end
 ...
@@ -121,7 +121,7 @@ forTime takes a single argument "time" - it repeats the loop until "time" in mil
 ...
 	$i = 0
 	forTime(2000)
-		console.log($i, ": Hello World")
+		console.printLine($i, ": Hello World")
 		script.wait(500)
 		++$i
 	end
@@ -133,7 +133,7 @@ forCondition takes a single boolean value as argument. The loop will be executed
 ...
 	$i = 0
 	forCondition($i < 5)
-		console.log("$ = ", $i)
+		console.printLine("$ = ", $i)
 		++$i
 	end
 ...
@@ -148,14 +148,14 @@ Argument variables, parsed in function declarations are populated in function co
 ...
 # function of recursive factorial computation
 function: factorial($value)
-	console.log("factorial(): $value = " + $value)
+	console.printLine("factorial(): $value = " + $value)
 	if ($value == 0) 
 		return(1)
 	end
 	return($value * factorial($value - 1))
 end
 ...
-	console.log("factorial(5) = " + factorial(5))
+	console.printLine("factorial(5) = " + factorial(5))
 ...
 ```
 
@@ -176,9 +176,9 @@ end
 	$a = "0"
 	$b = "1"
 	$c = "2"
-	console.log("assignTest(): pre: $a = " + $a + ", $b = " + $b + ", $c = " + $c)
+	console.printLine("assignTest(): pre: $a = " + $a + ", $b = " + $b + ", $c = " + $c)
 	assignTest($a, $b, $c)
-	console.log("assignTest(): post: $a = " + $a + ", $b = " + $b + ", $c = " + $c)
+	console.printLine("assignTest(): post: $a = " + $a + ", $b = " + $b + ", $c = " + $c)
 ...
 ``` 
 
@@ -189,14 +189,14 @@ So to be sure to use a global variable in function scope, just use the "$$." or 
 ...
 # function to test global variable access
 function: globalVariableTest()
-	console.log("globalVariableTest(): $GLOBAL.globalTest = " + $GLOBAL.globalTest)
+	console.printLine("globalVariableTest(): $GLOBAL.globalTest = " + $GLOBAL.globalTest)
 	$GLOBAL.globalTest = "Been there, done that, got the t-shirt"
 end
 ...
 	$globalTest = "Global Test Variable"
-	console.log("globalVariableTest(): pre: $globalTest = " + $globalTest)
+	console.printLine("globalVariableTest(): pre: $globalTest = " + $globalTest)
 	globalVariableTest()
-	console.log("globalVariableTest(): post: $globalTest = " + $globalTest)
+	console.printLine("globalVariableTest(): post: $globalTest = " + $globalTest)
 ...
 ```
 
@@ -363,15 +363,15 @@ Reading values using ByteArray::read*():
 ```
 ...
 	$byteArray->setReadPosition(0)
-	console.log($byteArray->readBool())
-	console.log($byteArray->readInt8())
-	console.log($byteArray->readInt16())
-	console.log($byteArray->readInt32())
-	console.log($byteArray->readInt64())
-	console.log($byteArray->readFloat())
-	console.log($byteArray->readSmallString())
-	console.log($byteArray->readMediumString())
-	console.log($byteArray->readLargeString())
+	console.printLine($byteArray->readBool())
+	console.printLine($byteArray->readInt8())
+	console.printLine($byteArray->readInt16())
+	console.printLine($byteArray->readInt32())
+	console.printLine($byteArray->readInt64())
+	console.printLine($byteArray->readFloat())
+	console.printLine($byteArray->readSmallString())
+	console.printLine($byteArray->readMediumString())
+	console.printLine($byteArray->readLargeString())
 ...
 ```
 
@@ -380,7 +380,7 @@ Reading byte arrays using ByteArray::length() and ByteArray::readInt8():
 ...
 	$byteArray->setReadPosition(0)
 	forCondition($byteArray->getReadPosition() < $byteArray->length())
-		console.log($i + ": " + $byteArray->readInt8($i))
+		console.printLine($i + ": " + $byteArray->readInt8($i))
 	end
 ...
 ```
@@ -454,7 +454,7 @@ Iterating arrays using Array::length() and Array::get():
 ...
 	$i = 0
 	forCondition($i < $array->length())
-		console.log($i + ": " + $array->get($i))
+		console.printLine($i + ": " + $array->get($i))
 		++$i
 	end
 ...
@@ -465,7 +465,7 @@ Iterating arrays using Array::length() and [] operator:
 ...
 	$i = 0
 	forCondition($i < $array->length())
-		console.log($i + ": " + $array[$i])
+		console.printLine($i + ": " + $array[$i])
 		++$i
 	end
 ...
@@ -474,7 +474,7 @@ Iterating arrays using Array::length() and [] operator:
 Iterating arrays using Array::forEach() and a lamda function
 ```
 ...
-	$array->forEach(($value) -> { console.log($value) })
+	$array->forEach(($value) -> { console.printLine($value) })
 ...
 ```
 
@@ -516,20 +516,20 @@ Removing from map using Map::remove() and a given key:
 Reading values from map using Map::get() and given keys:
 ```
 ...
-	console.log("map value for test1 key using map.get(): ", $map->get("test1"))
-	console.log("map value for test2 key using map.get(): ", $map->get("test2"))
-	console.log("map value for test3 key using map.get(): ", $map->get("test3"))
-	console.log("map value for test4 key using map.get(): ", $map->get("test4"))
+	console.printLine("map value for test1 key using map.get(): ", $map->get("test1"))
+	console.printLine("map value for test2 key using map.get(): ", $map->get("test2"))
+	console.printLine("map value for test3 key using map.get(): ", $map->get("test3"))
+	console.printLine("map value for test4 key using map.get(): ", $map->get("test4"))
 ...
 ```
 
 Reading values from map using dot operator:
 ```
 ...
-	console.log("map value for test1 using map dot operator: ", $map.test1)
-	console.log("map value for test2 using map dot operator: ", $map.test2)
-	console.log("map value for test3 using map dot operator: ", $map.test3)
-	console.log("map value for test4 using map dot operator: ", $map.test4)
+	console.printLine("map value for test1 using map dot operator: ", $map.test1)
+	console.printLine("map value for test2 using map dot operator: ", $map.test2)
+	console.printLine("map value for test3 using map dot operator: ", $map.test3)
+	console.printLine("map value for test4 using map dot operator: ", $map.test4)
 ...
 ```
 
@@ -544,14 +544,14 @@ Setting key, value pairs to map using dot operator:
 Reading map keys:
 ```
 ...
-	console.log("map keys: ", $map->getKeys())
+	console.printLine("map keys: ", $map->getKeys())
 ...
 ```
 
 Reading map values:
 ```
 ...
-	console.log("map values: ", $map->getValues())
+	console.printLine("map values: ", $map->getValues())
 ...
 ```
 
@@ -561,7 +561,7 @@ Reading all keys and values from map using Map::get() and Map::getKeys()
 	$mapKeys = $map->getKeys()
 	$i = 0
 	forCondition($i < $mapKeys->length())
-		console.log($mapKeys[$i] + " = " + $map->get($mapKeys[$i]))
+		console.printLine($mapKeys[$i] + " = " + $map->get($mapKeys[$i]))
 		++$i
 	end
 ...
@@ -570,7 +570,7 @@ Reading all keys and values from map using Map::get() and Map::getKeys()
 Iterating maps using Map::forEach() and a lamda function
 ```
 ...
-	$map->forEach(($key, $value) -> { console.log($key + " = " + $value) })
+	$map->forEach(($key, $value) -> { console.printLine($key + " = " + $value) })
 ...
 ```
 
@@ -611,11 +611,11 @@ Removing keys from set using Set::remove():
 Checking if keys exist in set using Set::has() and given keys:
 ```
 ...
-	console.log("set does have test1 key using set.has(): ", $set->has("test1"))
-	console.log("set does have test2 key using set.has(): ", $set->has("test2"))
-	console.log("set does have test3 key using set.has(): ", $set->has("test3"))
-	console.log("set does have test4 key using set.has(): ", $set->has("test4"))
-	console.log("set does have test5 key using set.has(): ", $set->has("test5"))
+	console.printLine("set does have test1 key using set.has(): ", $set->has("test1"))
+	console.printLine("set does have test2 key using set.has(): ", $set->has("test2"))
+	console.printLine("set does have test3 key using set.has(): ", $set->has("test3"))
+	console.printLine("set does have test4 key using set.has(): ", $set->has("test4"))
+	console.printLine("set does have test5 key using set.has(): ", $set->has("test5"))
 ...
 ```
 
@@ -623,11 +623,11 @@ Checking if keys exist in set using Set::has() and given keys:
 Checking if keys exist in set using dot operator and given keys:
 ```
 ...
-	console.log("set key for test1 using set dot operator: ", $set.test1)
-	console.log("set key for test2 using set dot operator: ", $set.test2)
-	console.log("set key for test3 using set dot operator: ", $set.test3)
-	console.log("set key for test4 using set dot operator: ", $set.test4)
-	console.log("set key for test5 using set dot operator: ", $set.test5)
+	console.printLine("set key for test1 using set dot operator: ", $set.test1)
+	console.printLine("set key for test2 using set dot operator: ", $set.test2)
+	console.printLine("set key for test3 using set dot operator: ", $set.test3)
+	console.printLine("set key for test4 using set dot operator: ", $set.test4)
+	console.printLine("set key for test5 using set dot operator: ", $set.test5)
 ...
 ```
 
@@ -644,14 +644,14 @@ Inserting/Removing set keys by using dot operator and boolean assignment:
 Reading all keys as array from set:
 ```
 ...
-	console.log("set keys: ", $set->getKeys())
+	console.printLine("set keys: ", $set->getKeys())
 ...
 ```
 
 Iterating sets using Set::forEach() and a lamda function
 ```
 ...
-	$set->forEach(($key) -> { console.log($key) })
+	$set->forEach(($key) -> { console.printLine($key) })
 ...
 ```
 
@@ -685,7 +685,7 @@ Please see a example below.
 			},
 		showMeWhatYouGot: () ->
 			{
-				console.log(
+				console.printLine(
 					"This amazing car has ", 
 					$this.wheelCount,
 					" wheels, is colored ", 
@@ -717,7 +717,7 @@ Please see a example below.
 	$color = null
 	$horsePower = null
 	$car->getProperties($wheelCount, $color, $horsePower)
-	console.log(
+	console.printLine(
 		"Car properties, wheels: ", 
 		$wheelCount,
 		", color: ", 
@@ -744,7 +744,7 @@ function: showMeWhatYouGot($this)
 	if ($this.convertible == true)
 		$carType = "convertible"
 	end
-	console.log(
+	console.printLine(
 		"This amazing ", 
 		$carType,
 		" has ", 
