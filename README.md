@@ -321,7 +321,7 @@ Available data types are
 - int8 (-128 .. 127)
 - int16 (-32768 .. 32767)
 - int32 (-2147483646 .. 2147483647)
-- int64 (-9,223,372,036,854,775,806 .. -9,223,372,036,854,775,807)
+- int64 (-9,223,372,036,854,775,806 .. 9,223,372,036,854,775,807)
 - float (floating point number)
 - small string (string with maximum size of 255 bytes)
 - medium string (string with maximum size of 65535 bytes)
