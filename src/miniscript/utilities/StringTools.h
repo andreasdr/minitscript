@@ -7,7 +7,6 @@
 
 #include <miniscript/miniscript.h>
 #include <miniscript/utilities/fwd-miniscript.h>
-#include <miniscript/utilities/UTF8CharacterIterator.h>
 
 using std::smatch;
 using std::string;

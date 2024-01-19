@@ -9,6 +9,7 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/StringTokenizer.h>
+#include <miniscript/utilities/UTF8CharacterIterator.h>
 
 using std::find_if;
 using std::isspace;
@@ -27,6 +28,7 @@ using miniscript::utilities::StringTools;
 
 using miniscript::utilities::Character;
 using miniscript::utilities::StringTokenizer;
+using miniscript::utilities::UTF8CharacterIterator;
 
 const string StringTools::replace(const string& str, const char what, const char by, int64_t beginIndex) {
 	string result = str;
