@@ -16,6 +16,7 @@ using std::regex;
 using std::regex_match;
 using std::regex_replace;
 using std::replace;
+using std::smatch;
 using std::string;
 using std::string_view;
 using std::tolower;
@@ -100,14 +101,20 @@ const string StringTools::toUpperCase(const string& src) {
 	return result;
 }
 
-bool StringTools::regexMatch(const string& src, const string& pattern) {
-	// TODO: return found groups
-	return regex_match(src, regex(pattern, std::regex::ECMAScript));
+bool StringTools::regexMatch(const string& src, const string& pattern, smatch* matches) {
+	if (matches == nullptr) {
+		return regex_match(src, regex(pattern, std::regex::ECMAScript));
+	} else {
+		return regex_match(src, *matches, regex(pattern, std::regex::ECMAScript));
+	}
 }
 
-bool StringTools::regexSearch(const string& src, const string& pattern) {
-	// TODO: return found groups
-	return regex_search(src, regex(pattern, std::regex::ECMAScript));
+bool StringTools::regexSearch(const string& src, const string& pattern, smatch* matches) {
+	if (matches == nullptr) {
+		return regex_search(src, regex(pattern, std::regex::ECMAScript));
+	} else {
+		return regex_search(src, *matches, regex(pattern, std::regex::ECMAScript));
+	}
 }
 
 const string StringTools::regexReplace(const string& src, const string& pattern, const string& by) {

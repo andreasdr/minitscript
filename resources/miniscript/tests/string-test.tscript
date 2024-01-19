@@ -12,10 +12,19 @@ on: nothing
 	console.printLine("string-test: Nothing")
 	console.printLine("----------------------")
 	console.printLine()
-	console.println("Hi, lets produce\na newline, and\nanother one: \"yarrrrr\"")
-	console.println("Some Umlauts love: äöü >>> ÄÖÜ")
-	console.println("Some more Umlauts love: \U000000fc")
-	console.println("Beep\a")
+	console.printLine("Hi, lets produce\na newline, and\nanother one: \"yarrrrr\"")
+	console.printLine("Some Umlauts love: äöü >>> ÄÖÜ")
+	console.printLine("Some more Umlauts love: \U000000fc")
+	console.printLine("Beep\a")
+	#
+	$matches = null
+	if (String::regexMatch("Andreas0815", "([A-Za-z]*)([0-9]*)", $matches) == true)
+		console.printLine('String::regexMatch("Andreas0815", "([A-Za-z]*)([0-9]*)", $matches): ' + $matches)
+	end
+	$matches = null
+	if (String::regexSearch("Who is this Andreas0815?", "Andreas([0-9]*)", $matches) == true)
+		console.printLine('String::regexSearch("Who is this Andreas0815?", "Andreas([0-9]*)", $matches): ' + $matches)
+	end
 	script.stop()
 end
 

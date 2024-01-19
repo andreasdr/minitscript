@@ -221,18 +221,24 @@ const string UTF8StringTools::toUpperCase(const string& str, UTF8CharacterIterat
 	return result;
 }
 
-bool UTF8StringTools::regexMatch(const string& str, const string& pattern) {
-	// TODO: return found groups
-	return regex_match(str, regex(pattern, std::regex::ECMAScript));
+bool UTF8StringTools::regexMatch(const string& src, const string& pattern, smatch* matches) {
+	if (matches == nullptr) {
+		return regex_match(src, regex(pattern, std::regex::ECMAScript));
+	} else {
+		return regex_match(src, *matches, regex(pattern, std::regex::ECMAScript));
+	}
 }
 
-bool UTF8StringTools::regexSearch(const string& str, const string& pattern) {
-	// TODO: return found groups
-	return regex_search(str, regex(pattern, std::regex::ECMAScript));
+bool UTF8StringTools::regexSearch(const string& src, const string& pattern, smatch* matches) {
+	if (matches == nullptr) {
+		return regex_search(src, regex(pattern, std::regex::ECMAScript));
+	} else {
+		return regex_search(src, *matches, regex(pattern, std::regex::ECMAScript));
+	}
 }
 
-const string UTF8StringTools::regexReplace(const string& str, const string& pattern, const string& by) {
-	return regex_replace(str, regex(pattern, std::regex::ECMAScript), by);
+const string UTF8StringTools::regexReplace(const string& src, const string& pattern, const string& by) {
+	return regex_replace(src, regex(pattern, std::regex::ECMAScript), by);
 }
 
 const vector<string> UTF8StringTools::tokenize(const string& str, const string& delimiters, bool emptyTokens) {

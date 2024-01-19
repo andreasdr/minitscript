@@ -823,9 +823,11 @@ end
 | Pad string right                                                                                 |
 | <sub>padRight($by: String, $toLength: Integer): String</sub>                                     |
 | RegEx match                                                                                      |
-| <sub>regexMatch($pattern: String): Boolean</sub>                                                 |
+| <sub>regexMatch($pattern: String[, &$matches: ?Array]): Boolean</sub>                            |
 | RegEx replace                                                                                    |
 | <sub>regexReplace($pattern: String, $by: String): String</sub>                                   |
+| RegEx search                                                                                     |
+| <sub>regexSearch($pattern: String[, &$matches: ?Array]): Boolean</sub>                           |
 | Replace specific string in string with given string                                              |
 | <sub>replace($what: String, $by: String[, $beginIndex: Integer]): String</sub>                   |
 | Test if given string starts with specific string                                                 |

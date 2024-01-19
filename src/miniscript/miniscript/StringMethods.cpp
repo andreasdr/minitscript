@@ -1,3 +1,4 @@
+#include <regex>
 #include <span>
 
 #include <miniscript/miniscript.h>
@@ -12,6 +13,7 @@
 #include <miniscript/utilities/UTF8StringTools.h>
 #include <miniscript/utilities/UTF8CharacterIterator.h>
 
+using std::smatch;
 using std::span;
 
 using miniscript::miniscript::StringMethods;
@@ -526,6 +528,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_STRING, .name = "pattern", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_ARRAY, .name = "matches", .optional = true, .reference = true, .nullable = true },
 					},
 					MiniScript::TYPE_BOOLEAN
 				),
@@ -541,11 +544,64 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					returnValue.setValue(_UTF8StringTools::regexMatch(stringValue, pattern));
+					if (arguments.size() > 2) {
+						smatch matches;
+						returnValue.setValue(_UTF8StringTools::regexMatch(stringValue, pattern, &matches));
+						arguments[2].setType(MiniScript::TYPE_ARRAY);
+						arguments[2].clearArray();
+						for (const auto& match: matches) {
+							arguments[2].pushArrayEntry(MiniScript::Variable(string(match.str())));
+						}
+					} else {
+						returnValue.setValue(_UTF8StringTools::regexMatch(stringValue, pattern));
+					}
 				}
 			}
 		};
 		miniScript->registerMethod(new MethodStringRegexMatch(miniScript));
+	}
+	{
+		//
+		class MethodStringRegexSearch: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodStringRegexSearch(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "pattern", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_ARRAY, .name = "matches", .optional = true, .reference = true, .nullable = true },
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "String::regexSearch";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string stringValue;
+				string pattern;
+				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
+					MiniScript::getStringValue(arguments, 1, pattern, false) == false) {
+					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					if (arguments.size() > 2) {
+						smatch matches;
+						returnValue.setValue(_UTF8StringTools::regexSearch(stringValue, pattern, &matches));
+						arguments[2].setType(MiniScript::TYPE_ARRAY);
+						arguments[2].clearArray();
+						for (const auto& match: matches) {
+							arguments[2].pushArrayEntry(MiniScript::Variable(string(match.str())));
+						}
+					} else {
+						returnValue.setValue(_UTF8StringTools::regexMatch(stringValue, pattern));
+					}
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodStringRegexSearch(miniScript));
 	}
 	{
 		//

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <regex>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -8,6 +9,7 @@
 #include <miniscript/utilities/fwd-miniscript.h>
 #include <miniscript/utilities/UTF8CharacterIterator.h>
 
+using std::smatch;
 using std::string;
 using std::string_view;
 using std::vector;
@@ -223,17 +225,19 @@ public:
 	 * Check if pattern matches whole string
 	 * @param str string
 	 * @param pattern pattern
+	 * @param matches matches
 	 * @return if pattern matches whole string
 	 */
-	static bool regexMatch(const string& str, const string& pattern);
+	static bool regexMatch(const string& str, const string& pattern, smatch* matches = nullptr);
 
 	/**
 	 * Do regex pattern search
 	 * @param str string
 	 * @param pattern pattern
+	 * @param matches matches
 	 * @return if search was successful
 	 */
-	static bool regexSearch(const string& str, const string& pattern);
+	static bool regexSearch(const string& str, const string& pattern, smatch* matches = nullptr);
 
 	/**
 	 * Replace regex pattern with given string
