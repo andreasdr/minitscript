@@ -3502,6 +3502,13 @@ public:
 	}
 
 	/**
+	 * Complain about method usage
+	 * @param methodName method mame
+	 * @param statement statement
+	 */
+	void complain(const string& methodName, const Statement& statement);
+
+	/**
 	 * @return data types
 	 */
 	inline static const vector<DataType*>& getDataTypes() {

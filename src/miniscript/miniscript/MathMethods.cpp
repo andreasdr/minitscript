@@ -156,7 +156,7 @@ void MathMethods::registerMethods() {
 						MiniScript::getIntegerValue(arguments, 1, range, false) == true) {
 						returnValue.setValue(_Math::mod(value, range));
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				} else {
@@ -166,7 +166,7 @@ void MathMethods::registerMethods() {
 						MiniScript::getFloatValue(arguments, 1, range, false) == true) {
 						returnValue.setValue(_Math::mod(value, range));
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				}
@@ -261,7 +261,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, x, false) == true) {
 					returnValue.setValue(_Math::acos(x));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -287,7 +287,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, x, false) == true) {
 					returnValue.setValue(_Math::asin(x));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -313,7 +313,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, x, false) == true) {
 					returnValue.setValue(_Math::atan(x));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -342,7 +342,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 1, x, false) == true) {
 					returnValue.setValue(_Math::atan2(y, x));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -368,7 +368,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, x, false) == true) {
 					returnValue.setValue(_Math::tan(x));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -394,7 +394,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, x, false) == true) {
 					returnValue.setValue(_Math::cos(x));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -420,7 +420,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, x, false) == true) {
 					returnValue.setValue(_Math::sin(x));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -446,7 +446,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(_Math::floor(value));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -472,7 +472,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(_Math::ceil(value));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -498,7 +498,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(_Math::round(value));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -524,7 +524,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(_Math::sqrt(value));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -566,7 +566,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, power, false) == true) {
 					returnValue.setValue(_Math::exp(power));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -592,7 +592,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getFloatValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(_Math::log(value));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -623,7 +623,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getIntegerValue(arguments, 0, intValue, false) == true) {
 					returnValue.setValue(_Math::sign(intValue));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -654,7 +654,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getIntegerValue(arguments, 0, intValue, false) == true) {
 					returnValue.setValue(_Math::square(intValue));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -683,7 +683,7 @@ void MathMethods::registerMethods() {
 				float floatValue1;
 				float floatValue2;
 				if (arguments.size() != 2) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else
 				if (MiniScript::hasType(arguments, MiniScript::TYPE_FLOAT) == true &&
@@ -695,7 +695,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getIntegerValue(arguments, 1, intValue2, false) == true) {
 					returnValue.setValue(_Math::min(intValue1, intValue2));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -724,7 +724,7 @@ void MathMethods::registerMethods() {
 				float floatValue1;
 				float floatValue2;
 				if (arguments.size() != 2) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else
 				if (MiniScript::hasType(arguments, MiniScript::TYPE_FLOAT) == true &&
@@ -736,7 +736,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getIntegerValue(arguments, 1, intValue2, false) == true) {
 					returnValue.setValue(_Math::max(intValue1, intValue2));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -767,7 +767,7 @@ void MathMethods::registerMethods() {
 				if (MiniScript::getIntegerValue(arguments, 0, intValue, false) == true) {
 					returnValue.setValue(_Math::abs(intValue));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -799,7 +799,7 @@ void MathMethods::registerMethods() {
 				float floatValueB;
 				float floatValueC;
 				if (arguments.size() != 3) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else
 				if (MiniScript::hasType(arguments, MiniScript::TYPE_FLOAT) == true &&
@@ -813,7 +813,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getIntegerValue(arguments, 2, intValueC, false) == true) {
 					returnValue.setValue(_Math::clamp(intValueA, intValueB, intValueC));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -842,7 +842,7 @@ void MathMethods::registerMethods() {
 				float floatValueBase;
 				float floatValuePower;
 				if (arguments.size() != 2) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else
 				if (MiniScript::hasType(arguments, MiniScript::TYPE_FLOAT) == true &&
@@ -854,7 +854,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getIntegerValue(arguments, 1, intValuePower, false) == true) {
 					returnValue.setValue(static_cast<int64_t>(_Math::pow(intValueBase, intValuePower)));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -885,7 +885,7 @@ void MathMethods::registerMethods() {
 						MiniScript::getIntegerValue(arguments, 1, range, false) == true) {
 						returnValue.setValue(_Math::mod(value, range));
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				} else {
@@ -895,7 +895,7 @@ void MathMethods::registerMethods() {
 						MiniScript::getFloatValue(arguments, 1, range, false) == true) {
 						returnValue.setValue(_Math::mod(value, range));
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				}
@@ -927,7 +927,7 @@ void MathMethods::registerMethods() {
 						MiniScript::getIntegerValue(arguments, 1, range, false) == true) {
 						returnValue.setValue(_Math::absmod(value, range));
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				} else {
@@ -937,7 +937,7 @@ void MathMethods::registerMethods() {
 						MiniScript::getFloatValue(arguments, 1, range, false) == true) {
 						returnValue.setValue(_Math::absmod(value, range));
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				}

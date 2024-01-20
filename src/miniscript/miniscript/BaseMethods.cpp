@@ -52,7 +52,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					scriptState.returnValue = arguments[0];
 					miniScript->stopRunning();
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 				}
 			}
 		};
@@ -183,7 +183,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t time;
 				if (miniScript->getIntegerValue(arguments, 0, time) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					//
@@ -234,7 +234,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
 				if (miniScript->getBooleanValue(arguments, 0, booleanValue, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					//
@@ -276,7 +276,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
 				if (miniScript->getBooleanValue(arguments, 0, booleanValue, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					miniScript->getScriptState().blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_IF, booleanValue, nullptr, nullptr, MiniScript::Variable());
@@ -308,7 +308,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
 				if (miniScript->getBooleanValue(arguments, 0, booleanValue, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					//
@@ -374,7 +374,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
 				if (arguments.size() != 1) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					auto& scriptState = miniScript->getScriptState();
@@ -402,7 +402,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 1) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					//
@@ -472,7 +472,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 2) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					returnValue.setValue(true);
@@ -510,7 +510,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 2) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					returnValue.setValue(true);
@@ -551,7 +551,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getIntegerValue(arguments, 0, integerValue, false) == true) {
 					returnValue.setValue(integerValue);
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -582,7 +582,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getFloatValue(arguments, 0, floatValue, false) == true) {
 					returnValue.setValue(floatValue);
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -611,7 +611,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getFloatValue(arguments, 0, floatValue, false) == true) {
 					returnValue.setValue(static_cast<int64_t>(*((uint32_t*)&floatValue)));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -640,7 +640,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getIntegerValue(arguments, 0, intValue, false) == true) {
 					returnValue.setValue(*((float*)&intValue));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -673,7 +673,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 						returnValue.setValue(stringValueA > stringValueB);
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				} else {
@@ -683,7 +683,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 						returnValue.setValue(floatValueA > floatValueB);
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				}
@@ -719,7 +719,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 						returnValue.setValue(stringValueA >= stringValueB);
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				} else {
@@ -729,7 +729,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 						returnValue.setValue(floatValueA >= floatValueB);
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				}
@@ -765,7 +765,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 						returnValue.setValue(stringValueA < stringValueB);
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				} else {
@@ -775,7 +775,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 						returnValue.setValue(floatValueA < floatValueB);
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				}
@@ -811,7 +811,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 						returnValue.setValue(stringValueA <= stringValueB);
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				} else {
@@ -821,7 +821,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 						returnValue.setValue(floatValueA <= floatValueB);
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+						miniScript->complain(getMethodName(), statement);
 						miniScript->startErrorScript();
 					}
 				}
@@ -855,7 +855,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getBooleanValue(arguments, 0, booleanValue, false) == true) {
 					returnValue.setValue(booleanValue);
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 					return;
 				}
@@ -883,7 +883,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getBooleanValue(arguments, 0, booleanValue, false) == true) {
 					returnValue.setValue(!booleanValue);
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 					return;
 				}
@@ -915,14 +915,14 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 2) {
 					returnValue.setValue(false);
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					returnValue.setValue(true);
 					for (auto i = 0; i < arguments.size(); i++) {
 						bool booleanValue;
 						if (MiniScript::getBooleanValue(arguments, i, booleanValue, false) == false) {
-							_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+							miniScript->complain(getMethodName(), statement);
 							miniScript->startErrorScript();
 						} else
 						if (booleanValue == false) {
@@ -959,14 +959,14 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 2) {
 					returnValue.setValue(false);
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					returnValue.setValue(false);
 					for (auto i = 0; i < arguments.size(); i++) {
 						bool booleanValue;
 						if (MiniScript::getBooleanValue(arguments, i, booleanValue, false) == false) {
-							_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+							miniScript->complain(getMethodName(), statement);
 							miniScript->startErrorScript();
 						} else
 						if (booleanValue == true) {
@@ -1005,7 +1005,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getStringValue(arguments, 0, variable, false) == true) {
 					returnValue = miniScript->getVariable(variable, &statement);
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -1036,7 +1036,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getStringValue(arguments, 0, variable, false) == true) {
 					returnValue = miniScript->getVariable(variable, &statement, true);
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -1071,7 +1071,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				string variable;
 				if (arguments.size() != 2 ||
 					MiniScript::getStringValue(arguments, 0, variable, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					miniScript->setVariable(variable, arguments[1], &statement);
@@ -1109,7 +1109,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				string constant;
 				if (arguments.size() != 2 ||
 					MiniScript::getStringValue(arguments, 0, constant, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					MiniScript::setConstant(arguments[1]);
@@ -1140,7 +1140,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
 				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					arguments[0].setValue(value + 1);
@@ -1173,7 +1173,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
 				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					arguments[0].setValue(value - 1);
@@ -1206,7 +1206,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
 				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					++value;
@@ -1240,7 +1240,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
 				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					--value;
@@ -1274,7 +1274,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
 				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					returnValue.setValue(~value);
@@ -1308,7 +1308,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				int64_t valueB;
 				if (MiniScript::getIntegerValue(arguments, 0, valueA, false) == false ||
 					MiniScript::getIntegerValue(arguments, 1, valueB, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					returnValue.setValue(valueA & valueB);
@@ -1342,7 +1342,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				int64_t valueB;
 				if (MiniScript::getIntegerValue(arguments, 0, valueA, false) == false ||
 					MiniScript::getIntegerValue(arguments, 1, valueB, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					returnValue.setValue(valueA | valueB);
@@ -1376,7 +1376,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				int64_t valueB;
 				if (MiniScript::getIntegerValue(arguments, 0, valueA, false) == false ||
 					MiniScript::getIntegerValue(arguments, 1, valueB, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					returnValue.setValue(valueA ^ valueB);
@@ -1411,7 +1411,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getIntegerValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(_Hex::encodeInt(value));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -1440,7 +1440,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getStringValue(arguments, 0, value, false) == true) {
 					returnValue.setValue(static_cast<int64_t>(_Hex::decodeInt(value)));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}

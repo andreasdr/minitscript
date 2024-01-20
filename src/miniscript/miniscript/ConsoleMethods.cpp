@@ -41,7 +41,7 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 1) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					_Console::printLine(arguments[0].getValueAsString(true));

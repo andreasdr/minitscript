@@ -207,6 +207,10 @@ void MiniScript::registerStateMachineState(StateMachineState* state) {
 void MiniScript::initializeNative() {
 }
 
+void MiniScript::complain(const string& methodName, const Statement& statement) {
+	_Console::printLine(methodName + "(): " + getStatementInformation(statement) + ": argument mismatch: expected arguments: " + getArgumentInformation(methodName));
+}
+
 void MiniScript::registerMethod(Method* method) {
 	auto methodsIt = methods.find(method->getMethodName());
 	if (methodsIt != methods.end()) {
@@ -2891,7 +2895,7 @@ void MiniScript::registerMethods() {
 			}
 			void executeMethod(span<Variable>& arguments, Variable& returnValue, const Statement& statement) override {
 				if (arguments.size() != 1) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else
 				if (arguments.size() == 1) {
@@ -2937,7 +2941,7 @@ void MiniScript::registerMethods() {
 				//
 				if (arguments.size() < 3 ||
 					miniScript->getStringValue(arguments, 2, member, false) == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				} else {
 					// do we have a this variable name?

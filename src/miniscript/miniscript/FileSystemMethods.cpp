@@ -51,7 +51,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, fileName, false) == true) {
 					returnValue.setValue(_FileSystem::composeURI(pathName, fileName));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -90,7 +90,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -129,7 +129,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -172,7 +172,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -213,7 +213,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -257,7 +257,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -302,7 +302,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -348,7 +348,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -384,7 +384,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -415,7 +415,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getStringValue(arguments, 0, uri, false) == true) {
 					returnValue.setValue(_FileSystem::isDrive(uri));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -450,7 +450,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -489,7 +489,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -554,7 +554,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -585,7 +585,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getStringValue(arguments, 0, uri, false) == true) {
 					returnValue.setValue(_FileSystem::getFileName(uri));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -616,7 +616,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getStringValue(arguments, 0, uri, false) == true) {
 					returnValue.setValue(_FileSystem::getPathName(uri));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -647,7 +647,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				if (MiniScript::getStringValue(arguments, 0, fileName, false) == true) {
 					returnValue.setValue(_FileSystem::removeFileExtension(fileName));
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -687,7 +687,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -724,7 +724,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -764,7 +764,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -804,7 +804,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -844,7 +844,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
@@ -886,7 +886,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
 				}
 			}
