@@ -34,10 +34,13 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				return "script.waitForCondition";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				// script bindings
-				miniScript->getScriptState().timeWaitStarted = _Time::getCurrentMillis();
-				miniScript->getScriptState().timeWaitTime = 100LL;
-				miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_WAIT_FOR_CONDITION);
+				if (arguments.size() == 0) {
+					miniScript->getScriptState().timeWaitStarted = _Time::getCurrentMillis();
+					miniScript->getScriptState().timeWaitTime = 100LL;
+					miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_WAIT_FOR_CONDITION);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodScriptWaitForCondition(miniScript));
@@ -58,12 +61,13 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t time;
-				if (miniScript->getIntegerValue(arguments, 0, time) == true) {
+				if (arguments.size() == 1 &&
+					miniScript->getIntegerValue(arguments, 0, time) == true) {
 					miniScript->getScriptState().timeWaitStarted = _Time::getCurrentMillis();
 					miniScript->getScriptState().timeWaitTime = time;
 					miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_WAIT);
 				} else {
-					miniScript->complain(getMethodName(), statement);
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -87,11 +91,11 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string condition;
-				if (MiniScript::getStringValue(arguments, 0, condition, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, condition) == true) {
 					miniScript->emit(condition);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -115,7 +119,8 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string name;
-				if (MiniScript::getStringValue(arguments, 0, name, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, name) == true) {
 					miniScript->enabledNamedConditions.erase(
 						remove(
 							miniScript->enabledNamedConditions.begin(),
@@ -126,8 +131,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 					);
 					miniScript->enabledNamedConditions.push_back(name);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -151,7 +155,8 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string name;
-				if (MiniScript::getStringValue(arguments, 0, name, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, name) == true) {
 					miniScript->enabledNamedConditions.erase(
 						remove(
 							miniScript->enabledNamedConditions.begin(),
@@ -161,8 +166,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->enabledNamedConditions.end()
 					);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -181,11 +185,15 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				return "script.getNamedConditions";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				string result;
-				for (const auto& namedCondition: miniScript->enabledNamedConditions) {
-					result+= result.empty() == false?",":namedCondition;
+				if (arguments.size() == 0) {
+					string result;
+					for (const auto& namedCondition: miniScript->enabledNamedConditions) {
+						result+= result.empty() == false?",":namedCondition;
+					}
+					returnValue.setValue(result);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
-				returnValue.setValue(result);
 			}
 		};
 		miniScript->registerMethod(new MethodScriptGetNamedConditions(miniScript));
@@ -209,13 +217,13 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string statementString;
-				if (miniScript->getStringValue(arguments, 0, statementString, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					miniScript->getStringValue(arguments, 0, statementString) == true) {
 					if (miniScript->evaluate(statementString, returnValue) == false) {
 						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": '" + statementString + "': An error occurred");
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -240,10 +248,8 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
-				if (miniScript->getStringValue(arguments, 0, function) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() >= 1 &&
+					miniScript->getStringValue(arguments, 0, function) == true) {
 					auto scriptIdx = miniScript->getFunctionScriptIdx(function);
 					if (scriptIdx == MiniScript::SCRIPTIDX_NONE) {
 						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": function not found: " + function);
@@ -263,6 +269,8 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 							miniScript->call(scriptIdx, callArgumentsSpan, returnValue);
 						#endif
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			bool isVariadic() const override {
@@ -282,9 +290,12 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				return "script.stop";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
-				miniScript->stopScriptExecution();
-				miniScript->stopRunning();
+				if (arguments.size() == 0) {
+					miniScript->stopScriptExecution();
+					miniScript->stopRunning();
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodScriptStop(miniScript));
@@ -300,9 +311,13 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				return "script.getVariables";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setType(MiniScript::TYPE_MAP);
-				for (const auto& [variableName, variableValue]: miniScript->getScriptState().variables) {
-					returnValue.setMapEntry(variableName, *variableValue);
+				if (arguments.size() == 0) {
+					returnValue.setType(MiniScript::TYPE_MAP);
+					for (const auto& [variableName, variableValue]: miniScript->getScriptState().variables) {
+						returnValue.setMapEntry(variableName, *variableValue);
+					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -321,7 +336,11 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				return "script.isNative";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setValue(miniScript->isNative());
+				if (arguments.size() == 0) {
+					returnValue.setValue(miniScript->isNative());
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodScriptIsNative(miniScript));
