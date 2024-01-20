@@ -33,7 +33,11 @@ void TimeMethods::registerMethods(MiniScript* miniScript) {
 				return "time.getCurrentMillis";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setValue(_Time::getCurrentMillis());
+				if (arguments.size() == 0) {
+					returnValue.setValue(_Time::getCurrentMillis());
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodTimeGetCurrentMillis(miniScript));
@@ -57,11 +61,11 @@ void TimeMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string format = "%Y-%m-%d %H:%M:%S";
-				if (MiniScript::getStringValue(arguments, 0, format, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 0 || arguments.size() == 1) &&
+					MiniScript::getStringValue(arguments, 0, format, true) == true) {
 					returnValue.setValue(_Time::getAsString(format));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};

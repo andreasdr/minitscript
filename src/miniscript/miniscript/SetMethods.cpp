@@ -275,7 +275,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
-				if ((arguments.size() == 2 && arguments.size() == 3) &&
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
 					arguments[0].getType() == MiniScript::TYPE_SET &&
 					MiniScript::getStringValue(arguments, 1, function) == true) {
 					auto setPtr = arguments[0].getSetPointer();
