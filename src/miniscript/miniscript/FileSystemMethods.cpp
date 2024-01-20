@@ -47,12 +47,12 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileName, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getStringValue(arguments, 1, fileName) == true) {
 					returnValue.setValue(_FileSystem::composeURI(pathName, fileName));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -82,16 +82,16 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileName, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getStringValue(arguments, 1, fileName) == true) {
 					try {
 						returnValue.setValue(static_cast<int64_t>(_FileSystem::getFileSize(pathName, fileName)));
 					} catch (_Exception& exception) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -121,16 +121,16 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileName, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getStringValue(arguments, 1, fileName) == true) {
 					try {
 						returnValue.setValue(_FileSystem::getContentAsString(pathName, fileName));
 					} catch (_Exception& exception) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -161,9 +161,10 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				string pathName;
 				string fileName;
 				string content;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileName, false) == true &&
-					MiniScript::getStringValue(arguments, 2, content, false) == true) {
+				if (arguments.size() == 3 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getStringValue(arguments, 1, fileName) == true &&
+					MiniScript::getStringValue(arguments, 2, content) == true) {
 					try {
 						_FileSystem::setContentFromString(pathName, fileName, content);
 						returnValue.setValue(true);
@@ -172,8 +173,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -203,8 +203,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileName, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getStringValue(arguments, 1, fileName) == true) {
 					try {
 						vector<uint8_t> content;
 						_FileSystem::getContent(pathName, fileName, content);
@@ -213,8 +214,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -257,8 +257,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -288,8 +287,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileName, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getStringValue(arguments, 1, fileName) == true) {
 					vector<string> contentAsStringArray;
 					try {
 						_FileSystem::getContentAsStringArray(pathName, fileName, contentAsStringArray);
@@ -302,8 +302,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -334,8 +333,8 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				string pathName;
 				string fileName;
 				if (arguments.size() == 3 &&
-					MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileName, false) == true &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getStringValue(arguments, 1, fileName) == true &&
 					arguments[2].getType() == MiniScript::TYPE_ARRAY) {
 					vector<string> contentAsStringArray;
 					auto arrayPointer = arguments[2].getArrayPointer();
@@ -348,8 +347,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -377,15 +375,15 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
-				if (MiniScript::getStringValue(arguments, 0, uri, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, uri, false) == true) {
 					try {
 						returnValue.setValue(_FileSystem::isPath(uri));
 					} catch (_Exception& exception) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -412,7 +410,8 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
-				if (MiniScript::getStringValue(arguments, 0, uri, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, uri) == true) {
 					returnValue.setValue(_FileSystem::isDrive(uri));
 				} else {
 					miniScript->complain(getMethodName(), statement);
@@ -443,15 +442,15 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
-				if (MiniScript::getStringValue(arguments, 0, uri, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, uri) == true) {
 					try {
 						returnValue.setValue(_FileSystem::exists(uri));
 					} catch (_Exception& exception) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -481,16 +480,16 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileName, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getStringValue(arguments, 1, fileName) == true) {
 					try {
 						returnValue.setValue(_FileSystem::getCanonicalURI(pathName, fileName));
 					} catch (_Exception& exception) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -515,10 +514,14 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 				return "filesystem.getCurrentWorkingPathName";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				try {
-					returnValue.setValue(_FileSystem::getCurrentWorkingPathName());
-				} catch (_Exception& exception) {
-					_Console::printLine("An error occurred: " + string(exception.what()));
+				if (arguments.size() == 0) {
+					try {
+						returnValue.setValue(_FileSystem::getCurrentWorkingPathName());
+					} catch (_Exception& exception) {
+						_Console::printLine("An error occurred: " + string(exception.what()));
+					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -545,7 +548,8 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true) {
 					try {
 						_FileSystem::changePath(pathName);
 						returnValue.setValue(true);
@@ -554,8 +558,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -582,11 +585,11 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
-				if (MiniScript::getStringValue(arguments, 0, uri, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, uri) == true) {
 					returnValue.setValue(_FileSystem::getFileName(uri));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -613,11 +616,11 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string uri;
-				if (MiniScript::getStringValue(arguments, 0, uri, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, uri) == true) {
 					returnValue.setValue(_FileSystem::getPathName(uri));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -644,11 +647,11 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string fileName;
-				if (MiniScript::getStringValue(arguments, 0, fileName, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, fileName) == true) {
 					returnValue.setValue(_FileSystem::removeFileExtension(fileName));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -677,8 +680,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				string fileName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileName, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getStringValue(arguments, 1, fileName) == true) {
 					try {
 						_FileSystem::removeFile(pathName, fileName);
 						returnValue.setValue(true);
@@ -687,8 +691,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -715,7 +718,8 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true) {
 					try {
 						_FileSystem::createPath(pathName);
 						returnValue.setValue(true);
@@ -724,8 +728,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -754,8 +757,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
 				bool recursive;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true &&
-					MiniScript::getBooleanValue(arguments, 1, recursive, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, pathName) == true &&
+					MiniScript::getBooleanValue(arguments, 1, recursive) == true) {
 					try {
 						_FileSystem::removePath(pathName, recursive);
 						returnValue.setValue(true);
@@ -764,8 +768,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -794,8 +797,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string fileNameFrom;
 				string fileNameTo;
-				if (MiniScript::getStringValue(arguments, 0, fileNameFrom, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileNameTo, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, fileNameFrom) == true &&
+					MiniScript::getStringValue(arguments, 1, fileNameTo) == true) {
 					try {
 						_FileSystem::rename(fileNameFrom, fileNameTo);
 						returnValue.setValue(true);
@@ -804,8 +808,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -834,8 +837,9 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string fileNameFrom;
 				string fileNameTo;
-				if (MiniScript::getStringValue(arguments, 0, fileNameFrom, false) == true &&
-					MiniScript::getStringValue(arguments, 1, fileNameTo, false) == true) {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, fileNameFrom) == true &&
+					MiniScript::getStringValue(arguments, 1, fileNameTo) == true) {
 					try {
 						_FileSystem::rename(fileNameFrom, fileNameTo);
 						returnValue.setValue(true);
@@ -844,8 +848,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -873,7 +876,8 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string pathName;
-				if (MiniScript::getStringValue(arguments, 0, pathName, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, pathName, false) == true) {
 					try {
 						vector<string> files;
 						_FileSystem::list(pathName, files);
@@ -886,8 +890,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
