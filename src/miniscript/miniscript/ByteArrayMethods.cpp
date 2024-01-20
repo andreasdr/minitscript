@@ -34,7 +34,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setType(MiniScript::TYPE_BYTEARRAY);
+				if (arguments.size() == 0) {
+					returnValue.setType(MiniScript::TYPE_BYTEARRAY);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodByteArray(miniScript));
@@ -58,11 +62,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::getSize";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getByteArraySize()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -87,12 +91,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::getReadPosition";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					returnValue.setValue(*arguments[0].getByteArrayReadPointer());
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -119,21 +122,20 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t position;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getIntegerValue(arguments, 1, position, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getIntegerValue(arguments, 1, position) == true) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if (position < 0ll) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Byte array read position must not be lesser than 0");
+						miniScript->complain(getMethodName(), statement, "Byte array read position must not be lesser than 0");
 					} else
 					if (position >= arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Byte array read position exceeding byte array size: " + to_string(*byteArrayReadPtr) + " >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Byte array read position exceeding byte array size: " + to_string(*byteArrayReadPtr) + " >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						*byteArrayReadPtr = position;
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -158,12 +160,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::getWritePosition";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					returnValue.setValue(*arguments[0].getByteArrayWritePointer());
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -190,21 +191,20 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t position;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getIntegerValue(arguments, 1, position, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getIntegerValue(arguments, 1, position) == true) {
 					const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 					if (position < 0ll) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Byte array write position must not be lesser than 0");
+						miniScript->complain(getMethodName(), statement, "Byte array write position must not be lesser than 0");
 					} else
 					if (position > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Byte array write position exceeding byte array size: " + to_string(*byteArrayWritePtr) + " >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Byte array write position exceeding byte array size: " + to_string(*byteArrayWritePtr) + " >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						*byteArrayWritePtr = position;
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -230,17 +230,16 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::readBool";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if ((*byteArrayReadPtr) + 1 > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading boolean value, because of read position " + to_string(*byteArrayReadPtr) + " + 1 >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading boolean value, because of read position " + to_string(*byteArrayReadPtr) + " + 1 >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						returnValue.setValue(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++) != 0);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -266,17 +265,16 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::readInt8";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if ((*byteArrayReadPtr) + 1 > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 8 bit integer value, because of read position " + to_string(*byteArrayReadPtr) + " + 1 >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading 8 bit integer value, because of read position " + to_string(*byteArrayReadPtr) + " + 1 >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						returnValue.setValue(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)));
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -302,20 +300,19 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::readInt16";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if ((*byteArrayReadPtr) + 2 > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 16 bit integer value, because of read position " + to_string(*byteArrayReadPtr) + " + 2 >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading 16 bit integer value, because of read position " + to_string(*byteArrayReadPtr) + " + 2 >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						returnValue.setValue(
 							static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) +
 							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 8)
 						);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -341,14 +338,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::readInt32";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if ((*byteArrayReadPtr) + 4 > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 32 bit integer value, because of read position " + to_string(*byteArrayReadPtr) + " + 4 >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading 32 bit integer value, because of read position " + to_string(*byteArrayReadPtr) + " + 4 >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						returnValue.setValue(
 							static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) +
@@ -357,6 +351,8 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 24)
 						);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -382,14 +378,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::readInt64";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if ((*byteArrayReadPtr) + 8 > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 64 bit integer value, because of read position " + to_string(*byteArrayReadPtr) + " + 8 >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading 64 bit integer value, because of read position " + to_string(*byteArrayReadPtr) + " + 8 >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						returnValue.setValue(
 							static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) +
@@ -403,6 +396,8 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 
 						);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -428,14 +423,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::readFloat";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if ((*byteArrayReadPtr) + 4 > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 32 bit float value, because of read position " + to_string(*byteArrayReadPtr) + " + 4 >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading 32 bit float value, because of read position " + to_string(*byteArrayReadPtr) + " + 4 >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						uint32_t floatAsInt =
 							static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) +
@@ -444,6 +436,8 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 24);
 						returnValue.setValue(*((float*)&floatAsInt));
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -469,25 +463,24 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::readSmallString";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if ((*byteArrayReadPtr) + 1 > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 8 bit string size, because of read position " + to_string(*byteArrayReadPtr) + " + 1 >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading 8 bit string size, because of read position " + to_string(*byteArrayReadPtr) + " + 1 >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						string value;
 						auto size = static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++));
 						if ((*byteArrayReadPtr) + size > arguments[0].getByteArraySize()) {
-							_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading string bytes, because of read position " + to_string(*byteArrayReadPtr) + " + " + to_string(size) + " >= " + to_string(arguments[0].getByteArraySize()));
+							miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading string bytes, because of read position " + to_string(*byteArrayReadPtr) + " + " + to_string(size) + " >= " + to_string(arguments[0].getByteArraySize()));
 						} else {
 							value.resize(size);
 							for (auto i = 0; i < size; i++) value.data()[i] = arguments[0].getByteArrayEntry((*byteArrayReadPtr)++);
 							returnValue.setValue(value);
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -513,27 +506,26 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::readMediumString";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if ((*byteArrayReadPtr) + 2 > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 16 bit string size, because of read position " + to_string(*byteArrayReadPtr) + " + 2 >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading 16 bit string size, because of read position " + to_string(*byteArrayReadPtr) + " + 2 >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						string value;
 						auto size =
 							static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) +
 							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 8);
 						if ((*byteArrayReadPtr) + size > arguments[0].getByteArraySize()) {
-							_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading string bytes, because of read position " + to_string(*byteArrayReadPtr) + " + " + to_string(size) + " >= " + to_string(arguments[0].getByteArraySize()));
+							miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading string bytes, because of read position " + to_string(*byteArrayReadPtr) + " + " + to_string(size) + " >= " + to_string(arguments[0].getByteArraySize()));
 						} else {
 							value.resize(size);
 							for (auto i = 0; i < size; i++) value.data()[i] = arguments[0].getByteArrayEntry((*byteArrayReadPtr)++);
 							returnValue.setValue(value);
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -559,14 +551,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::readLargeString";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					const auto byteArrayReadPtr = arguments[0].getByteArrayReadPointer();
 					if ((*byteArrayReadPtr) + 4 > arguments[0].getByteArraySize()) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading 32 bit string size, because of read position " + to_string(*byteArrayReadPtr) + " + 4 >= " + to_string(arguments[0].getByteArraySize()));
+						miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading 32 bit string size, because of read position " + to_string(*byteArrayReadPtr) + " + 4 >= " + to_string(arguments[0].getByteArraySize()));
 					} else {
 						string value;
 						auto size =
@@ -575,13 +564,16 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 16) +
 							(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)) << 24);
 						if ((*byteArrayReadPtr) + size > arguments[0].getByteArraySize()) {
-							_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding byte array size while reading string bytes, because of read position " + to_string(*byteArrayReadPtr) + " + " + to_string(size) + " >= " + to_string(arguments[0].getByteArraySize()));
+							miniScript->complain(getMethodName(), statement, "Exceeding byte array size while reading string bytes, because of read position " + to_string(*byteArrayReadPtr) + " + " + to_string(size) + " >= " + to_string(arguments[0].getByteArraySize()));
 						} else {
 							value.resize(size);
 							for (auto i = 0; i < size; i++) value.data()[i] = arguments[0].getByteArrayEntry((*byteArrayReadPtr)++);
 							returnValue.setValue(value);
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement);
+					miniScript->startErrorScript();
 				}
 			}
 		};
@@ -607,16 +599,14 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::writeBool";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				// TODO: value bounds check
 				bool value;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getBooleanValue(arguments, 1, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getBooleanValue(arguments, 1, value) == true) {
 					const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -642,16 +632,14 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::writeInt8";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				// TODO: value bounds check
 				int64_t value;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getIntegerValue(arguments, 1, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getIntegerValue(arguments, 1, value) == true) {
 					const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -677,17 +665,15 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::writeInt16";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				// TODO: value bounds check
 				int64_t value;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getIntegerValue(arguments, 1, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getIntegerValue(arguments, 1, value) == true) {
 					const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 8) & 0xff);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -713,19 +699,17 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::writeInt32";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				// TODO: value bounds check
 				int64_t value;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getIntegerValue(arguments, 1, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getIntegerValue(arguments, 1, value) == true) {
 					const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 8) & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 16) & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 24) & 0xff);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -751,14 +735,10 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::writeInt64";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				// TODO: value bounds check
 				int64_t value;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getIntegerValue(arguments, 1, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getIntegerValue(arguments, 1, value) == true) {
 					const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 8) & 0xff);
@@ -768,6 +748,8 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 40) & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 48) & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 56) & 0xff);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -793,20 +775,18 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::writeFloat";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				// TODO: value bounds check
 				float value;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getFloatValue(arguments, 1, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getFloatValue(arguments, 1, value) == true) {
 					const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 					uint32_t intValue = *((uint32_t*)&value);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, intValue & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (intValue >> 8) & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (intValue >> 16) & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (intValue >> 24) & 0xff);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -833,14 +813,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getStringValue(arguments, 1, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getStringValue(arguments, 1, value) == true) {
 					if (value.size() > 255) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding small string size of 255 bytes: " + to_string(value.size()) + " > 255");
+						miniScript->complain(getMethodName(), statement, "Exceeding small string size of 255 bytes: " + to_string(value.size()) + " > 255");
 					} else {
 						const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value.size());
@@ -848,6 +825,8 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 							arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value[i]);
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -874,14 +853,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getStringValue(arguments, 1, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getStringValue(arguments, 1, value) == true) {
 					if (value.size() > 65535) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding medium string size of 65535 bytes: " + to_string(value.size()) + " > 65535");
+						miniScript->complain(getMethodName(), statement, "Exceeding medium string size of 65535 bytes: " + to_string(value.size()) + " > 65535");
 					} else {
 						const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value.size() & 0xff);
@@ -890,6 +866,8 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 							arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value[i]);
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -916,14 +894,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_BYTEARRAY ||
-					MiniScript::getStringValue(arguments, 1, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY &&
+					MiniScript::getStringValue(arguments, 1, value) == true) {
 					if (value.size() > 4294967295) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": Exceeding medium string size of 4294967295 bytes: " + to_string(value.size()) + " > 4294967295");
+						miniScript->complain(getMethodName(), statement, "Exceeding medium string size of 4294967295 bytes: " + to_string(value.size()) + " > 4294967295");
 					} else {
 						const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 						arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value.size() & 0xff);
@@ -934,6 +909,8 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 							arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value[i]);
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -962,14 +939,12 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
 				int64_t size;
-				if ((arguments.size() != 3 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) ||
-					MiniScript::getIntegerValue(arguments, 1, index, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, size, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
-					// TODO: bounds check
+				if ((arguments.size() == 3 && arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) &&
+					MiniScript::getIntegerValue(arguments, 1, index) == true &&
+					MiniScript::getIntegerValue(arguments, 2, size) == true) {
 					arguments[0].removeByteArray(index, size);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -993,11 +968,10 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "ByteArray::clear";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 && arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					arguments[0].clearByteArray();
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
