@@ -539,12 +539,13 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string pattern;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
+				if ((arguments.size() != 2 && arguments.size() != 3) ||
+					MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
 					MiniScript::getStringValue(arguments, 1, pattern, false) == false) {
 					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					if (arguments.size() > 2) {
+					if (arguments.size() == 3) {
 						smatch matches;
 						returnValue.setValue(_UTF8StringTools::regexMatch(stringValue, pattern, &matches));
 						arguments[2].setType(MiniScript::TYPE_ARRAY);
@@ -582,12 +583,13 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string pattern;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
+				if ((arguments.size() != 2 && arguments.size() != 3) ||
+					MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
 					MiniScript::getStringValue(arguments, 1, pattern, false) == false) {
 					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
 				} else {
-					if (arguments.size() > 2) {
+					if (arguments.size() == 3) {
 						smatch matches;
 						returnValue.setValue(_UTF8StringTools::regexSearch(stringValue, pattern, &matches));
 						arguments[2].setType(MiniScript::TYPE_ARRAY);
@@ -596,7 +598,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 							arguments[2].pushArrayEntry(MiniScript::Variable(string(match.str())));
 						}
 					} else {
-						returnValue.setValue(_UTF8StringTools::regexMatch(stringValue, pattern));
+						returnValue.setValue(_UTF8StringTools::regexSearch(stringValue, pattern));
 					}
 				}
 			}
