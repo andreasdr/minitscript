@@ -40,11 +40,10 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				return "console.dump";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1) {
 					_Console::printLine(arguments[0].getValueAsString(true));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -108,7 +107,11 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				return "console.readLine";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setValue(_Console::readLine());
+				if (arguments.size() == 0) {
+					returnValue.setValue(_Console::readLine());
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodConsoleReadLine(miniScript));
@@ -128,7 +131,11 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				return "console.readAll";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setValue(_Console::readAll());
+				if (arguments.size() == 0) {
+					returnValue.setValue(_Console::readAll());
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodConsoleReadAll(miniScript));
@@ -148,9 +155,13 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				return "console.readAllAsArray";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setType(MiniScript::TYPE_ARRAY);
-				const auto input = _Console::readAllAsArray();
-				for (const auto& line: input) returnValue.pushArrayEntry(MiniScript::Variable(line));
+				if (arguments.size() == 0) {
+					returnValue.setType(MiniScript::TYPE_ARRAY);
+					const auto input = _Console::readAllAsArray();
+					for (const auto& line: input) returnValue.pushArrayEntry(MiniScript::Variable(line));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodConsoleReadAllAsArray(miniScript));
@@ -199,4 +210,3 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 		miniScript->registerMethod(new MethodConsoleErrorPrintLine(miniScript));
 	}
 }
-
