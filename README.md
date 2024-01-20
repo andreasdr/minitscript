@@ -375,11 +375,11 @@ Reading values using ByteArray::read*():
 ...
 ```
 
-Reading byte arrays using ByteArray::length() and ByteArray::readInt8():
+Reading byte arrays using ByteArray::getSize() and ByteArray::readInt8():
 ```
 ...
 	$byteArray->setReadPosition(0)
-	forCondition($byteArray->getReadPosition() < $byteArray->length())
+	forCondition($byteArray->getReadPosition() < $byteArray->getSize())
 		console.printLine($i + ": " + $byteArray->readInt8($i))
 	end
 ...
@@ -449,22 +449,22 @@ Removing from arrays using a index with Array::remove():
 	$array->remove(2)
 ...
 ```
-Iterating arrays using Array::length() and Array::get():
+Iterating arrays using Array::getSize() and Array::get():
 ```
 ...
 	$i = 0
-	forCondition($i < $array->length())
+	forCondition($i < $array->getSize())
 		console.printLine($i + ": " + $array->get($i))
 		++$i
 	end
 ...
 ```
 
-Iterating arrays using Array::length() and [] operator:
+Iterating arrays using Array::getSize() and [] operator:
 ```
 ...
 	$i = 0
-	forCondition($i < $array->length())
+	forCondition($i < $array->getSize())
 		console.printLine($i + ": " + $array[$i])
 		++$i
 	end
@@ -560,7 +560,7 @@ Reading all keys and values from map using Map::get() and Map::getKeys()
 ...
 	$mapKeys = $map->getKeys()
 	$i = 0
-	forCondition($i < $mapKeys->length())
+	forCondition($i < $mapKeys->getSize())
 		console.printLine($mapKeys[$i] + " = " + $map->get($mapKeys[$i]))
 		++$i
 	end
