@@ -40,15 +40,12 @@ void XMLMethods::registerMethods(MiniScript* miniScript) {
 				return "xml.createTag";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
 				string name;
 				string innerXML;
-				if (MiniScript::getStringValue(arguments, 0, name, false) == false ||
-					(arguments.size() >= 2 && arguments[1].getType() != MiniScript::TYPE_MAP) ||
-					MiniScript::getStringValue(arguments, 2, innerXML, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 1 || arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, name) == true &&
+					(arguments.size() == 1 || arguments[1].getType() == MiniScript::TYPE_MAP) &&
+					MiniScript::getStringValue(arguments, 2, innerXML, true) == true) {
 					auto mapPtr = arguments[1].getMapPointer();
 					string xml;
 					xml+= "<" + name;
@@ -62,8 +59,9 @@ void XMLMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						xml+= ">" + innerXML + "</" + name + ">";
 					}
-					//
 					returnValue.setValue(xml);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
