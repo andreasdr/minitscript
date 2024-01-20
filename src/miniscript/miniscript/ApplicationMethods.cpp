@@ -99,11 +99,11 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string command;
-				if (MiniScript::getStringValue(arguments, 0, command, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, command) == true) {
 					returnValue.setValue(ApplicationMethods::execute(command));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -125,9 +125,13 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 					return "application.getArguments";
 				}
 				void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-					returnValue.setType(MiniScript::TYPE_ARRAY);
-					for (const auto& argumentValue: miniScript->getContext()->getArgumentValues()) {
-						returnValue.pushArrayEntry(MiniScript::Variable(argumentValue));
+					if (arguments.size() == 0) {
+						returnValue.setType(MiniScript::TYPE_ARRAY);
+						for (const auto& argumentValue: miniScript->getContext()->getArgumentValues()) {
+							returnValue.pushArrayEntry(MiniScript::Variable(argumentValue));
+						}
+					} else {
+						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 					}
 				}
 			};
@@ -151,13 +155,13 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 				}
 				void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 					int64_t exitCode = 0ll;
-					if (MiniScript::getIntegerValue(arguments, 0, exitCode, true) == true) {
+					if ((arguments.size() == 0 || arguments.size() == 1) &&
+						MiniScript::getIntegerValue(arguments, 0, exitCode, true) == true) {
 						miniScript->getContext()->setExitCode(static_cast<int>(exitCode));
 						miniScript->stopScriptExecution();
 						miniScript->stopRunning();
 					} else {
-						miniScript->complain(getMethodName(), statement);
-						miniScript->startErrorScript();
+						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 					}
 				}
 			};

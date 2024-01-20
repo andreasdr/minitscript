@@ -47,12 +47,12 @@ on: nothing
 	console.printLine("pushed large string value 'Hi there!!!': " + $byteArray)
 	$byteArray->setWritePosition(1)
 	$byteArray->writeInt8(5)
-	$byteArray->setWritePosition($byteArray->size())
+	$byteArray->setWritePosition($byteArray->getSize())
 	console.printLine("change int8 value '1' to '5': " + $byteArray)
 	console.printLine("byte array iteration with $byteArray->readInt8(): ")
 	$i = 0
 	console.printLine("read position: " + $byteArray->getReadPosition())
-	forCondition($byteArray->getReadPosition() < $byteArray->size())
+	forCondition($byteArray->getReadPosition() < $byteArray->getSize())
 		# if ($value == null) break
 		console.printLine($i + ": " + $byteArray->readInt8())
 		++$i

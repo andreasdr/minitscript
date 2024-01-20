@@ -63,11 +63,11 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "Array::getSize";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_ARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getArraySize()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -91,11 +91,11 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "Array::isEmpty";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_ARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY) {
 					returnValue.setValue(arguments[0].getArraySize() == 0);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -123,13 +123,13 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
-				if (arguments.size() < 1 || arguments[0].getType() != MiniScript::TYPE_ARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() > 1 &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY) {
 					for (auto i = 1; i < arguments.size(); i++) {
 						arguments[0].pushArrayEntry(arguments[i]);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -155,12 +155,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
-				if ((arguments.size() <= 1 || arguments[0].getType() != MiniScript::TYPE_ARRAY) ||
-					MiniScript::getIntegerValue(arguments, 1, index, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
+					MiniScript::getIntegerValue(arguments, 1, index) == true) {
 					returnValue = arguments[0].getArrayEntry(index);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -187,12 +187,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
-				if ((arguments.size() <= 2 || arguments[0].getType() != MiniScript::TYPE_ARRAY) ||
-					MiniScript::getIntegerValue(arguments, 1, index, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 3 &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
+					MiniScript::getIntegerValue(arguments, 1, index) == true) {
 					arguments[0].setArrayEntry(index, arguments[2]);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -218,12 +218,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t index;
-				if ((arguments.size() < 2 || arguments[0].getType() != MiniScript::TYPE_ARRAY) ||
-					MiniScript::getIntegerValue(arguments, 1, index, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
+					MiniScript::getIntegerValue(arguments, 1, index) == true) {
 					arguments[0].removeArrayEntry(index);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -251,13 +251,10 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				int64_t beginIndex = 0;
-				if (arguments.size() < 2 ||
-					arguments[0].getType() != MiniScript::TYPE_ARRAY ||
-					MiniScript::getStringValue(arguments, 1, stringValue, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
+					MiniScript::getStringValue(arguments, 1, stringValue) == true &&
+					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true) {
 					auto& array = arguments[0];
 					for (auto i = beginIndex; i < array.getArraySize(); i++) {
 						auto arrayValue = array.getArrayEntry(i);
@@ -266,6 +263,8 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 							i--;
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -293,13 +292,10 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				int64_t beginIndex = 0;
-				if (arguments.size() < 2 ||
-					arguments[0].getType() != MiniScript::TYPE_ARRAY ||
-					MiniScript::getStringValue(arguments, 1, stringValue, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
+					MiniScript::getStringValue(arguments, 1, stringValue) == true &&
+					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true) {
 					const auto& array = arguments[0];
 					returnValue.setValue(static_cast<int64_t>(-1));
 					for (auto i = beginIndex; i < array.getArraySize(); i++) {
@@ -309,6 +305,8 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 							break;
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -334,13 +332,9 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_ARRAY ||
-					MiniScript::getStringValue(arguments, 1, function, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
-					//
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
+					MiniScript::getStringValue(arguments, 1, function) == true) {
 					auto arrayPtr = arguments[0].getArrayPointer();
 					if (arrayPtr != nullptr) {
 						class SortClass {
@@ -362,6 +356,8 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 						};
 						sort(arrayPtr->begin(), arrayPtr->end(), SortClass(miniScript, function));
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -385,16 +381,14 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "Array::reverse";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_ARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
-					//
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY) {
 					auto arrayPtr = arguments[0].getArrayPointer();
 					if (arrayPtr != nullptr) {
 						reverse(arrayPtr->begin(), arrayPtr->end());
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -418,11 +412,11 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "Array::clear";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_ARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY) {
 					arguments[0].clearArray();
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -449,12 +443,9 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
-				if ((arguments.size() != 2 && arguments.size() != 3) ||
-					arguments[0].getType() != MiniScript::TYPE_ARRAY ||
-					MiniScript::getStringValue(arguments, 1, function, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
+					MiniScript::getStringValue(arguments, 1, function) == true) {
 					auto arrayPtr = arguments[0].getArrayPointer();
 					if (arrayPtr != nullptr) {
 						for (auto arrayEntry: *arrayPtr) {
@@ -469,6 +460,8 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 							if (result == true) break;
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -501,16 +494,12 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				int64_t beginIndex;
 				int64_t count = -1ll;
 				int64_t step = 1ll;
-				if (arguments.size() < 3 ||
-					arguments.size() > 6 ||
-					arguments[0].getType() != MiniScript::TYPE_ARRAY ||
-					MiniScript::getStringValue(arguments, 1, function, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == false ||
-					MiniScript::getIntegerValue(arguments, 3, count, true) == false ||
-					MiniScript::getIntegerValue(arguments, 4, step, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 3 || arguments.size() == 4 || arguments.size() == 5 || arguments.size() == 6) &&
+					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
+					MiniScript::getStringValue(arguments, 1, function) == true &&
+					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true &&
+					MiniScript::getIntegerValue(arguments, 3, count, true) == true &&
+					MiniScript::getIntegerValue(arguments, 4, step, true) == true) {
 					auto arrayPtr = arguments[0].getArrayPointer();
 					if (arrayPtr != nullptr) {
 						auto counter = 0;
@@ -529,6 +518,9 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 							counter++;
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement);
+					miniScript->startErrorScript();
 				}
 			}
 		};
