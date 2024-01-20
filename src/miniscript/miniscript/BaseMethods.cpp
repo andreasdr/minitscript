@@ -4,6 +4,7 @@
 #include <miniscript/miniscript/BaseMethods.h>
 #include <miniscript/miniscript/MiniScript.h>
 #include <miniscript/utilities/Console.h>
+#include <miniscript/utilities/Hex.h>
 #include <miniscript/utilities/Time.h>
 
 using std::span;
@@ -13,6 +14,7 @@ using miniscript::miniscript::BaseMethods;
 using miniscript::miniscript::MiniScript;
 
 using _Console = miniscript::utilities::Console;
+using _Hex = miniscript::utilities::Hex;
 using _Time = miniscript::utilities::Time;
 
 void BaseMethods::registerConstants(MiniScript* miniScript) {
@@ -557,6 +559,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		miniScript->registerMethod(new MethodInt(miniScript));
 	}
 	// float methods
+	//	TODO: move me into FloatMethods
 	{
 		//
 		class MethodFloat: public MiniScript::Method {
@@ -1385,5 +1388,63 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new MethodBitwiseXor(miniScript));
 	}
-
+	// hex: move me into HexMethods
+	{
+		//
+		class MethodHexEncode: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodHexEncode(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_INTEGER, .name = "value", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_STRING
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "hex.encode";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				int64_t value;
+				if (MiniScript::getIntegerValue(arguments, 0, value, false) == true) {
+					returnValue.setValue(_Hex::encodeInt(value));
+				} else {
+					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodHexEncode(miniScript));
+	}
+	{
+		//
+		class MethodHexDecode: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodHexDecode(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "value", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_INTEGER
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "hex.decode";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string value;
+				if (MiniScript::getStringValue(arguments, 0, value, false) == true) {
+					returnValue.setValue(static_cast<int64_t>(_Hex::decodeInt(value)));
+				} else {
+					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodHexDecode(miniScript));
+	}
 }
