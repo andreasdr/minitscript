@@ -40,19 +40,15 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "return";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (miniScript->isFunctionRunning() == false) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": no function is being executed, return($value) has no effect");
-					miniScript->startErrorScript();
-				} else
-				if (arguments.size() == 0) {
-					miniScript->stopRunning();
-				} else
-				if (arguments.size() == 1) {
-					auto& scriptState = miniScript->getScriptState();
-					scriptState.returnValue = arguments[0];
+				if (arguments.size() == 0 || arguments.size() == 1) {
+					if (miniScript->isFunctionRunning() == false) {
+						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": no function is being executed, return($value) has no effect");
+						miniScript->startErrorScript();
+					} else
+					if (arguments.size() == 1) miniScript->getScriptState().returnValue = arguments[0];
 					miniScript->stopRunning();
 				} else {
-					miniScript->complain(getMethodName(), statement);
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -69,27 +65,30 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "break";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (miniScript->getScriptState().blockStack.empty() == true) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": break without forCondition/forTime");
-					miniScript->startErrorScript();
-				} else {
-					auto& blockStack = miniScript->getScriptState().blockStack;
-					MiniScript::ScriptState::Block endType;
-					for (auto i = blockStack.size() - 1; i >= 0; i--) {
-						if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
-							endType = blockStack[i];
-							blockStack.erase(blockStack.begin() + i, blockStack.end());
-							break;
+				if (arguments.size() == 0) {
+					if (miniScript->getScriptState().blockStack.empty() == true) {
+						miniScript->complain(getMethodName(), statement, "break without forCondition/forTime"); miniScript->startErrorScript();
+					} else {
+						auto& blockStack = miniScript->getScriptState().blockStack;
+						MiniScript::ScriptState::Block endType;
+						for (auto i = blockStack.size() - 1; i >= 0; i--) {
+							if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
+								endType = blockStack[i];
+								blockStack.erase(blockStack.begin() + i, blockStack.end());
+								break;
+							}
+						}
+						if (endType.type == MiniScript::ScriptState::BLOCKTYPE_NONE) {
+							miniScript->complain(getMethodName(), statement, "break without forCondition/forTime"); miniScript->startErrorScript();
+						} else
+						if (endType.continueStatement != nullptr) {
+							miniScript->gotoStatement(*endType.breakStatement);
+						} else {
+							miniScript->complain(getMethodName(), statement, "no break statement"); miniScript->startErrorScript();
 						}
 					}
-					if (endType.type == MiniScript::ScriptState::BLOCKTYPE_NONE) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": break without forCondition/forTime");
-					} else
-					if (endType.continueStatement != nullptr) {
-						miniScript->gotoStatement(*endType.breakStatement);
-					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": no break statement");
-					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -106,27 +105,31 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "continue";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (miniScript->getScriptState().blockStack.empty() == true) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": continue without forCondition, forTime");
-					miniScript->startErrorScript();
-				} else {
-					auto& blockStack = miniScript->getScriptState().blockStack;
-					MiniScript::ScriptState::Block* endType = nullptr;
-					for (auto i = blockStack.size() - 1; i >= 0; i--) {
-						if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
-							endType = &blockStack[i];
-							blockStack.erase(blockStack.begin() + i + 1, blockStack.end());
-							break;
+				if (arguments.size() == 0) {
+					if (miniScript->getScriptState().blockStack.empty() == true) {
+						miniScript->complain(getMethodName(), statement, "continue without forCondition, forTime");
+						miniScript->startErrorScript();
+					} else {
+						auto& blockStack = miniScript->getScriptState().blockStack;
+						MiniScript::ScriptState::Block* endType = nullptr;
+						for (auto i = blockStack.size() - 1; i >= 0; i--) {
+							if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
+								endType = &blockStack[i];
+								blockStack.erase(blockStack.begin() + i + 1, blockStack.end());
+								break;
+							}
+						}
+						if (endType == nullptr) {
+							miniScript->complain(getMethodName(), statement, "continue without forCondition, forTime"); miniScript->startErrorScript();
+						} else
+						if (endType->continueStatement != nullptr) {
+							miniScript->gotoStatement(*endType->continueStatement);
+						} else {
+							miniScript->complain(getMethodName(), statement, "no continue statement"); miniScript->startErrorScript();
 						}
 					}
-					if (endType == nullptr) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": continue without forCondition, forTime");
-					} else
-					if (endType->continueStatement != nullptr) {
-						miniScript->gotoStatement(*endType->continueStatement);
-					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": no continue statement");
-					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -143,22 +146,25 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "end";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (miniScript->getScriptState().blockStack.empty() == true) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": end without if/elseif/else/switch/case/default/forCondition/forTime/end");
-					miniScript->startErrorScript();
+				if (arguments.size() == 0) {
+					if (miniScript->getScriptState().blockStack.empty() == true) {
+						miniScript->complain(getMethodName(), statement, "end without if/elseif/else/switch/case/default/forCondition/forTime/end"); miniScript->startErrorScript();
+					} else {
+						auto& blockStack = miniScript->getScriptState().blockStack;
+						auto& block = blockStack[blockStack.size() - 1];
+						if (block.type == MiniScript::ScriptState::BLOCKTYPE_BLOCK &&
+							miniScript->isFunctionRunning() == true &&
+							miniScript->scriptStateStack.size() == 2) {
+							miniScript->stopRunning();
+						}
+						blockStack.erase(blockStack.begin() + blockStack.size() - 1);
+						if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
+							miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
+							miniScript->gotoStatementGoto(statement);
+						}
+					}
 				} else {
-					auto& blockStack = miniScript->getScriptState().blockStack;
-					auto& block = blockStack[blockStack.size() - 1];
-					if (block.type == MiniScript::ScriptState::BLOCKTYPE_BLOCK &&
-						miniScript->isFunctionRunning() == true &&
-						miniScript->scriptStateStack.size() == 2) {
-						miniScript->stopRunning();
-					}
-					blockStack.erase(blockStack.begin() + blockStack.size() - 1);
-					if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
-						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
-						miniScript->gotoStatementGoto(statement);
-					}
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -182,11 +188,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t time;
-				if (miniScript->getIntegerValue(arguments, 0, time) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
-					//
+				if (arguments.size() == 1 &&
+					miniScript->getIntegerValue(arguments, 0, time) == true) {
 					auto& scriptState = miniScript->getScriptState();
 					auto now = _Time::getCurrentMillis();
 					auto timeWaitStarted = now;
@@ -210,6 +213,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::Variable()
 						);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -233,11 +238,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
-				if (miniScript->getBooleanValue(arguments, 0, booleanValue, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
-					//
+				if (arguments.size() == 1 &&
+					miniScript->getBooleanValue(arguments, 0, booleanValue) == true) {
 					auto now = _Time::getCurrentMillis();
 					if (booleanValue == false) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
@@ -252,6 +254,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::Variable()
 						);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -275,15 +279,15 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
-				if (miniScript->getBooleanValue(arguments, 0, booleanValue, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					miniScript->getBooleanValue(arguments, 0, booleanValue) == true) {
 					miniScript->getScriptState().blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_IF, booleanValue, nullptr, nullptr, MiniScript::Variable());
 					if (booleanValue == false) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -307,16 +311,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
-				if (miniScript->getBooleanValue(arguments, 0, booleanValue, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
-					//
+				if (arguments.size() == 1 &&
+					miniScript->getBooleanValue(arguments, 0, booleanValue) == true) {
 					auto& scriptState = miniScript->getScriptState();
 					auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
 					if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_IF) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": elseif without if");
-						miniScript->startErrorScript();
+						miniScript->complain(getMethodName(), statement, + "elseif without if"); miniScript->startErrorScript();
 					} else
 					if (blockStack.match == true || booleanValue == false) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
@@ -324,6 +324,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						blockStack.match = booleanValue;
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -340,15 +342,18 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "else";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				auto& scriptState = miniScript->getScriptState();
-				auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
-				if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_IF) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": else without if");
-					miniScript->startErrorScript();
-				} else
-				if (blockStack.match == true) {
-					miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
-					miniScript->gotoStatementGoto(statement);
+				if (arguments.size() == 0) {
+					auto& scriptState = miniScript->getScriptState();
+					auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
+					if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_IF) {
+						miniScript->complain(getMethodName(), statement, "else without if"); miniScript->startErrorScript();
+					} else
+					if (blockStack.match == true) {
+						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
+						miniScript->gotoStatementGoto(statement);
+					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -373,12 +378,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
-				if (arguments.size() != 1) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1) {
 					auto& scriptState = miniScript->getScriptState();
 					scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_SWITCH, booleanValue, nullptr, nullptr, arguments[0]);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -401,15 +405,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "case";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
-					//
+				if (arguments.size() == 1) {
 					auto& scriptState = miniScript->getScriptState();
 					auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
 					if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_SWITCH) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": case without switch");
+						miniScript->complain(getMethodName(), statement, "case without switch");
 						miniScript->startErrorScript();
 					} else {
 						auto match = arguments[0].getValueAsString() == blockStack.switchVariable.getValueAsString();
@@ -421,6 +421,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_CASE, false, nullptr, nullptr, MiniScript::Variable());
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -437,15 +439,19 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "default";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				auto& scriptState = miniScript->getScriptState();
-				auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
-				if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_SWITCH) {
-					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": default without switch");
-					miniScript->startErrorScript();
-				} else
-				if (blockStack.match == true) {
-					miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
-					miniScript->gotoStatementGoto(statement);
+				if (arguments.size() == 0) {
+					auto& scriptState = miniScript->getScriptState();
+					auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
+					if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_SWITCH) {
+						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": default without switch");
+						miniScript->startErrorScript();
+					} else
+					if (blockStack.match == true) {
+						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
+						miniScript->gotoStatementGoto(statement);
+					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -471,10 +477,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "equals";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 2) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2) {
 					returnValue.setValue(true);
 					for (auto i = 1; i < arguments.size(); i++) {
 						if (arguments[0].getValueAsString() != arguments[i].getValueAsString()) {
@@ -482,6 +485,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							break;
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -509,10 +514,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "notEqual";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 2) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2) {
 					returnValue.setValue(true);
 					for (auto i = 1; i < arguments.size(); i++) {
 						if (arguments[0].getValueAsString() == arguments[i].getValueAsString()) {
@@ -520,6 +522,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							break;
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -548,11 +552,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t integerValue;
-				if (MiniScript::getIntegerValue(arguments, 0, integerValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getIntegerValue(arguments, 0, integerValue) == true) {
 					returnValue.setValue(integerValue);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -579,7 +583,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				float floatValue;
-				if (MiniScript::getFloatValue(arguments, 0, floatValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getFloatValue(arguments, 0, floatValue) == true) {
 					returnValue.setValue(floatValue);
 				} else {
 					miniScript->complain(getMethodName(), statement);
@@ -608,11 +613,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				float floatValue;
-				if (MiniScript::getFloatValue(arguments, 0, floatValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getFloatValue(arguments, 0, floatValue) == true) {
 					returnValue.setValue(static_cast<int64_t>(*((uint32_t*)&floatValue)));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -637,11 +642,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t intValue;
-				if (MiniScript::getIntegerValue(arguments, 0, intValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getIntegerValue(arguments, 0, intValue) == true) {
 					returnValue.setValue(*((float*)&intValue));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -666,26 +671,28 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "greater";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (MiniScript::hasType(arguments, MiniScript::TYPE_STRING) == true) {
-					string stringValueA;
-					string stringValueB;
-					if (MiniScript::getStringValue(arguments, 0, stringValueA, false) == true &&
-						MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
-						returnValue.setValue(stringValueA > stringValueB);
+				if (arguments.size() == 2) {
+					if (MiniScript::hasType(arguments, MiniScript::TYPE_STRING) == true) {
+						string stringValueA;
+						string stringValueB;
+						if (MiniScript::getStringValue(arguments, 0, stringValueA, false) == true &&
+							MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
+							returnValue.setValue(stringValueA > stringValueB);
+						} else {
+							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						}
 					} else {
-						miniScript->complain(getMethodName(), statement);
-						miniScript->startErrorScript();
+						float floatValueA;
+						float floatValueB;
+						if (MiniScript::getFloatValue(arguments, 0, floatValueA, false) == true &&
+							MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
+							returnValue.setValue(floatValueA > floatValueB);
+						} else {
+							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						}
 					}
 				} else {
-					float floatValueA;
-					float floatValueB;
-					if (MiniScript::getFloatValue(arguments, 0, floatValueA, false) == true &&
-						MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
-						returnValue.setValue(floatValueA > floatValueB);
-					} else {
-						miniScript->complain(getMethodName(), statement);
-						miniScript->startErrorScript();
-					}
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -712,26 +719,28 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "greaterEquals";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (MiniScript::hasType(arguments, MiniScript::TYPE_STRING) == true) {
-					string stringValueA;
-					string stringValueB;
-					if (MiniScript::getStringValue(arguments, 0, stringValueA, false) == true &&
-						MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
-						returnValue.setValue(stringValueA >= stringValueB);
+				if (arguments.size() == 2) {
+					if (MiniScript::hasType(arguments, MiniScript::TYPE_STRING) == true) {
+						string stringValueA;
+						string stringValueB;
+						if (MiniScript::getStringValue(arguments, 0, stringValueA, false) == true &&
+							MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
+							returnValue.setValue(stringValueA >= stringValueB);
+						} else {
+							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						}
 					} else {
-						miniScript->complain(getMethodName(), statement);
-						miniScript->startErrorScript();
+						float floatValueA;
+						float floatValueB;
+						if (MiniScript::getFloatValue(arguments, 0, floatValueA, false) == true &&
+							MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
+							returnValue.setValue(floatValueA >= floatValueB);
+						} else {
+							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						}
 					}
 				} else {
-					float floatValueA;
-					float floatValueB;
-					if (MiniScript::getFloatValue(arguments, 0, floatValueA, false) == true &&
-						MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
-						returnValue.setValue(floatValueA >= floatValueB);
-					} else {
-						miniScript->complain(getMethodName(), statement);
-						miniScript->startErrorScript();
-					}
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -758,26 +767,28 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "lesser";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (MiniScript::hasType(arguments, MiniScript::TYPE_STRING) == true) {
-					string stringValueA;
-					string stringValueB;
-					if (MiniScript::getStringValue(arguments, 0, stringValueA, false) == true &&
-						MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
-						returnValue.setValue(stringValueA < stringValueB);
+				if (arguments.size() == 2) {
+					if (MiniScript::hasType(arguments, MiniScript::TYPE_STRING) == true) {
+						string stringValueA;
+						string stringValueB;
+						if (MiniScript::getStringValue(arguments, 0, stringValueA, false) == true &&
+							MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
+							returnValue.setValue(stringValueA < stringValueB);
+						} else {
+							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						}
 					} else {
-						miniScript->complain(getMethodName(), statement);
-						miniScript->startErrorScript();
+						float floatValueA;
+						float floatValueB;
+						if (MiniScript::getFloatValue(arguments, 0, floatValueA, false) == true &&
+							MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
+							returnValue.setValue(floatValueA < floatValueB);
+						} else {
+							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						}
 					}
 				} else {
-					float floatValueA;
-					float floatValueB;
-					if (MiniScript::getFloatValue(arguments, 0, floatValueA, false) == true &&
-						MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
-						returnValue.setValue(floatValueA < floatValueB);
-					} else {
-						miniScript->complain(getMethodName(), statement);
-						miniScript->startErrorScript();
-					}
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -804,26 +815,28 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "lesserEquals";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (MiniScript::hasType(arguments, MiniScript::TYPE_STRING) == true) {
-					string stringValueA;
-					string stringValueB;
-					if (MiniScript::getStringValue(arguments, 0, stringValueA, false) == true &&
-						MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
-						returnValue.setValue(stringValueA <= stringValueB);
+				if (arguments.size() == 2) {
+					if (MiniScript::hasType(arguments, MiniScript::TYPE_STRING) == true) {
+						string stringValueA;
+						string stringValueB;
+						if (MiniScript::getStringValue(arguments, 0, stringValueA, false) == true &&
+							MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
+							returnValue.setValue(stringValueA <= stringValueB);
+						} else {
+							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						}
 					} else {
-						miniScript->complain(getMethodName(), statement);
-						miniScript->startErrorScript();
+						float floatValueA;
+						float floatValueB;
+						if (MiniScript::getFloatValue(arguments, 0, floatValueA, false) == true &&
+							MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
+							returnValue.setValue(floatValueA <= floatValueB);
+						} else {
+							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						}
 					}
 				} else {
-					float floatValueA;
-					float floatValueB;
-					if (MiniScript::getFloatValue(arguments, 0, floatValueA, false) == true &&
-						MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
-						returnValue.setValue(floatValueA <= floatValueB);
-					} else {
-						miniScript->complain(getMethodName(), statement);
-						miniScript->startErrorScript();
-					}
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -852,12 +865,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
-				if (MiniScript::getBooleanValue(arguments, 0, booleanValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getBooleanValue(arguments, 0, booleanValue) == true) {
 					returnValue.setValue(booleanValue);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-					return;
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -880,12 +892,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue = false;
-				if (MiniScript::getBooleanValue(arguments, 0, booleanValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getBooleanValue(arguments, 0, booleanValue) == true) {
 					returnValue.setValue(!booleanValue);
 				} else {
 					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
-					return;
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -913,23 +925,14 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "and";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 2) {
-					returnValue.setValue(false);
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+				bool booleanValueA;
+				bool booleanValueB;
+				if (arguments.size() == 2 &&
+					MiniScript::getBooleanValue(arguments, 0, booleanValueA) == true &&
+					MiniScript::getBooleanValue(arguments, 1, booleanValueB) == true) {
+					returnValue.setValue(booleanValueA && booleanValueB);
 				} else {
-					returnValue.setValue(true);
-					for (auto i = 0; i < arguments.size(); i++) {
-						bool booleanValue;
-						if (MiniScript::getBooleanValue(arguments, i, booleanValue, false) == false) {
-							miniScript->complain(getMethodName(), statement);
-							miniScript->startErrorScript();
-						} else
-						if (booleanValue == false) {
-							returnValue.setValue(false);
-							break;
-						}
-					}
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -957,23 +960,14 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "or";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 2) {
-					returnValue.setValue(false);
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+				bool booleanValueA;
+				bool booleanValueB;
+				if (arguments.size() == 2 &&
+					MiniScript::getBooleanValue(arguments, 0, booleanValueA) == true &&
+					MiniScript::getBooleanValue(arguments, 1, booleanValueB) == true) {
+					returnValue.setValue(booleanValueA || booleanValueB);
 				} else {
-					returnValue.setValue(false);
-					for (auto i = 0; i < arguments.size(); i++) {
-						bool booleanValue;
-						if (MiniScript::getBooleanValue(arguments, i, booleanValue, false) == false) {
-							miniScript->complain(getMethodName(), statement);
-							miniScript->startErrorScript();
-						} else
-						if (booleanValue == true) {
-							returnValue.setValue(true);
-							break;
-						}
-					}
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1002,14 +996,13 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string variable;
-				if (MiniScript::getStringValue(arguments, 0, variable, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, variable) == true) {
 					returnValue = miniScript->getVariable(variable, &statement);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
-
 		};
 		miniScript->registerMethod(new MethodGetVariable(miniScript));
 	}
@@ -1033,11 +1026,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string variable;
-				if (MiniScript::getStringValue(arguments, 0, variable, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, variable) == true) {
 					returnValue = miniScript->getVariable(variable, &statement, true);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			bool isPrivate() const override {
@@ -1069,13 +1062,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string variable;
-				if (arguments.size() != 2 ||
-					MiniScript::getStringValue(arguments, 0, variable, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, variable) == true) {
 					miniScript->setVariable(variable, arguments[1], &statement);
 					returnValue = arguments[1];
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1107,14 +1099,14 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string constant;
-				if (arguments.size() != 2 ||
-					MiniScript::getStringValue(arguments, 0, constant, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, constant) == true) {
 					MiniScript::setConstant(arguments[1]);
 					miniScript->setVariable(constant, arguments[1], &statement);
 					returnValue = arguments[1];
+				} else {
+					miniScript->complain(getMethodName(), statement);
+					miniScript->startErrorScript();
 				}
 			}
 		};
@@ -1139,12 +1131,13 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
-				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					MiniScript::getIntegerValue(arguments, 0, value) == true) {
 					arguments[0].setValue(value + 1);
 					returnValue.setValue(value);
+				} else {
+					miniScript->complain(getMethodName(), statement);
+					miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1172,12 +1165,13 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
-				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					MiniScript::getIntegerValue(arguments, 0, value) == true) {
 					arguments[0].setValue(value - 1);
 					returnValue.setValue(value);
+				} else {
+					miniScript->complain(getMethodName(), statement);
+					miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1205,13 +1199,14 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
-				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					MiniScript::getIntegerValue(arguments, 0, value) == true) {
 					++value;
 					arguments[0].setValue(value);
 					returnValue.setValue(value);
+				} else {
+					miniScript->complain(getMethodName(), statement);
+					miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1239,13 +1234,14 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
-				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					MiniScript::getIntegerValue(arguments, 0, value) == true) {
 					--value;
 					arguments[0].setValue(value);
 					returnValue.setValue(value);
+				} else {
+					miniScript->complain(getMethodName(), statement);
+					miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1273,11 +1269,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
-				if (MiniScript::getIntegerValue(arguments, 0, value, false) == false) {
+				if (arguments.size() == 1 &&
+					MiniScript::getIntegerValue(arguments, 0, value) == true) {
+					returnValue.setValue(~value);
+				} else {
 					miniScript->complain(getMethodName(), statement);
 					miniScript->startErrorScript();
-				} else {
-					returnValue.setValue(~value);
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1306,12 +1303,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t valueA;
 				int64_t valueB;
-				if (MiniScript::getIntegerValue(arguments, 0, valueA, false) == false ||
-					MiniScript::getIntegerValue(arguments, 1, valueB, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (MiniScript::getIntegerValue(arguments, 0, valueA) == true &&
+					MiniScript::getIntegerValue(arguments, 1, valueB) == true) {
 					returnValue.setValue(valueA & valueB);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1340,12 +1336,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t valueA;
 				int64_t valueB;
-				if (MiniScript::getIntegerValue(arguments, 0, valueA, false) == false ||
-					MiniScript::getIntegerValue(arguments, 1, valueB, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getIntegerValue(arguments, 0, valueA) == true &&
+					MiniScript::getIntegerValue(arguments, 1, valueB) == true) {
 					returnValue.setValue(valueA | valueB);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1374,12 +1370,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t valueA;
 				int64_t valueB;
-				if (MiniScript::getIntegerValue(arguments, 0, valueA, false) == false ||
-					MiniScript::getIntegerValue(arguments, 1, valueB, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getIntegerValue(arguments, 0, valueA) == true &&
+					MiniScript::getIntegerValue(arguments, 1, valueB) == true) {
 					returnValue.setValue(valueA ^ valueB);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1408,11 +1404,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t value;
-				if (MiniScript::getIntegerValue(arguments, 0, value, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getIntegerValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Hex::encodeInt(value));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -1437,11 +1433,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (MiniScript::getStringValue(arguments, 0, value, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, value) == true) {
 					returnValue.setValue(static_cast<int64_t>(_Hex::decodeInt(value)));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};

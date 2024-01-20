@@ -211,6 +211,10 @@ void MiniScript::complain(const string& methodName, const Statement& statement) 
 	_Console::printLine(methodName + "(): " + getStatementInformation(statement) + ": argument mismatch: expected arguments: " + getArgumentInformation(methodName));
 }
 
+void MiniScript::complain(const string& methodName, const Statement& statement, const string& message) {
+	_Console::printLine(methodName + "(): " + getStatementInformation(statement) + ": " + message);
+}
+
 void MiniScript::registerMethod(Method* method) {
 	auto methodsIt = methods.find(method->getMethodName());
 	if (methodsIt != methods.end()) {
