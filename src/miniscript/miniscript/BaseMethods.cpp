@@ -839,18 +839,18 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			MethodBool(MiniScript* miniScript):
 				MiniScript::Method(
 					{
-						{ .type = MiniScript::TYPE_BOOLEAN, .name = "bool", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_BOOLEAN, .name = "boolean", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_BOOLEAN
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "bool";
+				return "boolean";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				bool boolValue;
-				if (MiniScript::getBooleanValue(arguments, 0, boolValue, false) == true) {
-					returnValue.setValue(boolValue);
+				bool booleanValue;
+				if (MiniScript::getBooleanValue(arguments, 0, booleanValue, false) == true) {
+					returnValue.setValue(booleanValue);
 				} else {
 					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
 					miniScript->startErrorScript();
@@ -869,7 +869,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			MethodNot(MiniScript* miniScript):
 				MiniScript::Method(
 					{
-						{ .type = MiniScript::TYPE_BOOLEAN, .name = "bool", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_BOOLEAN, .name = "boolean", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_BOOLEAN), miniScript(miniScript) {}
 			const string getMethodName() override {

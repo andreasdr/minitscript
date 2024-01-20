@@ -286,14 +286,14 @@ The primitive data types can also be assigned by using initialization methods th
 
 ```
 ...
-	$boolean = bool(true)
-	$boolean = bool(false)
+	$boolean = boolean(true)
+	$boolean = boolean(false)
 ...
 ```
 
 ```
 ...
-	$integer = int(123)
+	$integer = integer(123)
 ...
 ```
 
@@ -865,7 +865,7 @@ end
 | <sub>getSize(): Integer</sub>                                                                    |
 | Get write position                                                                               |
 | <sub>getWritePosition(): Integer</sub>                                                           |
-| Read bool value and advance read position by 1 byte                                              |
+| Read boolean value and advance read position by 1 byte                                           |
 | <sub>readBool(): ?Boolean</sub>                                                                  |
 | Read 32 bit float value and advance read position by 4 byte                                      |
 | <sub>readFloat(): ?Float</sub>                                                                   |
@@ -889,7 +889,7 @@ end
 | <sub>setReadPosition($position: Integer): Null</sub>                                             |
 | Set write position                                                                               |
 | <sub>setWritePosition($position: Integer): Null</sub>                                            |
-| Write bool value and advance write position by 1 byte                                            |
+| Write boolean value and advance write position by 1 byte                                         |
 | <sub>writeBool($value: Boolean): Null</sub>                                                      |
 | Write 32 bit float value and advance write position by 4 byte                                    |
 | <sub>writeFloat($value: Integer): Null</sub>                                                     |
@@ -1078,8 +1078,8 @@ end
 | <sub>bitwiseOr($a: Integer, $b: Integer): Integer</sub>                                          |
 | Bitwise xor                                                                                      |
 | <sub>bitwiseXor($a: Integer, $b: Integer): Integer</sub>                                         |
-| Create bool                                                                                      |
-| <sub>bool($bool: Boolean): Boolean</sub>                                                         |
+| Create boolean                                                                                   |
+| <sub>boolean($boolean: Boolean): Boolean</sub>                                                   |
 | Break out of current forCondition or forTime loop                                                |
 | <sub>break(): Null</sub>                                                                         |
 | Begins a case block within a switch block, which will be executed if the case value has matched  |
@@ -1119,7 +1119,7 @@ end
 | Multiply                                                                                         |
 | <sub>mul($a: Mixed, $b: Mixed): Mixed</sub>                                                      |
 | Logical not                                                                                      |
-| <sub>not($bool: Boolean): Boolean</sub>                                                          |
+| <sub>not($boolean: Boolean): Boolean</sub>                                                       |
 | Logical not equal                                                                                |
 | <sub>notEqual($a: Mixed, $b: Mixed): Boolean</sub>                                               |
 | Logical or                                                                                       |
