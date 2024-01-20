@@ -42,11 +42,9 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
 				string callable;
-				if (MiniScript::getStringValue(arguments, 0, scriptId) == false ||
-					MiniScript::getStringValue(arguments, 1, callable) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, scriptId) == true &&
+					MiniScript::getStringValue(arguments, 1, callable) == true) {
 					auto script = miniScript->getContext()->getScript(scriptId);
 					if (script == nullptr) {
 						returnValue.setValue(false);
@@ -58,6 +56,8 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 							returnValue.setValue(true);
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -84,15 +84,12 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
 				string callable;
-				if (MiniScript::getStringValue(arguments, 0, scriptId) == false ||
-					MiniScript::getStringValue(arguments, 1, callable) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() >= 2 &&
+					MiniScript::getStringValue(arguments, 0, scriptId) == true &&
+					MiniScript::getStringValue(arguments, 1, callable) == true) {
 					auto script = dynamic_cast<MiniScript*>(miniScript->getContext()->getScript(scriptId));
 					if (script == nullptr) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": no script with given id: " + scriptId);
-						miniScript->startErrorScript();
+						miniScript->complain(getMethodName(), statement, "No script with given id: " + scriptId); miniScript->startErrorScript();
 					} else {
 						auto scriptIdx = script->getFunctionScriptIdx(callable);
 						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callableFunction == false) {
@@ -116,6 +113,8 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 							miniScript->getContext()->pop();
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 			bool isVariadic() const override {
@@ -149,13 +148,11 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 				string pathName;
 				string fileName;
 				bool verbose = false;
-				if (MiniScript::getStringValue(arguments, 0, scriptId) == false ||
-					MiniScript::getStringValue(arguments, 1, pathName) == false ||
-					MiniScript::getStringValue(arguments, 2, fileName) == false ||
-					MiniScript::getBooleanValue(arguments, 3, verbose, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 3 || arguments.size() == 4) &&
+					MiniScript::getStringValue(arguments, 0, scriptId) == true &&
+					MiniScript::getStringValue(arguments, 1, pathName) == true &&
+					MiniScript::getStringValue(arguments, 2, fileName) == true &&
+					MiniScript::getBooleanValue(arguments, 3, verbose, true) == true) {
 					unique_ptr<MiniScript> script;
 					// try to load from (native) library
 					if (miniScript->getLibrary() != nullptr) {
@@ -186,6 +183,8 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 							miniScript->getContext()->addScript(scriptId, script.release());
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -210,11 +209,11 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string scriptId;
-				if (MiniScript::getStringValue(arguments, 0, scriptId) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, scriptId) == true) {
 					miniScript->getContext()->removeScript(scriptId);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -233,9 +232,13 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 				return "context.script.getScriptIds";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				auto scriptIds = miniScript->getContext()->getScriptIds();
-				returnValue.setType(MiniScript::TYPE_ARRAY);
-				for (const auto& scriptId: scriptIds) returnValue.pushArrayEntry(scriptId);
+				if (arguments.size() == 0) {
+					auto scriptIds = miniScript->getContext()->getScriptIds();
+					returnValue.setType(MiniScript::TYPE_ARRAY);
+					for (const auto& scriptId: scriptIds) returnValue.pushArrayEntry(scriptId);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodContextScriptGetScriptIds(miniScript));
