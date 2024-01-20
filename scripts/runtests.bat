@@ -1,4 +1,3 @@
-chcp 65001
 .\bin\miniscript\tools\miniscript resources\miniscript\tests\advanced-test.tscript
 .\bin\miniscript\tools\miniscript resources\miniscript\tests\application-test.tscript
 .\bin\miniscript\tools\miniscript resources\miniscript\tests\base-test.tscript

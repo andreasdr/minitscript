@@ -43,11 +43,11 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (MiniScript::getStringValue(arguments, 0, value, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Base64::encode(value));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -72,11 +72,11 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (MiniScript::getStringValue(arguments, 0, value, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Base64::decode(value));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -102,11 +102,11 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string value;
-				if (MiniScript::getStringValue(arguments, 0, value, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, value) == true) {
 					returnValue.setValue(_SHA256::encode(value));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
