@@ -14,8 +14,8 @@ on: nothing
 	console.printLine()
 	console.printLine("Reading from pipe or console input stream: ")
 	$input = console.readAllAsArray()
-	console.println("Input was: ")
-	console.println($input)
+	console.printLine("Input was: ")
+	console.printLine($input)
 	script.stop()
 end
 

@@ -13,10 +13,10 @@ on: nothing
 	console.printLine("-----------------------")
 	console.printLine()
 	console.print("Whats your name: ")
-	$name = console.readln()
-	console.println("You have the mighty name: " + $name)
+	$name = console.readLine()
+	console.printLine("You have the mighty name: " + $name)
 	console.error.print("Now printing your name to error console: ")
-	console.error.println($name)
+	console.error.printLine($name)
 	script.stop()
 end
 

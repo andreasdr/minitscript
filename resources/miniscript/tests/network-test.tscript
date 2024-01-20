@@ -46,7 +46,7 @@ on: nothing
 		console.print("-")
 		script.wait(1000)
 	end
-	console.println("]")
+	console.printLine("]")
 	$httpDownloadClient->join()
 	console.printLine("HTTP Download status code: " + $httpDownloadClient->getStatusCode())
 	console.printLine("HTTP Download response headers: " + $httpDownloadClient->getResponseHeaders())
