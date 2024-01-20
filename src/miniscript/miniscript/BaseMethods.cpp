@@ -536,13 +536,13 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			MethodInt(MiniScript* miniScript):
 				MiniScript::Method(
 					{
-						{ .type = MiniScript::TYPE_INTEGER, .name = "int", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_INTEGER, .name = "integer", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_INTEGER
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "int";
+				return "integer";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t integerValue;
@@ -601,7 +601,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "float.toIntValue";
+				return "float.toIntegerValue";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				float floatValue;
@@ -624,13 +624,13 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			MethodFloatfromIntValue(MiniScript* miniScript):
 				MiniScript::Method(
 					{
-						{ .type = MiniScript::TYPE_INTEGER, .name = "int", .optional = false, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_INTEGER, .name = "integer", .optional = false, .reference = false, .nullable = false }
 					},
 					MiniScript::TYPE_FLOAT
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "float.fromIntValue";
+				return "float.fromIntegerValue";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t intValue;

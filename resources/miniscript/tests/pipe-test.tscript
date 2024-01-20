@@ -12,7 +12,7 @@ on: nothing
 	console.printLine("pipe-test: Nothing")
 	console.printLine("--------------------")
 	console.printLine()
-	console.println("Reading from pipe or console input stream: ")
+	console.printLine("Reading from pipe or console input stream: ")
 	$input = console.readAllAsArray()
 	console.println("Input was: ")
 	console.println($input)

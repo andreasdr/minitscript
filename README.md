@@ -1109,7 +1109,7 @@ end
 | If                                                                                               |
 | <sub>if($condition: Boolean): Null</sub>                                                         |
 | Create integer                                                                                   |
-| <sub>int($int: Integer): Integer</sub>                                                           |
+| <sub>integer($integer: Integer): Integer</sub>                                                   |
 | Lesser                                                                                           |
 | <sub>lesser($a: Mixed, $b: Mixed): Boolean</sub>                                                 |
 | Lesser equals                                                                                    |
@@ -1265,9 +1265,9 @@ end
 | Create float                                                                                     |
 | <sub>float($float: Float): Float</sub>                                                           |
 | Convert integer bit representation of float to float                                             |
-| <sub>float.fromIntValue($int: Integer): Float</sub>                                              |
+| <sub>float.fromIntegerValue($integer: Integer): Float</sub>                                      |
 | Convert float to integer bit representation of float                                             |
-| <sub>float.toIntValue($float: Float): Integer</sub>                                              |
+| <sub>float.toIntegerValue($float: Float): Integer</sub>                                          |
 
 ## 7.10. JSON methods
 
