@@ -34,7 +34,11 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setType(MiniScript::TYPE_MAP);
+				if (arguments.size() == 0) {
+					returnValue.setType(MiniScript::TYPE_MAP);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodMap(miniScript));
@@ -57,14 +61,12 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map::getSize";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
 				string key;
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_MAP) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getMapSize()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -88,14 +90,12 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map::isEmpty";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
 				string key;
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_MAP) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP) {
 					returnValue.setValue(arguments[0].getMapSize() == 0);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -123,13 +123,12 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
 				string key;
-				if (arguments.size() != 3 ||
-					arguments[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(arguments, 1, key, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 3 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP &&
+					MiniScript::getStringValue(arguments, 1, key) == true) {
 					arguments[0].setMapEntry(key, arguments[2]);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -154,15 +153,13 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map::has";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
 				string key;
-				if (arguments.size() < 2 ||
-					arguments[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(arguments, 1, key, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP &&
+					MiniScript::getStringValue(arguments, 1, key) == true) {
 					returnValue.setValue(arguments[0].hasMapEntry(key));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -187,15 +184,13 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map::get";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
 				string key;
-				if (arguments.size() < 2 ||
-					arguments[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(arguments, 1, key, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP &&
+					MiniScript::getStringValue(arguments, 1, key) == true) {
 					returnValue = arguments[0].getMapEntry(key);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -220,15 +215,13 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map::remove";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
 				string key;
-				if (arguments.size() < 2 ||
-					arguments[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(arguments, 1, key, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP &&
+					MiniScript::getStringValue(arguments, 1, key) == true) {
 					arguments[0].removeMapEntry(key);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -252,17 +245,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map::getKeys";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_MAP) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP) {
 					auto keys = arguments[0].getMapKeys();
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto& key: keys) {
 						returnValue.pushArrayEntry(key);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -286,17 +277,15 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map::getValues";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_MAP) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP) {
 					auto values = arguments[0].getMapValues();
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto value: values) {
 						returnValue.pushArrayEntry(*value);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -320,11 +309,11 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map::clear";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_MAP) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP) {
 					arguments[0].clearMap();
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -351,12 +340,9 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
-				if ((arguments.size() != 2 && arguments.size() != 3) ||
-					arguments[0].getType() != MiniScript::TYPE_MAP ||
-					MiniScript::getStringValue(arguments, 1, function, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					arguments[0].getType() == MiniScript::TYPE_MAP &&
+					MiniScript::getStringValue(arguments, 1, function) == true) {
 					auto mapPtr = arguments[0].getMapPointer();
 					if (mapPtr != nullptr) {
 						for (const auto& [mapKey, mapValue]: *mapPtr) {
@@ -371,6 +357,8 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 							if (result == true) break;
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
