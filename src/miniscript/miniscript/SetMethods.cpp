@@ -35,7 +35,11 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				return "Set";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setType(MiniScript::TYPE_SET);
+				if (arguments.size() == 0) {
+					returnValue.setType(MiniScript::TYPE_SET);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+				}
 			}
 		};
 		miniScript->registerMethod(new MethodSet(miniScript));
@@ -58,13 +62,11 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				return "Set::getSize";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_SET) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_SET) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getSetSize()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -88,13 +90,11 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				return "Set::isEmpty";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
-				if (arguments.size() != 1 ||
+				if (arguments.size() == 1 &&
 					arguments[0].getType() != MiniScript::TYPE_SET) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
 					returnValue.setValue(arguments[0].getSetSize() == 0);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -119,15 +119,13 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				return "Set::insert";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
 				string key;
-				if (arguments.size() != 2 ||
-					arguments[0].getType() != MiniScript::TYPE_SET ||
-					MiniScript::getStringValue(arguments, 1, key, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_SET &&
+					MiniScript::getStringValue(arguments, 1, key) == true) {
 					arguments[0].insertSetKey(key);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -152,15 +150,13 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				return "Set::has";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
 				string key;
-				if (arguments.size() < 2 ||
-					arguments[0].getType() != MiniScript::TYPE_SET ||
-					MiniScript::getStringValue(arguments, 1, key, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_SET &&
+					MiniScript::getStringValue(arguments, 1, key) == true) {
 					returnValue.setValue(arguments[0].hasSetKey(key));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -185,15 +181,13 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				return "Set::remove";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
 				string key;
-				if (arguments.size() < 2 ||
-					arguments[0].getType() != MiniScript::TYPE_SET ||
-					MiniScript::getStringValue(arguments, 1, key, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_SET &&
+					MiniScript::getStringValue(arguments, 1, key) == true) {
 					arguments[0].removeSetKey(key);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -218,16 +212,15 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				//
-				if (arguments.size() != 1 ||
-					arguments[0].getType() != MiniScript::TYPE_SET) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_SET) {
 					auto keys = arguments[0].getSetKeys();
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto& key: keys) {
 						returnValue.pushArrayEntry(key);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -251,11 +244,11 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				return "Set::clear";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if ((arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_SET)) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_SET) {
 					arguments[0].clearSet();
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -282,12 +275,9 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string function;
-				if ((arguments.size() != 2 && arguments.size() != 3) ||
-					arguments[0].getType() != MiniScript::TYPE_SET ||
-					MiniScript::getStringValue(arguments, 1, function, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 && arguments.size() == 3) &&
+					arguments[0].getType() == MiniScript::TYPE_SET &&
+					MiniScript::getStringValue(arguments, 1, function) == true) {
 					auto setPtr = arguments[0].getSetPointer();
 					if (setPtr != nullptr) {
 						for (auto setEntry: *setPtr) {
@@ -302,6 +292,8 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 							if (result == true) break;
 						}
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
