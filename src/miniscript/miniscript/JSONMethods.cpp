@@ -38,12 +38,10 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 				return "json.serialize";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				//
-				if (arguments.size() != 1) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1) {
 					returnValue.setValue(arguments[0].getValueAsString(false, true));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -68,10 +66,8 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string json;
-				if (MiniScript::getStringValue(arguments, 0, json, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, json) == true) {
 					json = _StringTools::trim(json);
 					if (_StringTools::startsWith(json, "{") == true) {
 						returnValue = MiniScript::initializeMapSet(json, miniScript, statement);
@@ -79,8 +75,10 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 					if (_StringTools::startsWith(json, "[") == true) {
 						returnValue = MiniScript::initializeArray(json, miniScript, statement);
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": JSON string not valid");
+						miniScript->complain(getMethodName(), statement, "JSON string not valid");
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
