@@ -64,11 +64,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class MethodStringLength: public MiniScript::Method {
+		class MethodStringGetLength: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			MethodStringLength(MiniScript* miniScript):
+			MethodStringGetLength(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
@@ -77,7 +77,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "String::length";
+				return "String::getLength";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
@@ -89,7 +89,36 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new MethodStringLength(miniScript));
+		miniScript->registerMethod(new MethodStringGetLength(miniScript));
+	}
+	{
+		//
+		class MethodStringGetSize: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodStringGetSize(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_INTEGER
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "String::getSize";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string stringValue;
+				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == true) {
+					returnValue.setValue(static_cast<int64_t>(stringValue.size()));
+				} else {
+					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodStringGetSize(miniScript));
 	}
 	{
 		//

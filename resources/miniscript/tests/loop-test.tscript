@@ -16,7 +16,7 @@ on: nothing
 	$i = 0
 	# tests for continue, break
 	#	if successfull we should see 1, 2, 4
-	forCondition($i < $array->length())
+	forCondition($i < $array->getSize())
 		$i++
 		if ($i == 3)
 			continue

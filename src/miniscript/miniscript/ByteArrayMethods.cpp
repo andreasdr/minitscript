@@ -42,11 +42,11 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 	//
 	{
 		//
-		class MethodByteArraySize: public MiniScript::Method {
+		class MethodByteArrayGetSize: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			MethodByteArraySize(MiniScript* miniScript):
+			MethodByteArrayGetSize(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BYTEARRAY, .name = "bytearray", .optional = false, .reference = true, .nullable = false }
@@ -55,7 +55,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "ByteArray::size";
+				return "ByteArray::getSize";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
@@ -66,7 +66,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new MethodByteArraySize(miniScript));
+		miniScript->registerMethod(new MethodByteArrayGetSize(miniScript));
 	}
 	//
 	{

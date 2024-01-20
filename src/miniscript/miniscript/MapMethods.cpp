@@ -41,6 +41,68 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
+		class MethodMapGetSize: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodMapGetSize(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_INTEGER
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "Map::getSize";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				//
+				string key;
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_MAP) {
+					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					returnValue.setValue(static_cast<int64_t>(arguments[0].getMapSize()));
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodMapGetSize(miniScript));
+	}
+	{
+		//
+		class MethodMapIsEmpty: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodMapIsEmpty(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "Map::isEmpty";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				//
+				string key;
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_MAP) {
+					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					returnValue.setValue(arguments[0].getMapSize() == 0);
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodMapIsEmpty(miniScript));
+	}
+	{
+		//
 		class MethodMapSet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };

@@ -47,11 +47,11 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class MethodArrayLength: public MiniScript::Method {
+		class MethodArrayGetSize: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			MethodArrayLength(MiniScript* miniScript):
+			MethodArrayGetSize(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false }
@@ -60,7 +60,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				),
 				miniScript(miniScript) {}
 			const string getMethodName() override {
-				return "Array::length";
+				return "Array::getSize";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_ARRAY) {
@@ -71,7 +71,35 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				}
 			}
 		};
-		miniScript->registerMethod(new MethodArrayLength(miniScript));
+		miniScript->registerMethod(new MethodArrayGetSize(miniScript));
+	}
+	{
+		//
+		class MethodArrayIsEmpty: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodArrayIsEmpty(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "Array::isEmpty";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_ARRAY) {
+					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					returnValue.setValue(arguments[0].getArraySize() == 0);
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodArrayIsEmpty(miniScript));
 	}
 	{
 		//

@@ -42,6 +42,66 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
+		class MethodSetGetSize: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodSetGetSize(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_INTEGER
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "Set::getSize";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				//
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_SET) {
+					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					returnValue.setValue(static_cast<int64_t>(arguments[0].getSetSize()));
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodSetGetSize(miniScript));
+	}
+	{
+		//
+		class MethodSetIsEmpty: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodSetIsEmpty(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "Set::isEmpty";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				//
+				if (arguments.size() != 1 ||
+					arguments[0].getType() != MiniScript::TYPE_SET) {
+					_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()));
+					miniScript->startErrorScript();
+				} else {
+					returnValue.setValue(arguments[0].getSetSize() == 0);
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodSetIsEmpty(miniScript));
+	}
+	{
+		//
 		class MethodSetInsert: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };

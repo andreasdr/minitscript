@@ -92,25 +92,25 @@ on: nothing
 	$array[11][] = 60
 	console.printLine("array values added with [] operator to push to array of array: 50, 60")
 	console.printLine("array now looks like: ", $array)
-	$array[11][$array[11]->length() - 1] = 61
+	$array[11][$array[11]->getSize() - 1] = 61
 	console.printLine("array of array: 60 -> 61")
 	console.printLine("array now looks like: ", $array)
-	console.printLine("array length: ", $array->length())
+	console.printLine("array size: ", $array->getSize())
 	console.printLine("array iteration with $array->get(): ")
 	$i = 0
-	forCondition($i < $array->length())
+	forCondition($i < $array->getSize())
 		console.printLine($i + ": " + $array->get($i))
 		++$i
 	end 
 	console.printLine("array iteration with [] operator: ")
 	$i = 0
-	forCondition($i < $array->length())
+	forCondition($i < $array->getSize())
 		console.printLine($i + ": " + $array[$i])
 		++$i
 	end
 	console.printLine("array iteration with [] operator and some index math: ")
 	$i = 0
-	forCondition($i < $array->length() / 2)
+	forCondition($i < $array->getSize() / 2)
 		console.printLine($i + "-a: " + $array[$i * 2 + 0])
 		console.printLine($i + "-b: " + $array[$i * 2 + 1])
 		++$i
@@ -172,7 +172,7 @@ on: nothing
 	console.printLine("iterating keys and values using $map->getKeys(): ")
 	$mapKeys = $map->getKeys()
 	$i = 0
-	forCondition($i < $mapKeys->length())
+	forCondition($i < $mapKeys->getSize())
 		console.printLine($mapKeys[$i] + " = " + $map->get($mapKeys[$i]))
 		++$i
 	end

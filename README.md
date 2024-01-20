@@ -802,6 +802,10 @@ end
 | <sub>firstIndexOf($what: String[, $beginIndex: Integer]): Integer</sub>                          |
 | Return first index of characters provided within given string in string                          |
 | <sub>firstIndexOfChars($what: String[, $beginIndex: Integer]): Integer</sub>                     |
+| Return string length in number of characters                                                     |
+| <sub>getLength(): Integer</sub>                                                                  |
+| Return string size in bytes                                                                      |
+| <sub>getSize(): Integer</sub>                                                                    |
 | Indent string                                                                                    |
 | <sub>indent($with: String, $count: Integer): String</sub>                                        |
 | Return index of specific string in string                                                        |
@@ -816,8 +820,6 @@ end
 | <sub>lastIndexOf($what: String[, $beginIndex: Integer]): Integer</sub>                           |
 | Return last index of characters provided within given string in string                           |
 | <sub>lastIndexOfChars($what: String[, $endIndex: Integer]): Integer</sub>                        |
-| Return string length                                                                             |
-| <sub>length(): Integer</sub>                                                                     |
 | Pad string left                                                                                  |
 | <sub>padLeft($by: String, $toLength: Integer): String</sub>                                      |
 | Pad string right                                                                                 |
@@ -859,6 +861,8 @@ end
 | <sub>clear(): Null</sub>                                                                         |
 | Get read position                                                                                |
 | <sub>getReadPosition(): Integer</sub>                                                            |
+| Return size of byte array in bytes                                                               |
+| <sub>getSize(): Integer</sub>                                                                    |
 | Get write position                                                                               |
 | <sub>getWritePosition(): Integer</sub>                                                           |
 | Read bool value and advance read position by 1 byte                                              |
@@ -885,8 +889,6 @@ end
 | <sub>setReadPosition($position: Integer): Null</sub>                                             |
 | Set write position                                                                               |
 | <sub>setWritePosition($position: Integer): Null</sub>                                            |
-| Return size of byte array                                                                        |
-| <sub>size(): Integer</sub>                                                                       |
 | Write bool value and advance write position by 1 byte                                            |
 | <sub>writeBool($value: Boolean): Null</sub>                                                      |
 | Write 32 bit float value and advance write position by 4 byte                                    |
@@ -924,10 +926,12 @@ end
 | <sub>forRange($function: Function, $beginIndex: Integer[, $count: Integer[, $step: Integer[, &$cookie: Mixed]]]): Null</sub>|
 | Get array entry                                                                                  |
 | <sub>get($index: Integer): Mixed</sub>                                                           |
+| Returns number of elements in array                                                              |
+| <sub>getSize(): Integer</sub>                                                                    |
 | Get array index by value                                                                         |
 | <sub>indexOf($value: String[, $beginIndex: Integer]): Integer</sub>                              |
-| Get array length                                                                                 |
-| <sub>length(): Integer</sub>                                                                     |
+| Returns if array is empty                                                                        |
+| <sub>isEmpty(): Boolean</sub>                                                                    |
 | Add entry to array                                                                               |
 | <sub>push(...): Null</sub>                                                                       |
 | Remove array entry by index                                                                      |
@@ -959,10 +963,14 @@ end
 | <sub>get($key: String): Mixed</sub>                                                              |
 | Get map keys                                                                                     |
 | <sub>getKeys(): Array</sub>                                                                      |
+| Returns number of elements in map                                                                |
+| <sub>getSize(): Integer</sub>                                                                    |
 | Get map values                                                                                   |
 | <sub>getValues(): Array</sub>                                                                    |
 | Has entry by key                                                                                 |
 | <sub>has($key: String): Boolean</sub>                                                            |
+| Returns if map is empty                                                                          |
+| <sub>isEmpty(): Boolean</sub>                                                                    |
 | Remove map entry                                                                                 |
 | <sub>remove($key: String): Null</sub>                                                            |
 | Set map entry                                                                                    |
@@ -984,10 +992,14 @@ end
 | <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
 | Get set keys                                                                                     |
 | <sub>getKeys(): Array</sub>                                                                      |
+| Returns number of elements in set                                                                |
+| <sub>getSize(): Integer</sub>                                                                    |
 | Has key in set                                                                                   |
 | <sub>has($key: String): Boolean</sub>                                                            |
 | Insert key into set                                                                              |
 | <sub>insert($key: String): Null</sub>                                                            |
+| Returns if set is empty                                                                          |
+| <sub>isEmpty(): Boolean</sub>                                                                    |
 | Remove key from set                                                                              |
 | <sub>remove($key: String): Null</sub>                                                            |
 

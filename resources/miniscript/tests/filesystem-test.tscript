@@ -68,7 +68,7 @@ on: nothing
 		script.stop()
 	else
 		$i = 0
-		forCondition ($i < $files->length())
+		forCondition ($i < $files->getSize())
 			console.printLine("File@" + $i + ": " + $files[$i])
 			++$i
 		end
@@ -155,7 +155,7 @@ on: nothing
 		script.stop()
 	else
 		$i = 0
-		forCondition ($i < $files->length())
+		forCondition ($i < $files->getSize())
 			console.printLine("File@" + $i + ": " + $files[$i])
 			++$i
 		end
