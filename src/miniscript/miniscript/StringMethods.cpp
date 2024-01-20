@@ -52,11 +52,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(stringValue);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -81,11 +81,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(static_cast<int64_t>(_UTF8StringTools::getLength(stringValue, arguments[0].getStringValueCache())));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -110,11 +110,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(static_cast<int64_t>(stringValue.size()));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -141,12 +141,12 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				int64_t index;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getIntegerValue(arguments, 1, index, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getIntegerValue(arguments, 1, index) == true) {
 					returnValue.setValue(_UTF8StringTools::getCharAt(stringValue, index, arguments[0].getStringValueCache()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -173,12 +173,12 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string prefix;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, prefix, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, prefix) == true) {
 					returnValue.setValue(_UTF8StringTools::startsWith(stringValue, prefix));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -205,12 +205,12 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string suffix;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, suffix, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, suffix) == true) {
 					returnValue.setValue(_UTF8StringTools::endsWith(stringValue, suffix));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -241,14 +241,14 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string what;
 				string by;
 				int64_t beginIndex = 0;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, what, false) == false ||
-					MiniScript::getStringValue(arguments, 2, by, false) == false ||
-					MiniScript::getIntegerValue(arguments, 3, beginIndex, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 3 || arguments.size() == 4) &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, what) == true &&
+					MiniScript::getStringValue(arguments, 2, by) == true &&
+					MiniScript::getIntegerValue(arguments, 3, beginIndex, true) == true) {
 					returnValue.setValue(_UTF8StringTools::replace(stringValue, what, by, beginIndex, arguments[0].getStringValueCache()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -277,13 +277,13 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string stringValue;
 				string what;
 				int64_t beginIndex = 0;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, what, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, what) == true &&
+					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true) {
 					returnValue.setValue(_UTF8StringTools::indexOf(stringValue, what, beginIndex, arguments[0].getStringValueCache()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -312,13 +312,13 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string stringValue;
 				string what;
 				int64_t beginIndex = 0;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, what, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, what) == true &&
+					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true) {
 					returnValue.setValue(_UTF8StringTools::firstIndexOf(stringValue, what, beginIndex, arguments[0].getStringValueCache()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -347,13 +347,13 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string stringValue;
 				string what;
 				int64_t beginIndex = 0;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, what, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, what) == true &&
+					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true) {
 					returnValue.setValue(_UTF8StringTools::lastIndexOf(stringValue, what, beginIndex, arguments[0].getStringValueCache()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -382,12 +382,10 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string stringValue;
 				string what;
 				int64_t beginIndex = 0;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, what, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, what) == true &&
+					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true) {
 					returnValue.setValue(
 						static_cast<int64_t>(
 							_UTF8StringTools::firstIndexOfChars(
@@ -399,6 +397,8 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 							)
 						)
 					);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -426,13 +426,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string what;
-				int64_t endIndex = -1;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, what, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, endIndex, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				int64_t endIndex = string::npos;
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, what) == true &&
+					MiniScript::getIntegerValue(arguments, 2, endIndex, true) == true) {
 					returnValue.setValue(
 						static_cast<int64_t>(
 							_UTF8StringTools::lastIndexOfChars(
@@ -444,6 +442,8 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 							)
 						)
 					);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -472,14 +472,14 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string stringValue;
 				int64_t beginIndex;
 				int64_t endIndex = string::npos;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getIntegerValue(arguments, 1, beginIndex, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, endIndex, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getIntegerValue(arguments, 1, beginIndex) == true &&
+					MiniScript::getIntegerValue(arguments, 2, endIndex, true) == true) {
 					// utf8 character iterator
 					returnValue.setValue(_UTF8StringTools::substring(stringValue, beginIndex, endIndex));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -506,12 +506,12 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string other;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, other, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, other) == true) {
 					returnValue.setValue(_UTF8StringTools::equalsIgnoreCase(stringValue, other, arguments[0].getStringValueCache(), arguments[1].getStringValueCache()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -536,11 +536,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_UTF8StringTools::trim(stringValue, arguments[0].getStringValueCache()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -568,12 +568,9 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string pattern;
-				if ((arguments.size() != 2 && arguments.size() != 3) ||
-					MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, pattern, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, pattern) == true) {
 					if (arguments.size() == 3) {
 						smatch matches;
 						returnValue.setValue(_UTF8StringTools::regexMatch(stringValue, pattern, &matches));
@@ -585,6 +582,8 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						returnValue.setValue(_UTF8StringTools::regexMatch(stringValue, pattern));
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -612,12 +611,9 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string pattern;
-				if ((arguments.size() != 2 && arguments.size() != 3) ||
-					MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, pattern, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, pattern) == true) {
 					if (arguments.size() == 3) {
 						smatch matches;
 						returnValue.setValue(_UTF8StringTools::regexSearch(stringValue, pattern, &matches));
@@ -629,6 +625,8 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						returnValue.setValue(_UTF8StringTools::regexSearch(stringValue, pattern));
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -657,13 +655,13 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string stringValue;
 				string pattern;
 				string by;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, pattern, false) == false ||
-					MiniScript::getStringValue(arguments, 2, by, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 3 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, pattern) == true &&
+					MiniScript::getStringValue(arguments, 2, by) == true) {
 					returnValue.setValue(_UTF8StringTools::regexReplace(stringValue, pattern, by));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -690,17 +688,16 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
 				string delimiters;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, delimiters, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, delimiters) == true) {
 					auto tokenizedStringVector = _UTF8StringTools::tokenize(stringValue, delimiters);
-					//
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto& tokenizedString: tokenizedStringVector) {
 						returnValue.pushArrayEntry(tokenizedString);
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -729,12 +726,12 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable> &arguments, MiniScript::Variable &returnValue, const MiniScript::Statement &statement) override {
 				string what;
 				int64_t count = 1;
-				if (MiniScript::getStringValue(arguments, 0, what, false) == false ||
-					MiniScript::getIntegerValue(arguments, 1, count, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 1 || arguments.size() == 2) &&
+					MiniScript::getStringValue(arguments, 0, what) == true &&
+					MiniScript::getIntegerValue(arguments, 1, count, true) == true) {
 					returnValue.setValue(_UTF8StringTools::generate(what, count));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -765,13 +762,13 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string src;
 				string with;
 				int64_t count = 1;
-				if (MiniScript::getStringValue(arguments, 0, src, false) == false ||
-					MiniScript::getStringValue(arguments, 1, with, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, count, true) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					MiniScript::getStringValue(arguments, 0, src) == true &&
+					MiniScript::getStringValue(arguments, 1, with) == true &&
+					MiniScript::getIntegerValue(arguments, 2, count, true) == true) {
 					returnValue.setValue(_UTF8StringTools::indent(src, with, count));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -819,11 +816,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_UTF8StringTools::toUpperCase(stringValue, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -848,11 +845,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_UTF8StringTools::toLowerCase(stringValue, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -877,11 +874,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(stringValue.empty());
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -906,11 +903,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_Float::is(stringValue));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -935,11 +932,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == true) {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_Integer::is(stringValue));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -968,13 +965,13 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string stringValue;
 				string by;
 				int64_t toLength;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, by, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, toLength, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 3 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, by) == true &&
+					MiniScript::getIntegerValue(arguments, 2, toLength) == true) {
 					returnValue.setValue(_UTF8StringTools::padLeft(stringValue, by, toLength, arguments[0].getStringValueCache()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -1003,13 +1000,13 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 				string stringValue;
 				string by;
 				int64_t toLength;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false ||
-					MiniScript::getStringValue(arguments, 1, by, false) == false ||
-					MiniScript::getIntegerValue(arguments, 2, toLength, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 3 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true &&
+					MiniScript::getStringValue(arguments, 1, by) == true &&
+					MiniScript::getIntegerValue(arguments, 2, toLength) == true) {
 					returnValue.setValue(_UTF8StringTools::padRight(stringValue, by, toLength, arguments[0].getStringValueCache()));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -1034,12 +1031,12 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (MiniScript::getStringValue(arguments, 0, stringValue, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setType(MiniScript::TYPE_BYTEARRAY);
 					for (auto i = 0; i < stringValue.size(); i++) returnValue.pushByteArrayEntry(stringValue[i]);
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -1064,14 +1061,14 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stringValue;
-				if (arguments.size() != 1 || arguments[0].getType() != MiniScript::TYPE_BYTEARRAY) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					auto byteArrayPointer = arguments[0].getByteArrayPointer();
 					if (byteArrayPointer != nullptr) {
 						returnValue.setValue(string((const char*)(byteArrayPointer->data()), byteArrayPointer->size()));
 					}
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
@@ -1096,11 +1093,11 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t codePoint;
-				if (MiniScript::getIntegerValue(arguments, 0, codePoint, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
-				} else {
+				if (arguments.size() == 1 &&
+					MiniScript::getIntegerValue(arguments, 0, codePoint) == true) {
 					returnValue.setValue(_Character::toString(codePoint));
+				} else {
+					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
 				}
 			}
 		};
