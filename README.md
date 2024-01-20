@@ -867,13 +867,13 @@ end
 | <sub>getWritePosition(): Integer</sub>                                                           |
 | Read boolean value and advance read position by 1 byte                                           |
 | <sub>readBool(): ?Boolean</sub>                                                                  |
-| Read 32 bit float value and advance read position by 4 byte                                      |
+| Read 32 bit float value and advance read position by 4 bytes                                     |
 | <sub>readFloat(): ?Float</sub>                                                                   |
-| Read 16 bit integer value and advance read position by 2 byte                                    |
+| Read 16 bit integer value and advance read position by 2 bytes                                   |
 | <sub>readInt16(): ?Integer</sub>                                                                 |
-| Read 16 bit integer value and advance read position by 4 byte                                    |
+| Read 16 bit integer value and advance read position by 4 bytes                                   |
 | <sub>readInt32(): ?Integer</sub>                                                                 |
-| Read 64 bit integer value and advance read position by 8 byte                                    |
+| Read 64 bit integer value and advance read position by 8 bytes                                   |
 | <sub>readInt64(): ?Integer</sub>                                                                 |
 | Read 8 bit integer value and advance read position by 1 byte                                     |
 | <sub>readInt8(): ?Integer</sub>                                                                  |
@@ -891,13 +891,13 @@ end
 | <sub>setWritePosition($position: Integer): Null</sub>                                            |
 | Write boolean value and advance write position by 1 byte                                         |
 | <sub>writeBool($value: Boolean): Null</sub>                                                      |
-| Write 32 bit float value and advance write position by 4 byte                                    |
+| Write 32 bit float value and advance write position by 4 bytes                                   |
 | <sub>writeFloat($value: Integer): Null</sub>                                                     |
-| Write 16 bit integer value and advance write position by 2 byte                                  |
+| Write 16 bit integer value and advance write position by 2 bytes                                 |
 | <sub>writeInt16($value: Integer): Null</sub>                                                     |
-| Write 32 bit integer value and advance write position by 4 byte                                  |
+| Write 32 bit integer value and advance write position by 4 bytes                                 |
 | <sub>writeInt32($value: Integer): Null</sub>                                                     |
-| Write 64 bit integer value and advance write position by 8 byte                                  |
+| Write 64 bit integer value and advance write position by 8 bytes                                 |
 | <sub>writeInt64($value: Integer): Null</sub>                                                     |
 | Write 8 bit integer value and advance write position by 1 byte                                   |
 | <sub>writeInt8($value: Integer): Null</sub>                                                      |
