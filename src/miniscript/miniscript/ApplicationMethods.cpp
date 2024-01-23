@@ -22,8 +22,8 @@ using _Console = miniscript::utilities::Console;
 using _StringTools = miniscript::utilities::StringTools;
 
 void ApplicationMethods::registerConstants(MiniScript* miniScript) {
-	miniScript->setConstant("$Application::EXITCODE_SUCCESS", static_cast<int64_t>(EXIT_SUCCESS));
-	miniScript->setConstant("$Application::EXITCODE_FAILURE", static_cast<int64_t>(EXIT_FAILURE));
+	miniScript->setConstant("$Application::EXITCODE_SUCCESS", MiniScript::Variable(static_cast<int64_t>(EXIT_SUCCESS)));
+	miniScript->setConstant("$Application::EXITCODE_FAILURE", MiniScript::Variable(static_cast<int64_t>(EXIT_FAILURE)));
 	//
 	#if defined(__FreeBSD__)
 		miniScript->setConstant("$Application::OS", string("FreeBSD"));

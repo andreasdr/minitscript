@@ -1842,9 +1842,6 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	resetScriptExecutationState(SCRIPTIDX_NONE, STATEMACHINESTATE_WAIT_FOR_CONDITION);
 
 	//
-	registerVariables();
-
-	//
 	string scriptCode;
 	try {
 		scriptCode = _FileSystem::getContentAsString(scriptPathName, scriptFileName);
@@ -1866,6 +1863,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				scripts = nativeScripts;
 				registerStateMachineStates();
 				registerMethods();
+				registerVariables();
 				startScript();
 				return;
 			} else {
@@ -1879,6 +1877,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	//
 	registerStateMachineStates();
 	registerMethods();
+	registerVariables();
 
 	//
 	if (parseScriptInternal(scriptCode) == false) return;
