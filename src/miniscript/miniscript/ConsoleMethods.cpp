@@ -43,7 +43,7 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 1) {
 					_Console::printLine(arguments[0].getValueAsString(true));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -110,7 +110,7 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 0) {
 					returnValue.setValue(_Console::readLine());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -134,7 +134,7 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 0) {
 					returnValue.setValue(_Console::readAll());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -160,7 +160,7 @@ void ConsoleMethods::registerMethods(MiniScript* miniScript) {
 					const auto input = _Console::readAllAsArray();
 					for (const auto& line: input) returnValue.pushArrayEntry(MiniScript::Variable(line));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

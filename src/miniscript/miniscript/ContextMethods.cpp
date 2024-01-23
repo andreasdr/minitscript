@@ -57,7 +57,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -114,7 +114,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			bool isVariadic() const override {
@@ -184,7 +184,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -213,7 +213,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, scriptId) == true) {
 					miniScript->getContext()->removeScript(scriptId);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -237,7 +237,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 					returnValue.setType(MiniScript::TYPE_ARRAY);
 					for (const auto& scriptId: scriptIds) returnValue.pushArrayEntry(scriptId);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

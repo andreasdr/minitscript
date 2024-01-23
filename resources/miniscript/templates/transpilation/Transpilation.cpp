@@ -5,6 +5,11 @@
 
 #include <{$base-class-header}>
 
+#undef MINISCRIPT_METHODUSAGE_COMPLAIN
+#undef MINISCRIPT_METHODUSAGE_COMPLAIN2
+#define MINISCRIPT_METHODUSAGE_COMPLAIN(methodName) miniScript->complain(methodName, statement); miniScript->startErrorScript(); return;
+#define MINISCRIPT_METHODUSAGE_COMPLAIN2(methodName, returnValue) miniScript->complain(methodName, statement); miniScript->startErrorScript(); return returnValue;
+
 /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_START__*/
 /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_END__*/
 

@@ -103,7 +103,7 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, command) == true) {
 					returnValue.setValue(ApplicationMethods::execute(command));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -131,7 +131,7 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 							returnValue.pushArrayEntry(MiniScript::Variable(argumentValue));
 						}
 					} else {
-						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				}
 			};
@@ -161,7 +161,7 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->stopScriptExecution();
 						miniScript->stopRunning();
 					} else {
-						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				}
 			};

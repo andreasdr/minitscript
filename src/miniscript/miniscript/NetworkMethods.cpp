@@ -158,7 +158,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -240,7 +240,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -341,7 +341,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -442,7 +442,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -516,7 +516,7 @@ void NetworkMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

@@ -52,7 +52,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, fileName) == true) {
 					returnValue.setValue(_FileSystem::composeURI(pathName, fileName));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -91,7 +91,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -130,7 +130,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -173,7 +173,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -214,7 +214,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -257,7 +257,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -302,7 +302,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -347,7 +347,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -383,7 +383,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -450,7 +450,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -489,7 +489,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -521,7 +521,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -558,7 +558,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -589,7 +589,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, uri) == true) {
 					returnValue.setValue(_FileSystem::getFileName(uri));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -620,7 +620,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, uri) == true) {
 					returnValue.setValue(_FileSystem::getPathName(uri));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -651,7 +651,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, fileName) == true) {
 					returnValue.setValue(_FileSystem::removeFileExtension(fileName));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -691,7 +691,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -728,7 +728,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -768,7 +768,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -808,7 +808,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -848,7 +848,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -890,7 +890,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine("An error occurred: " + string(exception.what()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

@@ -37,7 +37,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 0) {
 					returnValue.setType(MiniScript::TYPE_MAP);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -66,7 +66,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_MAP) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getMapSize()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -95,7 +95,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_MAP) {
 					returnValue.setValue(arguments[0].getMapSize() == 0);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -128,7 +128,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, key) == true) {
 					arguments[0].setMapEntry(key, arguments[2]);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -159,7 +159,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, key) == true) {
 					returnValue.setValue(arguments[0].hasMapEntry(key));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -190,7 +190,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, key) == true) {
 					returnValue = arguments[0].getMapEntry(key);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -221,7 +221,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, key) == true) {
 					arguments[0].removeMapEntry(key);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -253,7 +253,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.pushArrayEntry(key);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -285,7 +285,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.pushArrayEntry(*value);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -313,7 +313,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_MAP) {
 					arguments[0].clearMap();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -358,7 +358,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

@@ -38,7 +38,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 0) {
 					returnValue.setType(MiniScript::TYPE_SET);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -66,7 +66,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_SET) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getSetSize()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -94,7 +94,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() != MiniScript::TYPE_SET) {
 					returnValue.setValue(arguments[0].getSetSize() == 0);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -125,7 +125,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, key) == true) {
 					arguments[0].insertSetKey(key);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -156,7 +156,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, key) == true) {
 					returnValue.setValue(arguments[0].hasSetKey(key));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -187,7 +187,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, key) == true) {
 					arguments[0].removeSetKey(key);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -220,7 +220,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.pushArrayEntry(key);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -248,7 +248,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_SET) {
 					arguments[0].clearSet();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -293,7 +293,7 @@ void SetMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

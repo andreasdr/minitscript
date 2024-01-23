@@ -41,7 +41,7 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 1) {
 					returnValue.setValue(arguments[0].getValueAsString(false, true));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -78,7 +78,7 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->complain(getMethodName(), statement, "JSON string not valid");
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

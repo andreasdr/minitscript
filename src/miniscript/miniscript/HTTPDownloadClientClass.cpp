@@ -53,7 +53,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					returnValue.setType(MiniScript::TYPE_HTTPDOWNLOADCLIENT);
 					returnValue.setValue(&httpDownloadClient);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -82,7 +82,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					returnValue.setValue(httpDownloadClient->getUsername());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -114,7 +114,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					MiniScript::getStringValue(arguments, 1, userName) == true) {
 					httpDownloadClient->setUsername(userName);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -143,7 +143,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					returnValue.setValue(httpDownloadClient->getPassword());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -175,7 +175,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					MiniScript::getStringValue(arguments, 1, password) == true) {
 					httpDownloadClient->setPassword(password);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -204,7 +204,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					returnValue.setValue(httpDownloadClient->getURL());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -236,7 +236,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					MiniScript::getStringValue(arguments, 1, url) == true) {
 					httpDownloadClient->setURL(url);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -265,7 +265,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					returnValue.setValue(httpDownloadClient->getFile());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -297,7 +297,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					MiniScript::getStringValue(arguments, 1, file) == true) {
 					httpDownloadClient->setFile(file);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -326,7 +326,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					httpDownloadClient->reset();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -355,7 +355,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					httpDownloadClient->start();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -384,7 +384,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					httpDownloadClient->cancel();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -413,7 +413,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					httpDownloadClient->join();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -442,7 +442,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					returnValue.setValue(httpDownloadClient->getProgress());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -471,7 +471,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					returnValue.setValue(httpDownloadClient->isFinished());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -500,7 +500,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
 					returnValue.setValue(static_cast<int64_t>(httpDownloadClient->getStatusCode()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -532,7 +532,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 						returnValue.setMapEntry(headerName, MiniScript::Variable(string(headerValue)));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -564,7 +564,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 						returnValue.setMapEntry(parameterName, MiniScript::Variable(string(parameterValue)));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -600,7 +600,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					}
 					httpDownloadClient->setGETParameters(getParameters);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -632,7 +632,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 						returnValue.setMapEntry(headerName, MiniScript::Variable(string(headerValue)));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -668,7 +668,7 @@ void HTTPDownloadClientClass::registerMethods(MiniScript* miniScript) const {
 					}
 					httpDownloadClient->setHeaders(headers);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

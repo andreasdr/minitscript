@@ -48,7 +48,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					if (arguments.size() == 1) miniScript->getScriptState().returnValue = arguments[0];
 					miniScript->stopRunning();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -88,7 +88,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -129,7 +129,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -164,7 +164,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -214,7 +214,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -255,7 +255,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -287,7 +287,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->gotoStatementGoto(statement);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -325,7 +325,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						blockStack.match = booleanValue;
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -353,7 +353,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->gotoStatementGoto(statement);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -382,7 +382,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					auto& scriptState = miniScript->getScriptState();
 					scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_SWITCH, booleanValue, nullptr, nullptr, arguments[0]);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -422,7 +422,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -451,7 +451,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->gotoStatementGoto(statement);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -486,7 +486,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -523,7 +523,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -556,7 +556,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 0, integerValue) == true) {
 					returnValue.setValue(integerValue);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -617,7 +617,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getFloatValue(arguments, 0, floatValue) == true) {
 					returnValue.setValue(static_cast<int64_t>(*((uint32_t*)&floatValue)));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -646,7 +646,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 0, intValue) == true) {
 					returnValue.setValue(*((float*)&intValue));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -679,7 +679,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 							returnValue.setValue(stringValueA > stringValueB);
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					} else {
 						float floatValueA;
@@ -688,11 +688,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 							returnValue.setValue(floatValueA > floatValueB);
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -727,7 +727,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 							returnValue.setValue(stringValueA >= stringValueB);
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					} else {
 						float floatValueA;
@@ -736,11 +736,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 							returnValue.setValue(floatValueA >= floatValueB);
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -775,7 +775,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 							returnValue.setValue(stringValueA < stringValueB);
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					} else {
 						float floatValueA;
@@ -784,11 +784,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 							returnValue.setValue(floatValueA < floatValueB);
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -823,7 +823,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 							returnValue.setValue(stringValueA <= stringValueB);
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					} else {
 						float floatValueA;
@@ -832,11 +832,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							MiniScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 							returnValue.setValue(floatValueA <= floatValueB);
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -869,7 +869,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getBooleanValue(arguments, 0, booleanValue) == true) {
 					returnValue.setValue(booleanValue);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -932,7 +932,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getBooleanValue(arguments, 1, booleanValueB) == true) {
 					returnValue.setValue(booleanValueA && booleanValueB);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -967,7 +967,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getBooleanValue(arguments, 1, booleanValueB) == true) {
 					returnValue.setValue(booleanValueA || booleanValueB);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1000,7 +1000,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, variable) == true) {
 					returnValue = miniScript->getVariable(variable, &statement);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -1030,7 +1030,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, variable) == true) {
 					returnValue = miniScript->getVariable(variable, &statement, true);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			bool isPrivate() const override {
@@ -1067,7 +1067,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					miniScript->setVariable(variable, arguments[1], &statement);
 					returnValue = arguments[1];
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1307,7 +1307,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 1, valueB) == true) {
 					returnValue.setValue(valueA & valueB);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1341,7 +1341,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 1, valueB) == true) {
 					returnValue.setValue(valueA | valueB);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1375,7 +1375,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 1, valueB) == true) {
 					returnValue.setValue(valueA ^ valueB);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1408,7 +1408,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Hex::encodeInt(value));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -1437,7 +1437,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, value) == true) {
 					returnValue.setValue(static_cast<int64_t>(_Hex::decodeInt(value)));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

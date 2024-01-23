@@ -1,6 +1,7 @@
 #include <miniscript/miniscript/Transpiler.h>
 
 #include <algorithm>
+#include <regex>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -23,6 +24,7 @@ using miniscript::miniscript::Transpiler;
 using std::find;
 using std::remove;
 using std::sort;
+using std::smatch;
 using std::string;
 using std::string_view;
 using std::to_string;
@@ -2391,6 +2393,7 @@ bool Transpiler::transpileScriptStatement(
 		generatedCode+= minIndentString + depthIndentString + "\t" + "// method code: " + string(method) + "\n";
 		for (auto codeLine: methodCode) {
 			codeLine = StringTools::replace(codeLine, "getMethodName()", "string(\"" + string(method) + "\")");
+			smatch matches;
 			// replace returns with gotos
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*return[\\ \\t]*;.*") == true) {
 				Console::printLine("Transpiler::transpileScriptStatement(): method '" + string(method) + "': return statement not supported!");
@@ -2413,8 +2416,20 @@ bool Transpiler::transpileScriptStatement(
 					generatedCode+= minIndentString + indentString + depthIndentString + "\t" + "goto miniscript_statement_" + to_string(statement.gotoStatementIdx) + ";\n";
 				}
 			} else
-			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->startErrorScript[\\ \\t]*\\([\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true ||
-				StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->emit[\\ \\t]*\\([\\ \\t]*[a-zA-Z0-9]*[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
+			if (StringTools::regexMatch(codeLine, "[\\ \\t]*MINISCRIPT_METHODUSAGE_COMPLAIN[\\ \\t]*\\([\\ \\t]*(.*)\\)[\\ \\t]*;[\\ \\t]*", &matches) == true) {
+				string codeLineIndent = "";
+				for (auto i = 0; i < codeLine.size(); i++) {
+					auto c = codeLine[i];
+					if (Character::isSpace(c) == false) break;
+					codeLineIndent+= c;
+				}
+				if (returnValue.empty() == true) {
+					generatedCode+= minIndentString + depthIndentString + codeLineIndent + "\t" + "MINISCRIPT_METHODUSAGE_COMPLAIN(" + matches[1].str() + ");\n";
+				} else {
+					generatedCode+= minIndentString + depthIndentString + codeLineIndent + "\t" + "MINISCRIPT_METHODUSAGE_COMPLAIN2(" + matches[1].str() + ", " + returnValue + ");\n";
+				}
+			} else
+			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->emit[\\ \\t]*\\([\\ \\t]*[a-zA-Z0-9]*[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
 				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + " return" + (returnValue.empty() == false?" " + returnValue:"") + ";\n";
 			} else {
 				if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*miniScript[\\ \\t]*->[\\ \\t]*setScriptStateState[\\ \\t]*\\([\\ \\t]*.+[\\ \\t]*\\);.*") == true) {

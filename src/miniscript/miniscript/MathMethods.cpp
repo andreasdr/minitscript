@@ -157,7 +157,7 @@ void MathMethods::registerMethods() {
 							MiniScript::getIntegerValue(arguments, 1, range, false) == true) {
 							returnValue.setValue(_Math::mod(value, range));
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					} else {
 						float value;
@@ -166,11 +166,11 @@ void MathMethods::registerMethods() {
 							MiniScript::getFloatValue(arguments, 1, range, false) == true) {
 							returnValue.setValue(_Math::mod(value, range));
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -264,7 +264,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, x) == true) {
 					returnValue.setValue(_Math::acos(x));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -290,7 +290,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, x) == true) {
 					returnValue.setValue(_Math::asin(x));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -316,7 +316,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, x) == true) {
 					returnValue.setValue(_Math::atan(x));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -345,7 +345,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 1, x) == true) {
 					returnValue.setValue(_Math::atan2(y, x));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -371,7 +371,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, x) == true) {
 					returnValue.setValue(_Math::tan(x));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -397,7 +397,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, x) == true) {
 					returnValue.setValue(_Math::cos(x));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -423,7 +423,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, x) == true) {
 					returnValue.setValue(_Math::sin(x));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -449,7 +449,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Math::floor(value));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -475,7 +475,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Math::ceil(value));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -501,7 +501,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Math::round(value));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -527,7 +527,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Math::sqrt(value));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -547,7 +547,7 @@ void MathMethods::registerMethods() {
 				if (arguments.size() == 0) {
 					returnValue.setValue(_Math::random());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -573,7 +573,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, power) == true) {
 					returnValue.setValue(_Math::exp(power));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -599,7 +599,7 @@ void MathMethods::registerMethods() {
 					MiniScript::getFloatValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Math::log(value));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -630,10 +630,10 @@ void MathMethods::registerMethods() {
 					if (MiniScript::getIntegerValue(arguments, 0, intValue) == true) {
 						returnValue.setValue(_Math::sign(intValue));
 					} else {
-						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -664,10 +664,10 @@ void MathMethods::registerMethods() {
 					if (MiniScript::getIntegerValue(arguments, 0, intValue) == true) {
 						returnValue.setValue(_Math::square(intValue));
 					} else {
-						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -704,10 +704,10 @@ void MathMethods::registerMethods() {
 						MiniScript::getIntegerValue(arguments, 1, intValue2) == true) {
 						returnValue.setValue(_Math::min(intValue1, intValue2));
 					} else {
-						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -744,10 +744,10 @@ void MathMethods::registerMethods() {
 						MiniScript::getIntegerValue(arguments, 1, intValue2) == true) {
 						returnValue.setValue(_Math::max(intValue1, intValue2));
 					} else {
-						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -778,10 +778,10 @@ void MathMethods::registerMethods() {
 					if (MiniScript::getIntegerValue(arguments, 0, intValue) == true) {
 						returnValue.setValue(_Math::abs(intValue));
 					} else {
-						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -823,10 +823,10 @@ void MathMethods::registerMethods() {
 						MiniScript::getIntegerValue(arguments, 2, intValueC) == true) {
 						returnValue.setValue(_Math::clamp(intValueA, intValueB, intValueC));
 					} else {
-						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -863,10 +863,10 @@ void MathMethods::registerMethods() {
 						MiniScript::getIntegerValue(arguments, 1, intValuePower) == true) {
 						returnValue.setValue(static_cast<int64_t>(_Math::pow(intValueBase, intValuePower)));
 					} else {
-						miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -897,7 +897,7 @@ void MathMethods::registerMethods() {
 							MiniScript::getIntegerValue(arguments, 1, range) == true) {
 							returnValue.setValue(_Math::mod(value, range));
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					} else {
 						float value;
@@ -906,11 +906,11 @@ void MathMethods::registerMethods() {
 							MiniScript::getFloatValue(arguments, 1, range) == true) {
 							returnValue.setValue(_Math::mod(value, range));
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -951,11 +951,11 @@ void MathMethods::registerMethods() {
 							MiniScript::getFloatValue(arguments, 1, range) == true) {
 							returnValue.setValue(_Math::absmod(value, range));
 						} else {
-							miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

@@ -47,7 +47,7 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Base64::encode(value));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -76,7 +76,7 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, value) == true) {
 					returnValue.setValue(_Base64::decode(value));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -106,7 +106,7 @@ void CryptographyMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, value) == true) {
 					returnValue.setValue(_SHA256::encode(value));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

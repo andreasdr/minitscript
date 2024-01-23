@@ -56,7 +56,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(stringValue);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -85,7 +85,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(static_cast<int64_t>(_UTF8StringTools::getLength(stringValue, arguments[0].getStringValueCache())));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -114,7 +114,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(static_cast<int64_t>(stringValue.size()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -146,7 +146,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 1, index) == true) {
 					returnValue.setValue(_UTF8StringTools::getCharAt(stringValue, index, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -178,7 +178,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, prefix) == true) {
 					returnValue.setValue(_UTF8StringTools::startsWith(stringValue, prefix));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -210,7 +210,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, suffix) == true) {
 					returnValue.setValue(_UTF8StringTools::endsWith(stringValue, suffix));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -248,7 +248,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 3, beginIndex, true) == true) {
 					returnValue.setValue(_UTF8StringTools::replace(stringValue, what, by, beginIndex, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -283,7 +283,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true) {
 					returnValue.setValue(_UTF8StringTools::indexOf(stringValue, what, beginIndex, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -318,7 +318,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true) {
 					returnValue.setValue(_UTF8StringTools::firstIndexOf(stringValue, what, beginIndex, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -353,7 +353,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true) {
 					returnValue.setValue(_UTF8StringTools::lastIndexOf(stringValue, what, beginIndex, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -398,7 +398,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 						)
 					);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -443,7 +443,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 						)
 					);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -479,7 +479,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					// utf8 character iterator
 					returnValue.setValue(_UTF8StringTools::substring(stringValue, beginIndex, endIndex));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -511,7 +511,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, other) == true) {
 					returnValue.setValue(_UTF8StringTools::equalsIgnoreCase(stringValue, other, arguments[0].getStringValueCache(), arguments[1].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -540,7 +540,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_UTF8StringTools::trim(stringValue, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -583,7 +583,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setValue(_UTF8StringTools::regexMatch(stringValue, pattern));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -626,7 +626,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setValue(_UTF8StringTools::regexSearch(stringValue, pattern));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -661,7 +661,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 2, by) == true) {
 					returnValue.setValue(_UTF8StringTools::regexReplace(stringValue, pattern, by));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -697,7 +697,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.pushArrayEntry(tokenizedString);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -731,7 +731,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 1, count, true) == true) {
 					returnValue.setValue(_UTF8StringTools::generate(what, count));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -768,7 +768,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 2, count, true) == true) {
 					returnValue.setValue(_UTF8StringTools::indent(src, with, count));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -820,7 +820,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_UTF8StringTools::toUpperCase(stringValue, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -849,7 +849,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_UTF8StringTools::toLowerCase(stringValue, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -878,7 +878,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(stringValue.empty());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -907,7 +907,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_Float::is(stringValue));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -936,7 +936,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, stringValue) == true) {
 					returnValue.setValue(_Integer::is(stringValue));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -971,7 +971,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 2, toLength) == true) {
 					returnValue.setValue(_UTF8StringTools::padLeft(stringValue, by, toLength, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -1006,7 +1006,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 2, toLength) == true) {
 					returnValue.setValue(_UTF8StringTools::padRight(stringValue, by, toLength, arguments[0].getStringValueCache()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -1036,7 +1036,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					returnValue.setType(MiniScript::TYPE_BYTEARRAY);
 					for (auto i = 0; i < stringValue.size(); i++) returnValue.pushByteArrayEntry(stringValue[i]);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -1068,7 +1068,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setValue(string((const char*)(byteArrayPointer->data()), byteArrayPointer->size()));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -1097,7 +1097,7 @@ void StringMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 0, codePoint) == true) {
 					returnValue.setValue(_Character::toString(codePoint));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

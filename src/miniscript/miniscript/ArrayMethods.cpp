@@ -67,7 +67,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_ARRAY) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getArraySize()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -95,7 +95,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_ARRAY) {
 					returnValue.setValue(arguments[0].getArraySize() == 0);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -129,7 +129,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 						arguments[0].pushArrayEntry(arguments[i]);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -160,7 +160,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 1, index) == true) {
 					returnValue = arguments[0].getArrayEntry(index);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -192,7 +192,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 1, index) == true) {
 					arguments[0].setArrayEntry(index, arguments[2]);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -223,7 +223,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 1, index) == true) {
 					arguments[0].removeArrayEntry(index);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -264,7 +264,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -306,7 +306,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -357,7 +357,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 						sort(arrayPtr->begin(), arrayPtr->end(), SortClass(miniScript, function));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -388,7 +388,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 						reverse(arrayPtr->begin(), arrayPtr->end());
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -416,7 +416,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_ARRAY) {
 					arguments[0].clearArray();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -461,7 +461,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

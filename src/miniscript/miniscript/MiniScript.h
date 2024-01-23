@@ -55,6 +55,8 @@ using _UTF8CharacterIterator = miniscript::utilities::UTF8CharacterIterator;
 using _Context = miniscript::miniscript::Context;
 using _Library = miniscript::miniscript::Library;
 
+#define MINISCRIPT_METHODUSAGE_COMPLAIN(methodName) miniScript->complain(methodName, statement); miniScript->startErrorScript();
+
 /**
  * Miniscript
  * @author Andreas Drewke

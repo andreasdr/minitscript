@@ -39,7 +39,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 					miniScript->getScriptState().timeWaitTime = 100LL;
 					miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_WAIT_FOR_CONDITION);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -67,7 +67,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 					miniScript->getScriptState().timeWaitTime = time;
 					miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_WAIT);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -95,7 +95,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, condition) == true) {
 					miniScript->emit(condition);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -131,7 +131,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 					);
 					miniScript->enabledNamedConditions.push_back(name);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -166,7 +166,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->enabledNamedConditions.end()
 					);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -192,7 +192,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 					}
 					returnValue.setValue(result);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -223,7 +223,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": '" + statementString + "': An error occurred");
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -270,7 +270,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 						#endif
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			bool isVariadic() const override {
@@ -294,7 +294,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 					miniScript->stopScriptExecution();
 					miniScript->stopRunning();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -317,7 +317,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setMapEntry(variableName, *variableValue);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -339,7 +339,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 0) {
 					returnValue.setValue(miniScript->isNative());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

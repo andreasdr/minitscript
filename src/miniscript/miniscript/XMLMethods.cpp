@@ -61,7 +61,7 @@ void XMLMethods::registerMethods(MiniScript* miniScript) {
 					}
 					returnValue.setValue(xml);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

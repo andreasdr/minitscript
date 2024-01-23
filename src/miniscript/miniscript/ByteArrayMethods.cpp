@@ -37,7 +37,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 0) {
 					returnValue.setType(MiniScript::TYPE_BYTEARRAY);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -66,7 +66,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getByteArraySize()));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -95,7 +95,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					returnValue.setValue(*arguments[0].getByteArrayReadPointer());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -135,7 +135,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						*byteArrayReadPtr = position;
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -164,7 +164,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					returnValue.setValue(*arguments[0].getByteArrayWritePointer());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -204,7 +204,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						*byteArrayWritePtr = position;
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -239,7 +239,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setValue(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++) != 0);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -274,7 +274,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setValue(static_cast<int64_t>(arguments[0].getByteArrayEntry((*byteArrayReadPtr)++)));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -312,7 +312,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -352,7 +352,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -397,7 +397,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						);
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -437,7 +437,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setValue(*((float*)&floatAsInt));
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -480,7 +480,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -525,7 +525,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -606,7 +606,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -639,7 +639,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					const auto byteArrayWritePtr = arguments[0].getByteArrayWritePointer();
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -673,7 +673,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, value & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 8) & 0xff);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -709,7 +709,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 16) & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 24) & 0xff);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -749,7 +749,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 48) & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (value >> 56) & 0xff);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -786,7 +786,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (intValue >> 16) & 0xff);
 					arguments[0].setByteArrayEntry((*byteArrayWritePtr)++, (intValue >> 24) & 0xff);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -826,7 +826,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -867,7 +867,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -910,7 +910,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -944,7 +944,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 2, size) == true) {
 					arguments[0].removeByteArray(index, size);
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -971,7 +971,7 @@ void ByteArrayMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 1 && arguments[0].getType() == MiniScript::TYPE_BYTEARRAY) {
 					arguments[0].clearByteArray();
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

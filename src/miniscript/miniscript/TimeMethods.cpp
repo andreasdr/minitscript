@@ -36,7 +36,7 @@ void TimeMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 0) {
 					returnValue.setValue(_Time::getCurrentMillis());
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -65,7 +65,7 @@ void TimeMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, format, true) == true) {
 					returnValue.setValue(_Time::getAsString(format));
 				} else {
-					miniScript->complain(getMethodName(), statement); miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
