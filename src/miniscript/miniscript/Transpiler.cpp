@@ -2417,7 +2417,7 @@ bool Transpiler::transpileScriptStatement(
 				}
 			} else
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*MINISCRIPT_METHODUSAGE_COMPLAIN[\\ \\t]*\\([\\ \\t]*(.*)\\)[\\ \\t]*;[\\ \\t]*", &matches) == true) {
-				string codeLineIndent = "";
+				string codeLineIndent;
 				for (auto i = 0; i < codeLine.size(); i++) {
 					auto c = codeLine[i];
 					if (Character::isSpace(c) == false) break;
