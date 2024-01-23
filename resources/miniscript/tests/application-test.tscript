@@ -13,7 +13,7 @@ on: nothing
 	console.printLine("---------------------------")
 	console.printLine()
 	console.printLine("application.getArguments(): " + application.getArguments())
-	if ($APPLICATION::OS == "Windows-MSC")
+	if ($Application::OS == "Windows-MSC" || $Application::OS == "Windows-MINGW")
 		console.printLine("application.execute('dir'): " + application.execute('dir'))
 	else
 		console.printLine("application.execute('ls'): " + application.execute('ls'))

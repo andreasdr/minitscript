@@ -20,6 +20,9 @@ void MathMethods::registerDataType(MiniScript::DataType* dataType) {
 }
 
 void MathMethods::registerConstants() {
+	miniScript->setConstant("$Math::DEG2RAD", _Math::DEG2RAD);
+	miniScript->setConstant("$Math::EPSILON", _Math::EPSILON);
+	miniScript->setConstant("$Math::PI", _Math::PI);
 }
 
 void MathMethods::registerMethods() {
@@ -178,71 +181,6 @@ void MathMethods::registerMethods() {
 			}
 		};
 		miniScript->registerMethod(new MethodMod(miniScript));
-	}
-	// constants
-	{
-		//
-		class MethodPI: public MiniScript::Method {
-		private:
-			MiniScript* miniScript { nullptr };
-		public:
-			MethodPI(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
-			const string getMethodName() override {
-				return "math.PI";
-			}
-			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setValue(_Math::PI);
-			}
-		};
-		miniScript->registerMethod(new MethodPI(miniScript));
-	}
-	{
-		//
-		class MethodEPSILON: public MiniScript::Method {
-		private:
-			MiniScript* miniScript { nullptr };
-		public:
-			MethodEPSILON(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
-			const string getMethodName() override {
-				return "math.EPSILON";
-			}
-			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setValue(_Math::EPSILON);
-			}
-		};
-		miniScript->registerMethod(new MethodEPSILON(miniScript));
-	}
-	{
-		//
-		class MethodDEG2RAD: public MiniScript::Method {
-		private:
-			MiniScript* miniScript { nullptr };
-		public:
-			MethodDEG2RAD(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
-			const string getMethodName() override {
-				return "math.DEG2RAD";
-			}
-			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setValue(_Math::DEG2RAD);
-			}
-		};
-		miniScript->registerMethod(new MethodDEG2RAD(miniScript));
-	}
-	{
-		//
-		class MethodG: public MiniScript::Method {
-		private:
-			MiniScript* miniScript { nullptr };
-		public:
-			MethodG(MiniScript* miniScript): MiniScript::Method({}, MiniScript::TYPE_FLOAT), miniScript(miniScript) {}
-			const string getMethodName() override {
-				return "math.G";
-			}
-			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				returnValue.setValue(_Math::G);
-			}
-		};
-		miniScript->registerMethod(new MethodG(miniScript));
 	}
 	{
 		//

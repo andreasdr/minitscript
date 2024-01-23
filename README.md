@@ -1291,14 +1291,6 @@ end
 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Degree to radian factor                                                                          |
-| <sub>math.DEG2RAD(): Float</sub>                                                                 |
-| Epsilon                                                                                          |
-| <sub>math.EPSILON(): Float</sub>                                                                 |
-| G                                                                                                |
-| <sub>math.G(): Float</sub>                                                                       |
-| PI                                                                                               |
-| <sub>math.PI(): Float</sub>                                                                      |
 | Return number as positive number                                                                 |
 | <sub>math.abs($value: Number): Number</sub>                                                      |
 | Return number to be positive within given range                                                  |
@@ -1408,10 +1400,10 @@ end
 
 | Name                                                        | Value                              |
 |-------------------------------------------------------------|------------------------------------|
-| $APPLICATION::CPU                                           | e.g. X64                           |
-| $APPLICATION::EXITCODE_FAILURE                              | 1                                  |
-| $APPLICATION::EXITCODE_SUCCESS                              | 0                                  |
-| $APPLICATION::OS                                            | e.g. Windows-MSC                   |
+| $Application::CPU                                           | X64                                |
+| $Application::EXITCODE_FAILURE                              | 1                                  |
+| $Application::EXITCODE_SUCCESS                              | 0                                  |
+| $Application::OS                                            | Windows-MSC                        |
 | $HTTPClient::HTTP_STATUS_ACCEPTED                           | 202                                |
 | $HTTPClient::HTTP_STATUS_ALREADYREPORTED                    | 208                                |
 | $HTTPClient::HTTP_STATUS_BADGATEWAY                         | 502                                |
@@ -1477,10 +1469,13 @@ end
 | $HTTPClient::HTTP_STATUS_URITOOLONG                         | 414                                |
 | $HTTPClient::HTTP_STATUS_USEPROXY                           | 305                                |
 | $HTTPClient::HTTP_STATUS_VARIANTALSONEGOTIATES              | 506                                |
+| $Math::DEG2RAD                                              | 0.017453                           |
+| $Math::EPSILON                                              | 0.000000                           |
+| $Math::PI                                                   | 3.141593                           |
 
 Please note:
-- $APPLICATION::CPU can have the following values: FreeBSD, Haiku, Linux, MacOSX, NetBSD, OpenBSD, Windows-MSC, Windows-MINGW, Unknown
-- $APPLICATION::OS can have the following values: X64, IA64, ARM64, ARM, PPC64, PPC, Unknown
+- $Application::CPU can have the following values: FreeBSD, Haiku, Linux, MacOSX, NetBSD, OpenBSD, Windows-MSC, Windows-MINGW, Unknown
+- $Application::OS can have the following values: X64, IA64, ARM64, ARM, PPC64, PPC, Unknown
 
 # 9. Operators
 
