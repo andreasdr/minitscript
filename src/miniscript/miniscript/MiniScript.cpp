@@ -44,6 +44,7 @@
 
 #include <miniscript/math/Math.h>
 #include <miniscript/os/filesystem/FileSystem.h>
+#include <miniscript/os/threading/Thread.h>
 #include <miniscript/utilities/Character.h>
 #include <miniscript/utilities/Console.h>
 #include <miniscript/utilities/Integer.h>
@@ -102,6 +103,7 @@ using _StringTokenizer = miniscript::utilities::StringTokenizer;
 using _StringTools = miniscript::utilities::StringTools;
 using _SHA256 = miniscript::utilities::SHA256;
 using _Time = miniscript::utilities::Time;
+using _Thread = miniscript::os::threading::Thread;
 
 const string MiniScript::OPERATOR_CHARS = "+-!~/%<>=&^|";
 
@@ -2839,6 +2841,10 @@ void MiniScript::registerStateMachineStates() {
 				auto now = _Time::getCurrentMillis();
 				if (now > miniScript->getScriptState().timeWaitStarted + miniScript->getScriptState().timeWaitTime) {
 					miniScript->setScriptStateState(STATEMACHINESTATE_NEXT_STATEMENT);
+				} else {
+					#if !defined(MINISCRIPT_NO_SLEEP)
+						_Thread::sleep(10);
+					#endif
 				}
 			}
 		};
