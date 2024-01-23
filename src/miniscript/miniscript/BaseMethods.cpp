@@ -42,7 +42,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() == 0 || arguments.size() == 1) {
 					if (miniScript->isFunctionRunning() == false) {
-						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "no function is being executed, return($value) has no effect");
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No function is being executed, return($value) has no effect");
 					} else
 					if (arguments.size() == 1) miniScript->getScriptState().returnValue = arguments[0];
 					miniScript->stopRunning();
@@ -83,7 +83,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						if (endType.continueStatement != nullptr) {
 							miniScript->gotoStatement(*endType.breakStatement);
 						} else {
-							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "no break statement");
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No break statement");
 						}
 					}
 				} else {
@@ -123,7 +123,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						if (endType->continueStatement != nullptr) {
 							miniScript->gotoStatement(*endType->continueStatement);
 						} else {
-							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "no continue statement");
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No continue statement");
 						}
 					}
 				} else {
