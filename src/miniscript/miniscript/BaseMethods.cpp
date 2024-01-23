@@ -70,7 +70,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						MiniScript::ScriptState::Block endType;
-						for (auto i = blockStack.size() - 1; i >= 0; i--) {
+						for (int i = blockStack.size() - 1; i >= 0; i--) {
 							if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
 								endType = blockStack[i];
 								blockStack.erase(blockStack.begin() + i, blockStack.end());
@@ -110,7 +110,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						MiniScript::ScriptState::Block* endType = nullptr;
-						for (auto i = blockStack.size() - 1; i >= 0; i--) {
+						for (int i = blockStack.size() - 1; i >= 0; i--) {
 							if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
 								endType = &blockStack[i];
 								blockStack.erase(blockStack.begin() + i + 1, blockStack.end());
