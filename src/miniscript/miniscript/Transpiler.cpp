@@ -2426,7 +2426,20 @@ bool Transpiler::transpileScriptStatement(
 				if (returnValue.empty() == true) {
 					generatedCode+= minIndentString + depthIndentString + codeLineIndent + "\t" + "MINISCRIPT_METHODUSAGE_COMPLAIN(" + matches[1].str() + ");\n";
 				} else {
-					generatedCode+= minIndentString + depthIndentString + codeLineIndent + "\t" + "MINISCRIPT_METHODUSAGE_COMPLAIN2(" + matches[1].str() + ", " + returnValue + ");\n";
+					generatedCode+= minIndentString + depthIndentString + codeLineIndent + "\t" + "MINISCRIPT_METHODUSAGE_COMPLAINR(" + matches[1].str() + ", " + returnValue + ");\n";
+				}
+			} else
+			if (StringTools::regexMatch(codeLine, "[\\ \\t]*MINISCRIPT_METHODUSAGE_COMPLAINM[\\ \\t]*\\([\\ \\t]*(.*)[\\ \\t]*,[\\ \\t]*(.*)[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*", &matches) == true) {
+				string codeLineIndent;
+				for (auto i = 0; i < codeLine.size(); i++) {
+					auto c = codeLine[i];
+					if (Character::isSpace(c) == false) break;
+					codeLineIndent+= c;
+				}
+				if (returnValue.empty() == true) {
+					generatedCode+= minIndentString + depthIndentString + codeLineIndent + "\t" + "MINISCRIPT_METHODUSAGE_COMPLAINM(" + matches[1].str() + ", " + matches[2].str() + ");\n";
+				} else {
+					generatedCode+= minIndentString + depthIndentString + codeLineIndent + "\t" + "MINISCRIPT_METHODUSAGE_COMPLAINMR(" + matches[1].str() + ", " + matches[2].str() + ", " + returnValue + ");\n";
 				}
 			} else
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->emit[\\ \\t]*\\([\\ \\t]*[a-zA-Z0-9]*[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {

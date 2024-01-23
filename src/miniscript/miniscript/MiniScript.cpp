@@ -2904,8 +2904,7 @@ void MiniScript::registerMethods() {
 			}
 			void executeMethod(span<Variable>& arguments, Variable& returnValue, const Statement& statement) override {
 				if (arguments.size() != 1) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				} else
 				if (arguments.size() == 1) {
 					returnValue = arguments[0];
@@ -2950,8 +2949,7 @@ void MiniScript::registerMethods() {
 				//
 				if (arguments.size() < 3 ||
 					miniScript->getStringValue(arguments, 2, member, false) == false) {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				} else {
 					// do we have a this variable name?
 					{
@@ -3048,12 +3046,10 @@ void MiniScript::registerMethods() {
 								}
 							}
 						} else {
-							_Console::printLine(miniScript->getStatementInformation(statement) + ": class/object member not found: " + member + "()");
-							miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Class/object member not found: " + member + "()");
 						}
 					} else {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": argument mismatch: expected arguments: " + miniScript->getArgumentInformation(getMethodName()) + ": invalid variable type");
-						miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				}
 			}

@@ -6,9 +6,14 @@
 #include <{$base-class-header}>
 
 #undef MINISCRIPT_METHODUSAGE_COMPLAIN
-#undef MINISCRIPT_METHODUSAGE_COMPLAIN2
+#undef MINISCRIPT_METHODUSAGE_COMPLAINM
+#undef MINISCRIPT_METHODUSAGE_COMPLAINR
+#undef MINISCRIPT_METHODUSAGE_COMPLAINMR
+
 #define MINISCRIPT_METHODUSAGE_COMPLAIN(methodName) miniScript->complain(methodName, statement); miniScript->startErrorScript(); return;
-#define MINISCRIPT_METHODUSAGE_COMPLAIN2(methodName, returnValue) miniScript->complain(methodName, statement); miniScript->startErrorScript(); return returnValue;
+#define MINISCRIPT_METHODUSAGE_COMPLAINM(methodName, message) miniScript->complain(methodName, statement, message); miniScript->startErrorScript(); return;
+#define MINISCRIPT_METHODUSAGE_COMPLAINR(methodName, returnValue) miniScript->complain(methodName, statement); miniScript->startErrorScript(); return returnValue;
+#define MINISCRIPT_METHODUSAGE_COMPLAINMR(methodName, message, returnValue) miniScript->complain(methodName, statement, message); miniScript->startErrorScript(); return returnValue;
 
 /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_START__*/
 /*__MINISCRIPT_TRANSPILEDMINISCRIPTCODE_INCLUDES_END__*/

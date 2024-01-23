@@ -414,8 +414,7 @@ void FileSystemMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, uri) == true) {
 					returnValue.setValue(_FileSystem::isDrive(uri));
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

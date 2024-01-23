@@ -89,12 +89,11 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 1, callable) == true) {
 					auto script = dynamic_cast<MiniScript*>(miniScript->getContext()->getScript(scriptId));
 					if (script == nullptr) {
-						miniScript->complain(getMethodName(), statement, "No script with given id: " + scriptId); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No script with given id: " + scriptId);
 					} else {
 						auto scriptIdx = script->getFunctionScriptIdx(callable);
 						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callableFunction == false) {
-							_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": callable not found: " + callable);
-							miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Callable not found: " + callable);
 						} else {
 							miniScript->getContext()->push(script);
 							#if defined (__clang__)

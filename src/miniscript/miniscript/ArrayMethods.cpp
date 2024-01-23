@@ -519,8 +519,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 						}
 					}
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};

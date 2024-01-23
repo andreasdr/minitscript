@@ -56,6 +56,7 @@ using _Context = miniscript::miniscript::Context;
 using _Library = miniscript::miniscript::Library;
 
 #define MINISCRIPT_METHODUSAGE_COMPLAIN(methodName) miniScript->complain(methodName, statement); miniScript->startErrorScript();
+#define MINISCRIPT_METHODUSAGE_COMPLAINM(methodName, message) miniScript->complain(methodName, statement, message); miniScript->startErrorScript();
 
 /**
  * Miniscript

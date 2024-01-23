@@ -42,8 +42,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() == 0 || arguments.size() == 1) {
 					if (miniScript->isFunctionRunning() == false) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": no function is being executed, return($value) has no effect");
-						miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "no function is being executed, return($value) has no effect");
 					} else
 					if (arguments.size() == 1) miniScript->getScriptState().returnValue = arguments[0];
 					miniScript->stopRunning();
@@ -67,7 +66,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() == 0) {
 					if (miniScript->getScriptState().blockStack.empty() == true) {
-						miniScript->complain(getMethodName(), statement, "break without forCondition/forTime"); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "break without forCondition/forTime");
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						MiniScript::ScriptState::Block endType;
@@ -79,12 +78,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							}
 						}
 						if (endType.type == MiniScript::ScriptState::BLOCKTYPE_NONE) {
-							miniScript->complain(getMethodName(), statement, "break without forCondition/forTime"); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "break without forCondition/forTime");
 						} else
 						if (endType.continueStatement != nullptr) {
 							miniScript->gotoStatement(*endType.breakStatement);
 						} else {
-							miniScript->complain(getMethodName(), statement, "no break statement"); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "no break statement");
 						}
 					}
 				} else {
@@ -107,8 +106,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() == 0) {
 					if (miniScript->getScriptState().blockStack.empty() == true) {
-						miniScript->complain(getMethodName(), statement, "continue without forCondition, forTime");
-						miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "continue without forCondition, forTime");
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						MiniScript::ScriptState::Block* endType = nullptr;
@@ -120,12 +118,12 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							}
 						}
 						if (endType == nullptr) {
-							miniScript->complain(getMethodName(), statement, "continue without forCondition, forTime"); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "continue without forCondition, forTime");
 						} else
 						if (endType->continueStatement != nullptr) {
 							miniScript->gotoStatement(*endType->continueStatement);
 						} else {
-							miniScript->complain(getMethodName(), statement, "no continue statement"); miniScript->startErrorScript();
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "no continue statement");
 						}
 					}
 				} else {
@@ -148,7 +146,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() == 0) {
 					if (miniScript->getScriptState().blockStack.empty() == true) {
-						miniScript->complain(getMethodName(), statement, "end without if/elseif/else/switch/case/default/forCondition/forTime/end"); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "end without if/elseif/else/switch/case/default/forCondition/forTime/end");
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						auto& block = blockStack[blockStack.size() - 1];
@@ -316,7 +314,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					auto& scriptState = miniScript->getScriptState();
 					auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
 					if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_IF) {
-						miniScript->complain(getMethodName(), statement, + "elseif without if"); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "elseif without if");
 					} else
 					if (blockStack.match == true || booleanValue == false) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
@@ -346,7 +344,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					auto& scriptState = miniScript->getScriptState();
 					auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
 					if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_IF) {
-						miniScript->complain(getMethodName(), statement, "else without if"); miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "else without if");
 					} else
 					if (blockStack.match == true) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
@@ -409,8 +407,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					auto& scriptState = miniScript->getScriptState();
 					auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
 					if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_SWITCH) {
-						miniScript->complain(getMethodName(), statement, "case without switch");
-						miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "case without switch");
 					} else {
 						auto match = arguments[0].getValueAsString() == blockStack.switchVariable.getValueAsString();
 						if (blockStack.match == true || match == false) {
@@ -443,8 +440,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					auto& scriptState = miniScript->getScriptState();
 					auto& blockStack = scriptState.blockStack[scriptState.blockStack.size() - 1];
 					if (blockStack.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_SWITCH) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": default without switch");
-						miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "default without switch");
 					} else
 					if (blockStack.match == true) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
@@ -587,8 +583,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getFloatValue(arguments, 0, floatValue) == true) {
 					returnValue.setValue(floatValue);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -896,8 +891,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getBooleanValue(arguments, 0, booleanValue) == true) {
 					returnValue.setValue(!booleanValue);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1105,8 +1099,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					miniScript->setVariable(constant, arguments[1], &statement);
 					returnValue = arguments[1];
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
@@ -1136,8 +1129,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].setValue(value + 1);
 					returnValue.setValue(value);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1170,8 +1162,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].setValue(value - 1);
 					returnValue.setValue(value);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1205,8 +1196,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].setValue(value);
 					returnValue.setValue(value);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1240,8 +1230,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					arguments[0].setValue(value);
 					returnValue.setValue(value);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {
@@ -1273,8 +1262,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getIntegerValue(arguments, 0, value) == true) {
 					returnValue.setValue(~value);
 				} else {
-					miniScript->complain(getMethodName(), statement);
-					miniScript->startErrorScript();
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 			MiniScript::Operator getOperator() const override {

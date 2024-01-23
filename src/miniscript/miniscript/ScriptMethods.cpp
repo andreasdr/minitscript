@@ -252,8 +252,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 					miniScript->getStringValue(arguments, 0, function) == true) {
 					auto scriptIdx = miniScript->getFunctionScriptIdx(function);
 					if (scriptIdx == MiniScript::SCRIPTIDX_NONE) {
-						_Console::printLine(getMethodName() + "(): " + miniScript->getStatementInformation(statement) + ": function not found: " + function);
-						miniScript->startErrorScript();
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Function not found: " + function);
 					} else {
 						#if defined (__clang__)
 							// Clang currently does not support initializing span using begin and end iterators,
