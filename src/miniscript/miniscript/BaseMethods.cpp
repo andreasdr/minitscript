@@ -59,29 +59,48 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			MethodBreak(MiniScript* miniScript): MiniScript::Method(), miniScript(miniScript) {}
+			MethodBreak(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_INTEGER, .name = "levels", .optional = true, .reference = false, .nullable = false }
+					}
+				),
+				miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "break";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() == 0) {
+				int64_t levels = 1;
+				if ((arguments.size() == 0 || arguments.size() == 1) &&
+					MiniScript::getIntegerValue(arguments, 0, levels, true) == true) {
 					if (miniScript->getScriptState().blockStack.empty() == true) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "break without forCondition/forTime");
 					} else {
+						int64_t level = 0;
 						auto& blockStack = miniScript->getScriptState().blockStack;
-						MiniScript::ScriptState::Block endType;
+						MiniScript::ScriptState::Block* endType = nullptr;
+						vector<int> blockStacksToRemove;
 						for (int i = blockStack.size() - 1; i >= 0; i--) {
 							if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
-								endType = blockStack[i];
-								blockStack.erase(blockStack.begin() + i, blockStack.end());
-								break;
+								endType = &blockStack[i];
+								level++;
+								blockStacksToRemove.push_back(i);
+								if (level == levels) break;
+							} else
+							if (level < levels) {
+								blockStacksToRemove.push_back(i);
 							}
 						}
-						if (endType.type == MiniScript::ScriptState::BLOCKTYPE_NONE) {
-							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "break without forCondition/forTime");
+						if (endType == nullptr) {
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "break without forCondition, forTime");
 						} else
-						if (endType.continueStatement != nullptr) {
-							miniScript->gotoStatement(*endType.breakStatement);
+						if (levels != level) {
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "break(" + to_string(levels) + ") + without " + to_string(levels) + " levels of forCondition, forTime");
+						} else
+						if (endType->breakStatement != nullptr) {
+							auto breakStatement = endType->breakStatement;
+							for (auto i: blockStacksToRemove) blockStack.erase(blockStack.begin() + i);
+							miniScript->gotoStatement(*breakStatement);
 						} else {
 							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No break statement");
 						}
@@ -99,29 +118,51 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			MethodContinue(MiniScript* miniScript): MiniScript::Method(), miniScript(miniScript) {}
+			MethodContinue(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_INTEGER, .name = "levels", .optional = true, .reference = false, .nullable = false }
+					}
+				),
+				miniScript(miniScript) {}
 			const string getMethodName() override {
 				return "continue";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				if (arguments.size() == 0) {
+				int64_t levels = 1;
+				if ((arguments.size() == 0 || arguments.size() == 1) &&
+					MiniScript::getIntegerValue(arguments, 0, levels, true) == true) {
 					if (miniScript->getScriptState().blockStack.empty() == true) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "continue without forCondition, forTime");
 					} else {
+						int64_t level = 0;
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						MiniScript::ScriptState::Block* endType = nullptr;
+						vector<int> blockStacksToRemove;
 						for (int i = blockStack.size() - 1; i >= 0; i--) {
 							if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
 								endType = &blockStack[i];
-								blockStack.erase(blockStack.begin() + i + 1, blockStack.end());
-								break;
+								level++;
+								if (level == levels) {
+									break;
+								} else {
+									blockStacksToRemove.push_back(i);
+								}
+							} else
+							if (level < levels) {
+								blockStacksToRemove.push_back(i);
 							}
 						}
 						if (endType == nullptr) {
 							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "continue without forCondition, forTime");
 						} else
+						if (levels != level) {
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "continue(" + to_string(levels) + ") + without " + to_string(levels) + " levels of forCondition, forTime");
+						} else
 						if (endType->continueStatement != nullptr) {
-							miniScript->gotoStatement(*endType->continueStatement);
+							auto continueStatement = endType->continueStatement;
+							for (auto i: blockStacksToRemove) blockStack.erase(blockStack.begin() + i);
+							miniScript->gotoStatement(*continueStatement);
 						} else {
 							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No continue statement");
 						}
@@ -238,7 +279,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				bool booleanValue;
 				if (arguments.size() == 1 &&
 					miniScript->getBooleanValue(arguments, 0, booleanValue) == true) {
-					auto now = _Time::getCurrentMillis();
 					if (booleanValue == false) {
 						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);

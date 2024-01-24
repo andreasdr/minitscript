@@ -1758,7 +1758,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							.statementIdx = statementIdx
 						}
 					);
-				}
+				} else
 				if (_StringTools::regexMatch(executableStatement, "^default[\\s]*$") == true) {
 					gotoStatementStack.push(
 						{

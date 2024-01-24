@@ -12,11 +12,11 @@ on: nothing
 	console.printLine("loop-test: Nothing")
 	console.printLine("--------------------")
 	console.printLine()
-	$array = [1,2,3,4,5,6]
-	$i = 0
 	# tests for continue, break
 	#	if successfull we should see 1, 2, 4
-	forCondition($i < $array->getSize())
+	console.printLine("tests for continue, break")
+	$i = 0
+	forCondition($i < 5)
 		$i++
 		if ($i == 3)
 			continue
@@ -26,6 +26,31 @@ on: nothing
 		end
 		console.printLine($i)
 	end
+	# test for continue 2, break 2 
+	console.printLine("test for continue 2, break 2 ")
+	$i = 0
+	forCondition($i < 5)
+		console.printLine("$i = " + $i)
+		$j = 0
+		forCondition($j < 5)
+			if ($i == 0 && $j == 1)
+				$i++
+				continue(2)
+			elseif($i == 4 && $j == 2)
+				$i++
+				break(2)
+			end
+			console.printLine("    $j = " + $j)
+			$j++
+		end
+		$i++
+	end
+	# console.printLine("test for for")
+	console.printLine("test for for")
+	#for ($i = 0, $i < 5, $i++)
+	#	console.printLine("$i = " + $i)
+	#	break();
+	#end
 	script.stop()
 end
 

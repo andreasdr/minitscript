@@ -2364,29 +2364,32 @@ public:
 		 */
 		inline const string getArgumentsInformation(int beginIdx = 0) const {
 			string result;
-			auto optionalArgumentCount = 0;
-			auto argumentIdx = 0;
-			for (const auto& argumentType: argumentTypes) {
-				string argumentResult;
-				if (argumentType.optional == true) {
-					result+= "[";
-					optionalArgumentCount++;
-				}
-				if (argumentIdx > beginIdx) result+= ", ";
-				if (optionalArgumentCount > 0 || argumentIdx >= beginIdx) {
-					if (argumentType.reference == true) {
-						result+= "&";
+			if (argumentTypes.empty() == true) {
+				result = "None";
+			} else {
+				auto optionalArgumentCount = 0;
+				auto argumentIdx = 0;
+				for (const auto& argumentType: argumentTypes) {
+					string argumentResult;
+					if (argumentType.optional == true) {
+						result+= "[";
+						optionalArgumentCount++;
 					}
-					result+= "$" + argumentType.name + ": " + (argumentType.nullable == true?"?":"") + Variable::getTypeAsString(argumentType.type);
+					if (argumentIdx > beginIdx) result+= ", ";
+					if (optionalArgumentCount > 0 || argumentIdx >= beginIdx) {
+						if (argumentType.reference == true) {
+							result+= "&";
+						}
+						result+= "$" + argumentType.name + ": " + (argumentType.nullable == true?"?":"") + Variable::getTypeAsString(argumentType.type);
+					}
+					argumentIdx++;
 				}
-				argumentIdx++;
+				if (isVariadic() == true) {
+					if (argumentIdx > beginIdx) result+= ", ";
+					result+="...";
+				}
+				for (auto i = 0; i < optionalArgumentCount; i++) result+= "]";
 			}
-			if (isVariadic() == true) {
-				if (argumentIdx > beginIdx) result+= ", ";
-				result+="...";
-			}
-			for (auto i = 0; i < optionalArgumentCount; i++) result+= "]";
-			//
 			return result;
 		}
 
