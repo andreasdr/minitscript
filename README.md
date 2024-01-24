@@ -1081,11 +1081,11 @@ end
 | Create boolean                                                                                   |
 | <sub>boolean($boolean: Boolean): Boolean</sub>                                                   |
 | Break out of current forCondition or forTime loop                                                |
-| <sub>break(): Null</sub>                                                                         |
+| <sub>break([$levels: Integer]): Null</sub>                                                       |
 | Begins a case block within a switch block, which will be executed if the case value has matched  |
 | <sub>case($value: Mixed): Null</sub>                                                             |
 | Continue to next iteration of forCondition or forTime loop                                       |
-| <sub>continue(): Null</sub>                                                                      |
+| <sub>continue([$levels: Integer]): Null</sub>                                                    |
 | Begins a default block within a switch block, which will be executed if no case value has matched|
 | <sub>default(): Null</sub>                                                                       |
 | Divide                                                                                           |
@@ -1099,7 +1099,7 @@ end
 | Equals                                                                                           |
 | <sub>equals($a: Mixed, $b: Mixed): Boolean</sub>                                                 |
 | For condition                                                                                    |
-| <sub>forCondition($condition: Boolean): Null</sub>                                               |
+| <sub>forCondition($condition: Boolean[, $iterationFunction: Function]): Null</sub>               |
 | For time                                                                                         |
 | <sub>forTime($time: Integer): Null</sub>                                                         |
 | Greater                                                                                          |

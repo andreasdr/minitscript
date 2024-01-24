@@ -2364,32 +2364,28 @@ public:
 		 */
 		inline const string getArgumentsInformation(int beginIdx = 0) const {
 			string result;
-			if (argumentTypes.empty() == true) {
-				result = "None";
-			} else {
-				auto optionalArgumentCount = 0;
-				auto argumentIdx = 0;
-				for (const auto& argumentType: argumentTypes) {
-					string argumentResult;
-					if (argumentType.optional == true) {
-						result+= "[";
-						optionalArgumentCount++;
-					}
-					if (argumentIdx > beginIdx) result+= ", ";
-					if (optionalArgumentCount > 0 || argumentIdx >= beginIdx) {
-						if (argumentType.reference == true) {
-							result+= "&";
-						}
-						result+= "$" + argumentType.name + ": " + (argumentType.nullable == true?"?":"") + Variable::getTypeAsString(argumentType.type);
-					}
-					argumentIdx++;
+			auto optionalArgumentCount = 0;
+			auto argumentIdx = 0;
+			for (const auto& argumentType: argumentTypes) {
+				string argumentResult;
+				if (argumentType.optional == true) {
+					result+= "[";
+					optionalArgumentCount++;
 				}
-				if (isVariadic() == true) {
-					if (argumentIdx > beginIdx) result+= ", ";
-					result+="...";
+				if (argumentIdx > beginIdx) result+= ", ";
+				if (optionalArgumentCount > 0 || argumentIdx >= beginIdx) {
+					if (argumentType.reference == true) {
+						result+= "&";
+					}
+					result+= "$" + argumentType.name + ": " + (argumentType.nullable == true?"?":"") + Variable::getTypeAsString(argumentType.type);
 				}
-				for (auto i = 0; i < optionalArgumentCount; i++) result+= "]";
+				argumentIdx++;
 			}
+			if (isVariadic() == true) {
+				if (argumentIdx > beginIdx) result+= ", ";
+				result+="...";
+			}
+			for (auto i = 0; i < optionalArgumentCount; i++) result+= "]";
 			return result;
 		}
 
@@ -2714,7 +2710,7 @@ protected:
 				match(false),
 				continueStatement(nullptr),
 				breakStatement(nullptr),
-				switchVariable(Variable())
+				parameter(Variable())
 			{}
 			/**
 			 * Constructor
@@ -2722,27 +2718,27 @@ protected:
 			 * @param match match
 			 * @param continueStatement continue statement
 			 * @param breakStatement break statement
-			 * @param switchVariable switch variable
+			 * @param parameter switch variable / iteration function
 			 */
 			Block(
 				BlockType type,
 				bool match,
 				const Statement* continueStatement,
 				const Statement* breakStatement,
-				const Variable& switchVariable
+				const Variable& parameter
 			):
 				type(type),
 				match(match),
 				continueStatement(continueStatement),
 				breakStatement(breakStatement),
-				switchVariable(switchVariable)
+				parameter(parameter)
 			{}
 			//
 			BlockType type;
 			bool match;
 			const Statement* continueStatement;
 			const Statement* breakStatement;
-			Variable switchVariable;
+			Variable parameter;
 		};
 		enum ConditionType {
 			SCRIPT,
@@ -3695,11 +3691,11 @@ public:
 	}
 
 	/**
-	 * Get argument information
+	 * Get arguments information
 	 * @param methodName method name
-	 * @return argument information
+	 * @return arguments information
 	 */
-	inline const string getArgumentInformation(const string& methodName) {
+	inline const string getArgumentsInformation(const string& methodName) {
 		auto scriptMethod = getMethod(methodName);
 		if (scriptMethod == nullptr) {
 			_Console::printLine("MiniScript::getArgumentInformation(): method not found: " + methodName);

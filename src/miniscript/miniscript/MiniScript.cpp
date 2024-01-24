@@ -210,7 +210,9 @@ void MiniScript::initializeNative() {
 }
 
 void MiniScript::complain(const string& methodName, const Statement& statement) {
-	_Console::printLine(methodName + "(): " + getStatementInformation(statement) + ": argument mismatch: expected arguments: " + getArgumentInformation(methodName));
+	auto argumentsInformation = getArgumentsInformation(methodName);
+	if (argumentsInformation.empty() == true) argumentsInformation = "None";
+	_Console::printLine(methodName + "(): " + getStatementInformation(statement) + ": argument mismatch: expected arguments: " + argumentsInformation);
 }
 
 void MiniScript::complain(const string& methodName, const Statement& statement, const string& message) {

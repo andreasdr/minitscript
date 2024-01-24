@@ -45,8 +45,17 @@ on: nothing
 		end
 		$i++
 	end
+	# test for forCondition with a iteration function 
+	console.printLine("test for forCondition with a iteration function")
+	$i = 0
+	forCondition($i < 5, () -> { $i++ })
+		console.printLine("x $i = " + $i)
+		if ($i == 2)
+			break
+		end
+	end
 	# console.printLine("test for for")
-	console.printLine("test for for")
+	#console.printLine("test for for")
 	#for ($i = 0, $i < 5, $i++)
 	#	console.printLine("$i = " + $i)
 	#	break();
