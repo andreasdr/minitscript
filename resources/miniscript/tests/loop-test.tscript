@@ -49,7 +49,7 @@ on: nothing
 	console.printLine("test for forCondition with a iteration function")
 	$i = 0
 	forCondition($i < 5, () -> { $i++ })
-		console.printLine("x $i = " + $i)
+		console.printLine("$i = " + $i)
 		if ($i == 2)
 			break
 		end
