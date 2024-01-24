@@ -48,7 +48,7 @@ on: nothing
 	# test for forCondition with a iteration function 
 	console.printLine("test for forCondition with a iteration function")
 	$i = 0
-	forCondition($i < 5, () -> { $i++ })
+	forCondition($i < 5, (&$i) -> { $i++ })
 		console.printLine("$i = " + $i)
 		if ($i == 2)
 			break
