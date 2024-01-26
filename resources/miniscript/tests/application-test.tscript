@@ -12,13 +12,15 @@ on: nothing
 	console.printLine("application-test: Nothing")
 	console.printLine("---------------------------")
 	console.printLine()
+	console.printLine("$Application::OS = " , $Application::OS)
+	console.printLine("$Application::CPU = " , $Application::CPU)
 	console.printLine("application.getArguments(): " + application.getArguments())
 	if ($Application::OS == "Windows-MSC" || $Application::OS == "Windows-MINGW")
-		console.printLine("application.execute('dir'): " + application.execute('dir'))
+		console.printLine("application.execute('ver'): " + application.execute('ver'))
 	else
-		console.printLine("application.execute('ls'): " + application.execute('ls'))
+		console.printLine("application.execute('uname -a'): " + application.execute('uname -a'))
 	end
-	application.exit(2)
+	application.exit($Application::EXITCODE_SUCCESS)
 end
 
 # an error has occurred

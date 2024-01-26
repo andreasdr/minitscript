@@ -44,7 +44,9 @@ void ApplicationMethods::registerConstants(MiniScript* miniScript) {
 	#else
 		miniScript->setConstant("$Application::OS", string("Unknown"));
 	#endif
-	#if defined(__amd64__) || defined(_M_X64)
+	#if defined(__i386__) || defined(_M_IX86)
+		miniScript->setConstant("$Application::CPU", string("X86"));
+	#elif defined(__amd64__) || defined(_M_X64)
 		miniScript->setConstant("$Application::CPU", string("X64"));
 	#elif defined(__ia64__) || defined(_M_IA64)
 		miniScript->setConstant("$Application::CPU", string("IA64"));
@@ -52,6 +54,12 @@ void ApplicationMethods::registerConstants(MiniScript* miniScript) {
 		miniScript->setConstant("$Application::CPU", string("ARM64"));
 	#elif defined(__arm__) || defined(_M_ARM)
 		miniScript->setConstant("$Application::CPU", string("ARM"));
+	#elif defined(__riscv)
+		#if __riscv_xlen == 64
+			miniScript->setConstant("$Application::CPU", string("RISCV64"));
+		#else
+			miniScript->setConstant("$Application::CPU", string("RISCV"));
+		#endif
 	#elif defined(__powerpc64__)
 		miniScript->setConstant("$Application::CPU", string("PPC64"));
 	#elif defined(__powerpc__)
