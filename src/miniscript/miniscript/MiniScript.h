@@ -2556,7 +2556,7 @@ public:
 		enum ScriptType { SCRIPTTYPE_NONE, SCRIPTTYPE_FUNCTION, SCRIPTTYPE_ON, SCRIPTTYPE_ONENABLED };
 		/**
 		 * Constructor
-		 * @param scriptType script type
+		 * @param type script type
 		 * @param line line
 		 * @param condition condition
 		 * @param executableCondition executable condition
@@ -2570,7 +2570,7 @@ public:
 		 * @param functionArguments function arguments
 		 */
 		Script(
-			ScriptType scriptType,
+			ScriptType type,
 			int line,
 			// applies only for on and on-enabled
 			const string& condition,
@@ -2586,7 +2586,7 @@ public:
 			bool callableFunction,
 			const vector<FunctionArgument>& functionArguments
 		):
-			scriptType(scriptType),
+			type(type),
 			line(line),
 			condition(condition),
 			executableCondition(executableCondition),
@@ -2600,7 +2600,7 @@ public:
 			functionArguments(functionArguments)
 		{}
 		//
-		ScriptType scriptType;
+		ScriptType type;
 		int line;
 		string condition;
 		string executableCondition;
@@ -2697,16 +2697,19 @@ protected:
 	 * Script state
 	 */
 	struct ScriptState {
-		enum BlockType { BLOCKTYPE_NONE, BLOCKTYPE_BLOCK, BLOCKTYPE_FOR, BLOCKTYPE_FORTIME, BLOCKTYPE_IF, BLOCKTYPE_SWITCH, BLOCKTYPE_CASE };
+		enum BlockType { BLOCKTYPE_NONE, BLOCKTYPE_GLOBAL, BLOCKTYPE_FUNCTION, BLOCKTYPE_FOR, BLOCKTYPE_FORTIME, BLOCKTYPE_IF, BLOCKTYPE_SWITCH, BLOCKTYPE_CASE };
 		/**
 		 * Block
 		 */
 		struct Block {
 			/**
 			 * Constructor
+			 * @param type type
 			 */
-			Block():
-				type(BLOCKTYPE_NONE),
+			Block(
+				BlockType type
+			):
+				type(type),
 				match(false),
 				continueStatement(nullptr),
 				breakStatement(nullptr),
@@ -2753,7 +2756,6 @@ protected:
 		int gotoStatementIdx { STATEMENTIDX_NONE };
 		int64_t timeWaitStarted { TIME_NONE };
 		int64_t timeWaitTime { TIME_NONE };
-		string id;
 		unordered_map<string, Variable*> variables;
 		unordered_map<int, int64_t> forTimeStarted;
 		vector<Block> blockStack;
@@ -2846,6 +2848,38 @@ protected:
 	void executeStateMachine();
 
 	/**
+	 * Dump script state
+	 * @param scriptState script state
+	 * @param message message
+	 */
+	void dumpScriptState(ScriptState& scriptState, const string& message = string());
+
+	/**
+	 * Push a new script state
+	 */
+	inline void pushScriptState() {
+		scriptStateStack.push_back(make_unique<ScriptState>());
+	}
+
+	/**
+	 * Pop script state
+	 */
+	inline void popScriptState() {
+		if (scriptStateStack.empty() == true) return;
+		auto& scriptState = getScriptState();
+		for (const auto& [variableName, variable]: scriptState.variables) delete variable;
+		scriptState.variables.clear();
+		scriptStateStack.erase(scriptStateStack.begin() + scriptStateStack.size() - 1);
+	}
+
+	/**
+	 * @return is function running
+	 */
+	inline bool isFunctionRunning() {
+		return scriptStateStack.size() > 1;
+	}
+
+	/**
 	 * Reset script execution state
 	 * @param scriptIdx script index
 	 * @param stateMachineState state machine state
@@ -2855,13 +2889,44 @@ protected:
 		if (isFunctionRunning() == false) enabledNamedConditions.clear();
 		scriptState.forTimeStarted.clear();
 		scriptState.blockStack.clear();
-		if (scriptIdx != SCRIPTIDX_NONE) scriptState.blockStack.emplace_back(ScriptState::BLOCKTYPE_BLOCK, false, nullptr, nullptr, Variable());
-		scriptState.id.clear();
+		if (scriptIdx != SCRIPTIDX_NONE) {
+			scriptState.blockStack.emplace_back(
+				scripts[scriptIdx].type == Script::SCRIPTTYPE_FUNCTION?
+					ScriptState::BLOCKTYPE_FUNCTION:
+					ScriptState::BLOCKTYPE_GLOBAL,
+				false,
+				nullptr,
+				nullptr,
+				Variable()
+			);
+		}
 		scriptState.scriptIdx = scriptIdx;
 		scriptState.statementIdx = STATEMENTIDX_FIRST;
 		scriptState.gotoStatementIdx = STATEMENTIDX_NONE;
 		scriptState.timeWaitStarted = _Time::getCurrentMillis();
 		scriptState.timeWaitTime = 0LL;
+		scriptState.returnValue.setNullValue();
+		setScriptStateState(stateMachineState);
+	}
+
+	/**
+	 * Reset inline function script execution state
+	 * @param scriptIdx script index
+	 * @param stateMachineState state machine state
+	 */
+	inline void resetInlineFunctionScriptExecutationState(int scriptIdx, StateMachineStateId stateMachineState) {
+		auto& scriptState = getScriptState();
+		scriptState.blockStack.emplace_back(
+			ScriptState::BLOCKTYPE_FUNCTION,
+			false,
+			nullptr,
+			nullptr,
+			Variable()
+		);
+		scriptState.scriptIdx = scriptIdx;
+		scriptState.statementIdx = STATEMENTIDX_FIRST;
+		scriptState.gotoStatementIdx = STATEMENTIDX_NONE;
+		scriptState.returnValue.setNullValue();
 		setScriptStateState(stateMachineState);
 	}
 
@@ -2897,31 +2962,6 @@ protected:
 		scriptState.state = state;
 		scriptState.lastState = STATE_NONE;
 		scriptState.lastStateMachineState = nullptr;
-	}
-
-	/**
-	 * @return is function running
-	 */
-	inline bool isFunctionRunning() {
-		return scriptStateStack.size() > 1;
-	}
-
-	/**
-	 * Push a new script state
-	 */
-	inline void pushScriptState() {
-		scriptStateStack.push_back(make_unique<ScriptState>());
-	}
-
-	/**
-	 * Pop script state
-	 */
-	inline void popScriptState() {
-		if (scriptStateStack.empty() == true) return;
-		auto& scriptState = getScriptState();
-		for (const auto& [variableName, variable]: scriptState.variables) delete variable;
-		scriptState.variables.clear();
-		scriptStateStack.erase(scriptStateStack.begin() + scriptStateStack.size() - 1);
 	}
 
 	/**
@@ -3228,10 +3268,40 @@ private:
 	 * @param statement statement
 	 * @param executableStatement executable statement
 	 * @param returnValue return value
-	 * @param pushOwnScriptState push own script state
+	 * @param pushScriptState push script state
 	 * @return success
 	 */
-	bool evaluateInternal(const string& statement, const string& executableStatement, Variable& returnValue, bool pushOwnScriptState = true);
+	bool evaluateInternal(const string& statement, const string& executableStatement, Variable& returnValue, bool pushScriptState = true);
+
+	/**
+	 * Call function
+	 * @param scriptIdx script index
+	 * @param arguments argument values
+	 * @param returnValue return value
+	 * @param pushScriptState push script state
+	 * @return success
+	 */
+	virtual bool call(int scriptIdx, span<Variable>& arguments, Variable& returnValue, bool pushScriptState);
+
+	/**
+	 * Call function
+	 * @param function function
+	 * @param arguments argument values
+	 * @param returnValue return value
+	 * @param pushScriptState push script state
+	 * @return success
+	 */
+	inline bool call(const string& function, span<Variable>& arguments, Variable& returnValue, bool pushScriptState) {
+		// lookup function
+		auto functionIt = functions.find(function);
+		if (functionIt == functions.end()) {
+			return false;
+		}
+		//
+		auto scriptIdx = functionIt->second;
+		// call it
+		return call(scriptIdx, arguments, returnValue, pushScriptState);
+	}
 
 	/**
 	  * Initialize variable
@@ -4089,7 +4159,7 @@ public:
 	inline bool hasCondition(const string& condition) {
 		// iterate scripts to find out if condition exists
 		for (const auto& script: scripts) {
-			if (script.scriptType != Script::SCRIPTTYPE_ON) {
+			if (script.type != Script::SCRIPTTYPE_ON) {
 				// no op
 			} else
 			if (script.emitCondition == true && script.condition == condition) {
@@ -4136,7 +4206,9 @@ public:
 	 * @param returnValue return value
 	 * @return success
 	 */
-	virtual bool call(int scriptIdx, span<Variable>& arguments, Variable& returnValue);
+	virtual bool call(int scriptIdx, span<Variable>& arguments, Variable& returnValue) {
+		return call(scriptIdx, arguments, returnValue, true);
+	}
 
 	/**
 	 * Call function
@@ -4146,15 +4218,7 @@ public:
 	 * @return success
 	 */
 	inline bool call(const string& function, span<Variable>& arguments, Variable& returnValue) {
-		// lookup function
-		auto functionIt = functions.find(function);
-		if (functionIt == functions.end()) {
-			return false;
-		}
-		//
-		auto scriptIdx = functionIt->second;
-		// call it
-		return call(scriptIdx, arguments, returnValue);
+		return call(function, arguments, returnValue, true);
 	}
 
 	/**

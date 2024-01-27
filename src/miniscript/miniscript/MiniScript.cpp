@@ -1302,10 +1302,12 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 				//
 				statementCodeLines.emplace_back();
 			} else {
+				statementCodeLines[statementCodeLines.size() - 1] += c;
 				//
 				inlineFunctionArguments = false;
 			}
 		} else {
+			//
 			if (_Character::isSpace(c) == false && c != '-' && nc != '>') inlineFunctionArguments = false;
 			// add char to script line
 			statementCodeLines[statementCodeLines.size() - 1] += c;
@@ -1887,7 +1889,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	// validate method call context functions
 	for (const auto& script: scripts) {
 		//
-		if (script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION) {
+		if (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION) {
 			//
 			if (script.callableFunction == true) {
 				//
@@ -1914,7 +1916,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	// check for initialize and error condition
 	auto haveErrorScript = false;
 	for (const auto& script: scripts) {
-		if (script.scriptType == Script::SCRIPTTYPE_ONENABLED) {
+		if (script.type == Script::SCRIPTTYPE_ONENABLED) {
 			// no op
 		} else
 		if (script.condition == "error") {
@@ -1966,7 +1968,7 @@ int MiniScript::determineScriptIdxToStart() {
 	auto nothingScriptIdx = SCRIPTIDX_NONE;
 	auto scriptIdx = 0;
 	for (const auto& script: scripts) {
-		if (script.scriptType != Script::SCRIPTTYPE_ON) {
+		if (script.type != Script::SCRIPTTYPE_ON) {
 			// no op
 		} else
 		if (script.emitCondition == true && script.condition == "nothing") {
@@ -2013,7 +2015,7 @@ int MiniScript::determineNamedScriptIdxToStart() {
 	for (const auto& enabledConditionName: enabledNamedConditions) {
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
-			if (script.scriptType != Script::SCRIPTTYPE_ONENABLED ||
+			if (script.type != Script::SCRIPTTYPE_ONENABLED ||
 				script.name != enabledConditionName) {
 				// no op
 			} else {
@@ -2566,15 +2568,43 @@ bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, s
 	return objectMemberAccess;
 }
 
-bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& returnValue) {
+void MiniScript::dumpScriptState(ScriptState& scriptState, const string& message) {
+	_Console::printLine("MiniScript::dumpScriptState(): " + message + ": " + to_string(scriptStateStack.size()) + " on stack");
+	_Console::printLine(string("\t") + "state: " + to_string(scriptState.state));
+	_Console::printLine(string("\t") + "lastState: " + to_string(scriptState.lastState));
+	_Console::printLine(string("\t") + "running: " + (scriptState.running == true?"true":"false"));
+	_Console::printLine(string("\t") + "scriptIdx: " + to_string(scriptState.scriptIdx));
+	_Console::printLine(string("\t") + "statementIdx: " + to_string(scriptState.statementIdx));
+	_Console::printLine(string("\t") + "gotoStatementIdx: " + to_string(scriptState.gotoStatementIdx));
+	_Console::printLine(string("\t") + "variable count: " + to_string(scriptState.variables.size()));
+	_Console::printLine(string("\t") + "block stack count: " + to_string(scriptState.blockStack.size()));
+	array<string, 8> blockStackTypes {
+		"BLOCKTYPE_NONE",
+		"BLOCKTYPE_GLOBAL",
+		"BLOCKTYPE_FUNCTION",
+		"BLOCKTYPE_FOR",
+		"BLOCKTYPE_FORTIME",
+		"BLOCKTYPE_IF",
+		"BLOCKTYPE_SWITCH",
+		"BLOCKTYPE_CASE"
+	};
+	for (const auto& block: scriptState.blockStack) {
+		_Console::printLine(string("\t\t") + blockStackTypes[block.type]);
+	}
+	_Console::printLine(string("\t") + "returnValue: " + scriptState.returnValue.getValueAsString());
+}
+
+bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& returnValue, bool pushScriptState) {
 	if (scriptIdx < 0 || scriptIdx >= scripts.size()) {
 		_Console::printLine("MiniScript::call(): invalid script index: " + to_string(scriptIdx));
 		return false;
 	}
-	// push a new script state
-	pushScriptState();
-	// script state vector could get modified, so
-	{
+	// copy script state
+	ScriptState currentScriptState = getScriptState();
+	//
+	if (pushScriptState == true) {
+		this->pushScriptState();
+		// script state vector could get modified, so
 		auto& scriptState = getScriptState();
 		// also put named arguments into state context variables
 		auto argumentIdx = 0;
@@ -2585,9 +2615,16 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 			setVariable(argument.name, arguments[argumentIdx], nullptr, argument.reference);
 			argumentIdx++;
 		}
+		//
+		resetScriptExecutationState(scriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
+	} else {
+		//
+		if (scripts[scriptIdx].functionArguments.empty() == false) {
+			_Console::printLine("MiniScript::call(): " + scripts[scriptIdx].condition + ": Function call without script state. No arguments allowed.");
+		}
+		//
+		resetInlineFunctionScriptExecutationState(scriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
 	}
-	//
-	resetScriptExecutationState(scriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
 	// script state vector could get modified, so
 	{
 		auto& scriptState = getScriptState();
@@ -2607,7 +2644,16 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 		returnValue = scriptState.returnValue;
 	}
 	// done, pop the function script state
-	popScriptState();
+	if (pushScriptState == true) {
+		popScriptState();
+	} else {
+		auto& scriptState = getScriptState();
+		scriptState.running = currentScriptState.running;
+		scriptState.scriptIdx = currentScriptState.scriptIdx;
+		scriptState.statementIdx = currentScriptState.statementIdx;
+		scriptState.gotoStatementIdx = currentScriptState.gotoStatementIdx;
+		scriptState.returnValue = currentScriptState.returnValue;
+	}
 	// try garbage collection
 	tryGarbageCollection();
 	//
@@ -2688,7 +2734,7 @@ const string MiniScript::getScriptInformation(int scriptIdx, bool includeStateme
 	const auto& script = scripts[scriptIdx];
 	string result;
 	string argumentsString;
-	switch(script.scriptType) {
+	switch(script.type) {
 		case Script::SCRIPTTYPE_FUNCTION: {
 			for (const auto& argument: script.functionArguments) {
 				if (argumentsString.empty() == false) argumentsString+= ", ";
@@ -3988,7 +4034,7 @@ inline void MiniScript::setVariableInternal(const string& variableStatement, Var
 	}
 }
 
-inline bool MiniScript::evaluateInternal(const string& statement, const string& executableStatement, Variable& returnValue, bool pushOwnScriptState) {
+inline bool MiniScript::evaluateInternal(const string& statement, const string& executableStatement, Variable& returnValue, bool pushScriptState) {
 	Statement evaluateStatement(
 		LINE_NONE,
 		0,
@@ -4009,8 +4055,8 @@ inline bool MiniScript::evaluateInternal(const string& statement, const string& 
 		return false;
 	} else {
 		//
-		if (pushOwnScriptState == true) {
-			pushScriptState();
+		if (pushScriptState == true) {
+			this->pushScriptState();
 			resetScriptExecutationState(SCRIPTIDX_NONE, STATEMACHINESTATE_NEXT_STATEMENT);
 		}
 		getScriptState().running = true;
@@ -4020,7 +4066,7 @@ inline bool MiniScript::evaluateInternal(const string& statement, const string& 
 			evaluateStatement
 		);
 		//
-		if (pushOwnScriptState == true) popScriptState();
+		if (pushScriptState == true) popScriptState();
 		//
 		return true;
 	}

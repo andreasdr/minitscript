@@ -147,9 +147,9 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		for (const auto& script: scripts) {
 			// method name
 			string methodName =
-				(script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?
+				(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
 					"function_":
-					(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
+					(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
 				) +
 				(script.name.empty() == false?script.name:(
 					StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
@@ -280,7 +280,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
 			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "Script(" + "\n";
-			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + (script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?"Script::SCRIPTTYPE_FUNCTION":(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"Script::SCRIPTTYPE_ON":"Script::SCRIPTTYPE_ONENABLED")) + "," + "\n";
+			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?"Script::SCRIPTTYPE_FUNCTION":(script.type == MiniScript::Script::SCRIPTTYPE_ON?"Script::SCRIPTTYPE_ON":"Script::SCRIPTTYPE_ONENABLED")) + "," + "\n";
 			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + to_string(script.line) + "," + "\n";
 			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(script.condition, "\\", "\\\\"), "\"", "\\\"") + "\"," + "\n";
 			initializeNativeDefinition+= methodCodeIndent + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(script.executableCondition, "\\", "\\\\"), "\"", "\\\"") + "\"," + "\n";
@@ -356,9 +356,9 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		for (const auto& script: scripts) {
 			// method name
 			string methodName =
-				(script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?
+				(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
 					"function_":
-					(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
+					(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
 				) +
 				(script.name.empty() == false?script.name:(
 					StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
@@ -376,7 +376,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				);
 
 			// emit code
-			if (script.scriptType == MiniScript::Script::SCRIPTTYPE_ON && StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true) {
+			if (script.type == MiniScript::Script::SCRIPTTYPE_ON && StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true) {
 				string emitDefinitionIndent = "\t";
 				emitDefinition+= emitDefinitionIndent + "if (condition == \"" + emitName + "\") {" + "\n";
 				emitDefinition+= emitDefinitionIndent + "\t" + methodName + "(STATEMENTIDX_FIRST);" + "\n";
@@ -385,7 +385,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 
 			// declaration
 			generatedDeclarations+= headerIndent + "/**" + "\n";
-			generatedDeclarations+= headerIndent + " * Miniscript transpilation of: " + (script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?"function":(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"on":"on-enabled")) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
+			generatedDeclarations+= headerIndent + " * Miniscript transpilation of: " + (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?"function":(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on":"on-enabled")) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
 			generatedDeclarations+= headerIndent + " * @param miniScriptGotoStatementIdx MiniScript goto statement index" + "\n";
 			generatedDeclarations+= headerIndent + " */" + "\n";
 			generatedDeclarations+= headerIndent + "void " + methodName + "(int miniScriptGotoStatementIdx);" + "\n";
@@ -428,7 +428,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					miniScript,
 					statementArrayMapSetInitializerDefinitions,
 					MiniScript::SCRIPTIDX_NONE,
-					script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
+					script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
 					miniScriptClassName,
 					methodName,
 					script.syntaxTree[statementIdx],
@@ -447,7 +447,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					arrayAccessMethodsDefinitions,
 					miniScriptClassName,
 					MiniScript::SCRIPTIDX_NONE,
-					script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
+					script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
 					methodName,
 					script.syntaxTree[statementIdx],
 					script.statements[statementIdx],
@@ -470,7 +470,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 
 			//
 			if (script.emitCondition == false) {
-				if (script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
+				if (script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\n";
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "// next statements belong to tested enabled named condition with name \"" + script.name + "\"" + "\n";
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "if (enabledNamedCondition == \"" + script.name + "\") {" + "\n";
@@ -494,7 +494,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					allMethods,
 					true,
 					{},
-					script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED?3:2
+					script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED?3:2
 				);
 				if (arrayMapSetInitializerDefinitions.empty() == false) arrayMapSetInitializerDefinitions+= "\n";
 				//
@@ -511,10 +511,10 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					allMethods,
 					true,
 					{},
-					script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED?3:2
+					script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED?3:2
 				);
 				//
-				if (script.scriptType == MiniScript::Script::SCRIPTTYPE_ON) {
+				if (script.type == MiniScript::Script::SCRIPTTYPE_ON) {
 					generatedDetermineScriptIdxToStartDefinition+= arrayMapSetInitializerDefinitions;
 					generatedDetermineScriptIdxToStartDefinition+= arrayAccessMethodsDefinitions;
 				} else {
@@ -524,16 +524,16 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				//
 				Transpiler::transpileScriptCondition(
 					miniScript,
-					script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?generatedDetermineScriptIdxToStartDefinition:generatedDetermineNamedScriptIdxToStartDefinition,
+					script.type == MiniScript::Script::SCRIPTTYPE_ON?generatedDetermineScriptIdxToStartDefinition:generatedDetermineNamedScriptIdxToStartDefinition,
 					scriptIdx,
 					methodCodeMap,
 					allMethods,
 					"-1",
 					"bool returnValueBool; returnValue.getBooleanValue(returnValueBool); if (returnValueBool == true) return " + to_string(scriptIdx) + ";",
-					script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED?1:0
+					script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED?1:0
 				);
 				//
-				if (script.scriptType == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
+				if (script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
 					generatedDetermineNamedScriptIdxToStartDefinition+= string() + "\t" + "\t" + "}" + "\n";
 				} else {
 					generatedDetermineScriptIdxToStartDefinition+= string() + "\t" + "}" + "\n";
@@ -894,7 +894,7 @@ void Transpiler::determineVariables(MiniScript* miniScript, unordered_set<string
 			//
 			for (auto statementIdx = 0; statementIdx < script.statements.size(); statementIdx++) {
 				determineVariables(
-					script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
+					script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
 					script.syntaxTree[statementIdx],
 					globalVariables,
 					localVariables
@@ -1129,7 +1129,7 @@ void Transpiler::generateVariableAccess(
 	auto haveScript = (scriptConditionIdx != MiniScript::SCRIPTIDX_NONE || scriptIdx != MiniScript::SCRIPTIDX_NONE);
 	if (haveScript == true) {
 		const auto& script = miniScript->getScripts()[scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
-		haveFunction = script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION;
+		haveFunction = script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION;
 	}
 	//
 	auto dollarDollarVariable = StringTools::startsWith(variableName, "$$.");
@@ -2169,9 +2169,9 @@ bool Transpiler::transpileScriptStatement(
 									{
 										const auto& script = miniScript->getScripts()[scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
 										string methodName =
-											(script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?
+											(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
 												"function_":
-												(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
+												(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
 											) +
 											(script.name.empty() == false?script.name:(
 												StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
@@ -2482,10 +2482,10 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 
 	//
 	string scriptType =
-		(script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?
+		(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
 			"function":
 			(
-				script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?
+				script.type == MiniScript::Script::SCRIPTTYPE_ON?
 					"condition":
 					"named condition"
 			)
@@ -2509,9 +2509,9 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 
 	// method name
 	string methodName =
-		(script.scriptType == MiniScript::Script::SCRIPTTYPE_FUNCTION?
+		(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
 			"function_":
-			(script.scriptType == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
+			(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
 		) +
 		(script.name.empty() == false?script.name:(
 			StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
@@ -2764,7 +2764,7 @@ const string Transpiler::createSourceCode(MiniScript* miniScript) {
 	string result;
 	// create source code
 	for (const auto& script: miniScript->getScripts()) {
-		result+= createSourceCode(script.scriptType, script.emitCondition == true?script.condition:string(), script.functionArguments, script.name, script.conditionSyntaxTree, script.syntaxTree);
+		result+= createSourceCode(script.type, script.emitCondition == true?script.condition:string(), script.functionArguments, script.name, script.conditionSyntaxTree, script.syntaxTree);
 	}
 	//
 	return result;

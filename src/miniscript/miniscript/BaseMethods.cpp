@@ -191,9 +191,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						auto& block = blockStack[blockStack.size() - 1];
-						if (block.type == MiniScript::ScriptState::BLOCKTYPE_BLOCK &&
-							miniScript->isFunctionRunning() == true &&
-							miniScript->scriptStateStack.size() == 2) {
+						if (block.type == MiniScript::ScriptState::BLOCKTYPE_FUNCTION &&
+							miniScript->scriptStateStack.size() <= 2) {
 							miniScript->stopRunning();
 						} else
 						// TODO: we can also store later the function/script index instead of the function name, which reduces one hash map look up
@@ -201,7 +200,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							vector<MiniScript::Variable> arguments {};
 							span argumentsSpan(arguments);
 							MiniScript::Variable returnValue;
-							miniScript->call(block.parameter.getValueAsString(), argumentsSpan, returnValue);
+							miniScript->call(block.parameter.getValueAsString(), argumentsSpan, returnValue, false);
 						}
 						blockStack.erase(blockStack.begin() + blockStack.size() - 1);
 						if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {

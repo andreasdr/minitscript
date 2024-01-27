@@ -6,6 +6,14 @@ on: initialize
 	console.printLine()
 end
 
+# inline function test in function
+function: inlineFunctionTestInFunction()
+	$j = 0
+	forCondition($j < 5, () -> { $j++ })
+		console.printLine("$j = " + $j)
+	end
+end
+
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
 	console.printLine("--------------------")
@@ -45,10 +53,12 @@ on: nothing
 		end
 		$i++
 	end
-	# test for forCondition with a iteration function 
+	# test for forCondition with a inline iteration function, 
+	#	which gets no own script state stack entry
+	#	means it keeps variables and such 
 	console.printLine("test for forCondition with a iteration function")
 	$i = 0
-	forCondition($i < 5, (&$i) -> { $i++ })
+	forCondition($i < 5, () -> { $i++ })
 		console.printLine("$i = " + $i)
 		if ($i == 2)
 			break
