@@ -1731,10 +1731,11 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				);
 				auto executableStatement = doStatementPreProcessing(statementCode, generatedStatement);
 				if (_StringTools::regexMatch(executableStatement, "^for[\\s]*\\(.*\\)$") == true) {
-					// method call
+					// parse for statement
 					string_view forMethodName;
 					vector<string_view> forArguments;
 					string accessObjectMemberStatement;
+					// success?
 					if (parseStatement(executableStatement, forMethodName, forArguments, generatedStatement, accessObjectMemberStatement) == true &&
 						forArguments.size() == 3) {
 						// create initialize statement
