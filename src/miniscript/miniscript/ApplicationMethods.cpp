@@ -50,7 +50,7 @@ void ApplicationMethods::registerConstants(MiniScript* miniScript) {
 		miniScript->setConstant("$Application::CPU", string("X64"));
 	#elif defined(__ia64__) || defined(_M_IA64)
 		miniScript->setConstant("$Application::CPU", string("IA64"));
-	#elif defined(__aarch64__)
+	#elif defined(__aarch64__) || defined(_M_ARM64)
 		miniScript->setConstant("$Application::CPU", string("ARM64"));
 	#elif defined(__arm__) || defined(_M_ARM)
 		miniScript->setConstant("$Application::CPU", string("ARM"));
