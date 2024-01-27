@@ -2704,20 +2704,7 @@ protected:
 		struct Block {
 			/**
 			 * Constructor
-			 * @param type type
-			 */
-			Block(
-				BlockType type
-			):
-				type(type),
-				match(false),
-				continueStatement(nullptr),
-				breakStatement(nullptr),
-				parameter(Variable())
-			{}
-			/**
-			 * Constructor
-			 * @param type type
+			 * @param type block type
 			 * @param match match
 			 * @param continueStatement continue statement
 			 * @param breakStatement break statement
