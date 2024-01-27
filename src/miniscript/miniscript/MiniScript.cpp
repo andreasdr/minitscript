@@ -262,7 +262,7 @@ void MiniScript::executeNextStatement() {
 }
 
 bool MiniScript::parseStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const Statement& statement, string& accessObjectMemberStatement) {
-	if (VERBOSE == true) _Console::printLine("MiniScript::parseScriptStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
+	if (VERBOSE == true) _Console::printLine("MiniScript::parseStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
 	string_view objectMemberAccessObject;
 	string_view objectMemberAccessMethod;
 	int executableStatementStartIdx = 0;
@@ -525,7 +525,7 @@ bool MiniScript::parseStatement(const string_view& executableStatement, string_v
 
 	//
 	if (VERBOSE == true) {
-		_Console::print("MiniScript::parseScriptStatement(): " + getStatementInformation(statement) + ": method: '" + string(methodName) + "', arguments: ");
+		_Console::print("MiniScript::parseStatement(): " + getStatementInformation(statement) + ": method: '" + string(methodName) + "', arguments: ");
 		int variableIdx = 0;
 		for (const auto& argument: arguments) {
 			if (variableIdx > 0) _Console::print(", ");
@@ -565,7 +565,7 @@ bool MiniScript::parseStatement(const string_view& executableStatement, string_v
 }
 
 MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement) {
-	if (VERBOSE == true) _Console::printLine("MiniScript::executeScriptStatement(): " + getStatementInformation(statement) + "': " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
+	if (VERBOSE == true) _Console::printLine("MiniScript::executeStatement(): " + getStatementInformation(statement) + "': " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
 	// return on literal or empty syntaxTree
 	if (syntaxTree.type != SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD &&
 		syntaxTree.type != SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
@@ -594,7 +594,7 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 	}
 	//
 	if (VERBOSE == true) {
-		_Console::printLine("MiniScript::executeScriptStatement(): '" + getStatementInformation(statement) + ": " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
+		_Console::printLine("MiniScript::executeStatement(): '" + getStatementInformation(statement) + ": " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
 	}
 	// try first user functions
 	if (syntaxTree.type == SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
@@ -1730,6 +1730,35 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					STATEMENTIDX_NONE
 				);
 				auto executableStatement = doStatementPreProcessing(statementCode, generatedStatement);
+				if (_StringTools::regexMatch(executableStatement, "^for[\\s]*\\(.*\\)$") == true) {
+					// method call
+					string_view forMethodName;
+					vector<string_view> forArguments;
+					string accessObjectMemberStatement;
+					if (parseStatement(executableStatement, forMethodName, forArguments, generatedStatement, accessObjectMemberStatement) == true &&
+						forArguments.size() == 3) {
+						// create initialize statement
+						string initializeStatement = string(forArguments[0]);
+						scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx++, statementCode, initializeStatement, STATEMENTIDX_NONE);
+						//
+						gotoStatementStack.push(
+							{
+								.type = GOTOSTATEMENTTYPE_FOR,
+								.statementIdx = statementIdx
+							}
+						);
+						//
+						executableStatement = "forCondition(" + string(forArguments[1]) + ", () -> { " + string(forArguments[2]) + " })";
+					} else {
+						_Console::printLine(scriptFileName + ": Invalid for statement");
+						//
+						parseErrors.push_back("Invalid for statement");
+						//
+						scriptValid = false;
+						//
+						return false;
+					}
+				} else
 				if (_StringTools::regexMatch(executableStatement, "^forTime[\\s]*\\(.*\\)$") == true ||
 					_StringTools::regexMatch(executableStatement, "^forCondition[\\s]*\\(.*\\)$") == true) {
 					gotoStatementStack.push(

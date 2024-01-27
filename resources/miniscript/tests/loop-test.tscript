@@ -59,17 +59,26 @@ on: nothing
 	console.printLine("test for forCondition with a iteration function")
 	$i = 0
 	forCondition($i < 5, () -> { $i++ })
+		if ($i == 3)
+			continue
+		end
 		console.printLine("$i = " + $i)
-		if ($i == 2)
+		if ($i == 4)
 			break
 		end
 	end
 	# console.printLine("test for for")
-	#console.printLine("test for for")
-	#for ($i = 0, $i < 5, $i++)
-	#	console.printLine("$i = " + $i)
-	#	break();
-	#end
+	console.printLine("test for for")
+	for ($i = 0, $i < 5, $i++)
+		if ($i == 3)
+			continue
+		end
+		console.printLine("$i = " + $i)
+		if ($i == 4)
+			break
+		end
+	end
+	console.printLine("done")
 	script.stop()
 end
 
