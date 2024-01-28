@@ -1214,13 +1214,13 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 				quote = '\0';
 			}
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 			//
 			inlineFunctionArguments = false;
 		} else
 		if (quote != '\0') {
 			// no op
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 		} else
 		// brackets
 		if (c == '(') {
@@ -1229,7 +1229,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 			bracketCount++;
 			expectBracket = false;
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 		} else
 		if (c == ')') {
 			//
@@ -1237,7 +1237,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 			//
 			bracketCount--;
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 			//
 			inlineFunctionArguments = true;
 		} else
@@ -1248,7 +1248,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 			//
 			squareBracketCount++;
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 		} else
 		if (c == ']') {
 			//
@@ -1256,7 +1256,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 			//
 			squareBracketCount--;
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 		} else
 		// curly brackets
 		if (c == '{') {
@@ -1265,7 +1265,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 			//
 			curlyBracketCount++;
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 		} else
 		if (c == '}') {
 			//
@@ -1273,14 +1273,14 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 			//
 			curlyBracketCount--;
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 		} else
 		// hash
 		if (c == '#') {
 			// hash
 			hash = true;
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 		} else
 		// new line
 		if (c == '\r') {
@@ -1290,7 +1290,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 			// we expect a bracket now
 			if (inlineFunctionArguments == false) expectBracket = true;
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 		} else
 		if ((c == '\n' && ++line) || (hash == false && c == ';')) {
 			// break here and process script line
@@ -1302,7 +1302,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 				//
 				statementCodeLines.emplace_back();
 			} else {
-				statementCodeLines[statementCodeLines.size() - 1] += c;
+				statementCodeLines.back() += c;
 				//
 				inlineFunctionArguments = false;
 			}
@@ -1310,7 +1310,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 			//
 			if (_Character::isSpace(c) == false && c != '-' && nc != '>') inlineFunctionArguments = false;
 			// add char to script line
-			statementCodeLines[statementCodeLines.size() - 1] += c;
+			statementCodeLines.back() += c;
 		}
 		//
 		lc = c;
@@ -1327,7 +1327,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 	}
 
 	// add last line index
-	if (i == scriptCode.size() && scriptCode[scriptCode.size() - 1] != '\n') ++line;
+	if (i == scriptCode.size() && scriptCode.back() != '\n') ++line;
 
 	//
 	return statementCode;
@@ -1355,7 +1355,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 		auto statementCode = getNextStatement(scriptCode, i, lineIdx);
 
 		// add last line index
-		if (i == scriptCode.size() && scriptCode[scriptCode.size() - 1] != '\n') ++lineIdx;
+		if (i == scriptCode.size() && scriptCode.back() != '\n') ++lineIdx;
 		//
 		if (statementCode.empty() == true) {
 			continue;
@@ -1594,48 +1594,48 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					switch(gotoStatementStackElement.type) {
 						case GOTOSTATEMENTTYPE_FOR:
 							{
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, gotoStatementStackElement.statementIdx);
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size();
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, gotoStatementStackElement.statementIdx);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 							}
 							break;
 						case GOTOSTATEMENTTYPE_IF:
 							{
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size();
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
 						case GOTOSTATEMENTTYPE_ELSE:
 							{
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size();
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
 						case GOTOSTATEMENTTYPE_ELSEIF:
 							{
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size();
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
 						case GOTOSTATEMENTTYPE_SWITCH:
 							{
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
 						case GOTOSTATEMENTTYPE_CASE:
 							{
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size() + 1;
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size() + 1;
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
 						case GOTOSTATEMENTTYPE_DEFAULT:
 							{
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size() + 1;
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size() + 1;
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
 					}
 				} else{
-					scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+					scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 					haveScript = false;
 				}
 			} else
@@ -1646,14 +1646,14 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					switch(gotoStatementStackElement.type) {
 						case GOTOSTATEMENTTYPE_IF:
 							{
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size();
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
 						case GOTOSTATEMENTTYPE_ELSEIF:
 							{
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size();
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
 						default:
@@ -1693,14 +1693,14 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					switch(gotoStatementStackElement.type) {
 						case GOTOSTATEMENTTYPE_IF:
 							{
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size();
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
 							}
 							break;
 						case GOTOSTATEMENTTYPE_ELSEIF:
 							{
-								scripts[scripts.size() - 1].statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts[scripts.size() - 1].statements.size();
-								scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
+								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
 							}
 							break;
 						default:
@@ -1740,7 +1740,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						forArguments.size() == 3) {
 						// create initialize statement
 						string initializeStatement = string(forArguments[0]);
-						scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx++, statementCode, initializeStatement, STATEMENTIDX_NONE);
+						scripts.back().statements.emplace_back(currentLineIdx, statementIdx++, statementCode, initializeStatement, STATEMENTIDX_NONE);
 						//
 						gotoStatementStack.push(
 							{
@@ -1801,7 +1801,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						}
 					);
 				}
-				scripts[scripts.size() - 1].statements.emplace_back(currentLineIdx, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
+				scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
 			}
 			statementIdx++;
 		}
@@ -1839,7 +1839,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 		for (auto statementIdx = STATEMENTIDX_FIRST; statementIdx < script.statements.size(); statementIdx++) {
 			const auto& statement = script.statements[statementIdx];
 			script.syntaxTree.emplace_back();
-			auto& syntaxTree = script.syntaxTree[script.syntaxTree.size() - 1];
+			auto& syntaxTree = script.syntaxTree.back();
 			string_view methodName;
 			vector<string_view> arguments;
 			string accessObjectMemberStatement;
