@@ -2795,6 +2795,7 @@ protected:
 	 * @param statement statement
 	 */
 	void gotoStatement(const Statement& statement) {
+		setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 		getScriptState().gotoStatementIdx = statement.statementIdx;
 	}
 
@@ -2803,6 +2804,7 @@ protected:
 	 * @param statement statement
 	 */
 	void gotoStatementGoto(const Statement& statement) {
+		setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 		getScriptState().gotoStatementIdx = statement.gotoStatementIdx;
 	}
 
@@ -3268,7 +3270,7 @@ private:
 	 * @param pushScriptState push script state
 	 * @return success
 	 */
-	virtual bool call(int scriptIdx, span<Variable>& arguments, Variable& returnValue, bool pushScriptState);
+	bool call(int scriptIdx, span<Variable>& arguments, Variable& returnValue, bool pushScriptState);
 
 	/**
 	 * Call function
@@ -4193,7 +4195,7 @@ public:
 	 * @param returnValue return value
 	 * @return success
 	 */
-	virtual bool call(int scriptIdx, span<Variable>& arguments, Variable& returnValue) {
+	inline bool call(int scriptIdx, span<Variable>& arguments, Variable& returnValue) {
 		return call(scriptIdx, arguments, returnValue, true);
 	}
 
@@ -4206,6 +4208,28 @@ public:
 	 */
 	inline bool call(const string& function, span<Variable>& arguments, Variable& returnValue) {
 		return call(function, arguments, returnValue, true);
+	}
+
+	/**
+	 * Call inline function
+	 * @param scriptIdx script index
+	 * @param arguments argument values
+	 * @param returnValue return value
+	 * @return success
+	 */
+	inline bool callInlineFunction(int scriptIdx, span<Variable>& arguments, Variable& returnValue) {
+		return call(scriptIdx, arguments, returnValue, false);
+	}
+
+	/**
+	 * Call inline function
+	 * @param function function
+	 * @param arguments argument values
+	 * @param returnValue return value
+	 * @return success
+	 */
+	inline bool callInlineFunction(const string& function, span<Variable>& arguments, Variable& returnValue) {
+		return call(function, arguments, returnValue, false);
 	}
 
 	/**

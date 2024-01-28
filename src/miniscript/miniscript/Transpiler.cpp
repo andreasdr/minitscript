@@ -78,7 +78,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 
 	//
 	unordered_map<string, vector<string>> methodCodeMap;
-	auto allMethods = Transpiler::getAllClassesMethodNames(miniScript);
+	auto allMethods = getAllClassesMethodNames(miniScript);
 
 	//
 	vector<string> transpilationUnitIncludes;
@@ -114,7 +114,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 						if (c == ' ') continue;
 						className+= c;
 					}
-					Transpiler::gatherMethodCode(transpilationUnitCode, className, i, methodCodeMap);
+					gatherMethodCode(transpilationUnitCode, className, i, methodCodeMap);
 				}
 			}
 		}
@@ -183,7 +183,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	// member access evaluation
 	vector<string> memberAccessEvaluationDeclarations;
 	vector<string> memberAccessEvaluationDefinitions;
-	Transpiler::generateMiniScriptEvaluateMemberAccessArrays(miniScript, memberAccessEvaluationDeclarations, memberAccessEvaluationDefinitions);
+	generateEvaluateMemberAccessArrays(miniScript, memberAccessEvaluationDeclarations, memberAccessEvaluationDefinitions);
 
 	//
 	string miniScriptClassName = FileSystem::getFileName(transpilationFileName);
@@ -226,9 +226,15 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	generatedDeclarations+= headerIndent + "\t" + "\t" + "return;" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "}" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "auto& scriptState = getScriptState();" + "\n";
-	generatedDeclarations+= headerIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "if (scriptState.running == false) return;" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "// execute while having statements to be processed" + "\n";
-	generatedDeclarations+= headerIndent + "\t" + "if (getScriptState().state == STATEMACHINESTATE_NEXT_STATEMENT) {" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "if (scriptState.state == STATEMACHINESTATE_NEXT_STATEMENT) {" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "\t" + "// take goto statement index into account" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "\t" + "if (scriptState.gotoStatementIdx != STATEMENTIDX_NONE) {" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "\t" + "\t" + "scriptState.statementIdx = scriptState.gotoStatementIdx;" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "\t" + "\t" + "scriptState.gotoStatementIdx = STATEMENTIDX_NONE;" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "\t" + "}" + "\n";
+	generatedDeclarations+= headerIndent + "\t" + "\t" + "//" + "\n";
 	generatedDeclarations+= generatedExecuteCode;
 	generatedDeclarations+= headerIndent + "\t" + "}" + "\n";
 	generatedDeclarations+= headerIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
@@ -424,7 +430,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			for (auto statementIdx = 0; statementIdx < script.statements.size(); statementIdx++) {
 				string statementArrayMapSetInitializerDefinitions;
 				//
-				Transpiler::generateArrayMapSetInitializer(
+				generateArrayMapSetInitializer(
 					miniScript,
 					statementArrayMapSetInitializerDefinitions,
 					MiniScript::SCRIPTIDX_NONE,
@@ -442,7 +448,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				if (statementArrayMapSetInitializerDefinitions.empty() == false) statementArrayMapSetInitializerDefinitions+= "\n";
 				arrayMapSetInitializerDefinitions+= statementArrayMapSetInitializerDefinitions;
 				//
-				Transpiler::generateArrayAccessMethods(
+				generateArrayAccessMethods(
 					miniScript,
 					arrayAccessMethodsDefinitions,
 					miniScriptClassName,
@@ -464,7 +470,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			generatedDefinitions+= arrayAccessMethodsDefinitions;
 
 			//
-			Transpiler::transpile(miniScript, generatedSubCode, scriptIdx, methodCodeMap, allMethods);
+			transpile(miniScript, generatedSubCode, scriptIdx, methodCodeMap, allMethods);
 			generatedDefinitions+= generatedSubCode;
 			generatedDefinitions+= string() + "}" + "\n\n";
 
@@ -481,7 +487,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				string arrayMapSetInitializerDefinitions;
 				string arrayAccessMethodsDefinitions;
 				//
-				Transpiler::generateArrayMapSetInitializer(
+				generateArrayMapSetInitializer(
 					miniScript,
 					arrayMapSetInitializerDefinitions,
 					MiniScript::SCRIPTIDX_NONE,
@@ -498,7 +504,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				);
 				if (arrayMapSetInitializerDefinitions.empty() == false) arrayMapSetInitializerDefinitions+= "\n";
 				//
-				Transpiler::generateArrayAccessMethods(
+				generateArrayAccessMethods(
 					miniScript,
 					arrayAccessMethodsDefinitions,
 					miniScriptClassName,
@@ -522,7 +528,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					generatedDetermineNamedScriptIdxToStartDefinition+= arrayAccessMethodsDefinitions;
 				}
 				//
-				Transpiler::transpileScriptCondition(
+				transpileCondition(
 					miniScript,
 					script.type == MiniScript::Script::SCRIPTTYPE_ON?generatedDetermineScriptIdxToStartDefinition:generatedDetermineNamedScriptIdxToStartDefinition,
 					scriptIdx,
@@ -1402,7 +1408,7 @@ void Transpiler::generateArrayAccessMethods(
 									auto scriptStateChanged = false;
 									auto scriptStopped = false;
 									vector<string >enabledNamedConditions;
-									Transpiler::transpileScriptStatement(
+									transpileStatement(
 										miniScript,
 										transpiledCode,
 										arrayAccessSyntaxTree,
@@ -1495,15 +1501,15 @@ void Transpiler::generateArrayAccessMethods(
 	}
 }
 
-void Transpiler::generateMiniScriptEvaluateMemberAccessArrays(
+void Transpiler::generateEvaluateMemberAccessArrays(
 	MiniScript* miniScript,
 	vector<string>& generatedDeclarations,
 	vector<string>& generatedDefinitions
 ) {
 	//
 	auto scriptMethods = miniScript->getMethods();
-	auto allMethods = Transpiler::getAllClassesMethodNamesSorted(miniScript);
-	auto methodsByClasses = Transpiler::getClassesMethodNames(miniScript);
+	auto allMethods = getAllClassesMethodNamesSorted(miniScript);
+	auto methodsByClasses = getClassesMethodNames(miniScript);
 	generatedDeclarations.push_back("// evaluate member access constants");
 	generatedDeclarations.push_back("static constexpr int EVALUATEMEMBERACCESSARRAYIDX_NONE { -1 };");
 	auto methodIdx = 0;
@@ -1604,7 +1610,7 @@ void Transpiler::generateArrayMapSetVariable(
 				auto scriptStateChanged = false;
 				auto scriptStopped = false;
 				vector<string>enabledNamedConditions;
-				Transpiler::transpileScriptStatement(
+				transpileStatement(
 					miniScript,
 					transpiledCode,
 					*variable.getInitializer()->getSyntaxTree(),
@@ -1864,7 +1870,7 @@ void Transpiler::generateArrayMapSetInitializer(
 	}
 }
 
-bool Transpiler::transpileScriptStatement(
+bool Transpiler::transpileStatement(
 	MiniScript* miniScript,
 	string& generatedCode,
 	const MiniScript::SyntaxTreeNode& syntaxTree,
@@ -1940,11 +1946,11 @@ bool Transpiler::transpileScriptStatement(
 					// asign script.call method
 					auto method = miniScript->getMethod(callSyntaxTreeNode.value.getValueAsString());
 					if (method == nullptr) {
-						Console::printLine("Transpiler::transpileScriptStatement(): method code not found: '" + callSyntaxTreeNode.value.getValueAsString() + "'");
+						Console::printLine("Transpiler::transpileStatement(): method code not found: '" + callSyntaxTreeNode.value.getValueAsString() + "'");
 						return false;
 					}
 					callSyntaxTreeNode.setMethod(method);
-					return transpileScriptStatement(
+					return transpileStatement(
 						miniScript,
 						generatedCode,
 						callSyntaxTreeNode,
@@ -1964,7 +1970,7 @@ bool Transpiler::transpileScriptStatement(
 						additionalIndent
 					);
 				} else {
-					Console::printLine("Transpiler::transpileScriptStatement(): function not found: '" + syntaxTree.value.getValueAsString() + "'");
+					Console::printLine("Transpiler::transpileStatement(): function not found: '" + syntaxTree.value.getValueAsString() + "'");
 					return false;
 				}
 				//
@@ -2045,7 +2051,7 @@ bool Transpiler::transpileScriptStatement(
 			//
 			break;
 		default:
-			Console::printLine("Transpiler::transpileScriptStatement(): " + miniScript->getStatementInformation(statement) + ": function or method call expected, but got literal or 'none' syntaxTree");
+			Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": function or method call expected, but got literal or 'none' syntaxTree");
 			return false;
 
 	}
@@ -2056,7 +2062,7 @@ bool Transpiler::transpileScriptStatement(
 	// find method code in method code map
 	auto methodCodeMapIt = methodCodeMap.find(method);
 	if (methodCodeMapIt == methodCodeMap.end()) {
-		Console::printLine("Transpiler::transpileScriptStatement(): method code not found: '" + method + "'");
+		Console::printLine("Transpiler::transpileStatement(): method code not found: '" + method + "'");
 		return false;
 	}
 	const auto& methodCode = methodCodeMapIt->second;
@@ -2064,7 +2070,7 @@ bool Transpiler::transpileScriptStatement(
 	// script method
 	auto scriptMethod = miniScript->getMethod(string(method));
 	if (scriptMethod == nullptr) {
-		Console::printLine("Transpiler::transpileScriptStatement(): method not found: '" + method + "'");
+		Console::printLine("Transpiler::transpileStatement(): method not found: '" + method + "'");
 		return false;
 	}
 
@@ -2186,7 +2192,7 @@ bool Transpiler::transpileScriptStatement(
 									break;
 								default:
 									{
-										Console::printLine("Transpiler::transpileScriptStatement(): " + miniScript->getStatementInformation(statement) + ": '" + argument.value.getAsString() + "': unknown argument type: " + argument.value.getTypeAsString());
+										Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": '" + argument.value.getAsString() + "': unknown argument type: " + argument.value.getTypeAsString());
 										break;
 									}
 							}
@@ -2224,7 +2230,7 @@ bool Transpiler::transpileScriptStatement(
 	// enabled named conditions
 	if (method == MiniScript::METHOD_ENABLENAMEDCONDITION && syntaxTree.arguments.empty() == false) {
 		if (syntaxTree.arguments.size() != 1) {
-			Console::printLine("Transpiler::transpileScriptStatement(): " + miniScript->getStatementInformation(statement) + ": " + MiniScript::METHOD_ENABLENAMEDCONDITION + "(): expected string argument @ 0");
+			Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": " + MiniScript::METHOD_ENABLENAMEDCONDITION + "(): expected string argument @ 0");
 		} else {
 			string name = syntaxTree.arguments[0].value.getValueAsString();
 			enabledNamedConditions.erase(
@@ -2240,7 +2246,7 @@ bool Transpiler::transpileScriptStatement(
 	} else
 	if (method == MiniScript::METHOD_DISABLENAMEDCONDITION && syntaxTree.arguments.empty() == false) {
 		if (syntaxTree.arguments.size() != 1) {
-			Console::printLine("Transpiler::transpileScriptStatement(): " + miniScript->getStatementInformation(statement) + ": " + MiniScript::METHOD_DISABLENAMEDCONDITION + "(): expected string argument @ 0");
+			Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": " + MiniScript::METHOD_DISABLENAMEDCONDITION + "(): expected string argument @ 0");
 		} else {
 			string name = syntaxTree.arguments[0].value.getValueAsString();
 			enabledNamedConditions.erase(
@@ -2267,7 +2273,7 @@ bool Transpiler::transpileScriptStatement(
 						nextArgumentIndices.push_back(argumentIdx);
 
 						//
-						if (transpileScriptStatement(
+						if (transpileStatement(
 							miniScript,
 							generatedCode,
 							argument,
@@ -2286,7 +2292,7 @@ bool Transpiler::transpileScriptStatement(
 							string(),
 							additionalIndent
 						) == false) {
-							Console::printLine("Transpiler::transpileScriptStatement(): transpileScriptStatement(): " + miniScript->getStatementInformation(statement) + ": '" + syntaxTree.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(syntaxTree.arguments) + ")" + "': transpile error");
+							Console::printLine("Transpiler::transpileStatement(): transpileStatement(): " + miniScript->getStatementInformation(statement) + ": '" + syntaxTree.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(syntaxTree.arguments) + ")" + "': transpile error");
 						}
 					}
 					//
@@ -2396,7 +2402,7 @@ bool Transpiler::transpileScriptStatement(
 			smatch matches;
 			// replace returns with gotos
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*return[\\ \\t]*;.*") == true) {
-				Console::printLine("Transpiler::transpileScriptStatement(): method '" + string(method) + "': return statement not supported!");
+				Console::printLine("Transpiler::transpileStatement(): method '" + string(method) + "': return statement not supported!");
 				return false;
 			} else
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->gotoStatementGoto[\\ \\t]*\\([\\ \\t]*statement[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
@@ -2413,8 +2419,13 @@ bool Transpiler::transpileScriptStatement(
 					}
 					string indentString;
 					for (auto i = 0; i < indent; i++) indentString+= "\t";
+					//
 					generatedCode+= minIndentString + indentString + depthIndentString + "\t" + "goto miniscript_statement_" + to_string(statement.gotoStatementIdx) + ";\n";
 				}
+			} else
+			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->gotoStatement[\\ \\t]*\\(.*\\)[\\ \\t]*;[\\ \\t]*") == true) {
+				Console::printLine("Transpiler::transpileStatement(): unsupported gotoStatement() @" + to_string(statement.line) + ": " + codeLine);
+				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + " return;" + "\n";
 			} else
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*MINISCRIPT_METHODUSAGE_COMPLAIN[\\ \\t]*\\([\\ \\t]*(.*)\\)[\\ \\t]*;[\\ \\t]*", &matches) == true) {
 				string codeLineIndent;
@@ -2497,12 +2508,14 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 	string methodIndent = "\t";
 	string generatedCodeHeader;
 
-	// TODO: move me into a method
-	generatedCodeHeader+= methodIndent + "// STATEMENTIDX_FIRST means complete method call" + "\n";
-	generatedCodeHeader+= methodIndent + "if (miniScriptGotoStatementIdx == STATEMENTIDX_FIRST) {" + "\n";
-	generatedCodeHeader+= methodIndent + "\t" + "resetScriptExecutationState(" + to_string(scriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
-	generatedCodeHeader+= methodIndent + "}" + "\n";
-	// TODO: end
+	//
+	if (script.type == MiniScript::Script::SCRIPTTYPE_ON || script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
+		generatedCodeHeader+= methodIndent + "// STATEMENTIDX_FIRST means complete method call" + "\n";
+		generatedCodeHeader+= methodIndent + "if (miniScriptGotoStatementIdx == STATEMENTIDX_FIRST) {" + "\n";
+		generatedCodeHeader+= methodIndent + "\t" + "resetScriptExecutationState(" + to_string(scriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
+		generatedCodeHeader+= methodIndent + "}" + "\n";
+	}
+	//
 	generatedCodeHeader+= methodIndent + "// script setup" + "\n";
 	generatedCodeHeader+= methodIndent + "auto miniScript = this;" + "\n";
 	generatedCodeHeader+= methodIndent + "getScriptState().scriptIdx = " + to_string(scriptIdx) + ";" + "\n";
@@ -2522,7 +2535,12 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 
 	//
 	unordered_set<int> gotoStatementIdxSet;
-	for (const auto& statement: script.statements) gotoStatementIdxSet.insert(statement.gotoStatementIdx);
+	for (const auto& statement: script.statements) {
+		if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
+			gotoStatementIdxSet.insert(statement.statementIdx);
+			gotoStatementIdxSet.insert(statement.gotoStatementIdx);
+		}
+	}
 
 	//
 	auto statementIdx = MiniScript::STATEMENTIDX_FIRST;
@@ -2532,7 +2550,7 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 		const auto& statement = script.statements[scriptStatementIdx];
 		const auto& syntaxTree = script.syntaxTree[scriptStatementIdx];
 		//
-		if (scriptStateChanged == true) {
+		if (scriptStateChanged == true || gotoStatementIdxSet.find(statement.statementIdx) != gotoStatementIdxSet.end()) {
 			generatedCodeHeader+= methodIndent + "if (miniScriptGotoStatementIdx == " + to_string(statement.statementIdx)  + ") goto miniscript_statement_" + to_string(statement.statementIdx) + "; else" + "\n";
 		}
 
@@ -2557,7 +2575,7 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 		}
 		scriptStateChanged = false;
 		auto scriptStopped = false;
-		transpileScriptStatement(
+		transpileStatement(
 			miniScript,
 			generatedCode,
 			syntaxTree,
@@ -2594,7 +2612,7 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 	return true;
 }
 
-bool Transpiler::transpileScriptCondition(MiniScript* miniScript, string& generatedCode, int scriptIdx, const unordered_map<string, vector<string>>& methodCodeMap, const unordered_set<string>& allMethods, const string& returnValue, const string& injectCode, int depth) {
+bool Transpiler::transpileCondition(MiniScript* miniScript, string& generatedCode, int scriptIdx, const unordered_map<string, vector<string>>& methodCodeMap, const unordered_set<string>& allMethods, const string& returnValue, const string& injectCode, int depth) {
 	if (scriptIdx < 0 || scriptIdx >= miniScript->getScripts().size()) {
 		Console::printLine("Transpiler::transpileScriptCondition(): invalid script index");
 		return false;
@@ -2611,7 +2629,7 @@ bool Transpiler::transpileScriptCondition(MiniScript* miniScript, string& genera
 	auto scriptStateChanged = false;
 	auto scriptStopped = false;
 	vector<string >enabledNamedConditions;
-	transpileScriptStatement(
+	transpileStatement(
 		miniScript,
 		generatedCode,
 		script.conditionSyntaxTree,

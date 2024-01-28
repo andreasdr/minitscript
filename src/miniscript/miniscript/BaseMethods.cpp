@@ -200,11 +200,10 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							vector<MiniScript::Variable> arguments {};
 							span argumentsSpan(arguments);
 							MiniScript::Variable returnValue;
-							miniScript->call(block.parameter.getValueAsString(), argumentsSpan, returnValue, false);
+							miniScript->callInlineFunction(block.parameter.getValueAsString(), argumentsSpan, returnValue);
 						}
 						blockStack.erase(blockStack.begin() + blockStack.size() - 1);
 						if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
-							miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 							miniScript->gotoStatementGoto(statement);
 						}
 					}
@@ -247,7 +246,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					//
 					if (_Time::getCurrentMillis() > timeWaitStarted + time) {
 						scriptState.forTimeStarted.erase(statement.line);
-						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
 					} else {
 						scriptState.blockStack.emplace_back(
@@ -289,7 +287,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					miniScript->getBooleanValue(arguments, 0, booleanValue) == true &&
 					miniScript->getStringValue(arguments, 1, iterationFunction, true) == true) {
 					if (booleanValue == false) {
-						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
 					} else {
 						auto& scriptState = miniScript->getScriptState();
@@ -331,7 +328,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					miniScript->getBooleanValue(arguments, 0, booleanValue) == true) {
 					miniScript->getScriptState().blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_IF, booleanValue, nullptr, nullptr, MiniScript::Variable());
 					if (booleanValue == false) {
-						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
 					}
 				} else {
@@ -367,7 +363,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "elseif without if");
 					} else
 					if (blockStack.match == true || booleanValue == false) {
-						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
 					} else {
 						blockStack.match = booleanValue;
@@ -397,7 +392,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "else without if");
 					} else
 					if (blockStack.match == true) {
-						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
 					}
 				} else {
@@ -461,7 +455,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						auto match = arguments[0].getValueAsString() == blockStack.parameter.getValueAsString();
 						if (blockStack.match == true || match == false) {
-							miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 							miniScript->gotoStatementGoto(statement);
 						} else {
 							blockStack.match = match;
@@ -493,7 +486,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "default without switch");
 					} else
 					if (blockStack.match == true) {
-						miniScript->setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 						miniScript->gotoStatementGoto(statement);
 					}
 				} else {

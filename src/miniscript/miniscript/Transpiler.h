@@ -218,12 +218,12 @@ private:
 	);
 
 	/**
-	 * Generate MiniScript evaluate member access arrays
+	 * Generate evaluate member access arrays
 	 * @param miniScript MiniScript instance
 	 * @param generatedDeclarations generated declarations
 	 * @param generatedDefinitions generated definitions
 	 */
-	static void generateMiniScriptEvaluateMemberAccessArrays(
+	static void generateEvaluateMemberAccessArrays(
 		MiniScript* miniScript,
 		vector<string>& generatedDeclarations,
 		vector<string>& generatedDefinitions
@@ -294,7 +294,7 @@ private:
 	);
 
 	/**
-	 * Transpile script statement
+	 * Transpile statement
 	 * @param miniScript MiniScript instance
 	 * @param generatedCode generated code
 	 * @param syntaxTree syntax tree
@@ -313,7 +313,7 @@ private:
 	 * @param injectCode code to additionally inject
 	 * @param additionalIndent additional indent
 	 */
-	static bool transpileScriptStatement(
+	static bool transpileStatement(
 		MiniScript* miniScript,
 		string& generatedCode,
 		const MiniScript::SyntaxTreeNode& syntaxTree,
@@ -351,7 +351,7 @@ private:
 	);
 
 	/**
-	 * Transpile a script condition
+	 * Transpile a condition
 	 * @param miniScript MiniScript instance
 	 * @param generatedCode generated code
 	 * @param scriptIdx script index
@@ -361,7 +361,7 @@ private:
 	 * @param injectCode inject code
 	 * @return success
 	 */
-	static bool transpileScriptCondition(
+	static bool transpileCondition(
 		MiniScript* miniScript,
 		string& generatedCode,
 		int scriptIdx,
