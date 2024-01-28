@@ -2424,7 +2424,9 @@ bool Transpiler::transpileStatement(
 				}
 			} else
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->gotoStatement[\\ \\t]*\\(.*\\)[\\ \\t]*;[\\ \\t]*") == true) {
-				Console::printLine("Transpiler::transpileStatement(): unsupported gotoStatement() @" + to_string(statement.line) + ": " + codeLine);
+				// TODO: those are the break and continue statements, we might improve this later
+				//	we support break and continue with several levels, so this is not easy to be solved by iterating the tree, lets see later
+				//	for now we exit the C++ method after setting the gotoStatement and reenter the C++ method
 				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + " return;" + "\n";
 			} else
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*MINISCRIPT_METHODUSAGE_COMPLAIN[\\ \\t]*\\([\\ \\t]*(.*)\\)[\\ \\t]*;[\\ \\t]*", &matches) == true) {
