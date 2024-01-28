@@ -40,6 +40,44 @@ public:
 
 private:
 	/**
+	 * Create method name
+	 * @param scriptIdx script index
+	 * @return method name
+	 */
+	inline static const string createMethodName(MiniScript* miniScript, int scriptIdx) {
+		if (scriptIdx < 0 || scriptIdx >= miniScript->getScripts().size()) return string();
+		const auto& script = miniScript->getScripts()[scriptIdx];
+		return
+			(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
+				"function_":
+				(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
+			) +
+			(script.name.empty() == false?script.name:(
+				StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
+					script.condition:
+					to_string(scriptIdx)
+				)
+			);
+	}
+
+	/**
+	 * Create short method name
+	 * @param scriptIdx script index
+	 * @return short method name
+	 */
+	inline static const string createShortMethodName(MiniScript* miniScript, int scriptIdx) {
+		if (scriptIdx < 0 || scriptIdx >= miniScript->getScripts().size()) return string();
+		const auto& script = miniScript->getScripts()[scriptIdx];
+		return
+			(script.name.empty() == false?script.name:(
+				StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
+					script.condition:
+					to_string(scriptIdx)
+				)
+			);
+	}
+
+	/**
 	 * Check if variable has access statement
 	 * @param variableStatement variable statement
 	 * @return variable has statement
@@ -76,7 +114,7 @@ private:
 		if (dotIdx == string::npos) dotIdx = variableStatement.size();
 		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
 		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
-		auto cppVariableName = "_G" + StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
+		auto cppVariableName = "_" + StringTools::substring(variableStatement, 1, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
 		cppVariableName = StringTools::replace(cppVariableName, ":", "_");
 		return cppVariableName;
@@ -92,7 +130,7 @@ private:
 		if (dotIdx == string::npos) dotIdx = variableStatement.size();
 		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
 		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
-		auto cppVariableName = "_L" + StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
+		auto cppVariableName = StringTools::substring(variableStatement, 1, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
 		cppVariableName = StringTools::replace(cppVariableName, ":", "_");
 		return cppVariableName;

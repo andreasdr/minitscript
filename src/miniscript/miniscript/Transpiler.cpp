@@ -145,19 +145,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	{
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
-			// method name
-			string methodName =
-				(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
-					"function_":
-					(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
-				) +
-				(script.name.empty() == false?script.name:(
-					StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
-						script.condition:
-						to_string(scriptIdx)
-					)
-				);
-			//
+			auto methodName = createMethodName(miniScript, scriptIdx);
 			generatedExecuteCode+= headerIndent + "\t\t" + "if (getScriptState().scriptIdx == " + to_string(scriptIdx) + ") " + methodName + "(scriptState.statementIdx); else\n";
 			scriptIdx++;
 		}
@@ -361,18 +349,10 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
 			// method name
-			string methodName =
-				(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
-					"function_":
-					(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
-				) +
-				(script.name.empty() == false?script.name:(
-					StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
-						script.condition:
-						to_string(scriptIdx)
-					)
-				);
+			auto methodName = createMethodName(miniScript, scriptIdx);
+			auto shortMethodName = createShortMethodName(miniScript, scriptIdx);
 
+			// emit name
 			string emitName =
 				(script.name.empty() == false?script.name:(
 					StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
@@ -404,8 +384,9 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			//
 			if (localVariables[scriptIdx].empty() == false) {
 				generatedDefinitions+= string() + "\t" + "// local script variables" + "\n";
+				generatedDefinitions+= string() + "\t" + "LV_" + shortMethodName + " _lv;"+ "\n";
 				for (const auto& variable: localVariables[scriptIdx]) {
-					generatedDefinitions+= string() + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + "; auto " + createLocalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
+					generatedDefinitions+= string() + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + "; _lv." + createLocalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
 				}
 				//
 				generatedDefinitions+= string() + "\t" + "//" + "\n";
@@ -418,7 +399,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				generatedDefinitions+= string() + "\t" + "};" + "\n";
 				generatedDefinitions+= string() + "\t" + "//" + "\n";
 				for (const auto& variable: localVariables[scriptIdx]) {
-					generatedDefinitions+= string() + "\t" + "VariableRAII " + "variableRAII" + createLocalVariableName(variable) + "(" + createLocalVariableName(variable) + ");" + "\n";
+					generatedDefinitions+= string() + "\t" + "VariableRAII " + "variableRAII" + createLocalVariableName(variable) + "(_lv." + createLocalVariableName(variable) + ");" + "\n";
 				}
 			}
 
@@ -577,6 +558,31 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		generatedDeclarations+= headerIndent + "// global script variables" + "\n";
 		for (const auto& variable: globalVariables) {
 			generatedDeclarations+= headerIndent + "Variable " + createGlobalVariableName(variable) + ";" + "\n";
+		}
+		generatedDeclarations+= "\n";
+	}
+
+	//
+	{
+		auto scriptIdx = 0;
+		for (const auto& script: scripts) {
+			//
+			if (script.type == MiniScript::Script::SCRIPTTYPE_ON ||
+				script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
+				scriptIdx++;
+				continue;
+			}
+			// method name
+			auto shortMethodName = createShortMethodName(miniScript, scriptIdx);
+			//
+			generatedDeclarations+= headerIndent + "// local script variables of: " + (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?"function":(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on":"on-enabled")) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
+			generatedDeclarations+= headerIndent + "struct LV_" + shortMethodName + " {" + "\n";
+			for (const auto& variable: localVariables[scriptIdx]) {
+				generatedDeclarations+= headerIndent + "\t" + "Variable " + createLocalVariableName(variable) + ";" + "\n";
+			}
+			generatedDeclarations+= headerIndent + "};" + "\n\n";
+			//
+			scriptIdx++;
 		}
 	}
 
@@ -1190,30 +1196,30 @@ void Transpiler::generateVariableAccess(
 			auto haveVariableStatement = variableHasStatement(localVariable);
 			if (getVariable == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + returnValueStatement + "getVariable(&" + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, false)" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "getVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, false)" + statementEnd;
 				} else {
-					generatedCode+= indent + returnValueStatement + "Variable::createNonReferenceVariable(&" + createLocalVariableName(localVariable) + ")" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "Variable::createNonReferenceVariable(&_lv." + createLocalVariableName(localVariable) + ")" + statementEnd;
 				}
 			} else
 			if (getVariableReference == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + returnValueStatement + "getVariable(&" + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, true)" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "getVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, true)" + statementEnd;
 				} else {
-					generatedCode+= indent + returnValueStatement + "Variable::createReferenceVariable(&" + createLocalVariableName(localVariable) + ")" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "Variable::createReferenceVariable(&_lv." + createLocalVariableName(localVariable) + ")" + statementEnd;
 				}
 			} else
 			if (setVariable == true || setConstant == true) {
 				if (haveVariableStatement == true) {
 					if (setConstant == true) {
-						generatedCode+= indent + "setConstant(&" + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+						generatedCode+= indent + "setConstant(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 					} else {
-						generatedCode+= indent + "setVariable(&" + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+						generatedCode+= indent + "setVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 					}
 				} else {
-					generatedCode+= indent + "if (" + createLocalVariableName(localVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
-					generatedCode+= createLocalVariableName(localVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+					generatedCode+= indent + "if (_lv." + createLocalVariableName(localVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
+					generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 					if (setConstant == true) {
-						generatedCode+= indent + "setConstant(" + createLocalVariableName(localVariable) + ");" + "\n";
+						generatedCode+= indent + "setConstant(_lv." + createLocalVariableName(localVariable) + ");" + "\n";
 					}
 				}
 			}
@@ -2174,18 +2180,7 @@ bool Transpiler::transpileStatement(
 								case MiniScript::TYPE_SET:
 									{
 										const auto& script = miniScript->getScripts()[scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
-										string methodName =
-											(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
-												"function_":
-												(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
-											) +
-											(script.name.empty() == false?script.name:(
-												StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
-													script.condition:
-													to_string(scriptIdx)
-												)
-											);
-										//
+										auto methodName = createMethodName(miniScript, scriptIdx);										//
 										auto initializerMethod = string() + "initializer_" + to_string(statement.statementIdx) + "_" + miniScript->getArgumentIndicesAsString(nextArgumentIndices, "_");
 										argumentsCode.push_back(string() + "\t" + initializerMethod + "(statement)" + (lastArgument == false?",":""));
 									}
@@ -2523,17 +2518,7 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 	generatedCodeHeader+= methodIndent + "getScriptState().scriptIdx = " + to_string(scriptIdx) + ";" + "\n";
 
 	// method name
-	string methodName =
-		(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
-			"function_":
-			(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
-		) +
-		(script.name.empty() == false?script.name:(
-			StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
-				script.condition:
-				to_string(scriptIdx)
-			)
-		);
+	auto methodName = createMethodName(miniScript, scriptIdx);
 
 	//
 	unordered_set<int> gotoStatementIdxSet;
