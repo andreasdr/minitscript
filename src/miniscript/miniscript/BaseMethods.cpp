@@ -419,10 +419,9 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				return "switch";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				bool booleanValue;
 				if (arguments.size() == 1) {
 					auto& scriptState = miniScript->getScriptState();
-					scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_SWITCH, booleanValue, nullptr, nullptr, arguments[0]);
+					scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_SWITCH, false, nullptr, nullptr, arguments[0]);
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
