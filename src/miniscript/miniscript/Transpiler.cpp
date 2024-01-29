@@ -174,6 +174,9 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	//
 	string miniScriptClassName = FileSystem::getFileName(transpilationFileName);
 	string generatedDeclarations = "\n";
+	generatedDeclarations+= declarationIndent + "/**" + "\n";
+	generatedDeclarations+= declarationIndent + " * Public destructor" + "\n";
+	generatedDeclarations+= declarationIndent + " */" + "\n";
 	generatedDeclarations+= declarationIndent + "inline ~" + miniScriptClassName + "() {" + "\n";
 	for (const auto& variable: globalVariables) {
 		generatedDeclarations+= declarationIndent + "\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
