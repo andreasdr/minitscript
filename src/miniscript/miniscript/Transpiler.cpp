@@ -178,6 +178,21 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	for (const auto& variable: globalVariables) {
 		generatedDeclarations+= declarationIndent + "\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
 	}
+	{
+		auto scriptIdx = 0;
+		for (const auto& script: scripts) {
+			if (script.type == MiniScript::Script::SCRIPTTYPE_ON ||
+				script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
+				scriptIdx++;
+				continue;
+			}
+			auto methodName = createMethodName(miniScript, scriptIdx);
+			auto shortMethodName = createShortMethodName(miniScript, scriptIdx);
+			generatedDeclarations+= declarationIndent + "\t" + "if (" + shortMethodName + "_Stack.empty() == false) _Console::printLine(\"~" + miniScriptClassName + "(): Warning: " + methodName + ": stack not empty, size = \" + to_string(" + shortMethodName + "_Stack.size()));" + "\n";
+			scriptIdx++;
+		}
+	}
+
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	generatedDeclarations+= "\n";
 	generatedDeclarations+= declarationIndent + "// overridden methods" + "\n";
