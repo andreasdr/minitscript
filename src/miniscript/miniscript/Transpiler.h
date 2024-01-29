@@ -130,7 +130,7 @@ private:
 		if (dotIdx == string::npos) dotIdx = variableStatement.size();
 		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
 		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
-		auto cppVariableName = StringTools::substring(variableStatement, 1, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
+		auto cppVariableName = "_" + StringTools::substring(variableStatement, 1, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
 		cppVariableName = StringTools::replace(cppVariableName, ":", "_");
 		return cppVariableName;
