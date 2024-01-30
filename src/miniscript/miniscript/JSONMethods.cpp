@@ -70,10 +70,10 @@ void JSONMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, json) == true) {
 					json = _StringTools::trim(json);
 					if (_StringTools::startsWith(json, "{") == true) {
-						returnValue = MiniScript::initializeMapSet(json, miniScript, statement);
+						returnValue = MiniScript::initializeMapSet(json, miniScript, MiniScript::SCRIPTIDX_NONE, statement);
 					} else
 					if (_StringTools::startsWith(json, "[") == true) {
-						returnValue = MiniScript::initializeArray(json, miniScript, statement);
+						returnValue = MiniScript::initializeArray(json, miniScript, MiniScript::SCRIPTIDX_NONE, statement);
 					} else {
 						miniScript->complain(getMethodName(), statement, "JSON string not valid");
 					}

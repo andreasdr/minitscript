@@ -1364,7 +1364,7 @@ void Transpiler::generateArrayAccessMethods(
 									// check if literal
 									MiniScript::Variable arrayAccessStatementAsScriptVariable;
 									//
-									arrayAccessStatementAsScriptVariable.setImplicitTypedValue(arrayAccessStatementString, miniScript, statement);
+									arrayAccessStatementAsScriptVariable.setImplicitTypedValue(arrayAccessStatementString, miniScript, scriptIdx, statement);
 									switch (arrayAccessStatementAsScriptVariable.getType()) {
 										case MiniScript::TYPE_BOOLEAN:
 											{
@@ -1431,7 +1431,7 @@ void Transpiler::generateArrayAccessMethods(
 									}
 									// create syntax tree for this array access
 									MiniScript::SyntaxTreeNode arrayAccessSyntaxTree;
-									if (miniScript->createStatementSyntaxTree(arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, arrayAccessSyntaxTree) == false) {
+									if (miniScript->createStatementSyntaxTree(scriptIdx, arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, arrayAccessSyntaxTree) == false) {
 										break;
 									}
 

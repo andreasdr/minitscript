@@ -1889,11 +1889,12 @@ public:
 
 		/**
 		 * Set array/map values initializer function call statement
-		 * @param miniScript miniscript instance
-		 * @param statement statement
 		 * @param initializerStatement initializer statement
+		 * @param miniScript miniscript instance
+		 * @param scriptIdx script index
+		 * @param statement statement
 		 */
-		void setFunctionCallStatement(const string& initializerStatement, MiniScript* miniScript, const Statement& statement);
+		void setFunctionCallStatement(const string& initializerStatement, MiniScript* miniScript, int scriptIdx, const Statement& statement);
 
 		/**
 		 * Set function assignment from given value into variable
@@ -1917,19 +1918,21 @@ public:
 		 * Set implicit typed value given by value string
 		 * @param value value
 		 * @param miniScript mini script
+		 * @param scriptIdx script index
 		 * @param statement statement
 		 */
-		inline void setImplicitTypedValue(const string& value, MiniScript* miniScript, const Statement& statement) {
-			setImplicitTypedValueFromStringView(string_view(value), miniScript, statement);
+		inline void setImplicitTypedValue(const string& value, MiniScript* miniScript, int scriptIdx, const Statement& statement) {
+			setImplicitTypedValueFromStringView(string_view(value), miniScript, scriptIdx, statement);
 		}
 
 		/**
 		 * Set implicit typed value given by value string
 		 * @param value value
 		 * @param miniScript mini script
+		 * @param scriptIdx script index
 		 * @param statement statement
 		 */
-		inline void setImplicitTypedValueFromStringView(const string_view& value, MiniScript* miniScript, const Statement& statement) {
+		inline void setImplicitTypedValueFromStringView(const string_view& value, MiniScript* miniScript, int scriptIdx, const Statement& statement) {
 			//
 			auto viewIsFunctionAssignment = [](const string_view& candidate, string_view& function) -> bool {
 				if (candidate.size() == 0) return false;
@@ -2012,11 +2015,11 @@ public:
 			} else
 			if (_StringTools::viewStartsWith(value, "{") == true &&
 				_StringTools::viewEndsWith(value, "}") == true) {
-				*this = initializeMapSet(value, miniScript, statement);
+				*this = initializeMapSet(value, miniScript, scriptIdx, statement);
 			} else
 			if (_StringTools::viewStartsWith(value, "[") == true &&
 				_StringTools::viewEndsWith(value, "]") == true) {
-				*this = initializeArray(value, miniScript, statement);
+				*this = initializeArray(value, miniScript, scriptIdx, statement);
 			} else
 			if (viewIsFunctionAssignment(value, functionOrStacklet) == true) {
 				setFunctionAssignment(string(functionOrStacklet));
@@ -2028,11 +2031,11 @@ public:
 			//	TODO: improve me
 			if (value.find('(') != string::npos &&
 				value.find(')') != string::npos) {
-				setFunctionCallStatement(miniScript->doStatementPreProcessing(string(value), statement), miniScript, statement);
+				setFunctionCallStatement(miniScript->doStatementPreProcessing(string(value), statement), miniScript, scriptIdx, statement);
 			} else
 			// variable
 			if (viewIsVariableAccess(value) == true) {
-				setFunctionCallStatement("getVariable(\"" + string(value) + "\")", miniScript, statement);
+				setFunctionCallStatement("getVariable(\"" + string(value) + "\")", miniScript, scriptIdx, statement);
 			} else {
 				setValue(miniScript->deescape(value, statement));
 			}
@@ -3032,29 +3035,32 @@ protected:
 	/***
 	 * Create stacklet for given variable
 	 * @param variable variable
+	 * @param scopeName scope name
 	 * @param arguments arguments
 	 * @param stackletScriptCode stacklet script code
 	 * @param statement statement
 	 */
-	void createStacklet(Variable& variable, const vector<string_view>& arguments, const string_view& stackletScriptCode, const Statement& statement);
+	void createStacklet(Variable& variable, const string& scopeName, const vector<string_view>& arguments, const string_view& stackletScriptCode, const Statement& statement);
 
 	/**
 	 * Initialize array by initializer string
 	 * @param initializerString initializer string
 	 * @param miniScript mini script
+	 * @param scriptIdx script index
 	 * @param statement statement
 	 * @return initialized variable
 	 */
-	static const Variable initializeArray(const string_view& initializerString, MiniScript* miniScript, const Statement& statement);
+	static const Variable initializeArray(const string_view& initializerString, MiniScript* miniScript, int scriptIdx, const Statement& statement);
 
 	/**
 	 * Initialize map/set by initializer string
 	 * @param initializerString initializer string
 	 * @param miniScript mini script
+	 * @param scriptIdx script index
 	 * @param statement statement
 	 * @return initialized variable
 	 */
-	static const Variable initializeMapSet(const string_view& initializerString, MiniScript* miniScript, const Statement& statement);
+	static const Variable initializeMapSet(const string_view& initializerString, MiniScript* miniScript, int scriptIdx, const Statement& statement);
 
 	/**
 	 * Try garbage collection
@@ -3185,13 +3191,14 @@ private:
 
 	/**
 	 * Create statement syntax tree
+	 * @param scriptIdx script index
 	 * @param methodName method name
 	 * @param arguments arguments
 	 * @param statement statement
 	 * @param syntaxTree syntax tree
 	 * @return success
 	 */
-	bool createStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree);
+	bool createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree);
 
 	/**
 	 * Validate callabe

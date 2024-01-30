@@ -738,7 +738,7 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 	return returnValue;
 }
 
-bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree) {
+bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree) {
 	if (VERBOSE == true) _Console::printLine("MiniScript::createScriptStatementSyntaxTree(): " + getStatementInformation(statement) + ": " + string(methodName) + "(" + getArgumentsAsString(arguments) + ")");
 	// method/function
 	auto functionIdx = SCRIPTIDX_NONE;
@@ -789,8 +789,17 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 			syntaxTree.arguments.push_back(subSyntaxTree);
 		} else
 		if (viewIsStacklet(argument, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode) == true) {
+			string scopeName;
+			// empty scope means root scope
+			if (scriptIdx != SCRIPTIDX_NONE) {
+				// function are a valid scope for stacklets
+				if (scripts[scriptIdx].type == Script::SCRIPTTYPE_FUNCTION) {
+					scopeName = scripts[scriptIdx].condition;
+				}
+				// TODO: as well as stacklets
+			}
 			Variable variable;
-			createStacklet(variable, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode, statement);
+			createStacklet(variable, scopeName, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode, statement);
 			SyntaxTreeNode subSyntaxTree(SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {});
 			syntaxTree.arguments.push_back(subSyntaxTree);
 		} else
@@ -801,7 +810,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 			string accessObjectMemberStatement;
 			if (parseStatement(argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
-				if (createStatementSyntaxTree(subMethodName, subArguments, statement, subSyntaxTree) == false) {
+				if (createStatementSyntaxTree(scriptIdx, subMethodName, subArguments, statement, subSyntaxTree) == false) {
 					return false;
 				}
 				syntaxTree.arguments.push_back(subSyntaxTree);
@@ -864,7 +873,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 			string accessObjectMemberStatement;
 			if (parseStatement(argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
-				if (createStatementSyntaxTree(subMethodName, subArguments, statement, subSyntaxTree) == false) {
+				if (createStatementSyntaxTree(scriptIdx, subMethodName, subArguments, statement, subSyntaxTree) == false) {
 					return false;
 				}
 				syntaxTree.arguments.push_back(subSyntaxTree);
@@ -892,7 +901,7 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 			} else {
 				// implicitely literal
 				Variable value;
-				value.setImplicitTypedValueFromStringView(argument, this, statement);
+				value.setImplicitTypedValueFromStringView(argument, this, scriptIdx, statement);
 				//
 				syntaxTree.arguments.emplace_back(
 					SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
@@ -1866,8 +1875,8 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 	}
 
 	// create syntax tree
-	for (auto i = scriptCount; i < scripts.size(); i++) {
-		auto& script = scripts[i];
+	for (auto scriptIdx = scriptCount; scriptIdx < scripts.size(); scriptIdx++) {
+		auto& script = scripts[scriptIdx];
 		// create syntax tree of executable condition if we have any
 		if (script.emitCondition == false && script.executableCondition.empty() == false) {
 			string_view method;
@@ -1877,7 +1886,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				//
 				scriptValid = false;
 			} else
-			if (createStatementSyntaxTree(method, arguments, script.conditionStatement, script.conditionSyntaxTree) == false) {
+			if (createStatementSyntaxTree(SCRIPTIDX_NONE, method, arguments, script.conditionStatement, script.conditionSyntaxTree) == false) {
 				//
 				scriptValid = false;
 			}
@@ -1894,7 +1903,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				//
 				scriptValid = false;
 			} else
-			if (createStatementSyntaxTree(methodName, arguments, statement, syntaxTree) == false) {
+			if (createStatementSyntaxTree(scriptIdx, methodName, arguments, statement, syntaxTree) == false) {
 				//
 				scriptValid = false;
 			}
@@ -3385,10 +3394,10 @@ void MiniScript::createLamdaFunction(Variable& variable, const vector<string_vie
 	variable.setFunctionAssignment(functionName);
 }
 
-void MiniScript::createStacklet(Variable& variable, const vector<string_view>& arguments, const string_view& stackletScriptCode, const Statement& statement) {
+void MiniScript::createStacklet(Variable& variable, const string& scopeName, const vector<string_view>& arguments, const string_view& stackletScriptCode, const Statement& statement) {
 	// function declaration
 	auto stackletName = string() + "stacklet_" + to_string(stackletIdx++);
-	auto inlineStackletScriptCode = "stacklet: " + stackletName + "(xxx)" + "\n"; // TODO: no xxx here :DDD
+	auto inlineStackletScriptCode = "stacklet: " + stackletName + "(" + scopeName + ")" + "\n";
 	// function definition
 	auto scriptCode = string(stackletScriptCode);
 	auto lineIdx = MiniScript::LINE_FIRST;
@@ -3411,7 +3420,7 @@ void MiniScript::createStacklet(Variable& variable, const vector<string_view>& a
 	variable.setStackletAssignment(stackletName);
 }
 
-const MiniScript::Variable MiniScript::initializeArray(const string_view& initializerString, MiniScript* miniScript, const Statement& statement) {
+const MiniScript::Variable MiniScript::initializeArray(const string_view& initializerString, MiniScript* miniScript, int scriptIdx, const Statement& statement) {
 	Variable variable;
 	variable.setType(TYPE_ARRAY);
 	//
@@ -3446,7 +3455,7 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 				auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 				if (arrayValueStringView.empty() == false) {
 					Variable arrayValue;
-					arrayValue.setImplicitTypedValueFromStringView(arrayValueStringView, miniScript, statement);
+					arrayValue.setImplicitTypedValueFromStringView(arrayValueStringView, miniScript, scriptIdx, statement);
 					variable.pushArrayEntry(arrayValue);
 				}
 			}
@@ -3509,7 +3518,7 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 						if (arrayValueLength > 0) {
 							auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 							if (arrayValueStringView.empty() == false) {
-								auto arrayValue = initializeArray(arrayValueStringView, miniScript, statement);
+								auto arrayValue = initializeArray(arrayValueStringView, miniScript, scriptIdx, statement);
 								variable.pushArrayEntry(arrayValue);
 							}
 						}
@@ -3538,7 +3547,7 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 						if (arrayValueLength > 0) {
 							auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 							if (arrayValueStringView.empty() == false) {
-								auto arrayValue = initializeMapSet(arrayValueStringView, miniScript, statement);
+								auto arrayValue = initializeMapSet(arrayValueStringView, miniScript, scriptIdx, statement);
 								variable.pushArrayEntry(arrayValue);
 							}
 						}
@@ -3563,7 +3572,7 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 	return variable;
 }
 
-const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initializerString, MiniScript* miniScript, const Statement& statement) {
+const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initializerString, MiniScript* miniScript, int scriptIdx, const Statement& statement) {
 	Variable variable;
 	variable.setType(TYPE_MAP);
 	//
@@ -3637,7 +3646,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 					auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 					if (mapValueStringView.empty() == false) {
 						Variable mapValue;
-						mapValue.setImplicitTypedValueFromStringView(mapValueStringView, miniScript, statement);
+						mapValue.setImplicitTypedValueFromStringView(mapValueStringView, miniScript, scriptIdx, statement);
 						//
 						variable.setMapEntry(string(mapKey), mapValue);
 						//
@@ -3804,7 +3813,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 										variable.setMapEntry(string(mapKey), mapValue);
 									} else {
 										// map/set
-										auto mapValue = initializeMapSet(mapValueStringView, miniScript, statement);
+										auto mapValue = initializeMapSet(mapValueStringView, miniScript, scriptIdx, statement);
 										variable.setMapEntry(string(mapKey), mapValue);
 									}
 								}
@@ -3862,7 +3871,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 							if (mapValueLength > 0) {
 								auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 								if (mapValueStringView.empty() == false) {
-									auto mapValue = initializeArray(mapValueStringView, miniScript, statement);
+									auto mapValue = initializeArray(mapValueStringView, miniScript, scriptIdx, statement);
 									variable.setMapEntry(string(mapKey), mapValue);
 								}
 							}
@@ -3905,7 +3914,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 	return variable;
 }
 
-void MiniScript::Variable::setFunctionCallStatement(const string& initializerStatement, MiniScript* miniScript, const Statement& statement) {
+void MiniScript::Variable::setFunctionCallStatement(const string& initializerStatement, MiniScript* miniScript, int scriptIdx, const Statement& statement) {
 	setType(TYPE_FUNCTION_CALL);
 	getStringValueReference().setValue(initializerStatement);
 	//
@@ -3924,7 +3933,7 @@ void MiniScript::Variable::setFunctionCallStatement(const string& initializerSta
 	if (miniScript->parseStatement(initializerStatement, methodName, arguments, initializerScriptStatement, accessObjectMemberStatement) == false) {
 		//
 	} else
-	if (miniScript->createStatementSyntaxTree(methodName, arguments, initializerScriptStatement, *evaluateSyntaxTree) == false) {
+	if (miniScript->createStatementSyntaxTree(scriptIdx, methodName, arguments, initializerScriptStatement, *evaluateSyntaxTree) == false) {
 		//
 	} else {
 		getInitializerReference() = new Initializer(initializerStatement, statement, evaluateSyntaxTree);
@@ -4180,7 +4189,7 @@ inline bool MiniScript::evaluateInternal(const string& statement, const string& 
 	if (parseStatement(scriptEvaluateStatement, methodName, arguments, evaluateStatement, accessObjectMemberStatement) == false) {
 		return false;
 	} else
-	if (createStatementSyntaxTree(methodName, arguments, evaluateStatement, evaluateSyntaxTree) == false) {
+	if (createStatementSyntaxTree(SCRIPTIDX_NONE, methodName, arguments, evaluateStatement, evaluateSyntaxTree) == false) {
 		return false;
 	} else {
 		//
