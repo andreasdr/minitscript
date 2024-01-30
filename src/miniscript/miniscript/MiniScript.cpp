@@ -2023,12 +2023,12 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	// parse deferred function script codes,
 	//	which are created by parsing map initializers and possible map inline functions
 	do {
-		auto deferredFunctionScriptCodesCopy = deferredFunctionScriptCodes;
-		deferredFunctionScriptCodes.clear();
-		for (const auto& functionScriptCode: deferredFunctionScriptCodesCopy) {
+		auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
+		deferredInlineScriptCodes.clear();
+		for (const auto& functionScriptCode: deferredInlineScriptCodesCopy) {
 			parseScriptInternal(functionScriptCode);
 		}
-	} while (deferredFunctionScriptCodes.empty() == false);
+	} while (deferredInlineScriptCodes.empty() == false);
 
 	//
 	startScript();
@@ -3389,16 +3389,16 @@ void MiniScript::createLamdaFunction(Variable& variable, const vector<string_vie
 	inlineFunctionScriptCode+= "\n";
 	inlineFunctionScriptCode+= string() + "end" + "\n";
 	// store it to be parsed later
-	deferredFunctionScriptCodes.push_back(inlineFunctionScriptCode);
+	deferredInlineScriptCodes.push_back(inlineFunctionScriptCode);
 	//
 	variable.setFunctionAssignment(functionName);
 }
 
 void MiniScript::createStacklet(Variable& variable, const string& scopeName, const vector<string_view>& arguments, const string_view& stackletScriptCode, const Statement& statement) {
-	// function declaration
+	// stacklet declaration
 	auto stackletName = string() + "stacklet_" + to_string(stackletIdx++);
 	auto inlineStackletScriptCode = "stacklet: " + stackletName + "(" + scopeName + ")" + "\n";
-	// function definition
+	// stacklet definition
 	auto scriptCode = string(stackletScriptCode);
 	auto lineIdx = MiniScript::LINE_FIRST;
 	auto currentLineIdx = MiniScript::LINE_FIRST;
@@ -3415,7 +3415,7 @@ void MiniScript::createStacklet(Variable& variable, const string& scopeName, con
 	inlineStackletScriptCode+= "\n";
 	inlineStackletScriptCode+= string() + "end" + "\n";
 	// store it to be parsed later
-	deferredFunctionScriptCodes.push_back(inlineStackletScriptCode);
+	deferredInlineScriptCodes.push_back(inlineStackletScriptCode);
 	//
 	variable.setStackletAssignment(stackletName);
 }

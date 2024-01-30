@@ -2819,7 +2819,7 @@ protected:
 	int64_t timeEnabledConditionsCheckLast { TIME_NONE };
 
 	vector<string> parseErrors;
-	vector<string> deferredFunctionScriptCodes;
+	vector<string> deferredInlineScriptCodes;
 
 	int inlineFunctionIdx { 0 };
 	int stackletIdx { 0 };
