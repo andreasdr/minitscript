@@ -2819,6 +2819,7 @@ protected:
 	vector<string> deferredFunctionScriptCodes;
 
 	int inlineFunctionIdx { 0 };
+	int stackletIdx { 0 };
 
 	unique_ptr<MathMethods> miniScriptMath;
 
@@ -2952,7 +2953,7 @@ protected:
 	}
 
 	/**
-	 * Reset inline function script execution state
+	 * Reset stacklet script execution state
 	 * @param scriptIdx script index
 	 * @param stateMachineState state machine state
 	 */
@@ -3019,14 +3020,23 @@ protected:
 	virtual int determineNamedScriptIdxToStart();
 
 	/***
-	 * Create inline/lamda function for given variable
+	 * Create lamda function for given variable
 	 * @param variable variable
 	 * @param arguments arguments
 	 * @param functionScriptCode function script code
-	 * @param populateThis populate this variable, which applies to inline member function of maps/objects
+	 * @param populateThis populate this variable, which applies to lamda member function of maps/objects
 	 * @param statement statement
 	 */
 	void createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, bool populateThis, const Statement& statement);
+
+	/***
+	 * Create stacklet for given variable
+	 * @param variable variable
+	 * @param arguments arguments
+	 * @param stackletScriptCode stacklet script code
+	 * @param statement statement
+	 */
+	void createStacklet(Variable& variable, const vector<string_view>& arguments, const string_view& stackletScriptCode, const Statement& statement);
 
 	/**
 	 * Initialize array by initializer string
@@ -3410,11 +3420,11 @@ private:
 	}
 
 	/**
-	 * Returns if a given string is a inline/lambda function
+	 * Returns if a given string is a lambda function
 	 * @param candidate candidate
 	 * @param arguments arguments
 	 * @param functionScriptCode function script code
-	 * @return if candidate is a inline/lambda function
+	 * @return if candidate is a lambda function
 	 */
 	inline static bool viewIsLamdaFunction(const string_view& candidate, vector<string_view>& arguments, string_view& functionScriptCode) {
 		if (candidate.size() == 0) return false;
@@ -3499,6 +3509,50 @@ private:
 		if (scriptCodeEndIdx == string::npos) return false;
 		//
 		functionScriptCode = string_view(&candidate[scriptCodeStartIdx], scriptCodeEndIdx - scriptCodeStartIdx);
+		//
+		return true;
+	}
+
+	/**
+	 * Returns if a given string is a stacklet
+	 * @param candidate candidate
+	 * @param arguments arguments
+	 * @param stackletScriptCode stacklet script code
+	 * @return if candidate is a stacklet function
+	 */
+	inline static bool viewIsStacklet(const string_view& candidate, vector<string_view>& arguments, string_view& stackletScriptCode) {
+		if (candidate.size() == 0) return false;
+		//
+		auto i = 0;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		// -
+		if (candidate[i++] != '-') return false;
+		//
+		if (i >= candidate.size()) return false;
+		// >
+		if (candidate[i++] != '>') return false;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		//
+		if (candidate[i++] != '{') return false;
+		//
+		auto scriptCodeStartIdx = i;
+		auto scriptCodeEndIdx = string::npos;
+		//
+		for (auto j = candidate.size() - 1; j > i; j--) {
+			if (candidate[j] == '}') {
+				scriptCodeEndIdx = j;
+				break;
+			} else
+			if (_Character::isSpace(candidate[j]) == false) {
+				return false;
+			}
+		}
+		//
+		if (scriptCodeEndIdx == string::npos) return false;
+		//
+		stackletScriptCode = string_view(&candidate[scriptCodeStartIdx], scriptCodeEndIdx - scriptCodeStartIdx);
 		//
 		return true;
 	}
@@ -4264,25 +4318,25 @@ public:
 	}
 
 	/**
-	 * Call inline function
+	 * Call stacklet
 	 * @param scriptIdx script index
 	 * @param arguments argument values
 	 * @param returnValue return value
 	 * @return success
 	 */
-	inline bool callInlineFunction(int scriptIdx, span<Variable>& arguments, Variable& returnValue) {
+	inline bool callStacklet(int scriptIdx, span<Variable>& arguments, Variable& returnValue) {
 		return call(scriptIdx, arguments, returnValue, false);
 	}
 
 	/**
-	 * Call inline function
-	 * @param function function
+	 * Call stacklet
+	 * @param stacklet stacklet
 	 * @param arguments argument values
 	 * @param returnValue return value
 	 * @return success
 	 */
-	inline bool callInlineFunction(const string& function, span<Variable>& arguments, Variable& returnValue) {
-		return call(function, arguments, returnValue, false);
+	inline bool callStacklet(const string& stacklet, span<Variable>& arguments, Variable& returnValue) {
+		return call(stacklet, arguments, returnValue, false);
 	}
 
 	/**

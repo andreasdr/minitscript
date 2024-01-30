@@ -780,11 +780,17 @@ bool MiniScript::createStatementSyntaxTree(const string_view& methodName, const 
 		string_view accessObjectMemberObject;
 		string_view accessObjectMemberMethod;
 		int accessObjectMemberStartIdx;
-		vector<string_view> lamdaFunctionArguments;
-		string_view lamdaFunctionScriptCode;
-		if (viewIsLamdaFunction(argument, lamdaFunctionArguments, lamdaFunctionScriptCode) == true) {
+		vector<string_view> lamdaFunctionStackletArguments;
+		string_view lamdaFunctionStackletScriptCode;
+		if (viewIsLamdaFunction(argument, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode) == true) {
 			Variable variable;
-			createLamdaFunction(variable, lamdaFunctionArguments, lamdaFunctionScriptCode, false, statement);
+			createLamdaFunction(variable, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode, false, statement);
+			SyntaxTreeNode subSyntaxTree(SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {});
+			syntaxTree.arguments.push_back(subSyntaxTree);
+		} else
+		if (viewIsStacklet(argument, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode) == true) {
+			Variable variable;
+			createStacklet(variable, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode, statement);
 			SyntaxTreeNode subSyntaxTree(SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {});
 			syntaxTree.arguments.push_back(subSyntaxTree);
 		} else
@@ -1207,7 +1213,7 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 	for (; i < scriptCode.size(); i++) {
 		auto c = scriptCode[i];
 		auto nc = i + 1 < scriptCode.size()?scriptCode[i + 1]:'\0';
-		//
+		// this is some sort of hack, but it works, we need a more sophisticated parser later
 		if (c != '-' && c != '>' &&
 			c != ' ' && c != '\t' && c != '\n' && c != '\r') canExpectStacklet = c == ',' || c == '(';
 		// handle quotes
@@ -1335,9 +1341,6 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 	if (i == scriptCode.size() && scriptCode.back() != '\n') ++line;
 
 	//
-	_Console::printLine("@" + to_string(line) + ": " + statementCode);
-
-	//
 	return statementCode;
 }
 
@@ -1373,6 +1376,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 		if (haveScript == false) {
 			// check if we have to read additional info from code
 			if (statementCode == "function:" ||
+				statementCode == "stacklet:" ||
 				statementCode == "on:" ||
 				statementCode == "on-enabled:" ||
 				statementCode == "callable:") {
@@ -1546,7 +1550,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 									argumentNameTrimmed = _StringTools::trim(_StringTools::substring(argumentNameTrimmed, 1));
 								}
 								if (scriptType == Script::SCRIPTTYPE_FUNCTION) {
-									if (_StringTools::regexMatch(argumentNameTrimmed, "\\$[a-zA-Z0-9]+") == true) {
+									if (_StringTools::regexMatch(argumentNameTrimmed, "\\$[a-zA-Z0-9_]+") == true) {
 										arguments.emplace_back(
 											argumentNameTrimmed,
 											reference
@@ -1560,7 +1564,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 									}
 								} else
 								if (scriptType == Script::SCRIPTTYPE_STACKLET) {
-									if (_StringTools::regexMatch(argumentNameTrimmed, "\\[a-zA-Z0-9]+") == true) {
+									if (_StringTools::regexMatch(argumentNameTrimmed, "[a-zA-Z0-9_]+") == true) {
 										arguments.emplace_back(
 											argumentNameTrimmed,
 											reference
@@ -1591,7 +1595,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				auto emitCondition = _StringTools::regexMatch(conditionOrName, "[a-zA-Z0-9_]+");
 				statementIdx = STATEMENTIDX_FIRST;
 				// add to user functions
-				if (scriptType == Script::SCRIPTTYPE_FUNCTION) {
+				if (scriptType == Script::SCRIPTTYPE_FUNCTION || scriptType == Script::SCRIPTTYPE_STACKLET) {
 					functions[conditionOrName] = scripts.size();
 				}
 
@@ -1792,7 +1796,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							}
 						);
 						//
-						executableStatement = "forCondition(" + string(forArguments[1]) + ", () -> { " + string(forArguments[2]) + " })";
+						executableStatement = "forCondition(" + string(forArguments[1]) + ", -> { " + string(forArguments[2]) + " })";
 					} else {
 						_Console::printLine(scriptFileName + ": Invalid for statement");
 						//
@@ -2617,21 +2621,34 @@ bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, s
 		if (c == '}') {
 			curlyBracketCount--;
 		} else
-		if (lc == '-' && c == '>' &&
+		if (i > 3 &&
+			lc == '-' && c == '>' &&
 			bracketCount == 0 &&
 			squareBracketCount == 0 &&
 			curlyBracketCount == 0) {
 			//
-			objectStartIdx = 0;
-			objectEndIdx = i - 1;
-			memberCallStartIdx = i + 1;
-			memberCallEndIdx = executableStatement.size();
+			auto objectStartIdxCandidate = 0;
+			auto objectEndIdxCandidate = i - 1;
+			auto memberCallStartIdxCandidate = i + 1;
+			auto memberCallEndIdxCandidate = executableStatement.size();
 			//
-			object = _StringTools::viewTrim(string_view(&executableStatement[objectStartIdx], objectEndIdx - objectStartIdx));
-			method = _StringTools::viewTrim(string_view(&executableStatement[memberCallStartIdx], memberCallEndIdx - memberCallStartIdx));
-			methodStartIdx = memberCallStartIdx;
-			objectMemberAccess = true;
-			// dont break here, we can have multiple member access operators here, but we want the last one in this step
+			auto objectCandidate = _StringTools::viewTrim(string_view(&executableStatement[objectStartIdxCandidate], objectEndIdxCandidate - objectStartIdxCandidate));
+			auto methodCandidate = _StringTools::viewTrim(string_view(&executableStatement[memberCallStartIdxCandidate], memberCallEndIdxCandidate - memberCallStartIdxCandidate));
+			//
+			if (objectCandidate.empty() == false && methodCandidate.empty() == false) {
+				//
+				objectStartIdx = objectStartIdxCandidate;
+				objectEndIdx = objectEndIdxCandidate;
+				memberCallStartIdx = memberCallStartIdxCandidate;
+				memberCallEndIdx = memberCallEndIdxCandidate;
+				//
+				object = objectCandidate;
+				method = methodCandidate;
+				//
+				methodStartIdx = memberCallStartIdx;
+				objectMemberAccess = true;
+				// dont break here, we can have multiple member access operators here, but we want the last one in this step
+			}
 		}
 		//
 		lc = c;
@@ -2669,13 +2686,23 @@ void MiniScript::dumpScriptState(ScriptState& scriptState, const string& message
 
 bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& returnValue, bool pushScriptState) {
 	if (scriptIdx < 0 || scriptIdx >= scripts.size()) {
-		_Console::printLine("MiniScript::call(): invalid script index: " + to_string(scriptIdx));
+		_Console::printLine("MiniScript::call(): Invalid script index: " + to_string(scriptIdx));
+		return false;
+	}
+	//
+	if (scripts[scriptIdx].type != Script::SCRIPTTYPE_FUNCTION &&
+		scripts[scriptIdx].type != Script::SCRIPTTYPE_STACKLET) {
+		_Console::printLine("MiniScript::call(): Script index: " + to_string(scriptIdx) + ": Script is not a function/callable/stacklet.");
 		return false;
 	}
 	// copy script state
 	ScriptState currentScriptState = getScriptState();
 	//
 	if (pushScriptState == true) {
+		if (scripts[scriptIdx].type == Script::SCRIPTTYPE_STACKLET) {
+			_Console::printLine("MiniScript::call(): Script index: " + to_string(scriptIdx) + ": Stacklets can not be called with a stack.");
+			return false;
+		}
 		this->pushScriptState();
 		// script state vector could get modified, so
 		auto& scriptState = getScriptState();
@@ -2692,8 +2719,9 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 		resetScriptExecutationState(scriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
 	} else {
 		//
-		if (scripts[scriptIdx].functionArguments.empty() == false) {
-			_Console::printLine("MiniScript::call(): " + scripts[scriptIdx].condition + ": Function call without script state. No arguments allowed.");
+		if (scripts[scriptIdx].type != Script::SCRIPTTYPE_STACKLET) {
+			_Console::printLine("MiniScript::call(): Script index: " + to_string(scriptIdx) + ": Function/Callable can not be called with no stack.");
+			return false;
 		}
 		//
 		resetStackletScriptExecutationState(scriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
@@ -2808,14 +2836,16 @@ const string MiniScript::getScriptInformation(int scriptIdx, bool includeStateme
 	string result;
 	string argumentsString;
 	switch(script.type) {
-		case Script::SCRIPTTYPE_FUNCTION: {
+		case Script::SCRIPTTYPE_FUNCTION:
+		case Script::SCRIPTTYPE_STACKLET: {
 			for (const auto& argument: script.functionArguments) {
 				if (argumentsString.empty() == false) argumentsString+= ", ";
 				if (argument.reference == true) argumentsString+= "&";
 				argumentsString+= argument.name;
 			}
 			argumentsString = "(" + argumentsString + ")";
-			result+= "function: "; break;
+			if (script.type == Script::SCRIPTTYPE_FUNCTION) result+= "function: "; else result+= "stacklet: ";
+			break;
 		}
 		case Script::SCRIPTTYPE_ON: result+= "on: "; break;
 		case Script::SCRIPTTYPE_ONENABLED: result+= "on-enabled: "; break;
@@ -3353,6 +3383,32 @@ void MiniScript::createLamdaFunction(Variable& variable, const vector<string_vie
 	deferredFunctionScriptCodes.push_back(inlineFunctionScriptCode);
 	//
 	variable.setFunctionAssignment(functionName);
+}
+
+void MiniScript::createStacklet(Variable& variable, const vector<string_view>& arguments, const string_view& stackletScriptCode, const Statement& statement) {
+	// function declaration
+	auto stackletName = string() + "stacklet_" + to_string(stackletIdx++);
+	auto inlineStackletScriptCode = "stacklet: " + stackletName + "(xxx)" + "\n"; // TODO: no xxx here :DDD
+	// function definition
+	auto scriptCode = string(stackletScriptCode);
+	auto lineIdx = MiniScript::LINE_FIRST;
+	auto currentLineIdx = MiniScript::LINE_FIRST;
+	for (auto i = 0; i < scriptCode.size(); i++) {
+		//
+		currentLineIdx = lineIdx;
+
+		// try to get next statement code
+		auto statementCode = getNextStatement(scriptCode, i, lineIdx);
+		//
+		inlineStackletScriptCode+= doStatementPreProcessing(statementCode, statement) + "\n";
+	}
+	//
+	inlineStackletScriptCode+= "\n";
+	inlineStackletScriptCode+= string() + "end" + "\n";
+	// store it to be parsed later
+	deferredFunctionScriptCodes.push_back(inlineStackletScriptCode);
+	//
+	variable.setStackletAssignment(stackletName);
 }
 
 const MiniScript::Variable MiniScript::initializeArray(const string_view& initializerString, MiniScript* miniScript, const Statement& statement) {

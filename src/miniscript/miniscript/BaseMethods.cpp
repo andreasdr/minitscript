@@ -191,7 +191,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						auto& block = blockStack.back();
-						if (block.type == MiniScript::ScriptState::BLOCKTYPE_FUNCTION &&
+						if ((block.type == MiniScript::ScriptState::BLOCKTYPE_FUNCTION || block.type == MiniScript::ScriptState::BLOCKTYPE_STACKLET) &&
 							miniScript->scriptStateStack.size() <= 2) {
 							miniScript->stopRunning();
 						} else
@@ -200,7 +200,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							vector<MiniScript::Variable> arguments {};
 							span argumentsSpan(arguments);
 							MiniScript::Variable returnValue;
-							miniScript->callInlineFunction(block.parameter.getValueAsString(), argumentsSpan, returnValue);
+							miniScript->callStacklet(block.parameter.getValueAsString(), argumentsSpan, returnValue);
 						}
 						blockStack.erase(blockStack.begin() + blockStack.size() - 1);
 						if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
@@ -273,7 +273,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_BOOLEAN, .name = "condition", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "iterationFunction", .optional = true, .reference = false, .nullable = false }
+						{ .type = MiniScript::TYPE_STACKLET_ASSIGNMENT, .name = "iterationStacklet", .optional = true, .reference = false, .nullable = false }
 					}
 				),
 				miniScript(miniScript) {}
@@ -282,10 +282,10 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
-				string iterationFunction;
+				string iterationStacklet;
 				if ((arguments.size() == 1 || arguments.size() == 2) &&
 					miniScript->getBooleanValue(arguments, 0, booleanValue) == true &&
-					miniScript->getStringValue(arguments, 1, iterationFunction, true) == true) {
+					miniScript->getStringValue(arguments, 1, iterationStacklet, true) == true) {
 					if (booleanValue == false) {
 						miniScript->gotoStatementGoto(statement);
 					} else {
@@ -296,7 +296,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx - 1],
 							&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx],
 							// TODO: we can also store later the function/script index instead of the function name
-							iterationFunction.empty() == true?MiniScript::Variable():MiniScript::Variable(iterationFunction)
+							iterationStacklet.empty() == true?MiniScript::Variable():MiniScript::Variable(iterationStacklet)
 						);
 					}
 				} else {
