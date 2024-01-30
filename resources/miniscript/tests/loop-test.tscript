@@ -9,7 +9,26 @@ end
 # inline function test in function
 function: inlineFunctionTestInFunction()
 	$j = 0
-	forCondition($j < 5, () -> { $j++ })
+	forCondition($j < 5, -> { $j++ })
+		if ($j == 3)
+			continue
+		end
+		console.printLine("$j = " + $j)
+		if ($j == 4)
+			break
+		end
+	end
+end
+
+stacklet: incrementStacklet(inlineFunctionTestInFunction)
+	console.printLine("stacklet, yaaaay")
+	$j++
+end
+
+# inline function test in function
+function: inlineFunctionTestInFunction3()
+	$j = 0
+	forCondition($j < 5, incrementStacklet)
 		if ($j == 3)
 			continue
 		end

@@ -161,18 +161,19 @@ public:
 		// special
 		TYPE_FUNCTION_CALL = 4,
 		TYPE_FUNCTION_ASSIGNMENT = 5,
+		TYPE_STACKLET_ASSIGNMENT = 6,
 		// pseudo
-		TYPE_PSEUDO_NUMBER = 6,
-		TYPE_PSEUDO_MIXED = 7,
+		TYPE_PSEUDO_NUMBER = 7,
+		TYPE_PSEUDO_MIXED = 8,
 		// classes
-		TYPE_STRING = 8,
-		TYPE_BYTEARRAY = 9,
-		TYPE_ARRAY = 10,
-		TYPE_MAP = 11,
-		TYPE_SET = 12,
-		TYPE_PSEUDO_DATATYPES = 13,
-		TYPE_HTTPDOWNLOADCLIENT = 13,
-		TYPE_PSEUDO_CUSTOM_DATATYPES = 14
+		TYPE_STRING = 9,
+		TYPE_BYTEARRAY = 10,
+		TYPE_ARRAY = 11,
+		TYPE_MAP = 12,
+		TYPE_SET = 13,
+		TYPE_PSEUDO_DATATYPES = 14,
+		TYPE_HTTPDOWNLOADCLIENT = 14,
+		TYPE_PSEUDO_CUSTOM_DATATYPES = 15
 	};
 
 	//
@@ -771,6 +772,7 @@ public:
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_INTEGER;
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_FLOAT;
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_FUNCTION;
+		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_STACKLET;
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_NUMBER;
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_MIXED;
 		MINISCRIPT_STATIC_DLL_IMPEXT static const string TYPENAME_STRING;
@@ -886,6 +888,9 @@ public:
 					break;
 				case TYPE_FUNCTION_ASSIGNMENT:
 					to.setFunctionAssignment(from.getStringValueReference().getValue());
+					break;
+				case TYPE_STACKLET_ASSIGNMENT:
+					to.setStackletAssignment(from.getStringValueReference().getValue());
 					break;
 				case TYPE_PSEUDO_NUMBER: break;
 				case TYPE_PSEUDO_MIXED: break;
@@ -1080,6 +1085,7 @@ public:
 				case TYPE_PSEUDO_MIXED: break;
 				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
+				case TYPE_STACKLET_ASSIGNMENT:
 					delete static_cast<StringValue*>((void*)getValuePtrReference());
 					break;
 				case TYPE_BYTEARRAY:
@@ -1137,6 +1143,7 @@ public:
 				case TYPE_PSEUDO_MIXED: break;
 				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
+				case TYPE_STACKLET_ASSIGNMENT:
 					getValuePtrReference() = (uint64_t)(new StringValue());
 					break;
 				case TYPE_BYTEARRAY:
@@ -1317,6 +1324,7 @@ public:
 					return true;
 				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
+				case TYPE_STACKLET_ASSIGNMENT:
 					value = getStringValueReference().getValue();
 					return true;
 				default:
@@ -1355,6 +1363,7 @@ public:
 			switch(getType()) {
 				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
+				case TYPE_STACKLET_ASSIGNMENT:
 					return &getStringValueReference().getCache();
 				default:
 					return nullptr;
@@ -1896,6 +1905,15 @@ public:
 		}
 
 		/**
+		 * Set stacklet assignment from given value into variable
+		 * @param value value
+		 */
+		inline void setStackletAssignment(const string& value) {
+			setType(TYPE_STACKLET_ASSIGNMENT);
+			getStringValueReference().setValue(value);
+		}
+
+		/**
 		 * Set implicit typed value given by value string
 		 * @param value value
 		 * @param miniScript mini script
@@ -1947,7 +1965,35 @@ public:
 				return true;
 			};
 			//
-			string_view function;
+			auto viewIsStackletAssignment = [](const string_view& candidate, string_view& stacklet) -> bool {
+				if (candidate.size() == 0) return false;
+				//
+				auto i = 0;
+				// spaces
+				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+				// -
+				if (candidate[i++] != '-') return false;
+				//
+				if (i >= candidate.size()) return false;
+				// >
+				if (candidate[i++] != '>') return false;
+				// spaces
+				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+				//
+				auto stackletStartIdx = i;
+				for (; i < candidate.size(); i++) {
+					auto c = candidate[i];
+					if (_Character::isAlphaNumeric(c) == false && c != '_') {
+						return false;
+					}
+				}
+				//
+				stacklet = string_view(&candidate[stackletStartIdx], i - stackletStartIdx);
+				//
+				return true;
+			};
+			//
+			string_view functionOrStacklet;
 			//
 			if (value == "null") {
 				setNullValue();
@@ -1972,8 +2018,11 @@ public:
 				_StringTools::viewEndsWith(value, "]") == true) {
 				*this = initializeArray(value, miniScript, statement);
 			} else
-			if (viewIsFunctionAssignment(value, function) == true) {
-				setFunctionAssignment(string(function));
+			if (viewIsFunctionAssignment(value, functionOrStacklet) == true) {
+				setFunctionAssignment(string(functionOrStacklet));
+			} else
+			if (viewIsStackletAssignment(value, functionOrStacklet) == true) {
+				setStackletAssignment(string(functionOrStacklet));
 			} else
 			// function call
 			//	TODO: improve me
@@ -2020,6 +2069,7 @@ public:
 				case TYPE_FLOAT: return TYPENAME_FLOAT;
 				case TYPE_FUNCTION_CALL: return TYPENAME_NONE;
 				case TYPE_FUNCTION_ASSIGNMENT: return TYPENAME_FUNCTION;
+				case TYPE_STACKLET_ASSIGNMENT: return TYPENAME_STACKLET;
 				case TYPE_PSEUDO_NUMBER: return TYPENAME_NUMBER;
 				case TYPE_PSEUDO_MIXED: return TYPENAME_MIXED;
 				case TYPE_STRING: return TYPENAME_STRING;
@@ -2109,6 +2159,9 @@ public:
 					break;
 				case TYPE_FUNCTION_ASSIGNMENT:
 					result+= "() -> " + getStringValueReference().getValue();
+					break;
+				case TYPE_STACKLET_ASSIGNMENT:
+					result+= "-> " + getStringValueReference().getValue();
 					break;
 				case TYPE_PSEUDO_NUMBER:
 					result+= "Number";
@@ -2553,7 +2606,7 @@ public:
 			bool reference;
 		};
 		//
-		enum ScriptType { SCRIPTTYPE_NONE, SCRIPTTYPE_FUNCTION, SCRIPTTYPE_ON, SCRIPTTYPE_ONENABLED };
+		enum ScriptType { SCRIPTTYPE_NONE, SCRIPTTYPE_STACKLET, SCRIPTTYPE_FUNCTION, SCRIPTTYPE_ON, SCRIPTTYPE_ONENABLED };
 		/**
 		 * Constructor
 		 * @param type script type
@@ -2697,7 +2750,7 @@ protected:
 	 * Script state
 	 */
 	struct ScriptState {
-		enum BlockType { BLOCKTYPE_NONE, BLOCKTYPE_GLOBAL, BLOCKTYPE_FUNCTION, BLOCKTYPE_FOR, BLOCKTYPE_FORTIME, BLOCKTYPE_IF, BLOCKTYPE_SWITCH, BLOCKTYPE_CASE };
+		enum BlockType { BLOCKTYPE_NONE, BLOCKTYPE_GLOBAL, BLOCKTYPE_STACKLET, BLOCKTYPE_FUNCTION, BLOCKTYPE_FOR, BLOCKTYPE_FORTIME, BLOCKTYPE_IF, BLOCKTYPE_SWITCH, BLOCKTYPE_CASE };
 		/**
 		 * Block
 		 */
@@ -2903,10 +2956,10 @@ protected:
 	 * @param scriptIdx script index
 	 * @param stateMachineState state machine state
 	 */
-	inline void resetInlineFunctionScriptExecutationState(int scriptIdx, StateMachineStateId stateMachineState) {
+	inline void resetStackletScriptExecutationState(int scriptIdx, StateMachineStateId stateMachineState) {
 		auto& scriptState = getScriptState();
 		scriptState.blockStack.emplace_back(
-			ScriptState::BLOCKTYPE_FUNCTION,
+			ScriptState::BLOCKTYPE_STACKLET,
 			false,
 			nullptr,
 			nullptr,
