@@ -1069,7 +1069,7 @@ bool MiniScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syn
 						//
 						return false;
 					}
-					// check stacklet itself for stackless arguments
+					// check stacklet itself for stacklet litarals
 					return validateStacklets(stackletName, scopeScriptIdx);
 				}
 				break;
@@ -1788,7 +1788,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 			}
 		} else {
 			if (_StringTools::startsWith(statementCode, "function:") == true ||
-				_StringTools::startsWith(statementCode, "stackless:") == true ||
+				_StringTools::startsWith(statementCode, "stacklet:") == true ||
 				_StringTools::startsWith(statementCode, "on:") == true ||
 				_StringTools::startsWith(statementCode, "on-enabled:") == true ||
 				_StringTools::startsWith(statementCode, "callable:") == true
