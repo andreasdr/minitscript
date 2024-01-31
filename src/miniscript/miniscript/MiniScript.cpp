@@ -2163,6 +2163,40 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	for (auto scriptIdx = 0; scriptIdx < scripts.size(); scriptIdx++) {
 		const auto& script = scripts[scriptIdx];
 		//
+		if (script.type == MiniScript::Script::SCRIPTTYPE_STACKLET) {
+			// valid: root scope
+			if (script.functionArguments.empty()) continue;
+			// invalid: more than 1 argument
+			if (script.functionArguments.size() != 1) {
+				_Console::printLine(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
+				parseErrors.push_back(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
+				//
+				scriptValid = false;
+				//
+				break;
+			}
+			//
+			auto stackletScopeScriptIdx = getFunctionScriptIdx(script.functionArguments[0].name);
+			// invalid: scope function/stacklet not found
+			if (stackletScopeScriptIdx == SCRIPTIDX_NONE) {
+				_Console::printLine(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.functionArguments[0].name);
+				parseErrors.push_back(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.functionArguments[0].name);
+				//
+				scriptValid = false;
+				//
+				break;
+			} else
+			// invalid: stacklet can not have itself as scope stacklet
+			if (stackletScopeScriptIdx == scriptIdx) {
+				_Console::printLine(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
+				parseErrors.push_back(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
+				//
+				scriptValid = false;
+				//
+				break;
+			}
+		}
+		//
 		if (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION ||
 			script.type == MiniScript::Script::SCRIPTTYPE_ON ||
 			script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
