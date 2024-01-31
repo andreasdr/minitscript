@@ -9,6 +9,7 @@ end
 # inline function test in function
 function: inlineFunctionTestInFunction()
 	$j = 0
+	$k = 0
 	forCondition($j < 5, -> { $j++ })
 		if ($j == 3)
 			continue

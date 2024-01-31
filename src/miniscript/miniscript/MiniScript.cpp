@@ -2698,18 +2698,19 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 		_Console::printLine("MiniScript::call(): Invalid script index: " + to_string(scriptIdx));
 		return false;
 	}
+	auto& script = scripts[scriptIdx];
 	//
-	if (scripts[scriptIdx].type != Script::SCRIPTTYPE_FUNCTION &&
-		scripts[scriptIdx].type != Script::SCRIPTTYPE_STACKLET) {
-		_Console::printLine("MiniScript::call(): Script index: " + to_string(scriptIdx) + ": Script is not a function/callable/stacklet.");
+	if (script.type != Script::SCRIPTTYPE_FUNCTION &&
+			script.type != Script::SCRIPTTYPE_STACKLET) {
+		_Console::printLine("MiniScript::call(): " + (script.name.empty() == false?script.name:script.condition) + ": Script is not a function/callable/stacklet.");
 		return false;
 	}
 	// copy script state
 	ScriptState currentScriptState = getScriptState();
 	//
 	if (pushScriptState == true) {
-		if (scripts[scriptIdx].type == Script::SCRIPTTYPE_STACKLET) {
-			_Console::printLine("MiniScript::call(): Script index: " + to_string(scriptIdx) + ": Stacklets can not be called with a stack.");
+		if (script.type == Script::SCRIPTTYPE_STACKLET) {
+			_Console::printLine("MiniScript::call(): " + (script.name.empty() == false?script.name:script.condition) + ": Stacklets can not be called with a stack.");
 			return false;
 		}
 		this->pushScriptState();
@@ -2717,7 +2718,7 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 		auto& scriptState = getScriptState();
 		// also put named arguments into state context variables
 		auto argumentIdx = 0;
-		for (const auto& argument: scripts[scriptIdx].functionArguments) {
+		for (const auto& argument: script.functionArguments) {
 			if (argumentIdx == arguments.size()) {
 				break;
 			}
@@ -2728,8 +2729,8 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 		resetScriptExecutationState(scriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
 	} else {
 		//
-		if (scripts[scriptIdx].type != Script::SCRIPTTYPE_STACKLET) {
-			_Console::printLine("MiniScript::call(): Script index: " + to_string(scriptIdx) + ": Function/Callable can not be called with no stack.");
+		if (script.type != Script::SCRIPTTYPE_STACKLET) {
+			_Console::printLine("MiniScript::call(): " + (script.name.empty() == false?script.name:script.condition) + ": Function/Callable can not be called with no stack.");
 			return false;
 		}
 		//
