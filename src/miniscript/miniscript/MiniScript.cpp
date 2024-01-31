@@ -940,6 +940,164 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 	return false;
 }
 
+int MiniScript::getStackletScopeScriptIdx(int scriptIdx) {
+	if (scriptIdx < 0 || scriptIdx >= scripts.size() ||
+		scripts[scriptIdx].type != MiniScript::Script::SCRIPTTYPE_STACKLET) {
+		_Console::printLine("MiniScript::getStackletScopeScriptIdx(): No stacklet: " + to_string(scriptIdx));
+		return MiniScript::SCRIPTIDX_NONE;
+	}
+	//
+	const auto& stackletScript = scripts[scriptIdx];
+	const auto& stackletScopeName = stackletScript.functionArguments.size() == 1?stackletScript.functionArguments[0].name:string();
+	if (stackletScopeName.empty() == true) {
+		return MiniScript::SCRIPTIDX_NONE;
+	}
+	//
+	for (auto i = 0; i < scripts.size(); i++) {
+		if (i == scriptIdx) continue;
+		const auto& scriptCandidate = scripts[i];
+		if (scriptCandidate.type != MiniScript::Script::SCRIPTTYPE_FUNCTION && scriptCandidate.type != MiniScript::Script::SCRIPTTYPE_STACKLET) continue;
+		if (scriptCandidate.condition == stackletScopeName) {
+			if (scriptCandidate.type == MiniScript::Script::SCRIPTTYPE_STACKLET) return getStackletScopeScriptIdx(i); else return i;
+		}
+	}
+	//
+	return MiniScript::SCRIPTIDX_NONE;
+}
+
+bool MiniScript::validateStacklets(int scriptIdx) {
+	//
+	const auto& script = scripts[scriptIdx];
+	auto statementIdx = STATEMENTIDX_FIRST;
+	//
+	for (const auto& syntaxTreeNode: script.syntaxTree) {
+		const auto& statement = script.statements[statementIdx++];
+		//
+		if (validateStacklets(script.type == Script::SCRIPTTYPE_FUNCTION?scriptIdx:SCRIPTIDX_NONE, syntaxTreeNode, statement) == false) {
+			//
+			return false;
+		}
+	}
+	//
+	return true;
+}
+
+bool MiniScript::validateStacklets(const string& function, int scopeScriptIdx) {
+	auto functionScriptIdx = getFunctionScriptIdx(function);
+	if (functionScriptIdx == SCRIPTIDX_NONE) {
+		_Console::printLine("MiniScript::validateStacklet(): function not found: " + function);
+		return false;
+	}
+	//
+	const auto& script = scripts[functionScriptIdx];
+	auto statementIdx = STATEMENTIDX_FIRST;
+	//
+	for (const auto& syntaxTreeNode: script.syntaxTree) {
+		const auto& statement = script.statements[statementIdx++];
+		//
+		if (validateStacklets(scopeScriptIdx == MiniScript::SCRIPTIDX_NONE?functionScriptIdx:scopeScriptIdx, syntaxTreeNode, statement) == false) {
+			//
+			return false;
+		}
+	}
+	//
+	return true;
+}
+
+bool MiniScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syntaxTreeNode, const Statement& statement) {
+	// 2 possibilities to check before runtime
+	//	2) passing stacklet assignment
+	//
+	switch (syntaxTreeNode.type) {
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
+			{
+				if (syntaxTreeNode.value.getType() == MiniScript::TYPE_STACKLET_ASSIGNMENT) {
+					// we only allow assignments of stacklets with a correct scope, means
+					string stackletName;
+					int stackletScriptIdx = SCRIPTIDX_NONE;
+					if (syntaxTreeNode.value.getStackletValue(stackletName) == false ||
+						(stackletScriptIdx = getFunctionScriptIdx(stackletName)) == SCRIPTIDX_NONE) {
+						//
+						_Console::printLine(
+							getStatementInformation(statement) +
+							": " +
+							syntaxTreeNode.value.getValueAsString() +
+							": stacklet not found"
+						);
+						//
+						parseErrors.push_back(
+							getStatementInformation(statement) +
+							": " +
+							syntaxTreeNode.value.getValueAsString() +
+							": stacklet not found"
+						);
+						//
+						return false;
+					}
+					//
+					int stackletScopeScriptIdx = getStackletScopeScriptIdx(stackletScriptIdx);
+					if (stackletScopeScriptIdx != scopeScriptIdx) {
+						// construct scope error
+						string scopeErrorMessage;
+						if (stackletScopeScriptIdx == SCRIPTIDX_NONE) {
+							scopeErrorMessage = "stacklet requires root scope";
+						} else {
+							scopeErrorMessage = "stacklet requires scope of " + scripts[stackletScopeScriptIdx].condition + "()";
+						}
+						scopeErrorMessage+= ", but has scope of ";
+						if (scopeScriptIdx == SCRIPTIDX_NONE) {
+							scopeErrorMessage+= "root scope";
+						} else {
+							scopeErrorMessage+= scripts[scopeScriptIdx].condition + "()";
+						}
+						//
+						_Console::printLine(
+							getStatementInformation(statement) +
+							": " +
+							syntaxTreeNode.value.getValueAsString() +
+							": stacklet scope invalid: " +
+							scopeErrorMessage
+						);
+						//
+						parseErrors.push_back(
+							getStatementInformation(statement) +
+							": " +
+							syntaxTreeNode.value.getValueAsString() +
+							": stacklet scope invalid" +
+							scopeErrorMessage
+						);
+						//
+						return false;
+					}
+					// check stacklet itself for stackless arguments
+					return validateStacklets(stackletName, scopeScriptIdx);
+				}
+				break;
+			}
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
+			{
+				for (const auto& argument: syntaxTreeNode.arguments) {
+					if (validateStacklets(scopeScriptIdx, argument, statement) == false) return false;
+				}
+				//
+				break;
+			}
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+			{
+				for (const auto& argument: syntaxTreeNode.arguments) {
+					if (validateStacklets(scopeScriptIdx, argument, statement) == false) return false;
+				}
+				validateStacklets(syntaxTreeNode.value.getValueAsString());
+				//
+				break;
+			}
+		default:
+			break;
+	}
+	//
+	return true;
+}
+
 bool MiniScript::validateCallable(const string& function) {
 	auto functionScriptIdx = getFunctionScriptIdx(function);
 	if (functionScriptIdx == SCRIPTIDX_NONE) {
@@ -975,15 +1133,14 @@ bool MiniScript::validateCallable(const SyntaxTreeNode& syntaxTreeNode, const St
 				if (contextFunctions.empty() == false) {
 					//
 					_Console::printLine(
-						"MiniScript::validateCallable(): '" +
 						getStatementInformation(statement) +
-						": method " +
+						": " +
 						syntaxTreeNode.getMethod()->getMethodName() + "() can not be called within a callable function"
 					);
 					//
 					parseErrors.push_back(
 						getStatementInformation(statement) +
-						": method " +
+						": " +
 						syntaxTreeNode.getMethod()->getMethodName() + "() can not be called within a callable function"
 					);
 					//
@@ -1062,9 +1219,8 @@ bool MiniScript::validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode, 
 						}
 						//
 						_Console::printLine(
-							"MiniScript::validateContextFunctions(): '" +
 							getStatementInformation(statement) +
-							": method " +
+							": " +
 							syntaxTreeNode.getMethod()->getMethodName() + "() can only be called within the following functions: " +
 							contextFunctionsString +
 							", but was called from " +
@@ -1073,7 +1229,7 @@ bool MiniScript::validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode, 
 						//
 						parseErrors.push_back(
 							getStatementInformation(statement) +
-							": method " +
+							": " +
 							syntaxTreeNode.getMethod()->getMethodName() + "() can only be called within the following functions: " +
 							contextFunctionsString +
 							", but was called from " +
@@ -1972,8 +2128,31 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	//
 	if (parseScriptInternal(scriptCode) == false) return;
 
-	// validate method call context functions
-	for (const auto& script: scripts) {
+	// parse deferred function script codes,
+	//	which are created by parsing map initializers and possible map inline functions
+	do {
+		auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
+		deferredInlineScriptCodes.clear();
+		for (const auto& functionScriptCode: deferredInlineScriptCodesCopy) {
+			parseScriptInternal(functionScriptCode);
+		}
+	} while (deferredInlineScriptCodes.empty() == false);
+
+	// validations
+	for (auto scriptIdx = 0; scriptIdx < scripts.size(); scriptIdx++) {
+		const auto& script = scripts[scriptIdx];
+		//
+		if (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION ||
+			script.type == MiniScript::Script::SCRIPTTYPE_ON ||
+			script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
+			//
+			if (validateStacklets(scriptIdx) == false) {
+				//
+				scriptValid = false;
+				//
+				break;
+			}
+		}
 		//
 		if (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION) {
 			//
@@ -2019,16 +2198,6 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 		return;
 
 	}
-
-	// parse deferred function script codes,
-	//	which are created by parsing map initializers and possible map inline functions
-	do {
-		auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
-		deferredInlineScriptCodes.clear();
-		for (const auto& functionScriptCode: deferredInlineScriptCodesCopy) {
-			parseScriptInternal(functionScriptCode);
-		}
-	} while (deferredInlineScriptCodes.empty() == false);
 
 	//
 	startScript();

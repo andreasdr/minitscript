@@ -290,7 +290,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "Script(" + "\n";
-			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?"Script::SCRIPTTYPE_FUNCTION":(script.type == MiniScript::Script::SCRIPTTYPE_ON?"Script::SCRIPTTYPE_ON":"Script::SCRIPTTYPE_ONENABLED")) + "," + "\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + getScriptTypeEnumIdentifier(script.type) + "," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + to_string(script.line) + "," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(script.condition, "\\", "\\\\"), "\"", "\\\"") + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(script.executableCondition, "\\", "\\\\"), "\"", "\\\"") + "\"," + "\n";
@@ -387,7 +387,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 
 			// declaration
 			generatedDeclarations+= declarationIndent + "/**" + "\n";
-			generatedDeclarations+= declarationIndent + " * Miniscript transpilation of: " + (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?"function":(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on":"on-enabled")) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
+			generatedDeclarations+= declarationIndent + " * Miniscript transpilation of: " + getScriptTypeReadableName(script.type) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
 			generatedDeclarations+= declarationIndent + " * @param miniScriptGotoStatementIdx MiniScript goto statement index" + "\n";
 			generatedDeclarations+= declarationIndent + " */" + "\n";
 			generatedDeclarations+= declarationIndent + "void " + methodName + "(int miniScriptGotoStatementIdx);" + "\n";
@@ -426,7 +426,9 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					miniScript,
 					statementArrayMapSetInitializerDefinitions,
 					MiniScript::SCRIPTIDX_NONE,
-					script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
+					script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION || script.type == MiniScript::Script::SCRIPTTYPE_STACKLET?
+						scriptIdx:
+						MiniScript::SCRIPTIDX_NONE,
 					miniScriptClassName,
 					methodName,
 					script.syntaxTree[statementIdx],
@@ -445,7 +447,9 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 					arrayAccessMethodsDefinitions,
 					miniScriptClassName,
 					MiniScript::SCRIPTIDX_NONE,
-					script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
+					script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION || script.type == MiniScript::Script::SCRIPTTYPE_STACKLET?
+						scriptIdx:
+						MiniScript::SCRIPTIDX_NONE,
 					methodName,
 					script.syntaxTree[statementIdx],
 					script.statements[statementIdx],
@@ -595,7 +599,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			// method name
 			auto shortMethodName = createShortMethodName(miniScript, scriptIdx);
 			//
-			generatedDeclarations+= declarationIndent + "// local script variables of: " + (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?"function":(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on":"on-enabled")) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
+			generatedDeclarations+= declarationIndent + "// local script variables of: " + getScriptTypeReadableName(script.type) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
 			generatedDeclarations+= declarationIndent + "struct LV_" + shortMethodName + " {" + "\n";
 			for (const auto& variable: localVariables[scriptIdx]) {
 				generatedDeclarations+= declarationIndent + "\t" + "Variable " + createLocalVariableName(variable) + ";" + "\n";
@@ -933,7 +937,9 @@ void Transpiler::determineVariables(MiniScript* miniScript, unordered_set<string
 			//
 			for (auto statementIdx = 0; statementIdx < script.statements.size(); statementIdx++) {
 				determineVariables(
-					script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?scriptIdx:MiniScript::SCRIPTIDX_NONE,
+					script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION || script.type == MiniScript::Script::SCRIPTTYPE_STACKLET?
+						scriptIdx:
+						MiniScript::SCRIPTIDX_NONE,
 					script.syntaxTree[statementIdx],
 					globalVariables,
 					localVariables
@@ -942,6 +948,24 @@ void Transpiler::determineVariables(MiniScript* miniScript, unordered_set<string
 			//
 			scriptIdx++;
 		}
+	}
+	//
+	// TODO: move stacket variables into their scopes
+	Console::printLine("Global variables");
+	for (const auto& variable: globalVariables) Console::printLine(string() + "\t" + variable);
+	Console::printLine("Function/Stacklets variables");
+	for (auto scriptIdx = 0; scriptIdx < localVariables.size(); scriptIdx++) {
+		const auto& script = scripts[scriptIdx];
+		Console::print(string() + "\t" + (script.name.empty() == false?script.name:script.condition));
+		if (script.type == MiniScript::Script::SCRIPTTYPE_STACKLET) {
+			auto stackletScopeScriptIdx = miniScript->getStackletScopeScriptIdx(scriptIdx);
+			string stackletScopeName;
+			if (stackletScopeScriptIdx != MiniScript::SCRIPTIDX_NONE) stackletScopeName = scripts[stackletScopeScriptIdx].condition;
+			Console::printLine(" - STACKLET, scope: " + stackletScopeName + " (" + to_string(stackletScopeScriptIdx) + ")");
+		} else {
+			Console::printLine();
+		}
+		for (const auto& variable: localVariables[scriptIdx]) Console::printLine(string() + "\t\t" + variable);
 	}
 }
 
@@ -1164,16 +1188,16 @@ void Transpiler::generateVariableAccess(
 	int setArgumentIdx
 ) {
 	//
-	auto haveFunction = false;
+	auto haveFunctionOrStacklet = false;
 	auto haveScript = (scriptConditionIdx != MiniScript::SCRIPTIDX_NONE || scriptIdx != MiniScript::SCRIPTIDX_NONE);
 	if (haveScript == true) {
 		const auto& script = miniScript->getScripts()[scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
-		haveFunction = script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION;
+		haveFunctionOrStacklet = script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION || script.type == MiniScript::Script::SCRIPTTYPE_STACKLET;
 	}
 	//
 	auto dollarDollarVariable = StringTools::startsWith(variableName, "$$.");
 	auto dollarGlobalVariable = StringTools::startsWith(variableName, "$GLOBAL.");
-	if (haveFunction == true ||
+	if (haveFunctionOrStacklet == true ||
 		dollarDollarVariable == true ||
 		dollarGlobalVariable == true) {
 		//
@@ -2184,6 +2208,7 @@ bool Transpiler::transpileStatement(
 									break;
 								case MiniScript::TYPE_STRING:
 								case MiniScript::TYPE_FUNCTION_ASSIGNMENT:
+								case MiniScript::TYPE_STACKLET_ASSIGNMENT:
 									{
 										string value;
 										argument.value.getStringValue(value);
@@ -2494,17 +2519,7 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 	const auto& script = miniScript->getScripts()[scriptIdx];
 
 	//
-	string scriptType =
-		(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
-			"function":
-			(
-				script.type == MiniScript::Script::SCRIPTTYPE_ON?
-					"condition":
-					"named condition"
-			)
-		);
-
-	Console::printLine("Transpiler::transpile(): transpiling code for " + scriptType + " = '" + script.condition + "', with name '" + script.name + "'");
+	Console::printLine("Transpiler::transpile(): transpiling code for " + getScriptTypeReadableName(script.type) + " = '" + script.condition + "', with name '" + script.name + "'");
 
 	//
 	string methodIndent = "\t";

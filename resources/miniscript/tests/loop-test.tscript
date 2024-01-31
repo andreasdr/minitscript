@@ -9,7 +9,6 @@ end
 # inline function test in function
 function: inlineFunctionTestInFunction()
 	$j = 0
-	$k = 0
 	forCondition($j < 5, -> { $j++ })
 		if ($j == 3)
 			continue
@@ -21,15 +20,24 @@ function: inlineFunctionTestInFunction()
 	end
 end
 
-stacklet: incrementStacklet(inlineFunctionTestInFunction)
+stacklet: incrementStacklet2(inlineFunctionTestInFunction3)
+	$k++
+end
+
+stacklet: incrementStacklet(inlineFunctionTestInFunction3)
+	$k = 0
+	forCondition($k < 5, -> incrementStacklet2)
+		console.printLine("$k = " + $k)
+	end
 	console.printLine("stacklet, yaaaay")
 	$j++
 end
 
 # inline function test in function
 function: inlineFunctionTestInFunction3()
+	console.printLine("inlineFunctionTestInFunction3()")
 	$j = 0
-	forCondition($j < 5, incrementStacklet)
+	forCondition($j < 5, -> incrementStacklet)
 		if ($j == 3)
 			continue
 		end
@@ -103,6 +111,7 @@ on: nothing
 	# test for forCondition with a iteration function in a function
 	console.printLine("test forCondition with a iteration function in a function")
 	inlineFunctionTestInFunction()
+	inlineFunctionTestInFunction3()
 	# console.printLine("test for")
 	console.printLine("test for")
 	for ($i = 0, $i < 5, $i++)

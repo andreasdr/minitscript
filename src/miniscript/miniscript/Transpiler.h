@@ -40,6 +40,40 @@ public:
 
 private:
 	/**
+	 * Get script type name
+	 * @param type script type
+	 * @return script type enum identifier
+	 */
+	inline static const string getScriptTypeReadableName(MiniScript::Script::ScriptType type) {
+		switch(type) {
+			case MiniScript::Script::SCRIPTTYPE_NONE: return "none";
+			case MiniScript::Script::SCRIPTTYPE_FUNCTION: return "function";
+			case MiniScript::Script::SCRIPTTYPE_STACKLET: return "stacklet";
+			case MiniScript::Script::SCRIPTTYPE_ON: return "on";
+			case MiniScript::Script::SCRIPTTYPE_ONENABLED: return "on-enabled";
+		};
+		//
+		return string();
+	}
+
+	/**
+	 * Get script type enum identifier
+	 * @param type script type
+	 * @return script type enum identifier
+	 */
+	inline static const string getScriptTypeEnumIdentifier(MiniScript::Script::ScriptType type) {
+		switch(type) {
+			case MiniScript::Script::SCRIPTTYPE_NONE: return "Script::SCRIPTTYPE_NONE";
+			case MiniScript::Script::SCRIPTTYPE_FUNCTION: return "Script::SCRIPTTYPE_FUNCTION";
+			case MiniScript::Script::SCRIPTTYPE_STACKLET: return "Script::SCRIPTTYPE_STACKLET";
+			case MiniScript::Script::SCRIPTTYPE_ON: return "Script::SCRIPTTYPE_ON";
+			case MiniScript::Script::SCRIPTTYPE_ONENABLED: return "Script::SCRIPTTYPE_ONENABLED";
+		};
+		//
+		return string();
+	}
+
+	/**
 	 * Create method name
 	 * @param scriptIdx script index
 	 * @return method name

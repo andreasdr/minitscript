@@ -1324,6 +1324,22 @@ public:
 					return true;
 				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
+					value = getStringValueReference().getValue();
+					return true;
+				default:
+					return false;
+			}
+			return false;
+		}
+
+		/**
+		 * Get stacklet string value from given variable
+		 * @param value value
+		 * @param optional optional
+		 * @return success
+		 */
+		inline bool getStackletValue(string& value, bool optional = false) const {
+			switch(getType()) {
 				case TYPE_STACKLET_ASSIGNMENT:
 					value = getStringValueReference().getValue();
 					return true;
@@ -2609,7 +2625,7 @@ public:
 			bool reference;
 		};
 		//
-		enum ScriptType { SCRIPTTYPE_NONE, SCRIPTTYPE_STACKLET, SCRIPTTYPE_FUNCTION, SCRIPTTYPE_ON, SCRIPTTYPE_ONENABLED };
+		enum ScriptType { SCRIPTTYPE_NONE, SCRIPTTYPE_FUNCTION, SCRIPTTYPE_STACKLET, SCRIPTTYPE_ON, SCRIPTTYPE_ONENABLED };
 		/**
 		 * Constructor
 		 * @param type script type
@@ -3115,7 +3131,7 @@ private:
 	int64_t dataTypesGCTime { -1ll };
 
 	// TODO: maybe we need a better naming for this
-	// functions defined by script itself
+	// functions/stacklets/callables defined by script itself
 	unordered_map<string, int> functions;
 	// registered methods
 	unordered_map<string, Method*> methods;
@@ -3201,6 +3217,34 @@ private:
 	 * @return success
 	 */
 	bool createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree);
+
+	/**
+	 * Return stacklet scope script index
+	 * @param scriptIdx stacklet script index
+	 * @return stacklet scope script index
+	 */
+	int getStackletScopeScriptIdx(int scriptIdx);
+
+	/**
+	 * Validate stacklets
+	 * @param scriptIdx script index
+	 */
+	bool validateStacklets(int scriptIdx);
+
+	/**
+	 * Validate stacklets
+	 * @param function function
+	 * @param scopeScriptIdx scope script index or MiniScript::SCRIPTIDX_NONE for the function itself
+	 */
+	bool validateStacklets(const string& function, int scopeScriptIdx = MiniScript::SCRIPTIDX_NONE);
+
+	/**
+	 * Validate stacklets
+	 * @param scopeScriptIdx scope script index
+	 * @param syntaxTreeNode syntax tree node
+	 * @param statement statement
+	 */
+	bool validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
 
 	/**
 	 * Validate callabe
@@ -3980,6 +4024,20 @@ public:
 		if (idx >= arguments.size()) return optional;
 		const auto& argument = arguments[idx];
 		return argument.getStringValue(value, optional);
+	}
+
+	/**
+	 * Get stacklet string value from given variable
+	 * @param arguments arguments
+	 * @param idx argument index
+	 * @param value value
+	 * @param optional optional
+	 * @return success
+	 */
+	inline static bool getStackletValue(const span<Variable>& arguments, int idx, string& value, bool optional = false) {
+		if (idx >= arguments.size()) return optional;
+		const auto& argument = arguments[idx];
+		return argument.getStackletValue(value, optional);
 	}
 
 	/**
