@@ -185,7 +185,8 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
 			if (script.type == MiniScript::Script::TYPE_ON ||
-				script.type == MiniScript::Script::TYPE_ONENABLED) {
+				script.type == MiniScript::Script::TYPE_ONENABLED ||
+				script.type == MiniScript::Script::TYPE_STACKLET) {
 				scriptIdx++;
 				continue;
 			}
@@ -322,7 +323,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "{\n";
 			auto argumentIdx = 0;
 			for (const auto& argument: script.arguments) {
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "Script::FunctionArgument(" + "\n";
+				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "Script::Argument(" + "\n";
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + argument.name + "\"," + "\n";
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + (argument.reference == true?"true":"false") + "\n";
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" ")" + (argumentIdx != script.arguments.size() - 1?",":"") + "\n";
@@ -411,6 +412,14 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				generatedDefinitions+= definitionIndent + "//" + "\n";
 				generatedDefinitions+= definitionIndent + "auto& _lv = " + shortMethodName + "_Stack.top();" + "\n";
 			} else {
+				if (script.type == MiniScript::Script::TYPE_STACKLET) {
+					auto scopeScriptIdx = miniScript->getStackletScopeScriptIdx(scriptIdx);
+					if (scopeScriptIdx != MiniScript::SCRIPTIDX_NONE) {
+						auto scopeShortMethodName = createShortMethodName(miniScript, miniScript->getStackletScopeScriptIdx(scriptIdx));
+						generatedDefinitions+= definitionIndent + "// local script variables" + "\n";
+						generatedDefinitions+= definitionIndent + "auto& _lv = " + scopeShortMethodName + "_Stack.top();" + "\n";
+					}
+				}
 				generatedDefinitions+= definitionIndent + "#define MINISCRIPT_METHOD_POPSTACK()" + "\n";
 			}
 
@@ -592,7 +601,8 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 		for (const auto& script: scripts) {
 			//
 			if (script.type == MiniScript::Script::TYPE_ON ||
-				script.type == MiniScript::Script::TYPE_ONENABLED) {
+				script.type == MiniScript::Script::TYPE_ONENABLED ||
+				script.type == MiniScript::Script::TYPE_STACKLET) {
 				scriptIdx++;
 				continue;
 			}
@@ -949,23 +959,20 @@ void Transpiler::determineVariables(MiniScript* miniScript, unordered_set<string
 			scriptIdx++;
 		}
 	}
-	//
-	// TODO: move stacket variables into their scopes
-	Console::printLine("Global variables");
-	for (const auto& variable: globalVariables) Console::printLine(string() + "\t" + variable);
-	Console::printLine("Function/Stacklets variables");
+	// move stacklet variables into their scopes
 	for (auto scriptIdx = 0; scriptIdx < localVariables.size(); scriptIdx++) {
 		const auto& script = scripts[scriptIdx];
-		Console::print(string() + "\t" + (script.name.empty() == false?script.name:script.condition));
-		if (script.type == MiniScript::Script::TYPE_STACKLET) {
-			auto stackletScopeScriptIdx = miniScript->getStackletScopeScriptIdx(scriptIdx);
-			string stackletScopeName;
-			if (stackletScopeScriptIdx != MiniScript::SCRIPTIDX_NONE) stackletScopeName = scripts[stackletScopeScriptIdx].condition;
-			Console::printLine(" - STACKLET, scope: " + stackletScopeName + " (" + to_string(stackletScopeScriptIdx) + ")");
-		} else {
-			Console::printLine();
+		if (script.type != MiniScript::Script::TYPE_STACKLET) continue;
+		//
+		auto stackletScopeScriptIdx = miniScript->getStackletScopeScriptIdx(scriptIdx);
+		for (const auto& variable: localVariables[scriptIdx]) {
+			if (stackletScopeScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+				globalVariables.insert(variable);
+			} else {
+				localVariables[stackletScopeScriptIdx].insert(variable);
+			}
 		}
-		for (const auto& variable: localVariables[scriptIdx]) Console::printLine(string() + "\t\t" + variable);
+		localVariables[scriptIdx].clear();
 	}
 }
 
@@ -1188,16 +1195,18 @@ void Transpiler::generateVariableAccess(
 	int setArgumentIdx
 ) {
 	//
-	auto haveFunctionOrStacklet = false;
+	auto haveFunction = false;
 	auto haveScript = (scriptConditionIdx != MiniScript::SCRIPTIDX_NONE || scriptIdx != MiniScript::SCRIPTIDX_NONE);
 	if (haveScript == true) {
 		const auto& script = miniScript->getScripts()[scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
-		haveFunctionOrStacklet = script.type == MiniScript::Script::TYPE_FUNCTION || script.type == MiniScript::Script::TYPE_STACKLET;
+		haveFunction =
+			script.type == MiniScript::Script::TYPE_FUNCTION ||
+			(script.type == MiniScript::Script::TYPE_STACKLET && miniScript->getStackletScopeScriptIdx(scriptIdx) != MiniScript::SCRIPTIDX_NONE);
 	}
 	//
 	auto dollarDollarVariable = StringTools::startsWith(variableName, "$$.");
 	auto dollarGlobalVariable = StringTools::startsWith(variableName, "$GLOBAL.");
-	if (haveFunctionOrStacklet == true ||
+	if (haveFunction == true ||
 		dollarDollarVariable == true ||
 		dollarGlobalVariable == true) {
 		//
@@ -1697,6 +1706,19 @@ void Transpiler::generateArrayMapSetVariable(
 				generatedDefinitions+= indent + "{" + "\n";
 				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + ";" + "\n";
 				generatedDefinitions+= indent + "\t" + "variableD" + to_string(initializerDepth) + ".setFunctionAssignment(\"" + value + "\");" + "\n";
+				generatedDefinitions+= indent + "\t" + postStatement + "\n";
+				generatedDefinitions+= indent + "}" + "\n";
+			}
+			break;
+		case MiniScript::TYPE_STACKLET_ASSIGNMENT:
+			{
+				string value;
+				variable.getStringValue(value);
+				value = StringTools::replace(StringTools::replace(value, "\\", "\\\\"), "\"", "\\\"");
+				//
+				generatedDefinitions+= indent + "{" + "\n";
+				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + ";" + "\n";
+				generatedDefinitions+= indent + "\t" + "variableD" + to_string(initializerDepth) + ".setStackletAssignment(\"" + value + "\");" + "\n";
 				generatedDefinitions+= indent + "\t" + postStatement + "\n";
 				generatedDefinitions+= indent + "}" + "\n";
 			}

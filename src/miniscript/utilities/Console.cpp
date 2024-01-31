@@ -1,3 +1,7 @@
+#if defined(_MSC_VER)
+	#include <windows.h>
+#endif
+
 #include <iostream>
 #include <string>
 #include <string_view>
@@ -16,6 +20,13 @@ using std::string_view;
 using std::vector;
 
 using miniscript::utilities::Console;
+
+void Console::initialize() {
+	#if defined(_MSC_VER)
+		// set Microsoft Windows console to use UTF-8
+		SetConsoleOutputCP(65001);
+	#endif
+}
 
 void Console::printLine(const string_view& str)
 {

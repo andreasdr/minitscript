@@ -20,6 +20,11 @@ class miniscript::utilities::Console
 {
 public:
 	/**
+	 * Initialize
+	 */
+	static void initialize();
+
+	/**
 	 * Print given string and trailing newline to console
 	 * @param str string
 	 */

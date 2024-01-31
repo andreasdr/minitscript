@@ -63,11 +63,11 @@ private:
 	 */
 	inline static const string getScriptTypeEnumIdentifier(MiniScript::Script::Type type) {
 		switch(type) {
-			case MiniScript::Script::TYPE_NONE: return "Script::SCRIPTTYPE_NONE";
-			case MiniScript::Script::TYPE_FUNCTION: return "Script::SCRIPTTYPE_FUNCTION";
-			case MiniScript::Script::TYPE_STACKLET: return "Script::SCRIPTTYPE_STACKLET";
-			case MiniScript::Script::TYPE_ON: return "Script::SCRIPTTYPE_ON";
-			case MiniScript::Script::TYPE_ONENABLED: return "Script::SCRIPTTYPE_ONENABLED";
+			case MiniScript::Script::TYPE_NONE: return "Script::TYPE_NONE";
+			case MiniScript::Script::TYPE_FUNCTION: return "Script::TYPE_FUNCTION";
+			case MiniScript::Script::TYPE_STACKLET: return "Script::TYPE_STACKLET";
+			case MiniScript::Script::TYPE_ON: return "Script::TYPE_ON";
+			case MiniScript::Script::TYPE_ONENABLED: return "Script::TYPE_ONENABLED";
 		};
 		//
 		return string();
@@ -81,11 +81,18 @@ private:
 	inline static const string createMethodName(MiniScript* miniScript, int scriptIdx) {
 		if (scriptIdx < 0 || scriptIdx >= miniScript->getScripts().size()) return string();
 		const auto& script = miniScript->getScripts()[scriptIdx];
+		//
+		string methodType;
+		switch(script.type) {
+			case MiniScript::Script::TYPE_NONE: break;
+			case MiniScript::Script::TYPE_FUNCTION: methodType = "function"; break;
+			case MiniScript::Script::TYPE_STACKLET: methodType = "stacklet"; break;
+			case MiniScript::Script::TYPE_ON: methodType = "on"; break;
+			case MiniScript::Script::TYPE_ONENABLED: methodType = "on_enabled"; break;
+		};
+		//
 		return
-			(script.type == MiniScript::Script::TYPE_FUNCTION?
-				"function_":
-				(script.type == MiniScript::Script::TYPE_ON?"on_":"on_enabled_")
-			) +
+			methodType + "_" +
 			(script.name.empty() == false?script.name:(
 				StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
 					script.condition:
