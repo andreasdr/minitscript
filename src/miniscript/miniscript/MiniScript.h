@@ -2658,10 +2658,12 @@ public:
 		//
 		ScriptType type;
 		int line;
+		// condition, condition name or function/stacklet/callable name
 		string condition;
 		string executableCondition;
 		Statement conditionStatement;
 		SyntaxTreeNode conditionSyntaxTree;
+		// if condition holds a condition, name is the additional condition name if given
 		string name;
 		bool emitCondition;
 		vector<Statement> statements;

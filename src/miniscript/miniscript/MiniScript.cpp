@@ -2710,7 +2710,7 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 	//
 	if (pushScriptState == true) {
 		if (script.type == Script::SCRIPTTYPE_STACKLET) {
-			_Console::printLine("MiniScript::call(): " + (script.name.empty() == false?script.name:script.condition) + ": Stacklets can not be called with a stack.");
+			_Console::printLine("MiniScript::call(): " + script.condition + ": Stacklets can not be called with a stack.");
 			return false;
 		}
 		this->pushScriptState();
@@ -2730,7 +2730,7 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 	} else {
 		//
 		if (script.type != Script::SCRIPTTYPE_STACKLET) {
-			_Console::printLine("MiniScript::call(): " + (script.name.empty() == false?script.name:script.condition) + ": Function/Callable can not be called with no stack.");
+			_Console::printLine("MiniScript::call(): " + script.condition + ": Function/Callable can not be called with no stack.");
 			return false;
 		}
 		//
