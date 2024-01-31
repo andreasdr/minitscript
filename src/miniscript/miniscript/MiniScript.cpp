@@ -1087,6 +1087,27 @@ bool MiniScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syn
 				for (const auto& argument: syntaxTreeNode.arguments) {
 					if (validateStacklets(scopeScriptIdx, argument, statement) == false) return false;
 				}
+				//
+				auto functionIdx = getFunctionScriptIdx(syntaxTreeNode.value.getValueAsString());
+				if (functionIdx != SCRIPTIDX_NONE && scripts[functionIdx].type == Script::SCRIPTTYPE_STACKLET) {
+					//
+					_Console::printLine(
+						getStatementInformation(statement) +
+						": " +
+						syntaxTreeNode.value.getValueAsString() +
+						": calling a stacklet in script is not yet supported"
+					);
+					//
+					parseErrors.push_back(
+						getStatementInformation(statement) +
+						": " +
+						syntaxTreeNode.value.getValueAsString() +
+						": calling a stacklet in script is not yet supported"
+					);
+					//
+					return false;
+				}
+				//
 				validateStacklets(syntaxTreeNode.value.getValueAsString());
 				//
 				break;
