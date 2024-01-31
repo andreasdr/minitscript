@@ -50,7 +50,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						returnValue.setValue(false);
 					} else {
 						auto scriptIdx = script->getFunctionScriptIdx(callable);
-						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callableFunction == false) {
+						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callable == false) {
 							returnValue.setValue(false);
 						} else {
 							returnValue.setValue(true);
@@ -92,7 +92,7 @@ void ContextMethods::registerMethods(MiniScript* miniScript) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No script with given id: " + scriptId);
 					} else {
 						auto scriptIdx = script->getFunctionScriptIdx(callable);
-						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callableFunction == false) {
+						if (scriptIdx == MiniScript::SCRIPTIDX_NONE || script->getScripts()[scriptIdx].callable == false) {
 							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Callable not found: " + callable);
 						} else {
 							miniScript->getContext()->push(script);

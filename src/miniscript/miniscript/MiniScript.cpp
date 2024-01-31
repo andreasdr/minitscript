@@ -761,9 +761,9 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 	// arguments
 	vector<bool> argumentReferences(0);
 	if (functionIdx != SCRIPTIDX_NONE) {
-		argumentReferences.resize(scripts[functionIdx].functionArguments.size());
+		argumentReferences.resize(scripts[functionIdx].arguments.size());
 		auto argumentIdx = 0;
-		for (const auto& argument: scripts[functionIdx].functionArguments) {
+		for (const auto& argument: scripts[functionIdx].arguments) {
 			argumentReferences[argumentIdx++] = argument.reference;
 		}
 	} else
@@ -793,7 +793,7 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 			// empty scope means root scope
 			if (scriptIdx != SCRIPTIDX_NONE) {
 				// function are a valid scope for stacklets
-				if (scripts[scriptIdx].type == Script::SCRIPTTYPE_FUNCTION) {
+				if (scripts[scriptIdx].type == Script::TYPE_FUNCTION) {
 					scopeName = scripts[scriptIdx].condition;
 				}
 				// TODO: as well as stacklets
@@ -942,13 +942,13 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 
 int MiniScript::getStackletScopeScriptIdx(int scriptIdx) {
 	if (scriptIdx < 0 || scriptIdx >= scripts.size() ||
-		scripts[scriptIdx].type != MiniScript::Script::SCRIPTTYPE_STACKLET) {
+		scripts[scriptIdx].type != MiniScript::Script::TYPE_STACKLET) {
 		_Console::printLine("MiniScript::getStackletScopeScriptIdx(): No stacklet: " + to_string(scriptIdx));
 		return MiniScript::SCRIPTIDX_NONE;
 	}
 	//
 	const auto& stackletScript = scripts[scriptIdx];
-	const auto& stackletScopeName = stackletScript.functionArguments.size() == 1?stackletScript.functionArguments[0].name:string();
+	const auto& stackletScopeName = stackletScript.arguments.size() == 1?stackletScript.arguments[0].name:string();
 	if (stackletScopeName.empty() == true) {
 		return MiniScript::SCRIPTIDX_NONE;
 	}
@@ -956,9 +956,9 @@ int MiniScript::getStackletScopeScriptIdx(int scriptIdx) {
 	for (auto i = 0; i < scripts.size(); i++) {
 		if (i == scriptIdx) continue;
 		const auto& scriptCandidate = scripts[i];
-		if (scriptCandidate.type != MiniScript::Script::SCRIPTTYPE_FUNCTION && scriptCandidate.type != MiniScript::Script::SCRIPTTYPE_STACKLET) continue;
+		if (scriptCandidate.type != MiniScript::Script::TYPE_FUNCTION && scriptCandidate.type != MiniScript::Script::TYPE_STACKLET) continue;
 		if (scriptCandidate.condition == stackletScopeName) {
-			if (scriptCandidate.type == MiniScript::Script::SCRIPTTYPE_STACKLET) return getStackletScopeScriptIdx(i); else return i;
+			if (scriptCandidate.type == MiniScript::Script::TYPE_STACKLET) return getStackletScopeScriptIdx(i); else return i;
 		}
 	}
 	//
@@ -973,7 +973,7 @@ bool MiniScript::validateStacklets(int scriptIdx) {
 	for (const auto& syntaxTreeNode: script.syntaxTree) {
 		const auto& statement = script.statements[statementIdx++];
 		//
-		if (validateStacklets(script.type == Script::SCRIPTTYPE_FUNCTION?scriptIdx:SCRIPTIDX_NONE, syntaxTreeNode, statement) == false) {
+		if (validateStacklets(script.type == Script::TYPE_FUNCTION?scriptIdx:SCRIPTIDX_NONE, syntaxTreeNode, statement) == false) {
 			//
 			return false;
 		}
@@ -1070,8 +1070,9 @@ bool MiniScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syn
 						return false;
 					}
 					// check stacklet itself for stacklet litarals
-					return validateStacklets(stackletName, scopeScriptIdx);
+					if (validateStacklets(stackletName, scopeScriptIdx) == false) return false;
 				}
+				//
 				break;
 			}
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
@@ -1089,7 +1090,7 @@ bool MiniScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syn
 				}
 				//
 				auto functionIdx = getFunctionScriptIdx(syntaxTreeNode.value.getValueAsString());
-				if (functionIdx != SCRIPTIDX_NONE && scripts[functionIdx].type == Script::SCRIPTTYPE_STACKLET) {
+				if (functionIdx != SCRIPTIDX_NONE && scripts[functionIdx].type == Script::TYPE_STACKLET) {
 					//
 					_Console::printLine(
 						getStatementInformation(statement) +
@@ -1108,7 +1109,11 @@ bool MiniScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syn
 					return false;
 				}
 				//
-				validateStacklets(syntaxTreeNode.value.getValueAsString());
+				if (functionIdx == scopeScriptIdx) {
+					// recursion
+				} else {
+					validateStacklets(syntaxTreeNode.value.getValueAsString());
+				}
 				//
 				break;
 			}
@@ -1657,41 +1662,41 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 			}
 			// script type
 			auto callable = false;
-			auto scriptType = Script::SCRIPTTYPE_NONE;
-			if (_StringTools::startsWith(statementCode, "function:") == true) scriptType = Script::SCRIPTTYPE_FUNCTION; else
-			if (_StringTools::startsWith(statementCode, "stacklet:") == true) scriptType = Script::SCRIPTTYPE_STACKLET; else
-			if (_StringTools::startsWith(statementCode, "on:") == true) scriptType = Script::SCRIPTTYPE_ON; else
-			if (_StringTools::startsWith(statementCode, "on-enabled:") == true) scriptType = Script::SCRIPTTYPE_ONENABLED; else
+			auto scriptType = Script::TYPE_NONE;
+			if (_StringTools::startsWith(statementCode, "function:") == true) scriptType = Script::TYPE_FUNCTION; else
+			if (_StringTools::startsWith(statementCode, "stacklet:") == true) scriptType = Script::TYPE_STACKLET; else
+			if (_StringTools::startsWith(statementCode, "on:") == true) scriptType = Script::TYPE_ON; else
+			if (_StringTools::startsWith(statementCode, "on-enabled:") == true) scriptType = Script::TYPE_ONENABLED; else
 			if (_StringTools::startsWith(statementCode, "callable:") == true) {
 				callable = true;
-				scriptType = Script::SCRIPTTYPE_FUNCTION;
+				scriptType = Script::TYPE_FUNCTION;
 			}
 			// no, but did we got a new script?
-			if (scriptType != Script::SCRIPTTYPE_NONE) {
+			if (scriptType != Script::TYPE_NONE) {
 				// yes
 				haveScript = true;
 				// functions: argument names
-				vector<Script::FunctionArgument> arguments;
+				vector<Script::Argument> arguments;
 				// determine statement
 				string statement;
-				if (scriptType == Script::SCRIPTTYPE_FUNCTION) {
+				if (scriptType == Script::TYPE_FUNCTION) {
 					statement = callable == true?
 						_StringTools::trim(_StringTools::substring(statementCode, string("callable:").size())):
 						_StringTools::trim(_StringTools::substring(statementCode, string("function:").size()));
 				} else
-				if (scriptType == Script::SCRIPTTYPE_STACKLET) {
+				if (scriptType == Script::TYPE_STACKLET) {
 					statement = _StringTools::trim(_StringTools::substring(statementCode, string("stacklet:").size()));
 				} else
-				if (scriptType == Script::SCRIPTTYPE_ON)
+				if (scriptType == Script::TYPE_ON)
 					statement = _StringTools::trim(_StringTools::substring(statementCode, string("on:").size())); else
-				if (scriptType == Script::SCRIPTTYPE_ONENABLED)
+				if (scriptType == Script::TYPE_ONENABLED)
 					statement = _StringTools::trim(_StringTools::substring(statementCode, string("on-enabled:").size()));
 				// and name
 				string name;
 				auto scriptLineNameSeparatorIdx =
-					scriptType == Script::SCRIPTTYPE_FUNCTION?
+					scriptType == Script::TYPE_FUNCTION?
 						statement.rfind("function:"):
-						(scriptType == Script::SCRIPTTYPE_STACKLET?
+						(scriptType == Script::TYPE_STACKLET?
 							statement.rfind("stacklet:"):
 							statement.rfind(":=")
 						);
@@ -1701,27 +1706,27 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							_StringTools::substring(
 								statement,
 								scriptLineNameSeparatorIdx +
-									(scriptType == Script::SCRIPTTYPE_FUNCTION?string("function").size():(scriptType == Script::SCRIPTTYPE_STACKLET?string("stacklet").size():string(":=").size()))
+									(scriptType == Script::TYPE_FUNCTION?string("function").size():(scriptType == Script::TYPE_STACKLET?string("stacklet").size():string(":=").size()))
 							)
 						);
 					statement = _StringTools::trim(_StringTools::substring(statement, 0, scriptLineNameSeparatorIdx));
 				}
-				if (scriptType == Script::SCRIPTTYPE_FUNCTION ||
-					scriptType == Script::SCRIPTTYPE_STACKLET) {
+				if (scriptType == Script::TYPE_FUNCTION ||
+					scriptType == Script::TYPE_STACKLET) {
 					auto leftBracketIdx = statement.find('(');
 					auto rightBracketIdx = statement.find(')');
 					if (leftBracketIdx != string::npos || leftBracketIdx != string::npos) {
 						if (leftBracketIdx == string::npos) {
-							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": " + (scriptType == Script::SCRIPTTYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
+							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
 							//
-							parseErrors.push_back(to_string(currentLineIdx) + ": " + (scriptType == Script::SCRIPTTYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
+							parseErrors.push_back(to_string(currentLineIdx) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
 							//
 							scriptValid = false;
 						} else
 						if (rightBracketIdx == string::npos) {
-							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": " + (scriptType == Script::SCRIPTTYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
+							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
 							//
-							parseErrors.push_back(to_string(currentLineIdx) + ": " + (scriptType == Script::SCRIPTTYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
+							parseErrors.push_back(to_string(currentLineIdx) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
 							//
 							scriptValid = false;
 						} else {
@@ -1735,30 +1740,30 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 									reference = true;
 									argumentNameTrimmed = _StringTools::trim(_StringTools::substring(argumentNameTrimmed, 1));
 								}
-								if (scriptType == Script::SCRIPTTYPE_FUNCTION) {
+								if (scriptType == Script::TYPE_FUNCTION) {
 									if (_StringTools::regexMatch(argumentNameTrimmed, "\\$[a-zA-Z0-9_]+") == true) {
 										arguments.emplace_back(
 											argumentNameTrimmed,
 											reference
 										);
 									} else {
-										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": " + (scriptType == Script::SCRIPTTYPE_FUNCTION?"function":"stacklet") + ": invalid argument name: '" + argumentNameTrimmed + "'");
+										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": invalid argument name: '" + argumentNameTrimmed + "'");
 										//
-										parseErrors.push_back(to_string(currentLineIdx) + ": " + (scriptType == Script::SCRIPTTYPE_FUNCTION?"function":"stacklet") + ": invalid argument name: '" + argumentNameTrimmed + "'");
+										parseErrors.push_back(to_string(currentLineIdx) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": invalid argument name: '" + argumentNameTrimmed + "'");
 										//
 										scriptValid = false;
 									}
 								} else
-								if (scriptType == Script::SCRIPTTYPE_STACKLET) {
+								if (scriptType == Script::TYPE_STACKLET) {
 									if (_StringTools::regexMatch(argumentNameTrimmed, "[a-zA-Z0-9_]+") == true) {
 										arguments.emplace_back(
 											argumentNameTrimmed,
 											reference
 										);
 									} else {
-										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": " + (scriptType == Script::SCRIPTTYPE_FUNCTION?"function":"stacklet") + ": invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
+										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
 										//
-										parseErrors.push_back(to_string(currentLineIdx) + ": " + (scriptType == Script::SCRIPTTYPE_FUNCTION?"function":"stacklet") + ": invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
+										parseErrors.push_back(to_string(currentLineIdx) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
 										//
 										scriptValid = false;
 									}
@@ -1781,7 +1786,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				auto emitCondition = _StringTools::regexMatch(conditionOrName, "[a-zA-Z0-9_]+");
 				statementIdx = STATEMENTIDX_FIRST;
 				// add to user functions
-				if (scriptType == Script::SCRIPTTYPE_FUNCTION || scriptType == Script::SCRIPTTYPE_STACKLET) {
+				if (scriptType == Script::TYPE_FUNCTION || scriptType == Script::TYPE_STACKLET) {
 					functions[conditionOrName] = scripts.size();
 				}
 
@@ -2163,11 +2168,11 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	for (auto scriptIdx = 0; scriptIdx < scripts.size(); scriptIdx++) {
 		const auto& script = scripts[scriptIdx];
 		//
-		if (script.type == MiniScript::Script::SCRIPTTYPE_STACKLET) {
+		if (script.type == MiniScript::Script::TYPE_STACKLET) {
 			// valid: root scope
-			if (script.functionArguments.empty()) continue;
+			if (script.arguments.empty()) continue;
 			// invalid: more than 1 argument
-			if (script.functionArguments.size() != 1) {
+			if (script.arguments.size() != 1) {
 				_Console::printLine(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
 				parseErrors.push_back(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
 				//
@@ -2176,11 +2181,11 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				break;
 			}
 			//
-			auto stackletScopeScriptIdx = getFunctionScriptIdx(script.functionArguments[0].name);
+			auto stackletScopeScriptIdx = getFunctionScriptIdx(script.arguments[0].name);
 			// invalid: scope function/stacklet not found
 			if (stackletScopeScriptIdx == SCRIPTIDX_NONE) {
-				_Console::printLine(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.functionArguments[0].name);
-				parseErrors.push_back(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.functionArguments[0].name);
+				_Console::printLine(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
+				parseErrors.push_back(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
 				//
 				scriptValid = false;
 				//
@@ -2197,9 +2202,9 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 			}
 		}
 		//
-		if (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION ||
-			script.type == MiniScript::Script::SCRIPTTYPE_ON ||
-			script.type == MiniScript::Script::SCRIPTTYPE_ONENABLED) {
+		if (script.type == MiniScript::Script::TYPE_FUNCTION ||
+			script.type == MiniScript::Script::TYPE_ON ||
+			script.type == MiniScript::Script::TYPE_ONENABLED) {
 			//
 			if (validateStacklets(scriptIdx) == false) {
 				//
@@ -2209,9 +2214,9 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 			}
 		}
 		//
-		if (script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION) {
+		if (script.type == MiniScript::Script::TYPE_FUNCTION) {
 			//
-			if (script.callableFunction == true) {
+			if (script.callable == true) {
 				//
 				if (validateCallable(script.condition) == false) {
 					//
@@ -2236,7 +2241,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	// check for initialize and error condition
 	auto haveErrorScript = false;
 	for (const auto& script: scripts) {
-		if (script.type == Script::SCRIPTTYPE_ONENABLED) {
+		if (script.type == Script::TYPE_ONENABLED) {
 			// no op
 		} else
 		if (script.condition == "error") {
@@ -2278,7 +2283,7 @@ int MiniScript::determineScriptIdxToStart() {
 	auto nothingScriptIdx = SCRIPTIDX_NONE;
 	auto scriptIdx = 0;
 	for (const auto& script: scripts) {
-		if (script.type != Script::SCRIPTTYPE_ON) {
+		if (script.type != Script::TYPE_ON) {
 			// no op
 		} else
 		if (script.emitCondition == true && script.condition == "nothing") {
@@ -2325,7 +2330,7 @@ int MiniScript::determineNamedScriptIdxToStart() {
 	for (const auto& enabledConditionName: enabledNamedConditions) {
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
-			if (script.type != Script::SCRIPTTYPE_ONENABLED ||
+			if (script.type != Script::TYPE_ONENABLED ||
 				script.name != enabledConditionName) {
 				// no op
 			} else {
@@ -2924,8 +2929,8 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 	}
 	auto& script = scripts[scriptIdx];
 	//
-	if (script.type != Script::SCRIPTTYPE_FUNCTION &&
-			script.type != Script::SCRIPTTYPE_STACKLET) {
+	if (script.type != Script::TYPE_FUNCTION &&
+			script.type != Script::TYPE_STACKLET) {
 		_Console::printLine("MiniScript::call(): " + (script.name.empty() == false?script.name:script.condition) + ": Script is not a function/callable/stacklet.");
 		return false;
 	}
@@ -2933,7 +2938,7 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 	ScriptState currentScriptState = getScriptState();
 	//
 	if (pushScriptState == true) {
-		if (script.type == Script::SCRIPTTYPE_STACKLET) {
+		if (script.type == Script::TYPE_STACKLET) {
 			_Console::printLine("MiniScript::call(): " + script.condition + ": Stacklets can not be called with a stack.");
 			return false;
 		}
@@ -2942,7 +2947,7 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 		auto& scriptState = getScriptState();
 		// also put named arguments into state context variables
 		auto argumentIdx = 0;
-		for (const auto& argument: script.functionArguments) {
+		for (const auto& argument: script.arguments) {
 			if (argumentIdx == arguments.size()) {
 				break;
 			}
@@ -2953,7 +2958,7 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 		resetScriptExecutationState(scriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
 	} else {
 		//
-		if (script.type != Script::SCRIPTTYPE_STACKLET) {
+		if (script.type != Script::TYPE_STACKLET) {
 			_Console::printLine("MiniScript::call(): " + script.condition + ": Function/Callable can not be called with no stack.");
 			return false;
 		}
@@ -3070,19 +3075,19 @@ const string MiniScript::getScriptInformation(int scriptIdx, bool includeStateme
 	string result;
 	string argumentsString;
 	switch(script.type) {
-		case Script::SCRIPTTYPE_FUNCTION:
-		case Script::SCRIPTTYPE_STACKLET: {
-			for (const auto& argument: script.functionArguments) {
+		case Script::TYPE_FUNCTION:
+		case Script::TYPE_STACKLET: {
+			for (const auto& argument: script.arguments) {
 				if (argumentsString.empty() == false) argumentsString+= ", ";
 				if (argument.reference == true) argumentsString+= "&";
 				argumentsString+= argument.name;
 			}
 			argumentsString = "(" + argumentsString + ")";
-			if (script.type == Script::SCRIPTTYPE_FUNCTION) result+= "function: "; else result+= "stacklet: ";
+			if (script.type == Script::TYPE_FUNCTION) result+= "function: "; else result+= "stacklet: ";
 			break;
 		}
-		case Script::SCRIPTTYPE_ON: result+= "on: "; break;
-		case Script::SCRIPTTYPE_ONENABLED: result+= "on-enabled: "; break;
+		case Script::TYPE_ON: result+= "on: "; break;
+		case Script::TYPE_ONENABLED: result+= "on-enabled: "; break;
 	}
 	if (script.condition.empty() == false)
 		result+= script.condition + argumentsString + "; ";
@@ -3391,7 +3396,7 @@ void MiniScript::registerMethods() {
 											} else
 											if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
 												arguments[argumentIdx + 1] =
-													callArgumentIdx >= miniScript->getScripts()[functionIdx].functionArguments.size() || miniScript->getScripts()[functionIdx].functionArguments[callArgumentIdx].reference == false?
+													callArgumentIdx >= miniScript->getScripts()[functionIdx].arguments.size() || miniScript->getScripts()[functionIdx].arguments[callArgumentIdx].reference == false?
 														Variable::createNonReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]):
 														EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1];
 											}
@@ -3401,7 +3406,7 @@ void MiniScript::registerMethods() {
 												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentIdx].reference);
 											} else
 											if (functionIdx != MiniScript::SCRIPTIDX_NONE) {
-												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionIdx].functionArguments.size()?false:miniScript->getScripts()[functionIdx].functionArguments[callArgumentIdx].reference);
+												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionIdx].arguments.size()?false:miniScript->getScripts()[functionIdx].arguments[callArgumentIdx].reference);
 											}
 										#endif
 									}

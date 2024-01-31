@@ -2605,15 +2605,15 @@ public:
 	 */
 	struct Script {
 		/**
-		 * Function Argument
+		 * Argument
 		 */
-		struct FunctionArgument {
+		struct Argument {
 			/**
 			 * Constructor
 			 * @param name name
 			 * @param reference reference
 			 */
-			FunctionArgument(
+			Argument(
 				const string& name,
 				bool reference
 			):
@@ -2625,10 +2625,10 @@ public:
 			bool reference;
 		};
 		//
-		enum ScriptType { SCRIPTTYPE_NONE, SCRIPTTYPE_FUNCTION, SCRIPTTYPE_STACKLET, SCRIPTTYPE_ON, SCRIPTTYPE_ONENABLED };
+		enum Type { TYPE_NONE, TYPE_FUNCTION, TYPE_STACKLET, TYPE_ON, TYPE_ONENABLED };
 		/**
 		 * Constructor
-		 * @param type script type
+		 * @param type type
 		 * @param line line
 		 * @param condition condition
 		 * @param executableCondition executable condition
@@ -2642,7 +2642,7 @@ public:
 		 * @param functionArguments function arguments
 		 */
 		Script(
-			ScriptType type,
+			Type type,
 			int line,
 			// applies only for on and on-enabled
 			const string& condition,
@@ -2654,9 +2654,9 @@ public:
 			bool emitCondition,
 			const vector<Statement>& statements,
 			const vector<SyntaxTreeNode>& syntaxTree,
-			// applies only for functions
-			bool callableFunction,
-			const vector<FunctionArgument>& functionArguments
+			// applies only for functions/stacklets
+			bool callable,
+			const vector<Argument>& arguments
 		):
 			type(type),
 			line(line),
@@ -2668,11 +2668,11 @@ public:
 			emitCondition(emitCondition),
 			statements(statements),
 			syntaxTree(syntaxTree),
-			callableFunction(callableFunction),
-			functionArguments(functionArguments)
+			callable(callable),
+			arguments(arguments)
 		{}
 		//
-		ScriptType type;
+		Type type;
 		int line;
 		// condition, condition name or function/stacklet/callable name
 		string condition;
@@ -2684,8 +2684,8 @@ public:
 		bool emitCondition;
 		vector<Statement> statements;
 		vector<SyntaxTreeNode> syntaxTree;
-		bool callableFunction;
-		vector<FunctionArgument> functionArguments;
+		bool callable;
+		vector<Argument> arguments;
 	};
 
 	static constexpr int SCRIPTIDX_NONE { -1 };
@@ -2955,7 +2955,7 @@ protected:
 		scriptState.blockStack.clear();
 		if (scriptIdx != SCRIPTIDX_NONE) {
 			scriptState.blockStack.emplace_back(
-				scripts[scriptIdx].type == Script::SCRIPTTYPE_FUNCTION?
+				scripts[scriptIdx].type == Script::TYPE_FUNCTION?
 					ScriptState::BLOCKTYPE_FUNCTION:
 					ScriptState::BLOCKTYPE_GLOBAL,
 				false,
@@ -4322,7 +4322,7 @@ public:
 	inline bool hasCondition(const string& condition) {
 		// iterate scripts to find out if condition exists
 		for (const auto& script: scripts) {
-			if (script.type != Script::SCRIPTTYPE_ON) {
+			if (script.type != Script::TYPE_ON) {
 				// no op
 			} else
 			if (script.emitCondition == true && script.condition == condition) {

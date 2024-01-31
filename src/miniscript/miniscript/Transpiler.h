@@ -44,13 +44,13 @@ private:
 	 * @param type script type
 	 * @return script type enum identifier
 	 */
-	inline static const string getScriptTypeReadableName(MiniScript::Script::ScriptType type) {
+	inline static const string getScriptTypeReadableName(MiniScript::Script::Type type) {
 		switch(type) {
-			case MiniScript::Script::SCRIPTTYPE_NONE: return "none";
-			case MiniScript::Script::SCRIPTTYPE_FUNCTION: return "function";
-			case MiniScript::Script::SCRIPTTYPE_STACKLET: return "stacklet";
-			case MiniScript::Script::SCRIPTTYPE_ON: return "on";
-			case MiniScript::Script::SCRIPTTYPE_ONENABLED: return "on-enabled";
+			case MiniScript::Script::TYPE_NONE: return "none";
+			case MiniScript::Script::TYPE_FUNCTION: return "function";
+			case MiniScript::Script::TYPE_STACKLET: return "stacklet";
+			case MiniScript::Script::TYPE_ON: return "on";
+			case MiniScript::Script::TYPE_ONENABLED: return "on-enabled";
 		};
 		//
 		return string();
@@ -61,13 +61,13 @@ private:
 	 * @param type script type
 	 * @return script type enum identifier
 	 */
-	inline static const string getScriptTypeEnumIdentifier(MiniScript::Script::ScriptType type) {
+	inline static const string getScriptTypeEnumIdentifier(MiniScript::Script::Type type) {
 		switch(type) {
-			case MiniScript::Script::SCRIPTTYPE_NONE: return "Script::SCRIPTTYPE_NONE";
-			case MiniScript::Script::SCRIPTTYPE_FUNCTION: return "Script::SCRIPTTYPE_FUNCTION";
-			case MiniScript::Script::SCRIPTTYPE_STACKLET: return "Script::SCRIPTTYPE_STACKLET";
-			case MiniScript::Script::SCRIPTTYPE_ON: return "Script::SCRIPTTYPE_ON";
-			case MiniScript::Script::SCRIPTTYPE_ONENABLED: return "Script::SCRIPTTYPE_ONENABLED";
+			case MiniScript::Script::TYPE_NONE: return "Script::SCRIPTTYPE_NONE";
+			case MiniScript::Script::TYPE_FUNCTION: return "Script::SCRIPTTYPE_FUNCTION";
+			case MiniScript::Script::TYPE_STACKLET: return "Script::SCRIPTTYPE_STACKLET";
+			case MiniScript::Script::TYPE_ON: return "Script::SCRIPTTYPE_ON";
+			case MiniScript::Script::TYPE_ONENABLED: return "Script::SCRIPTTYPE_ONENABLED";
 		};
 		//
 		return string();
@@ -82,9 +82,9 @@ private:
 		if (scriptIdx < 0 || scriptIdx >= miniScript->getScripts().size()) return string();
 		const auto& script = miniScript->getScripts()[scriptIdx];
 		return
-			(script.type == MiniScript::Script::SCRIPTTYPE_FUNCTION?
+			(script.type == MiniScript::Script::TYPE_FUNCTION?
 				"function_":
-				(script.type == MiniScript::Script::SCRIPTTYPE_ON?"on_":"on_enabled_")
+				(script.type == MiniScript::Script::TYPE_ON?"on_":"on_enabled_")
 			) +
 			(script.name.empty() == false?script.name:(
 				StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
@@ -460,9 +460,9 @@ private:
 	 * @param syntaxTree syntax tree
 	 */
 	static const string createSourceCode(
-		MiniScript::Script::ScriptType scriptType,
+		MiniScript::Script::Type scriptType,
 		const string& condition,
-		const vector<MiniScript::Script::FunctionArgument>& functionArguments,
+		const vector<MiniScript::Script::Argument>& functionArguments,
 		const string& name,
 		const MiniScript::SyntaxTreeNode& conditionSyntaxTree,
 		const vector<MiniScript::SyntaxTreeNode>& syntaxTree
