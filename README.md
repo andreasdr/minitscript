@@ -112,7 +112,7 @@ See an example:
 
 Please note, default block is optional.
 
-## 2.3. forTime, forCondition
+## 2.3. forTime, forCondition, for, break, continue
 
 forTime and forCondition are loops and belong to flow control also:
 
@@ -138,6 +138,8 @@ forCondition takes a single boolean value as argument. The loop will be executed
 	end
 ...
 ```
+
+TODO: for, break, continue
 
 # 3. Functions/Callables
 
@@ -182,9 +184,8 @@ end
 ...
 ``` 
 
-Global variables can always be accessed by using the "$$." or "$GLOBAL." accessor.
-By default variables are read from current context and if they have not been found from root context.
-So to be sure to use a global variable in function scope, just use the "$$." or "$GLOBAL." accessor.
+By default, variables are read from current (variable) context. The default context is the global context. 
+Functions and callables have their own contexts. In this case global variables must be accessed by using the "$$." or "$GLOBAL." accessor.
 ```
 ...
 # function to test global variable access

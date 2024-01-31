@@ -4067,37 +4067,18 @@ inline MiniScript::Variable* MiniScript::getVariableIntern(const string& variabl
 		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
 		variableName = _StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 	}
-	// retrieve variable from function script state
+	// retrieve variable from script state
 	Variable* variablePtr = nullptr;
-	if (global == false) {
-		const auto& scriptState = getScriptState();
-		auto variableIt = scriptState.variables.find(variableName);
-		if (variableIt == scriptState.variables.end()) {
-			if (isFunctionRunning() == false) {
-				if (expectVariable == true) {
-					_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + variableStatement + " does not exist");
-				}
-				return nullptr;
-			}
-		} else {
-			variablePtr = variableIt->second;
+	const auto& scriptState = global == false?getScriptState():getRootScriptState();
+	auto variableIt = scriptState.variables.find(variableName);
+	if (variableIt == scriptState.variables.end()) {
+		if (expectVariable == true) {
+			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + variableStatement + " does not exist");
 		}
+		return nullptr;
+	} else {
+		variablePtr = variableIt->second;
 	}
-	// if no success try to retrieve variable from root script state, but only when expecting variable aka reading variable
-	if (global == true || (expectVariable == true && variablePtr == nullptr)) {
-		const auto& scriptState = getRootScriptState();
-		auto variableIt = scriptState.variables.find(variableName);
-		if (variableIt == scriptState.variables.end()) {
-			if (expectVariable == true) {
-				_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + variableStatement + " does not exist");
-			}
-			return nullptr;
-		} else {
-			variablePtr = variableIt->second;
-		}
-	}
-	//
-	if (variablePtr == nullptr) return nullptr;
 	//
 	return evaluateVariableAccessIntern(variablePtr, variableStatement, callerMethod, parentVariable, arrayIdx, key, setAccessBool, statement, expectVariable);
 }
