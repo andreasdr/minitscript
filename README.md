@@ -1,4 +1,5 @@
-This is the home of the MiniScript script language. This document and repository is WIP. Expect a BETA release around 2024-02-01. 
+This is the home of the MiniScript script language. This document and repository is WIP. Expect a BETA release around 2024-02-15. 
+See section 1.3. for 1.0 BETA release TODO list.
 
 # 1. Introduction
 
@@ -35,6 +36,25 @@ Also note the focus on easy integration into other products and easy customizabi
   - supports event like programming
   - unicode support via UTF8
   - can be transpiled to C++
+
+## 1.3. 1.0 BETA release TODO list
+
+- Whats left to do for 1.0 BETA release
+  - stacklets and function assignment literals should store script function index
+  - make stacklets callable by script
+  - console logger interface
+  - application.execute stderr
+  - application.execute exit code
+  - parser bug: console.printLine("\t$j = " + $j)
+  - make event system optional
+  - optional: forEach, forRange: MiniScript "like" alternative
+  - optional: else if
+  - documentation
+    - detailed docu for methods and section
+    - ...
+  - preprocessor definition for data files
+  - installer for Windows
+  - installer for MacOSX
 
 # 2. Flow control
 
