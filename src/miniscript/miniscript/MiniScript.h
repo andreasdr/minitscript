@@ -1032,6 +1032,27 @@ public:
 
 		/**
 		 * Constructor
+		 * @param type type
+		 * @param value value
+		 */
+		inline Variable(VariableType type, const string& value) {
+			switch (type) {
+				case MiniScript::TYPE_FUNCTION_ASSIGNMENT:
+					setFunctionAssignment(value);
+					break;
+				case MiniScript::TYPE_STACKLET_ASSIGNMENT:
+					setStackletAssignment(value);
+					break;
+				case MiniScript::TYPE_STRING:
+					setValue(value);
+					break;
+				default:
+					_Console::printLine("Variable::Variable(VariableType, const string&): invalid type: " + getTypeAsString(type));
+			}
+		}
+
+		/**
+		 * Constructor
 		 * @param value value
 		 */
 		inline Variable(const string& value) {

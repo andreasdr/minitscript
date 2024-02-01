@@ -1713,7 +1713,7 @@ void Transpiler::generateArrayMapSetVariable(
 		case MiniScript::TYPE_STACKLET_ASSIGNMENT:
 			{
 				string value;
-				variable.getStringValue(value);
+				variable.getStackletValue(value);
 				value = StringTools::replace(StringTools::replace(value, "\\", "\\\\"), "\"", "\\\"");
 				//
 				generatedDefinitions+= indent + "{" + "\n";
@@ -2233,7 +2233,12 @@ bool Transpiler::transpileStatement(
 								case MiniScript::TYPE_STACKLET_ASSIGNMENT:
 									{
 										string value;
-										argument.value.getStringValue(value);
+										// get it, while its hot
+										if (argument.value.getType() == MiniScript::TYPE_STACKLET_ASSIGNMENT) {
+											argument.value.getStackletValue(value);
+										} else {
+											argument.value.getStringValue(value);
+										}
 										value = StringTools::replace(StringTools::replace(value, "\\", "\\\\"), "\"", "\\\"");
 										// take array access statements into account
 										auto arrayAccessStatementOffset = 0;
@@ -2247,7 +2252,7 @@ bool Transpiler::transpileStatement(
 											arrayAccessStatementOffset-= (arrayAccessStatement.rightIdx - (arrayAccessStatement.leftIdx + 1)) - arrayAccessStatementMethodCall.size();
 										}
 										//
-										argumentsCode.push_back(indent +  + "Variable(string(\"" + value + "\"))" + (lastArgument == false?",":""));
+										argumentsCode.push_back(indent + "Variable(static_cast<VariableType>(" + to_string(argument.value.getType()) + "), string(\"" + value + "\"))" + (lastArgument == false?",":""));
 									}
 									break;
 								case MiniScript::TYPE_ARRAY:

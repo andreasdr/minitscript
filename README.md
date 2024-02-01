@@ -24,7 +24,8 @@ Also note the focus on easy integration into other products and easy customizabi
   - built-in data types: null, boolean, integer, float, string, byte array, array, map and set, ...
   - when calling script C++ methods or script functions with arguments it does optionally use references or value by copy
   - supports functions and recursion
-  - supports inline/lamda functions
+  - supports stacklets
+  - supports inline/lamda functions and stacklets
   - supports operators by operator to method mapping by a preprocessor run
   - supports loops and conditions
   - supports programming with classes style programming
@@ -141,7 +142,7 @@ forCondition takes a single boolean value as argument. The loop will be executed
 
 TODO: for, break, continue
 
-# 3. Functions/Callables
+# 3. Functions/Stacklets/Callables
 
 See this example that shows functions and recursion.
 
@@ -200,6 +201,11 @@ end
 	console.printLine("globalVariableTest(): post: $globalTest = " + $globalTest)
 ...
 ```
+Stacklets are basically functions without a own stack(or scope), that e.g. holds variables. 
+But stacklets are able to read/write variables of root scope or of a defined scope function scope. 
+Stacklets take no argument if used in root scope. It can take a single argument that names the function the stacklet is bound too, to use its scope.
+
+TODO: Example  
 
 A special type of functions are callables. Callables are functions that are used to interact between MiniScript scripts.
  
