@@ -46,6 +46,7 @@ Also note the focus on easy integration into other products and easy customizabi
   - application.execute stderr
   - application.execute exit code
   - parser bug: console.printLine("\t$j = " + $j)
+  - parser bug: $stacklet =->{ console.printLine("my stacklet") }
   - make event system optional
   - optional: forEach, forRange: MiniScript "like" alternative
   - optional: else if
