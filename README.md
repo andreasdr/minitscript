@@ -1106,7 +1106,7 @@ end
 | Equals                                                                                           |
 | <sub>equals($a: Mixed, $b: Mixed): Boolean</sub>                                                 |
 | For condition                                                                                    |
-| <sub>forCondition($condition: Boolean[, $iterationFunction: Function]): Null</sub>               |
+| <sub>forCondition($condition: Boolean[, $iterationStacklet: Stacklet]): Null</sub>               |
 | For time                                                                                         |
 | <sub>forTime($time: Integer): Null</sub>                                                         |
 | Greater                                                                                          |
