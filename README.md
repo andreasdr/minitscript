@@ -40,8 +40,6 @@ Also note the focus on easy integration into other products and easy customizabi
 ## 1.3. 1.0 BETA release TODO list
 
 - Whats left to do for 1.0 BETA release
-  - application.execute stderr
-  - application.execute exit code
   - parser bug: console.printLine("\t$j = " + $j)
   - parser bug: $stacklet =->{ console.printLine("my stacklet") }
   - make event system optional
@@ -1173,7 +1171,7 @@ end
 | Get application command line arguments                                                           |
 | <sub>application.getArguments(): Array</sub>                                                     |
 | Execute Application                                                                              |
-| <sub>application.execute($command: String): String</sub>                                         |
+| <sub>application.execute($command: String[, &$exitCode: Integer[, &$error: String]]): String</sub>|
 | Exit application with optional exit code                                                         |
 | <sub>application.exit([$exitCode: Integer]): Null</sub>                                          |
 
@@ -1390,8 +1388,10 @@ end
 | <sub>script.isNative(): Boolean</sub>                                                            |
 | Get script variables                                                                             |
 | <sub>script.getVariables(): Map</sub>                                                            |
-| Call script callable function                                                                    |
+| Call script function                                                                             |
 | <sub>script.call($function: String, ...): Mixed</sub>                                            |
+| Call script stacklet                                                                             |
+| <sub>script.callStacklet($stacklet: String): Mixed</sub>                                         |
 | Disable a specific named condition                                                               |
 | <sub>script.disableNamedCondition($name: String): Null</sub>                                     |
 | Emit a condition                                                                                 |

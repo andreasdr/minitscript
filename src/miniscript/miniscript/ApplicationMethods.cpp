@@ -136,6 +136,8 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "command", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_INTEGER, .name = "exitCode", .optional = true, .reference = true, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "error", .optional = true, .reference = true, .nullable = false },
 					},
 					MiniScript::TYPE_STRING
 				),
@@ -145,9 +147,15 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string command;
-				if (arguments.size() == 1 &&
+				if ((arguments.size() == 1 || arguments.size() == 2 || arguments.size() == 3) &&
 					MiniScript::getStringValue(arguments, 0, command) == true) {
-					returnValue.setValue(ApplicationMethods::execute(command));
+					int exitCode = -1;
+					string error;
+					int* exitCodePtr = arguments.size() >= 2?&exitCode:nullptr;
+					string* errorPtr = arguments.size() >= 3?&error:nullptr;
+					returnValue.setValue(ApplicationMethods::execute(command, exitCodePtr, errorPtr));
+					if (exitCodePtr != nullptr) arguments[1].setValue(static_cast<int64_t>(exitCode));
+					if (errorPtr != nullptr) arguments[2].setValue(error);
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
