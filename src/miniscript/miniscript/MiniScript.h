@@ -557,8 +557,8 @@ public:
 		 * Function value
 		 */
 		struct FunctionValue {
-			string value;
-			int functionIdx;
+			string name;
+			int scriptIdx;
 		};
 
 		/**
@@ -700,6 +700,20 @@ public:
 		 */
 		inline const float& getFloatValueReference() const {
 			return *(float*)(&getValuePtrReference());
+		}
+
+		/**
+		 * @return function value reference
+		 */
+		inline FunctionValue& getFunctionValueReference() {
+			return *static_cast<FunctionValue*>((void*)getValuePtrReference());
+		}
+
+		/**
+		 * @return const function value reference
+		 */
+		inline const FunctionValue& getFunctionValueReference() const {
+			return *static_cast<FunctionValue*>((void*)getValuePtrReference());
 		}
 
 		/**
@@ -895,17 +909,26 @@ public:
 					//
 					break;
 				case TYPE_FUNCTION_ASSIGNMENT:
-					to.setFunctionAssignment(from.getStringValueReference().getValue());
-					break;
+					{
+						const auto& functionValue = from.getFunctionValueReference();
+						to.setFunctionAssignment(functionValue.name, functionValue.scriptIdx);
+						break;
+					}
 				case TYPE_STACKLET_ASSIGNMENT:
-					to.setStackletAssignment(from.getStringValueReference().getValue());
-					break;
+					{
+						const auto& functionValue = from.getFunctionValueReference();
+						to.setStackletAssignment(functionValue.name, functionValue.scriptIdx);
+						break;
+					}
 				case TYPE_PSEUDO_NUMBER: break;
 				case TYPE_PSEUDO_MIXED: break;
 				case TYPE_STRING:
-					to.getStringValueReference().setValue(from.getStringValueReference().getValue());
-					to.getStringValueReference().setCache(from.getStringValueReference().getCache());
-					break;
+					{
+						const auto& stringValue = from.getStringValueReference();
+						to.getStringValueReference().setValue(stringValue.getValue());
+						to.getStringValueReference().setCache(stringValue.getCache());
+						break;
+					}
 				case TYPE_BYTEARRAY:
 					to.getByteArrayValueReference() = from.getByteArrayValueReference();
 					break;
@@ -1042,14 +1065,15 @@ public:
 		 * Constructor
 		 * @param type type
 		 * @param value value
+		 * @param scriptIdx script index
 		 */
-		inline Variable(VariableType type, const string& value) {
+		inline Variable(VariableType type, const string& value, int scriptIdx = SCRIPTIDX_NONE) {
 			switch (type) {
 				case MiniScript::TYPE_FUNCTION_ASSIGNMENT:
-					setFunctionAssignment(value);
+					setFunctionAssignment(value, scriptIdx);
 					break;
 				case MiniScript::TYPE_STACKLET_ASSIGNMENT:
-					setStackletAssignment(value);
+					setStackletAssignment(value, scriptIdx);
 					break;
 				case MiniScript::TYPE_STRING:
 					setValue(value);
@@ -1113,9 +1137,11 @@ public:
 				case TYPE_PSEUDO_NUMBER: break;
 				case TYPE_PSEUDO_MIXED: break;
 				case TYPE_STRING:
+					delete static_cast<StringValue*>((void*)getValuePtrReference());
+					break;
 				case TYPE_FUNCTION_ASSIGNMENT:
 				case TYPE_STACKLET_ASSIGNMENT:
-					delete static_cast<StringValue*>((void*)getValuePtrReference());
+					delete static_cast<FunctionValue*>((void*)getValuePtrReference());
 					break;
 				case TYPE_BYTEARRAY:
 					delete static_cast<ByteArrayValue*>((void*)getValuePtrReference());
@@ -1170,9 +1196,11 @@ public:
 					break;
 				case TYPE_PSEUDO_NUMBER: break;
 				case TYPE_PSEUDO_MIXED: break;
-				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
 				case TYPE_STACKLET_ASSIGNMENT:
+					getValuePtrReference() = (uint64_t)(new FunctionValue());
+					break;
+				case TYPE_STRING:
 					getValuePtrReference() = (uint64_t)(new StringValue());
 					break;
 				case TYPE_BYTEARRAY:
@@ -1335,6 +1363,50 @@ public:
 		}
 
 		/**
+		 * Get function values from given variable
+		 * @param function function
+		 * @param scriptIdx script index
+		 * @param optional optional
+		 * @return success
+		 */
+		inline bool getFunctionValue(string& function, int& scriptIdx, bool optional = false) const {
+			switch(getType()) {
+				case TYPE_FUNCTION_ASSIGNMENT:
+					{
+						const auto& functionValue = getFunctionValueReference();
+						function = functionValue.name;
+						scriptIdx = functionValue.scriptIdx;
+						return true;
+					}
+				default:
+					return false;
+			}
+			return false;
+		}
+
+		/**
+		 * Get stacklet values from given variable
+		 * @param stacklet stacklet
+		 * @param scriptIdx script index
+		 * @param optional optional
+		 * @return success
+		 */
+		inline bool getStackletValue(string& stacklet, int& scriptIdx, bool optional = false) const {
+			switch(getType()) {
+				case TYPE_STACKLET_ASSIGNMENT:
+					{
+						const auto& functionValue = getFunctionValueReference();
+						stacklet = functionValue.name;
+						scriptIdx = functionValue.scriptIdx;
+						return true;
+					}
+				default:
+					return false;
+			}
+			return false;
+		}
+
+		/**
 		 * Get string value from given variable
 		 * @param value value
 		 * @param optional optional
@@ -1352,24 +1424,6 @@ public:
 					value = to_string(getFloatValueReference());
 					return true;
 				case TYPE_STRING:
-				case TYPE_FUNCTION_ASSIGNMENT:
-					value = getStringValueReference().getValue();
-					return true;
-				default:
-					return false;
-			}
-			return false;
-		}
-
-		/**
-		 * Get stacklet string value from given variable
-		 * @param value value
-		 * @param optional optional
-		 * @return success
-		 */
-		inline bool getStackletValue(string& value, bool optional = false) const {
-			switch(getType()) {
-				case TYPE_STACKLET_ASSIGNMENT:
 					value = getStringValueReference().getValue();
 					return true;
 				default:
@@ -1943,20 +1997,26 @@ public:
 
 		/**
 		 * Set function assignment from given value into variable
-		 * @param value value
+		 * @param function function
+		 * @param scriptIdx script index
 		 */
-		inline void setFunctionAssignment(const string& value) {
+		inline void setFunctionAssignment(const string& function, int scriptIdx = MiniScript::SCRIPTIDX_NONE) {
 			setType(TYPE_FUNCTION_ASSIGNMENT);
-			getStringValueReference().setValue(value);
+			auto& functionValue = getFunctionValueReference();
+			functionValue.name = function;
+			functionValue.scriptIdx = scriptIdx;
 		}
 
 		/**
 		 * Set stacklet assignment from given value into variable
-		 * @param value value
+		 * @param stacklet stacklet
+		 * @param scriptIdx script index
 		 */
-		inline void setStackletAssignment(const string& value) {
+		inline void setStackletAssignment(const string& stacklet, int scriptIdx = MiniScript::SCRIPTIDX_NONE) {
 			setType(TYPE_STACKLET_ASSIGNMENT);
-			getStringValueReference().setValue(value);
+			auto& functionValue = getFunctionValueReference();
+			functionValue.name = stacklet;
+			functionValue.scriptIdx = scriptIdx;
 		}
 
 		/**
@@ -2206,11 +2266,17 @@ public:
 					result+= "{" + getStringValueReference().getValue() + "}";
 					break;
 				case TYPE_FUNCTION_ASSIGNMENT:
-					result+= "() -> " + getStringValueReference().getValue();
-					break;
+					{
+						const auto& functionValue = getFunctionValueReference();
+						result+= "() -> " + functionValue.name + "(" + to_string(functionValue.scriptIdx) + ")";
+						break;
+					}
 				case TYPE_STACKLET_ASSIGNMENT:
-					result+= "-> " + getStringValueReference().getValue();
-					break;
+					{
+						const auto& functionValue = getFunctionValueReference();
+						result+= "-> " + functionValue.name + "(" + to_string(functionValue.scriptIdx) + ")";
+						break;
+					}
 				case TYPE_PSEUDO_NUMBER:
 					result+= "Number";
 					break;
@@ -2582,18 +2648,18 @@ public:
 		 * Constructor
 		 * @param type type
 		 * @param value value
-		 * @param functionIdx function index
+		 * @param functionScriptIdx function script index
 		 * @param arguments arguments
 		 */
 		inline SyntaxTreeNode(
 			Type type,
 			const Variable& value,
-			uint64_t functionIdx,
+			uint64_t functionScriptIdx,
 			const vector<SyntaxTreeNode>& arguments
 		):
 			type(type),
 			value(value),
-			pointer(functionIdx),
+			pointer(functionScriptIdx),
 			arguments(arguments)
 		{}
 		/**
@@ -2869,7 +2935,7 @@ protected:
 	vector<string> deferredInlineScriptCodes;
 
 	int inlineFunctionIdx { 0 };
-	int stackletIdx { 0 };
+	int inlineStackletIdx { 0 };
 
 	unique_ptr<MathMethods> miniScriptMath;
 
@@ -3253,6 +3319,19 @@ private:
 	bool createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree);
 
 	/**
+	 * Setup stacket and function function indices
+	 * @param scriptIdx script index
+	 */
+	bool setupStackletAndFunctionIndices(int scriptIdx);
+
+	/**
+	 * Setup stacket and function function indices
+	 * @param syntaxTreeNode syntax tree node
+	 * @param statement statement
+	 */
+	bool setupStackletAndFunctionIndices(SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
+
+	/**
 	 * Return stacklet scope script index
 	 * @param scriptIdx stacklet script index
 	 * @return stacklet scope script index
@@ -3262,6 +3341,7 @@ private:
 	/**
 	 * Validate stacklets
 	 * @param scriptIdx script index
+	 * @return success
 	 */
 	bool validateStacklets(int scriptIdx);
 
@@ -3269,6 +3349,7 @@ private:
 	 * Validate stacklets
 	 * @param function function
 	 * @param scopeScriptIdx scope script index or MiniScript::SCRIPTIDX_NONE for the function itself
+	 * @return success
 	 */
 	bool validateStacklets(const string& function, int scopeScriptIdx = MiniScript::SCRIPTIDX_NONE);
 
@@ -3277,12 +3358,14 @@ private:
 	 * @param scopeScriptIdx scope script index
 	 * @param syntaxTreeNode syntax tree node
 	 * @param statement statement
+	 * @return success
 	 */
 	bool validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
 
 	/**
 	 * Validate callabe
 	 * @param function function
+	 * @return success
 	 */
 	bool validateCallable(const string& function);
 
@@ -3290,6 +3373,7 @@ private:
 	 * Validate callable
 	 * @param syntaxTreeNode syntax tree node
 	 * @param statement statement
+	 * @return success
 	 */
 	bool validateCallable(const SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
 
@@ -3297,6 +3381,7 @@ private:
 	 * Validate context functions
 	 * @param function function
 	 * @param functionStack function stack
+	 * @return success
 	 */
 	bool validateContextFunctions(const string& function, vector<string>& functionStack);
 
@@ -3305,6 +3390,7 @@ private:
 	 * @param syntaxTreeNode syntax tree node
 	 * @param functionStack function stack
 	 * @param statement statement
+	 * @return success
 	 */
 	bool validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode, vector<string>& functionStack, const Statement& statement);
 
@@ -4047,6 +4133,36 @@ public:
 	}
 
 	/**
+	 * Get function value from given variable
+	 * @param arguments arguments
+	 * @param idx argument index
+	 * @param function function
+	 * @param scriptIdx script index
+	 * @param optional optional
+	 * @return success
+	 */
+	inline static bool getFunctionValue(const span<Variable>& arguments, int idx, string& function, int& scriptIdx, bool optional = false) {
+		if (idx >= arguments.size()) return optional;
+		const auto& argument = arguments[idx];
+		return argument.getFunctionValue(function, scriptIdx, optional);
+	}
+
+	/**
+	 * Get stacklet value from given variable
+	 * @param arguments arguments
+	 * @param idx argument index
+	 * @param stacklet stacklet
+	 * @param scriptIdx script index
+	 * @param optional optional
+	 * @return success
+	 */
+	inline static bool getStackletValue(const span<Variable>& arguments, int idx, string& stacklet, int& scriptIdx, bool optional = false) {
+		if (idx >= arguments.size()) return optional;
+		const auto& argument = arguments[idx];
+		return argument.getStackletValue(stacklet, scriptIdx, optional);
+	}
+
+	/**
 	 * Get string value from given variable
 	 * @param arguments arguments
 	 * @param idx argument index
@@ -4058,20 +4174,6 @@ public:
 		if (idx >= arguments.size()) return optional;
 		const auto& argument = arguments[idx];
 		return argument.getStringValue(value, optional);
-	}
-
-	/**
-	 * Get stacklet string value from given variable
-	 * @param arguments arguments
-	 * @param idx argument index
-	 * @param value value
-	 * @param optional optional
-	 * @return success
-	 */
-	inline static bool getStackletValue(const span<Variable>& arguments, int idx, string& value, bool optional = false) {
-		if (idx >= arguments.size()) return optional;
-		const auto& argument = arguments[idx];
-		return argument.getStackletValue(value, optional);
 	}
 
 	/**

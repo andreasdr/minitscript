@@ -339,10 +339,10 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	initializeNativeDefinition+= definitionIndent + "setNativeFunctions(" + "\n";
 	initializeNativeDefinition+= definitionIndent + "\t" + "{" + "\n";
 	auto functionItIdx = 0;
-	for (const auto& [functionName, functionIdx]: miniScript->functions) {
+	for (const auto& [functionName, functionScriptIdx]: miniScript->functions) {
 		initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "{" + "\n";
 		initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + functionName + "\"," + "\n";
-		initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + to_string(functionIdx) + "\n";
+		initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + to_string(functionScriptIdx) + "\n";
 		initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "}" + (functionItIdx != miniScript->functions.size() - 1?",":"") + "\n";
 		functionItIdx++;
 	}
@@ -1712,25 +1712,28 @@ void Transpiler::generateArrayMapSetVariable(
 			break;
 		case MiniScript::TYPE_STACKLET_ASSIGNMENT:
 			{
-				string value;
-				variable.getStackletValue(value);
-				value = StringTools::replace(StringTools::replace(value, "\\", "\\\\"), "\"", "\\\"");
+				string stacket;
+				auto stackletScriptIdx = MiniScript::SCRIPTIDX_NONE;
+				variable.getStackletValue(stacket, stackletScriptIdx);
+				stacket = StringTools::replace(StringTools::replace(stacket, "\\", "\\\\"), "\"", "\\\"");
 				//
 				generatedDefinitions+= indent + "{" + "\n";
 				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + ";" + "\n";
-				generatedDefinitions+= indent + "\t" + "variableD" + to_string(initializerDepth) + ".setStackletAssignment(\"" + value + "\");" + "\n";
+				generatedDefinitions+= indent + "\t" + "variableD" + to_string(initializerDepth) + ".setStackletAssignment(\"" + stacket + "\", " + to_string(stackletScriptIdx) + ");" + "\n";
 				generatedDefinitions+= indent + "\t" + postStatement + "\n";
 				generatedDefinitions+= indent + "}" + "\n";
 			}
 			break;
 		case MiniScript::TYPE_STRING:
 			{
-				string value;
-				variable.getStringValue(value);
-				value = StringTools::replace(StringTools::replace(value, "\\", "\\\\"), "\"", "\\\"");
+				string function;
+				auto functionScriptIdx = MiniScript::SCRIPTIDX_NONE;
+				variable.getFunctionValue(function, functionScriptIdx);
+				function = StringTools::replace(StringTools::replace(function, "\\", "\\\\"), "\"", "\\\"");
 				//
 				generatedDefinitions+= indent + "{" + "\n";
-				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + "(string(\"" + value + "\"));" + "\n";
+				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + ";" + "\n";
+				generatedDefinitions+= indent + "\t" + "variableD" + to_string(initializerDepth) + ".setFunctionAssignment(\"" + function + "\", " + to_string(functionScriptIdx) + ");" + "\n";
 				generatedDefinitions+= indent + "\t" + postStatement + "\n";
 				generatedDefinitions+= indent + "}" + "\n";
 			}
@@ -2233,9 +2236,13 @@ bool Transpiler::transpileStatement(
 								case MiniScript::TYPE_STACKLET_ASSIGNMENT:
 									{
 										string value;
+										auto scriptIdx = MiniScript::SCRIPTIDX_NONE;
 										// get it, while its hot
+										if (argument.value.getType() == MiniScript::TYPE_FUNCTION_ASSIGNMENT) {
+											argument.value.getFunctionValue(value, scriptIdx);
+										} else
 										if (argument.value.getType() == MiniScript::TYPE_STACKLET_ASSIGNMENT) {
-											argument.value.getStackletValue(value);
+											argument.value.getStackletValue(value, scriptIdx);
 										} else {
 											argument.value.getStringValue(value);
 										}
@@ -2252,8 +2259,9 @@ bool Transpiler::transpileStatement(
 											arrayAccessStatementOffset-= (arrayAccessStatement.rightIdx - (arrayAccessStatement.leftIdx + 1)) - arrayAccessStatementMethodCall.size();
 										}
 										//
-										argumentsCode.push_back(indent + "Variable(static_cast<VariableType>(" + to_string(argument.value.getType()) + "), string(\"" + value + "\"))" + (lastArgument == false?",":""));
+										argumentsCode.push_back(indent + "Variable(static_cast<VariableType>(" + to_string(argument.value.getType()) + "), string(\"" + value + "\"), " + to_string(scriptIdx) + ")" + (lastArgument == false?",":""));
 									}
+									//
 									break;
 								case MiniScript::TYPE_ARRAY:
 								case MiniScript::TYPE_MAP:

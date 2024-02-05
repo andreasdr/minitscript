@@ -40,7 +40,6 @@ Also note the focus on easy integration into other products and easy customizabi
 ## 1.3. 1.0 BETA release TODO list
 
 - Whats left to do for 1.0 BETA release
-  - stacklets and function assignment literals should store script function index
   - make stacklets callable by script
   - console logger interface
   - application.execute stderr
@@ -816,6 +815,8 @@ end
 | <sub><b>static</b> String::concatenate(...): String</sub>                                        |
 | Create string from byte array                                                                    |
 | <sub><b>static</b> String::fromByteArray($byteArray: ByteArray): String</sub>                    |
+| Create string from unicode code point                                                            |
+| <sub><b>static</b> String::fromCodePoint($codePoint: Integer): String</sub>                      |
 | Generate string                                                                                  |
 | <sub><b>static</b> String::generate($what: String[, $count: Integer]): String</sub>              |
 | &nbsp;                                    |
@@ -949,9 +950,9 @@ end
 | Clear array                                                                                      |
 | <sub>clear(): Null</sub>                                                                         |
 | Iterate array values, by using a (Lamda) function                                                |
-| <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
+| <sub>forEach($callbackFunction: Function[, &$cookie: Mixed]): Null</sub>                         |
 | Iterate range of array values, by using a (Lamda) function                                       |
-| <sub>forRange($function: Function, $beginIndex: Integer[, $count: Integer[, $step: Integer[, &$cookie: Mixed]]]): Null</sub>|
+| <sub>forRange($callbackFunction: Function, $beginIndex: Integer[, $count: Integer[, $step: Integer[, &$cookie: Mixed]]]): Null</sub>|
 | Get array entry                                                                                  |
 | <sub>get($index: Integer): Mixed</sub>                                                           |
 | Returns number of elements in array                                                              |
@@ -971,7 +972,7 @@ end
 | Set array entry                                                                                  |
 | <sub>set($index: Integer, $value: Mixed): Null</sub>                                             |
 | Sort array                                                                                       |
-| <sub>sort($function: Function): Null</sub>                                                       |
+| <sub>sort($sortFunction: Function): Null</sub>                                                   |
 
 ## 6.4. Map class
 
@@ -986,7 +987,7 @@ end
 | Clear map                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
 | Iterate map key and value pairs, by using a (Lamda) function                                     |
-| <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
+| <sub>forEach($callbackFunction: Function[, &$cookie: Mixed]): Null</sub>                         |
 | Get map value by key                                                                             |
 | <sub>get($key: String): Mixed</sub>                                                              |
 | Get map keys                                                                                     |
@@ -1017,7 +1018,7 @@ end
 | Clear set                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
 | Iterate set keys, by using a (Lamda) function                                                    |
-| <sub>forEach($function: Function[, &$cookie: Mixed]): Null</sub>                                 |
+| <sub>forEach($callbackFunction: Function[, &$cookie: Mixed]): Null</sub>                         |
 | Get set keys                                                                                     |
 | <sub>getKeys(): Array</sub>                                                                      |
 | Returns number of elements in set                                                                |
@@ -1108,7 +1109,7 @@ end
 | <sub>bitwiseXor($a: Integer, $b: Integer): Integer</sub>                                         |
 | Create boolean                                                                                   |
 | <sub>boolean($boolean: Boolean): Boolean</sub>                                                   |
-| Break out of current forCondition or forTime loop                                                |
+| Break out of forCondition or forTime loop                                                        |
 | <sub>break([$levels: Integer]): Null</sub>                                                       |
 | Begins a case block within a switch block, which will be executed if the case value has matched  |
 | <sub>case($value: Mixed): Null</sub>                                                             |

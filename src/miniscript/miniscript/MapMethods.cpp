@@ -329,7 +329,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "callbackFunction", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "cookie", .optional = true, .reference = true, .nullable = false }
 					},
 					MiniScript::TYPE_NULL
@@ -339,22 +339,30 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				return "Map::forEach";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				string function;
+				string callbackFunction;
+				int callbackFunctionScriptIdx;
 				if ((arguments.size() == 2 || arguments.size() == 3) &&
 					arguments[0].getType() == MiniScript::TYPE_MAP &&
-					MiniScript::getStringValue(arguments, 1, function) == true) {
+					MiniScript::getFunctionValue(arguments, 1, callbackFunction, callbackFunctionScriptIdx) == true) {
 					auto mapPtr = arguments[0].getMapPointer();
 					if (mapPtr != nullptr) {
-						for (const auto& [mapKey, mapValue]: *mapPtr) {
-							vector<MiniScript::Variable> functionArguments { MiniScript::Variable(mapKey), MiniScript::Variable::createReferenceVariable(mapValue) };
-							if (arguments.size() == 3) functionArguments.push_back(arguments[2]);
-							span functionArgumentsSpan(functionArguments);
-							MiniScript::Variable functionReturnValue;
-							miniScript->call(function, functionArgumentsSpan, functionReturnValue);
-							// exit condition
-							bool result = false;
-							functionReturnValue.getBooleanValue(result, false);
-							if (result == true) break;
+						if (callbackFunction.empty() == false && callbackFunctionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							callbackFunctionScriptIdx = miniScript->getFunctionScriptIdx(callbackFunction);
+						}
+						if (callbackFunctionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Function not found: " + callbackFunction);
+						} else {
+							for (const auto& [mapKey, mapValue]: *mapPtr) {
+								vector<MiniScript::Variable> functionArguments { MiniScript::Variable(mapKey), MiniScript::Variable::createReferenceVariable(mapValue) };
+								if (arguments.size() == 3) functionArguments.push_back(arguments[2]);
+								span functionArgumentsSpan(functionArguments);
+								MiniScript::Variable functionReturnValue;
+								miniScript->call(callbackFunctionScriptIdx, functionArgumentsSpan, functionReturnValue);
+								// exit condition
+								bool result = false;
+								functionReturnValue.getBooleanValue(result, false);
+								if (result == true) break;
+							}
 						}
 					}
 				} else {

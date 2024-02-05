@@ -199,10 +199,10 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							vector<MiniScript::Variable> arguments {};
 							span argumentsSpan(arguments);
 							MiniScript::Variable returnValue;
-							int64_t iterationStackletFunctionIdx;
-							if (block.parameter.getIntegerValue(iterationStackletFunctionIdx) == true &&
-								iterationStackletFunctionIdx != MiniScript::SCRIPTIDX_NONE) {
-								miniScript->callStacklet(iterationStackletFunctionIdx, argumentsSpan, returnValue);
+							int64_t iterationStackletScriptIdx;
+							if (block.parameter.getIntegerValue(iterationStackletScriptIdx) == true &&
+								iterationStackletScriptIdx != MiniScript::SCRIPTIDX_NONE) {
+								miniScript->callStacklet(iterationStackletScriptIdx, argumentsSpan, returnValue);
 							} else {
 								MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "end with for: iteration stacklet: invalid stacklet");
 							}
@@ -288,19 +288,18 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				bool booleanValue;
 				string iterationStacklet;
+				auto iterationStackletScriptIdx = MiniScript::SCRIPTIDX_NONE;
 				if ((arguments.size() == 1 || arguments.size() == 2) &&
 					miniScript->getBooleanValue(arguments, 0, booleanValue) == true &&
-					miniScript->getStackletValue(arguments, 1, iterationStacklet, true) == true) {
+					miniScript->getStackletValue(arguments, 1, iterationStacklet, iterationStackletScriptIdx, true) == true) {
 					if (booleanValue == false) {
 						miniScript->gotoStatementGoto(statement);
 					} else {
-						// TODO: we need to cache later the function/script index instead of the function name
-						auto iterationStackletFunctionIdx =
-							iterationStacklet.empty() == true?
-								MiniScript::SCRIPTIDX_NONE:
-								miniScript->getFunctionScriptIdx(iterationStacklet);
+						if (iterationStacklet.empty() == false && iterationStackletScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							iterationStackletScriptIdx = miniScript->getFunctionScriptIdx(iterationStacklet);
+						}
 						// check if valid
-						if (iterationStacklet.empty() == false && iterationStackletFunctionIdx == MiniScript::SCRIPTIDX_NONE) {
+						if (iterationStacklet.empty() == false && iterationStackletScriptIdx == MiniScript::SCRIPTIDX_NONE) {
 							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Stacklet not found: " + iterationStacklet);
 						} else {
 							auto& scriptState = miniScript->getScriptState();
@@ -309,7 +308,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 								false,
 								&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx - 1],
 								&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx],
-								iterationStacklet.empty() == true?MiniScript::Variable():MiniScript::Variable(static_cast<int64_t>(iterationStackletFunctionIdx))
+								iterationStacklet.empty() == true?MiniScript::Variable():MiniScript::Variable(static_cast<int64_t>(iterationStackletScriptIdx))
 							);
 						}
 					}

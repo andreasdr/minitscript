@@ -322,7 +322,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
-						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "sortFunction", .optional = false, .reference = false, .nullable = false },
 					},
 					MiniScript::TYPE_NULL
 				),
@@ -331,30 +331,38 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "Array::sort";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				string function;
+				string sortFunction;
+				int sortFunctionScriptIdx;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
-					MiniScript::getStringValue(arguments, 1, function) == true) {
+					MiniScript::getFunctionValue(arguments, 1, sortFunction, sortFunctionScriptIdx) == true) {
 					auto arrayPtr = arguments[0].getArrayPointer();
 					if (arrayPtr != nullptr) {
-						class SortClass {
-							private:
-								MiniScript* miniScript;
-								const string& function;
-							public:
-								SortClass(MiniScript* miniScript, const string& function): miniScript(miniScript), function(function) {
-								}
-								bool operator()(const MiniScript::Variable* a, const MiniScript::Variable* b) const {
-									vector<MiniScript::Variable> sortArguments { MiniScript::Variable::createReferenceVariable(a), MiniScript::Variable::createReferenceVariable(b) };
-									span sortArgumentsSpan(sortArguments);
-									MiniScript::Variable sortReturnValue;
-									miniScript->call(function, sortArgumentsSpan, sortReturnValue);
-									bool result = false;
-									sortReturnValue.getBooleanValue(result, false);
-									return result;
-								}
-						};
-						sort(arrayPtr->begin(), arrayPtr->end(), SortClass(miniScript, function));
+						if (sortFunction.empty() == false && sortFunctionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							sortFunctionScriptIdx = miniScript->getFunctionScriptIdx(sortFunction);
+						}
+						if (sortFunctionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Function not found: " + sortFunction);
+						} else {
+							class SortClass {
+								private:
+									MiniScript* miniScript;
+									int sortFunctionScriptIdx;
+								public:
+									SortClass(MiniScript* miniScript, int sortFunctionScriptIdx): miniScript(miniScript), sortFunctionScriptIdx(sortFunctionScriptIdx) {
+									}
+									bool operator()(const MiniScript::Variable* a, const MiniScript::Variable* b) const {
+										vector<MiniScript::Variable> sortArguments { MiniScript::Variable::createReferenceVariable(a), MiniScript::Variable::createReferenceVariable(b) };
+										span sortArgumentsSpan(sortArguments);
+										MiniScript::Variable sortReturnValue;
+										miniScript->call(sortFunctionScriptIdx, sortArgumentsSpan, sortReturnValue);
+										bool result = false;
+										sortReturnValue.getBooleanValue(result, false);
+										return result;
+									}
+							};
+							sort(arrayPtr->begin(), arrayPtr->end(), SortClass(miniScript, sortFunctionScriptIdx));
+						}
 					}
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -432,7 +440,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "callbackFunction", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "cookie", .optional = true, .reference = true, .nullable = false }
 					},
 					MiniScript::TYPE_NULL
@@ -442,22 +450,30 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "Array::forEach";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				string function;
+				string callbackFunction;
+				int callbackFunctionScriptIdx;
 				if ((arguments.size() == 2 || arguments.size() == 3) &&
 					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
-					MiniScript::getStringValue(arguments, 1, function) == true) {
+					MiniScript::getFunctionValue(arguments, 1, callbackFunction, callbackFunctionScriptIdx) == true) {
 					auto arrayPtr = arguments[0].getArrayPointer();
 					if (arrayPtr != nullptr) {
-						for (auto arrayEntry: *arrayPtr) {
-							vector<MiniScript::Variable> functionArguments { MiniScript::Variable::createReferenceVariable(arrayEntry) };
-							if (arguments.size() == 3) functionArguments.push_back(arguments[2]);
-							span functionArgumentsSpan(functionArguments);
-							MiniScript::Variable functionReturnValue;
-							miniScript->call(function, functionArgumentsSpan, functionReturnValue);
-							// exit condition
-							bool result = false;
-							functionReturnValue.getBooleanValue(result, false);
-							if (result == true) break;
+						if (callbackFunction.empty() == false && callbackFunctionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							callbackFunctionScriptIdx = miniScript->getFunctionScriptIdx(callbackFunction);
+						}
+						if (callbackFunctionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Function not found: " + callbackFunction);
+						} else {
+							for (auto arrayEntry: *arrayPtr) {
+								vector<MiniScript::Variable> functionArguments { MiniScript::Variable::createReferenceVariable(arrayEntry) };
+								if (arguments.size() == 3) functionArguments.push_back(arguments[2]);
+								span functionArgumentsSpan(functionArguments);
+								MiniScript::Variable functionReturnValue;
+								miniScript->call(callbackFunctionScriptIdx, functionArgumentsSpan, functionReturnValue);
+								// exit condition
+								bool result = false;
+								functionReturnValue.getBooleanValue(result, false);
+								if (result == true) break;
+							}
 						}
 					}
 				} else {
@@ -477,7 +493,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "callbackFunction", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "beginIndex", .optional = false, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "count", .optional = true, .reference = false, .nullable = false },
 						{ .type = MiniScript::TYPE_INTEGER, .name = "step", .optional = true, .reference = false, .nullable = false },
@@ -490,32 +506,40 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				return "Array::forRange";
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				string function;
+				string callbackFunction;
+				int callbackFunctionScriptIdx;
 				int64_t beginIndex;
 				int64_t count = -1ll;
 				int64_t step = 1ll;
 				if ((arguments.size() == 3 || arguments.size() == 4 || arguments.size() == 5 || arguments.size() == 6) &&
 					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
-					MiniScript::getStringValue(arguments, 1, function) == true &&
+					MiniScript::getFunctionValue(arguments, 1, callbackFunction, callbackFunctionScriptIdx) == true &&
 					MiniScript::getIntegerValue(arguments, 2, beginIndex, true) == true &&
 					MiniScript::getIntegerValue(arguments, 3, count, true) == true &&
 					MiniScript::getIntegerValue(arguments, 4, step, true) == true) {
 					auto arrayPtr = arguments[0].getArrayPointer();
 					if (arrayPtr != nullptr) {
-						auto counter = 0;
-						for (auto i = beginIndex; i >= 0 && counter < count && i < arrayPtr->size(); i+= step) {
-							auto arrayEntry = (*arrayPtr)[i];
-							vector<MiniScript::Variable> functionArguments { MiniScript::Variable::createReferenceVariable(arrayEntry) };
-							if (arguments.size() == 6) functionArguments.push_back(arguments[5]);
-							span functionArgumentsSpan(functionArguments);
-							MiniScript::Variable functionReturnValue;
-							miniScript->call(function, functionArgumentsSpan, functionReturnValue);
-							// exit condition
-							bool result = false;
-							functionReturnValue.getBooleanValue(result, false);
-							if (result == true) break;
-							//
-							counter++;
+						if (callbackFunction.empty() == false && callbackFunctionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							callbackFunctionScriptIdx = miniScript->getFunctionScriptIdx(callbackFunction);
+						}
+						if (callbackFunctionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Function not found: " + callbackFunction);
+						} else {
+							auto counter = 0;
+							for (auto i = beginIndex; i >= 0 && counter < count && i < arrayPtr->size(); i+= step) {
+								auto arrayEntry = (*arrayPtr)[i];
+								vector<MiniScript::Variable> functionArguments { MiniScript::Variable::createReferenceVariable(arrayEntry) };
+								if (arguments.size() == 6) functionArguments.push_back(arguments[5]);
+								span functionArgumentsSpan(functionArguments);
+								MiniScript::Variable functionReturnValue;
+								miniScript->call(callbackFunctionScriptIdx, functionArgumentsSpan, functionReturnValue);
+								// exit condition
+								bool result = false;
+								functionReturnValue.getBooleanValue(result, false);
+								if (result == true) break;
+								//
+								counter++;
+							}
 						}
 					}
 				} else {
