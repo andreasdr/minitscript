@@ -595,19 +595,16 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 	}
 	// try first function
 	if (syntaxTree.type == SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
-		auto scriptIdx = syntaxTree.getScriptIdx();
 		// call
 		span argumentsSpan(arguments);
-		call(scriptIdx, argumentsSpan, returnValue);
+		call(syntaxTree.getScriptIdx(), argumentsSpan, returnValue);
 		//
 		return returnValue;
 	} else
 	if (syntaxTree.type == SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET) {
-		// try stacklet
-		auto scriptIdx = syntaxTree.getScriptIdx();
 		// call
 		span argumentsSpan(arguments);
-		callStacklet(scriptIdx, argumentsSpan, returnValue);
+		callStacklet(syntaxTree.getScriptIdx(), argumentsSpan, returnValue);
 		//
 		return returnValue;
 	} else
@@ -766,10 +763,21 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 	// arguments
 	vector<bool> argumentReferences(0);
 	if (functionScriptIdx != SCRIPTIDX_NONE) {
-		argumentReferences.resize(scripts[functionScriptIdx].arguments.size());
-		auto argumentIdx = 0;
-		for (const auto& argument: scripts[functionScriptIdx].arguments) {
-			argumentReferences[argumentIdx++] = argument.reference;
+		const auto& script = scripts[functionScriptIdx];
+		if (script.type == Script::TYPE_STACKLET) {
+			if (arguments.empty() == false) {
+				_Console::printLine(getStatementInformation(statement) + ": A stacklet must not be called with any arguments: " + string(methodName));
+				//
+				parseErrors.push_back(getStatementInformation(statement) + ": A stacklet must not be called with any arguments: " + string(methodName));
+				//
+				return false;
+			}
+		} else {
+			argumentReferences.resize(script.arguments.size());
+			auto argumentIdx = 0;
+			for (const auto& argument: scripts[functionScriptIdx].arguments) {
+				argumentReferences[argumentIdx++] = argument.reference;
+			}
 		}
 	} else
 	if (method != nullptr) {
@@ -837,9 +845,9 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 				if (methodsIt != methods.end()) {
 					method = methodsIt->second;
 				} else {
-					_Console::printLine(getStatementInformation(statement) + ": unknown method '" + methodName + "'");
+					_Console::printLine(getStatementInformation(statement) + ": Unknown method: " + methodName);
 					//
-					parseErrors.push_back(getStatementInformation(statement) + ": unknown method '" + methodName + "'");
+					parseErrors.push_back(getStatementInformation(statement) + ": Unknown method: " + methodName);
 					//
 					return false;
 				}
@@ -935,9 +943,9 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 		//
 		return true;
 	} else {
-		_Console::printLine(getStatementInformation(statement) + ": unknown function/method: " + string(methodName) + "()");
+		_Console::printLine(getStatementInformation(statement) + ": Unknown function/method: " + string(methodName) + "()");
 		//
-		parseErrors.push_back(getStatementInformation(statement) + ": unknown function/method: " + string(methodName) + "()");
+		parseErrors.push_back(getStatementInformation(statement) + ": Unknown function/method: " + string(methodName) + "()");
 		//
 		return false;
 	}
@@ -1190,7 +1198,7 @@ bool MiniScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syn
 			}
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
 			{
-				// we only allow assignments of stacklets with a correct scope, means
+				//
 				string stackletName = syntaxTreeNode.value.getValueAsString();
 				auto stackletScriptIdx = syntaxTreeNode.getScriptIdx();
 				if (stackletName.empty() == true || stackletScriptIdx == SCRIPTIDX_NONE) {
@@ -1309,12 +1317,17 @@ bool MiniScript::validateCallable(const SyntaxTreeNode& syntaxTreeNode, const St
 			}
 			break;
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
 			{
 				for (const auto& argument: syntaxTreeNode.arguments) {
 					if (validateCallable(argument, statement) == false) return false;
 				}
 				//
+				validateCallable(syntaxTreeNode.value.getValueAsString());
+				//
+				break;
+			}
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
+			{
 				validateCallable(syntaxTreeNode.value.getValueAsString());
 				//
 				break;
