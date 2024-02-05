@@ -74,19 +74,19 @@ void ApplicationMethods::registerConstants(MiniScript* miniScript) {
 }
 
 const string ApplicationMethods::execute(const string& command, int* exitCode, string* error) {
-	FILE* pipe = nullptr;
-	auto _exitCode = EXIT_FAILURE;
-	// see: https://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
-	array<char, 128> buffer;
 	string result;
-	string errorFile;
 	auto _command = command;
+	auto _exitCode = EXIT_FAILURE;
+	// error stream
+	string errorFile;
 	if (error != nullptr) {
 		errorFile = tmpnam(nullptr);
 		_command+= " 2>" + errorFile;
 	}
-	//
+	// execute command
+	FILE* pipe = nullptr;
 	try {
+		array<char, 128> buffer;
 		pipe = popen(_command.c_str(), "r");
 		if (pipe == nullptr) throw std::runtime_error("popen() failed!");
 		while (feof(pipe) == false) {
@@ -95,18 +95,24 @@ const string ApplicationMethods::execute(const string& command, int* exitCode, s
 	} catch (Exception& exception) {
 		_Console::printLine("ApplicationMethods::execute(): An error occurred: " + string(exception.what()));
 	}
-	//
-	#if defined(_MSC_VER)
-		_exitCode = _pclose(pipe);
-	#else
-		_exitCode = pclose(pipe);
-	#endif
-	//
+	// get exit code, if we have a pipe
+	if (pipe != nullptr) {
+		#if defined(_MSC_VER)
+			_exitCode = _pclose(pipe);
+		#else
+			_exitCode = pclose(pipe);
+		#endif
+	}
+	// store it to given exit code int pointer
 	if (exitCode != nullptr) *exitCode = _exitCode;
-	//
+	// store error to given string error pointer
 	if (error != nullptr) {
 		try {
 			*error = FileSystem::getContentAsString(
+				FileSystem::getPathName(errorFile),
+				FileSystem::getFileName(errorFile)
+			);
+			FileSystem::removeFile(
 				FileSystem::getPathName(errorFile),
 				FileSystem::getFileName(errorFile)
 			);
@@ -114,7 +120,7 @@ const string ApplicationMethods::execute(const string& command, int* exitCode, s
 			_Console::printLine("ApplicationMethods::execute(): An error occurred: " + string(exception.what()));
 		}
 	}
-	//
+	// done
 	return result;
 }
 
