@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -7,6 +8,7 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/utilities/fwd-miniscript.h>
 
+using std::unique_ptr;
 using std::string;
 using std::string_view;
 using std::vector;
@@ -19,6 +21,41 @@ using std::vector;
 class miniscript::utilities::Console
 {
 public:
+	/**
+	 * Console logger
+	 */
+	struct Logger
+	{
+		/**
+		 * Destructor
+		 */
+		virtual ~Logger() {}
+
+		/**
+		 * Print given string and trailing newline to console
+		 * @param str string
+		 */
+		virtual void printLine(const string_view& str) = 0;
+
+		/**
+		 * Print given string without trainling newline to console
+		 * @param str string
+		 */
+		virtual void print(const string_view& str) = 0;
+
+		/**
+		 * Print given string and trailing newline to console
+		 * @param str string
+		 */
+		virtual void printLine() = 0;
+	};
+
+	/**
+	 * Set logger
+	 * @param logger logger
+	 */
+	static void setLogger(Logger* logger);
+
 	/**
 	 * Initialize
 	 */
@@ -56,4 +93,6 @@ public:
 	 */
 	static const vector<string> readAllAsArray();
 
+private:
+	MINISCRIPT_STATIC_DLL_IMPEXT static unique_ptr<Logger> logger;
 };

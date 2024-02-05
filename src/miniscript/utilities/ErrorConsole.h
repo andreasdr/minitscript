@@ -1,11 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <string_view>
 
 #include <miniscript/miniscript.h>
 #include <miniscript/utilities/fwd-miniscript.h>
 
 using std::string_view;
+using std::unique_ptr;
 
 /**
  * Console class
@@ -15,6 +17,41 @@ using std::string_view;
 class miniscript::utilities::ErrorConsole
 {
 public:
+	/**
+	 * Console logger
+	 */
+	struct Logger
+	{
+		/**
+		 * Destructor
+		 */
+		virtual ~Logger() {}
+
+		/**
+		 * Print given string and trailing newline to console
+		 * @param str string
+		 */
+		virtual void printLine(const string_view& str) = 0;
+
+		/**
+		 * Print given string without trainling newline to console
+		 * @param str string
+		 */
+		virtual void print(const string_view& str) = 0;
+
+		/**
+		 * Print given string and trailing newline to console
+		 * @param str string
+		 */
+		virtual void printLine() = 0;
+	};
+
+	/**
+	 * Set logger
+	 * @param logger logger
+	 */
+	static void setLogger(Logger* logger);
+
 	/**
 	 * Print given string and trailing newline to error console
 	 * @param str string
@@ -32,4 +69,6 @@ public:
 	 */
 	static void printLine();
 
+private:
+	MINISCRIPT_STATIC_DLL_IMPEXT static unique_ptr<Logger> logger;
 };

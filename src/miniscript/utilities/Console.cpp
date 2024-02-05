@@ -3,6 +3,7 @@
 #endif
 
 #include <iostream>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,9 +18,16 @@ using std::endl;
 using std::getline;
 using std::string;
 using std::string_view;
+using std::unique_ptr;
 using std::vector;
 
 using miniscript::utilities::Console;
+
+unique_ptr<Console::Logger> Console::logger;
+
+void Console::setLogger(Logger* logger) {
+	Console::logger = unique_ptr<Logger>(logger);
+}
 
 void Console::initialize() {
 	#if defined(_MSC_VER)
@@ -30,18 +38,36 @@ void Console::initialize() {
 
 void Console::printLine(const string_view& str)
 {
+	// log to logger
+	if (logger != nullptr) {
+		logger->printLine(str);
+		return;
+	}
+	// nope, cout this
 	cout << str << endl;
 	cout.flush();
 }
 
 void Console::print(const string_view& str)
 {
+	// log to logger
+	if (logger != nullptr) {
+		logger->print(str);
+		return;
+	}
+	// nope, cout this
 	cout << str;
 	cout.flush();
 }
 
 void Console::printLine()
 {
+	// log to logger
+	if (logger != nullptr) {
+		logger->printLine();
+		return;
+	}
+	// nope, cout this
 	cout << endl;
 	cout.flush();
 }
