@@ -27,7 +27,7 @@ Also note the focus on easy integration into other products and easy customizabi
   - supports functions/stacklets and recursion
   - supports lamda functions and inline stacklets
   - supports operators by operator to method mapping by a preprocessor run
-  - supports loops and conditions
+  - supports loops, conditions and switch/case/default blocks
   - supports programming with classes style programming
     - for built-in datatypes: string, byte array, array, map and set, ...
     - for script classes/objects
