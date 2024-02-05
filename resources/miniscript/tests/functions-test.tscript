@@ -32,6 +32,11 @@ function: globalVariableTest()
 	$GLOBAL.globalTest = "Been there, done that, got the t-shirt"
 end
 
+# user script stacklet
+stacklet: stackletTest()
+	console.printLine("stackletTest(): $a = " + $a + ", $b = " + $b + ", $c = " + $c + ", $GLOBAL.globalTest = " + $GLOBAL.globalTest)
+end
+
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
 	console.printLine("-------------------------")
@@ -49,6 +54,7 @@ on: nothing
 	console.printLine("globalVariableTest(): pre: $globalTest = " + $globalTest)
 	globalVariableTest()
 	console.printLine("globalVariableTest(): post: $globalTest = " + $globalTest)
+	stackletTest()
 	script.stop()
 end
 

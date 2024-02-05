@@ -251,7 +251,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() >= 1 &&
 					miniScript->getStringValue(arguments, 0, function) == true) {
 					auto scriptIdx = miniScript->getFunctionScriptIdx(function);
-					if (scriptIdx == MiniScript::SCRIPTIDX_NONE) {
+					if (scriptIdx == MiniScript::SCRIPTIDX_NONE || miniScript->getScripts()[scriptIdx].type != MiniScript::Script::TYPE_FUNCTION) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Function not found: " + function);
 					} else {
 						#if defined (__clang__)
@@ -277,6 +277,137 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 			}
 		};
 		miniScript->registerMethod(new MethodScriptCall(miniScript));
+	}
+	{
+		//
+		class MethodScriptCallByIndex: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodScriptCallByIndex(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_INTEGER, .name = "functionScriptIdx", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "script.callByIndex"; // METHOD_SCRIPTCALLBYINDEX;
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				int64_t functionScriptIdx;
+				if (arguments.size() >= 1 &&
+					miniScript->getIntegerValue(arguments, 0, functionScriptIdx) == true) {
+					if (functionScriptIdx == MiniScript::SCRIPTIDX_NONE ||
+						functionScriptIdx < 0 ||
+						functionScriptIdx >= miniScript->getScripts().size() ||
+						miniScript->getScripts()[functionScriptIdx].type != MiniScript::Script::TYPE_FUNCTION) {
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Function script index invalid: " + to_string(functionScriptIdx));
+					} else {
+						#if defined (__clang__)
+							// Clang currently does not support initializing span using begin and end iterators,
+							vector<MiniScript::Variable> callArguments(arguments.size() - 1);
+							for (auto i = 1; i < arguments.size(); i++) callArguments[i - 1] = move(arguments[i]);
+							// call
+							span callArgumentsSpan(callArguments);
+							miniScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
+							// move back arguments
+							for (auto i = 1; i < arguments.size(); i++) arguments[i] = move(callArguments[i - 1]);
+						#else
+							span callArgumentsSpan(arguments.begin() + 1, arguments.end());
+							miniScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
+						#endif
+					}
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+			bool isVariadic() const override {
+				return true;
+			}
+			bool isPrivate() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodScriptCallByIndex(miniScript));
+	}
+	{
+		//
+		class MethodScriptCallStacklet: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodScriptCallStacklet(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "stacklet", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "script.callStacklet"; // METHOD_SCRIPTCALLSTACKLET;
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string stacklet;
+				if (arguments.size() >= 1 &&
+					miniScript->getStringValue(arguments, 0, stacklet) == true) {
+					auto scriptIdx = miniScript->getFunctionScriptIdx(stacklet);
+					if (scriptIdx == MiniScript::SCRIPTIDX_NONE || miniScript->getScripts()[scriptIdx].type != MiniScript::Script::TYPE_STACKLET) {
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Stacklet not found: " + stacklet);
+					} else {
+						vector<MiniScript::Variable> callArguments(0);
+						span callArgumentsSpan(callArguments);
+						miniScript->callStacklet(scriptIdx, callArgumentsSpan, returnValue);
+					}
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodScriptCallStacklet(miniScript));
+	}
+	{
+		//
+		class MethodScriptCallStackletByIndex: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodScriptCallStackletByIndex(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_INTEGER, .name = "stackletScriptIndex", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "script.callStackletByIndex"; // METHOD_SCRIPTCALLSTACKLETBYINDEX;
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				int64_t stackletScriptIdx;
+				if (arguments.size() >= 1 &&
+					miniScript->getIntegerValue(arguments, 0, stackletScriptIdx) == true) {
+					if (stackletScriptIdx == MiniScript::SCRIPTIDX_NONE ||
+						stackletScriptIdx < 0 ||
+						stackletScriptIdx >= miniScript->getScripts().size() ||
+						miniScript->getScripts()[stackletScriptIdx].type != MiniScript::Script::TYPE_STACKLET) {
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Stacklet script index invalid: " + to_string(stackletScriptIdx));
+					} else {
+						vector<MiniScript::Variable> callArguments(0);
+						span callArgumentsSpan(callArguments);
+						miniScript->callStacklet(stackletScriptIdx, callArgumentsSpan, returnValue);
+					}
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+			bool isPrivate() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodScriptCallStackletByIndex(miniScript));
 	}
 	{
 		//

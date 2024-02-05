@@ -40,7 +40,6 @@ Also note the focus on easy integration into other products and easy customizabi
 ## 1.3. 1.0 BETA release TODO list
 
 - Whats left to do for 1.0 BETA release
-  - make stacklets callable by script
   - console logger interface
   - application.execute stderr
   - application.execute exit code

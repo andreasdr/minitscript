@@ -2615,7 +2615,8 @@ public:
 			SCRIPTSYNTAXTREENODE_NONE,
 			SCRIPTSYNTAXTREENODE_LITERAL,
 			SCRIPTSYNTAXTREENODE_EXECUTE_METHOD,
-			SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION
+			SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION,
+			SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET
 		};
 		/**
 		 * Constructor
@@ -2648,18 +2649,18 @@ public:
 		 * Constructor
 		 * @param type type
 		 * @param value value
-		 * @param functionScriptIdx function script index
+		 * @param scriptIdx script index
 		 * @param arguments arguments
 		 */
 		inline SyntaxTreeNode(
 			Type type,
 			const Variable& value,
-			uint64_t functionScriptIdx,
+			uint64_t scriptIdx,
 			const vector<SyntaxTreeNode>& arguments
 		):
 			type(type),
 			value(value),
-			pointer(functionScriptIdx),
+			pointer(scriptIdx),
 			arguments(arguments)
 		{}
 		/**
@@ -2676,16 +2677,16 @@ public:
 			pointer = (uint64_t)method;
 		}
 		/**
-		 * @return function script index
+		 * @return function/stacklet script index
 		 */
-		inline uint64_t getFunctionScriptIdx() const {
+		inline int64_t getScriptIdx() const {
 			return pointer;
 		}
 		/**
-		 * Set function script index
+		 * Set function/stacklet script index
 		 * @param scriptIdx script index
 		 */
-		inline void setFunctionScriptIdx(uint64_t scriptIdx) {
+		inline void setScriptIdx(uint64_t scriptIdx) {
 			pointer = scriptIdx;
 		}
 		//
@@ -2790,6 +2791,9 @@ public:
 	static constexpr int ARGUMENTIDX_NONE { -1 };
 
 	MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALL;
+	MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALLSTACKLET;
+	MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALLBYINDEX;
+	MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALLSTACKLETBYINDEX;
 	MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_ENABLENAMEDCONDITION;
 	MINISCRIPT_STATIC_DLL_IMPEXT static const string METHOD_DISABLENAMEDCONDITION;
 

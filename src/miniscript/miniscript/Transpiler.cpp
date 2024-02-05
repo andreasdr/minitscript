@@ -2005,25 +2005,32 @@ bool Transpiler::transpileStatement(
 	//
 	switch (syntaxTree.type) {
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
 			{
 				// check script user functions
-				auto functionsIdx = syntaxTree.getFunctionScriptIdx();
-				if (functionsIdx != MiniScript::SCRIPTIDX_NONE) {
-					// have a wrapping script.call call
+				auto functionStackletScriptIdx = syntaxTree.getScriptIdx();
+				if (functionStackletScriptIdx != MiniScript::SCRIPTIDX_NONE) {
+					// have a wrapping script.call/script.callStacklet call
 					MiniScript::SyntaxTreeNode callSyntaxTreeNode;
 					callSyntaxTreeNode.type = MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD;
-					callSyntaxTreeNode.value = MiniScript::METHOD_SCRIPTCALL;
-					// construct argument for name of function
+					callSyntaxTreeNode.value =
+						syntaxTree.type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION?
+							MiniScript::METHOD_SCRIPTCALLBYINDEX:
+							MiniScript::METHOD_SCRIPTCALLSTACKLETBYINDEX;
+					// construct argument for name of function/stacklet
 					MiniScript::SyntaxTreeNode callArgumentSyntaxTreeNode;
 					callArgumentSyntaxTreeNode.type = MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL;
-					callArgumentSyntaxTreeNode.value = syntaxTree.value;
-					// add argumnet for name of function
+					callArgumentSyntaxTreeNode.value = MiniScript::Variable(functionStackletScriptIdx);
+					// add argumnet for name of function/stacklet
 					callSyntaxTreeNode.arguments.push_back(callArgumentSyntaxTreeNode);
-					// add original parameter to call syntaxTree
-					for (const auto& argument: syntaxTree.arguments) {
-						callSyntaxTreeNode.arguments.push_back(argument);
+					// stacklets have no arguments when calling them, functions do have them
+					if (syntaxTree.type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
+						// add original parameter to call syntaxTree
+						for (const auto& argument: syntaxTree.arguments) {
+							callSyntaxTreeNode.arguments.push_back(argument);
+						}
 					}
-					// asign script.call method
+					// assign script.call/script.callStacklet method
 					auto method = miniScript->getMethod(callSyntaxTreeNode.value.getValueAsString());
 					if (method == nullptr) {
 						Console::printLine("Transpiler::transpileStatement(): method code not found: '" + callSyntaxTreeNode.value.getValueAsString() + "'");
@@ -2050,7 +2057,7 @@ bool Transpiler::transpileStatement(
 						additionalIndent
 					);
 				} else {
-					Console::printLine("Transpiler::transpileStatement(): function not found: '" + syntaxTree.value.getValueAsString() + "'");
+					Console::printLine("Transpiler::transpileStatement(): Function/stacklet not found: '" + syntaxTree.value.getValueAsString() + "'");
 					return false;
 				}
 				//
@@ -2280,6 +2287,7 @@ bool Transpiler::transpileStatement(
 							break;
 						}
 					case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+					case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
 						{
 							argumentsCode.push_back(indent + "Variable()" + (lastArgument == false?",":"") + " // arguments[" + to_string(argumentIdx) + "] --> returnValue of " + argument.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(argument.arguments) + ")");
 							break;
@@ -2347,6 +2355,7 @@ bool Transpiler::transpileStatement(
 		for (const auto& argument: syntaxTree.arguments) {
 			switch (argument.type) {
 				case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+				case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
 				case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 					{
 						//
@@ -2731,6 +2740,7 @@ const string Transpiler::createSourceCode(const MiniScript::SyntaxTreeNode& synt
 			}
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
 			{
 				auto endElse = syntaxTreeNode.value.getValueAsString() == "end" || syntaxTreeNode.value.getValueAsString() == "else";
 				result+= syntaxTreeNode.value.getValueAsString();

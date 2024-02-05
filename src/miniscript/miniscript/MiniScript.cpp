@@ -107,6 +107,10 @@ vector<MiniScript::DataType*> MiniScript::dataTypes;
 MiniScript::ShutdownRAII MiniScript::shutdownRAII(MiniScript::dataTypes);
 
 const string MiniScript::METHOD_SCRIPTCALL = "script.call";
+const string MiniScript::METHOD_SCRIPTCALLSTACKLET = "script.callStacklet";
+const string MiniScript::METHOD_SCRIPTCALLBYINDEX = "script.callByIndex";
+const string MiniScript::METHOD_SCRIPTCALLSTACKLETBYINDEX = "script.callStackletByIndex";
+
 const string MiniScript::METHOD_ENABLENAMEDCONDITION = "script.enableNamedCondition";
 const string MiniScript::METHOD_DISABLENAMEDCONDITION = "script.disableNamedCondition";
 
@@ -561,8 +565,7 @@ bool MiniScript::parseStatement(const string_view& executableStatement, string_v
 MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement) {
 	if (VERBOSE == true) _Console::printLine("MiniScript::executeStatement(): " + getStatementInformation(statement) + "': " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
 	// return on literal or empty syntaxTree
-	if (syntaxTree.type != SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD &&
-		syntaxTree.type != SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
+	if (syntaxTree.type == SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
 		return initializeVariable(syntaxTree.value);
 	}
 	//
@@ -590,12 +593,21 @@ MiniScript::Variable MiniScript::executeStatement(const SyntaxTreeNode& syntaxTr
 	if (VERBOSE == true) {
 		_Console::printLine("MiniScript::executeStatement(): '" + getStatementInformation(statement) + ": " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
 	}
-	// try first user functions
+	// try first function
 	if (syntaxTree.type == SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
-		auto scriptIdx = syntaxTree.getFunctionScriptIdx();
+		auto scriptIdx = syntaxTree.getScriptIdx();
 		// call
 		span argumentsSpan(arguments);
 		call(scriptIdx, argumentsSpan, returnValue);
+		//
+		return returnValue;
+	} else
+	if (syntaxTree.type == SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET) {
+		// try stacklet
+		auto scriptIdx = syntaxTree.getScriptIdx();
+		// call
+		span argumentsSpan(arguments);
+		callStacklet(scriptIdx, argumentsSpan, returnValue);
 		//
 		return returnValue;
 	} else
@@ -909,9 +921,9 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 	}
 	// try first user functions
 	if (functionScriptIdx != SCRIPTIDX_NONE) {
-		syntaxTree.type = SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION;
+		syntaxTree.type = scripts[functionScriptIdx].type == Script::TYPE_FUNCTION?SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET;
 		syntaxTree.value.setValue(deescape(methodName, statement));
-		syntaxTree.setFunctionScriptIdx(functionScriptIdx);
+		syntaxTree.setScriptIdx(functionScriptIdx);
 		//
 		return true;
 	} else
@@ -1005,13 +1017,6 @@ bool MiniScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTre
 				break;
 			}
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
-			{
-				for (auto& argument: syntaxTreeNode.arguments) {
-					if (setupFunctionAndStackletScriptIndices(argument, statement) == false) return false;
-				}
-				//
-				break;
-			}
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 			{
 				for (auto& argument: syntaxTreeNode.arguments) {
@@ -1095,6 +1100,8 @@ bool MiniScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syn
 	switch (syntaxTreeNode.type) {
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
 			{
+				// TODO: improve me! This is actually litaral only, which can be also set as variable and be reused later
+				//	basically we forbid here to create a stacklet assignment variable with wrong scope in a given scope
 				if (syntaxTreeNode.value.getType() == MiniScript::TYPE_STACKLET_ASSIGNMENT) {
 					// we only allow assignments of stacklets with a correct scope, means
 					string stackletName;
@@ -1173,31 +1180,74 @@ bool MiniScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syn
 					if (validateStacklets(scopeScriptIdx, argument, statement) == false) return false;
 				}
 				//
-				auto functionScriptIdx = getFunctionScriptIdx(syntaxTreeNode.value.getValueAsString());
-				if (functionScriptIdx != SCRIPTIDX_NONE && scripts[functionScriptIdx].type == Script::TYPE_STACKLET) {
+				if (getFunctionScriptIdx(syntaxTreeNode.value.getValueAsString()) == scopeScriptIdx) {
+					// recursion
+				} else {
+					validateStacklets(syntaxTreeNode.value.getValueAsString());
+				}
+				//
+				break;
+			}
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
+			{
+				// we only allow assignments of stacklets with a correct scope, means
+				string stackletName = syntaxTreeNode.value.getValueAsString();
+				auto stackletScriptIdx = syntaxTreeNode.getScriptIdx();
+				if (stackletName.empty() == true || stackletScriptIdx == SCRIPTIDX_NONE) {
 					//
 					_Console::printLine(
 						getStatementInformation(statement) +
 						": " +
 						syntaxTreeNode.value.getValueAsString() +
-						": Calling a stacklet in script is not yet supported"
+						": Stacklet not found"
 					);
 					//
 					parseErrors.push_back(
 						getStatementInformation(statement) +
 						": " +
 						syntaxTreeNode.value.getValueAsString() +
-						": Calling a stacklet in script is not yet supported"
+						": Stacklet not found"
 					);
 					//
 					return false;
 				}
 				//
-				if (functionScriptIdx == scopeScriptIdx) {
-					// recursion
-				} else {
-					validateStacklets(syntaxTreeNode.value.getValueAsString());
+				int stackletScopeScriptIdx = getStackletScopeScriptIdx(stackletScriptIdx);
+				if (stackletScopeScriptIdx != scopeScriptIdx) {
+					// construct scope error
+					string scopeErrorMessage;
+					if (stackletScopeScriptIdx == SCRIPTIDX_NONE) {
+						scopeErrorMessage = "Stacklet requires root scope";
+					} else {
+						scopeErrorMessage = "Stacklet requires scope of " + scripts[stackletScopeScriptIdx].condition + "()";
+					}
+					scopeErrorMessage+= ", but has scope of ";
+					if (scopeScriptIdx == SCRIPTIDX_NONE) {
+						scopeErrorMessage+= "root scope";
+					} else {
+						scopeErrorMessage+= scripts[scopeScriptIdx].condition + "()";
+					}
+					//
+					_Console::printLine(
+						getStatementInformation(statement) +
+						": " +
+						syntaxTreeNode.value.getValueAsString() +
+						": Stacklet scope invalid: " +
+						scopeErrorMessage
+					);
+					//
+					parseErrors.push_back(
+						getStatementInformation(statement) +
+						": " +
+						syntaxTreeNode.value.getValueAsString() +
+						": Stacklet scope invalid" +
+						scopeErrorMessage
+					);
+					//
+					return false;
 				}
+				//
+				validateStacklets(syntaxTreeNode.value.getValueAsString(), scopeScriptIdx);
 				//
 				break;
 			}
@@ -1259,6 +1309,7 @@ bool MiniScript::validateCallable(const SyntaxTreeNode& syntaxTreeNode, const St
 			}
 			break;
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
 			{
 				for (const auto& argument: syntaxTreeNode.arguments) {
 					if (validateCallable(argument, statement) == false) return false;
@@ -1352,12 +1403,13 @@ bool MiniScript::validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode, 
 			}
 			break;
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
+		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
 			{
 				for (const auto& argument: syntaxTreeNode.arguments) {
 					if (validateContextFunctions(argument, functionStack, statement) == false) return false;
 				}
 				//
-				validateContextFunctions(syntaxTreeNode.value.getValueAsString(), functionStack	);
+				validateContextFunctions(syntaxTreeNode.value.getValueAsString(), functionStack);
 				//
 				break;
 			}
@@ -3083,6 +3135,9 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 		popScriptState();
 	} else {
 		auto& scriptState = getScriptState();
+		scriptState.state = currentScriptState.state;
+		scriptState.lastState = currentScriptState.lastState;
+		scriptState.lastStateMachineState = currentScriptState.lastStateMachineState;
 		scriptState.running = currentScriptState.running;
 		scriptState.scriptIdx = currentScriptState.scriptIdx;
 		scriptState.statementIdx = currentScriptState.statementIdx;
