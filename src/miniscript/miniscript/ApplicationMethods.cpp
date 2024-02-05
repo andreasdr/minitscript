@@ -7,7 +7,9 @@
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/ApplicationMethods.h>
 #include <miniscript/miniscript/MiniScript.h>
+#include <miniscript/os/filesystem/FileSystem.h>
 #include <miniscript/utilities/Console.h>
+#include <miniscript/utilities/Exception.h>
 #include <miniscript/utilities/StringTools.h>
 
 using std::array;
@@ -17,6 +19,8 @@ using std::shared_ptr;
 using miniscript::miniscript::ApplicationMethods;
 
 using miniscript::miniscript::MiniScript;
+using miniscript::os::filesystem::FileSystem;
+using miniscript::utilities::Exception;
 
 using _Console = miniscript::utilities::Console;
 using _StringTools = miniscript::utilities::StringTools;
@@ -69,20 +73,48 @@ void ApplicationMethods::registerConstants(MiniScript* miniScript) {
 	#endif
 }
 
-const string ApplicationMethods::execute(const string& command) {
+const string ApplicationMethods::execute(const string& command, int* exitCode, string* error) {
+	FILE* pipe = nullptr;
+	auto _exitCode = EXIT_FAILURE;
 	// see: https://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
 	array<char, 128> buffer;
 	string result;
-	#if defined(_MSC_VER)
-		shared_ptr<FILE> pipe(_popen(command.c_str(), "r"), _pclose);
-	#else
-		shared_ptr<FILE> pipe(popen(command.c_str(), "r"), pclose);
-	#endif
-	if (!pipe) throw std::runtime_error("popen() failed!");
-	while (!feof(pipe.get())) {
-		if (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
-			result += buffer.data();
+	string errorFile;
+	auto _command = command;
+	if (error != nullptr) {
+		errorFile = tmpnam(nullptr);
+		_command+= " 2>" + errorFile;
 	}
+	//
+	try {
+		pipe = popen(_command.c_str(), "r");
+		if (pipe == nullptr) throw std::runtime_error("popen() failed!");
+		while (feof(pipe) == false) {
+			if (fgets(buffer.data(), buffer.size(), pipe) != nullptr) result += buffer.data();
+		}
+	} catch (Exception& exception) {
+		_Console::printLine("ApplicationMethods::execute(): An error occurred: " + string(exception.what()));
+	}
+	//
+	#if defined(_MSC_VER)
+		_exitCode = _pclose(pipe);
+	#else
+		_exitCode = pclose(pipe);
+	#endif
+	//
+	if (exitCode != nullptr) *exitCode = _exitCode;
+	//
+	if (error != nullptr) {
+		try {
+			*error = FileSystem::getContentAsString(
+				FileSystem::getPathName(errorFile),
+				FileSystem::getFileName(errorFile)
+			);
+		} catch (Exception& exception) {
+			_Console::printLine("ApplicationMethods::execute(): An error occurred: " + string(exception.what()));
+		}
+	}
+	//
 	return result;
 }
 

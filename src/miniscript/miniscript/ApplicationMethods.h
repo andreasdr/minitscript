@@ -30,7 +30,9 @@ public:
 	/**
 	 * Execute
 	 * @param command command
+	 * @param exitCode pointer to exit code
+	 * @param error pointer to error string
 	 */
-	static const string execute(const string& command);
+	static const string execute(const string& command, int* exitCode = nullptr, string* error = nullptr);
 
 };
