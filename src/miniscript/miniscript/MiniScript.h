@@ -3319,17 +3319,17 @@ private:
 	bool createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree);
 
 	/**
-	 * Setup stacket and function function indices
+	 * Setup function and stacket script indices
 	 * @param scriptIdx script index
 	 */
-	bool setupStackletAndFunctionIndices(int scriptIdx);
+	bool setupFunctionAndStackletScriptIndices(int scriptIdx);
 
 	/**
-	 * Setup stacket and function function indices
+	 * Setup function and stacket script indices
 	 * @param syntaxTreeNode syntax tree node
 	 * @param statement statement
 	 */
-	bool setupStackletAndFunctionIndices(SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
+	bool setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
 
 	/**
 	 * Return stacklet scope script index

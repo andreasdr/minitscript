@@ -1726,14 +1726,12 @@ void Transpiler::generateArrayMapSetVariable(
 			break;
 		case MiniScript::TYPE_STRING:
 			{
-				string function;
-				auto functionScriptIdx = MiniScript::SCRIPTIDX_NONE;
-				variable.getFunctionValue(function, functionScriptIdx);
-				function = StringTools::replace(StringTools::replace(function, "\\", "\\\\"), "\"", "\\\"");
+				string value;
+				variable.getStringValue(value);
+				value = StringTools::replace(StringTools::replace(value, "\\", "\\\\"), "\"", "\\\"");
 				//
 				generatedDefinitions+= indent + "{" + "\n";
-				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + ";" + "\n";
-				generatedDefinitions+= indent + "\t" + "variableD" + to_string(initializerDepth) + ".setFunctionAssignment(\"" + function + "\", " + to_string(functionScriptIdx) + ");" + "\n";
+				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + "(string(\"" + value + "\"));" + "\n";
 				generatedDefinitions+= indent + "\t" + postStatement + "\n";
 				generatedDefinitions+= indent + "}" + "\n";
 			}

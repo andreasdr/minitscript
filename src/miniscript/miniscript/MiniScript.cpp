@@ -933,7 +933,7 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 	return false;
 }
 
-bool MiniScript::setupStackletAndFunctionIndices(int scriptIdx) {
+bool MiniScript::setupFunctionAndStackletScriptIndices(int scriptIdx) {
 	//
 	auto& script = scripts[scriptIdx];
 	auto statementIdx = STATEMENTIDX_FIRST;
@@ -941,7 +941,7 @@ bool MiniScript::setupStackletAndFunctionIndices(int scriptIdx) {
 	for (auto& syntaxTreeNode: script.syntaxTree) {
 		auto& statement = script.statements[statementIdx++];
 		//
-		if (setupStackletAndFunctionIndices(syntaxTreeNode, statement) == false) {
+		if (setupFunctionAndStackletScriptIndices(syntaxTreeNode, statement) == false) {
 			//
 			return false;
 		}
@@ -951,7 +951,7 @@ bool MiniScript::setupStackletAndFunctionIndices(int scriptIdx) {
 
 }
 
-bool MiniScript::setupStackletAndFunctionIndices(SyntaxTreeNode& syntaxTreeNode, const Statement& statement) {
+bool MiniScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTreeNode, const Statement& statement) {
 	switch (syntaxTreeNode.type) {
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
 			{
@@ -1007,7 +1007,7 @@ bool MiniScript::setupStackletAndFunctionIndices(SyntaxTreeNode& syntaxTreeNode,
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 			{
 				for (auto& argument: syntaxTreeNode.arguments) {
-					if (setupStackletAndFunctionIndices(argument, statement) == false) return false;
+					if (setupFunctionAndStackletScriptIndices(argument, statement) == false) return false;
 				}
 				//
 				break;
@@ -1015,7 +1015,7 @@ bool MiniScript::setupStackletAndFunctionIndices(SyntaxTreeNode& syntaxTreeNode,
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 			{
 				for (auto& argument: syntaxTreeNode.arguments) {
-					if (setupStackletAndFunctionIndices(argument, statement) == false) return false;
+					if (setupFunctionAndStackletScriptIndices(argument, statement) == false) return false;
 				}
 				//
 				break;
@@ -2250,7 +2250,7 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	// set up stacklet and function indices
 	for (auto scriptIdx = 0; scriptIdx < scripts.size(); scriptIdx++) {
 		//
-		if (setupStackletAndFunctionIndices(scriptIdx) == false) {
+		if (setupFunctionAndStackletScriptIndices(scriptIdx) == false) {
 			//
 			scriptValid = false;
 			//
@@ -2267,8 +2267,8 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				if (script.arguments.empty()) continue;
 				// invalid: more than 1 argument
 				if (script.arguments.size() != 1) {
-					_Console::printLine(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
-					parseErrors.push_back(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
+					_Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
+					parseErrors.push_back(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
 					//
 					scriptValid = false;
 					//
@@ -2278,8 +2278,8 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				auto stackletScopeScriptIdx = getFunctionScriptIdx(script.arguments[0].name);
 				// invalid: scope function/stacklet not found
 				if (stackletScopeScriptIdx == SCRIPTIDX_NONE) {
-					_Console::printLine(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
-					parseErrors.push_back(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
+					_Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
+					parseErrors.push_back(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
 					//
 					scriptValid = false;
 					//
@@ -2287,8 +2287,8 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				} else
 				// invalid: stacklet can not have itself as scope stacklet
 				if (stackletScopeScriptIdx == scriptIdx) {
-					_Console::printLine(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
-					parseErrors.push_back(scriptFileName + ": stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
+					_Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
+					parseErrors.push_back(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
 					//
 					scriptValid = false;
 					//
