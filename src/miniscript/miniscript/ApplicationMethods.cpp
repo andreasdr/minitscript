@@ -87,7 +87,11 @@ const string ApplicationMethods::execute(const string& command, int* exitCode, s
 	FILE* pipe = nullptr;
 	try {
 		array<char, 128> buffer;
-		pipe = popen(_command.c_str(), "r");
+		#if defined(_MSC_VER)
+			pipe = _popen(_command.c_str(), "r");
+		#else
+			pipe = popen(_command.c_str(), "r");
+		#endif
 		if (pipe == nullptr) throw std::runtime_error("popen() failed!");
 		while (feof(pipe) == false) {
 			if (fgets(buffer.data(), buffer.size(), pipe) != nullptr) result += buffer.data();
