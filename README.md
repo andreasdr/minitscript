@@ -12,7 +12,7 @@ Also note the focus on easy integration into other products and easy customizabi
 ## 1.1. Open source
 
 - MiniScript is open source
-  - please check the [license](https://github.com/Mindty-Kollektiv/miniscript/blob/master/LICENSE)
+  - please check the [license](https://github.com/Mindty-Kollektiv/miniscript/blob/main/LICENSE)
   - you find the source code at [https://github.com/Mindty-Kollektiv/miniscript](https://github.com/Mindty-Kollektiv/miniscript) 
   - here you find developer [documentation including collaboration graphs and API](https://www.mindty.com/products/miniscript/documentation/)
 
