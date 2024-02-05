@@ -131,7 +131,7 @@ public:
 		 * @param executableStatement executable statement
 		 * @param gotoStatementIdx goto statement index
 		 */
-		Statement(
+		inline Statement(
 			int line,
 			int statementIdx,
 			const string& statement,
@@ -197,7 +197,7 @@ public:
 				/**
 				 * Constructor
 				 */
-				ScriptContext() {}
+				inline ScriptContext() {}
 
 				/**
 				 * Destructor
@@ -208,7 +208,7 @@ public:
 				 * Set MiniScript instance
 				 * @param miniScript MiniScript instance
 				 */
-				void setMiniScript(MiniScript* miniScript) {
+				inline void setMiniScript(MiniScript* miniScript) {
 					this->miniScript = miniScript;
 				}
 
@@ -216,7 +216,7 @@ public:
 				 * Set garbage collection type index
 				 * @param index garbage collection type index
 				 */
-				void setIndex(int index) {
+				inline void setIndex(int index) {
 					this->index = index;
 				}
 
@@ -372,7 +372,7 @@ public:
 		 * @param mathDataType is math data type and provides math methods
 		 * @param requiresGarbageCollection requires garbage collection
 		 */
-		DataType(bool mathDataType, bool requiresGarbageCollection): mathDataType(mathDataType), requiresGarbageCollection(requiresGarbageCollection) {
+		inline DataType(bool mathDataType, bool requiresGarbageCollection): mathDataType(mathDataType), requiresGarbageCollection(requiresGarbageCollection) {
 			//
 		}
 
@@ -416,7 +416,7 @@ public:
 				/**
 				 * Constructor
 				 */
-				Initializer():
+				inline Initializer():
 					statement(
 						MiniScript::Statement(
 							MiniScript::LINE_NONE,
@@ -436,18 +436,18 @@ public:
 				 * @param statement statement
 				 * @param syntaxTree syntax tree
 				 */
-				Initializer(const string& initializerString, const Statement& statement, SyntaxTreeNode* syntaxTree): initializerString(initializerString), statement(statement), syntaxTree(syntaxTree) {}
+				inline Initializer(const string& initializerString, const Statement& statement, SyntaxTreeNode* syntaxTree): initializerString(initializerString), statement(statement), syntaxTree(syntaxTree) {}
 
 				/**
 				 * Destructor
 				 */
-				~Initializer() { delete syntaxTree; }
+				inline ~Initializer() { delete syntaxTree; }
 
 				/**
 				 * Copy from initializer
 				 * @param initializer initializer
 				 */
-				void copy(Initializer* initializer) {
+				inline void copy(Initializer* initializer) {
 					this->initializerString = initializer->initializerString;
 					this->statement = initializer->statement;
 					if (syntaxTree != nullptr && initializer->syntaxTree != nullptr) {
@@ -458,21 +458,21 @@ public:
 				/**
 				 * @return initializer string
 				 */
-				const string& getInitializerString() const {
+				inline const string& getInitializerString() const {
 					return initializerString;
 				}
 
 				/**
 				 * @return statement
 				 */
-				const Statement& getStatement() const {
+				inline const Statement& getStatement() const {
 					return statement;
 				}
 
 				/**
 				 * @return syntax tree node
 				 */
-				const SyntaxTreeNode* getSyntaxTree() const {
+				inline const SyntaxTreeNode* getSyntaxTree() const {
 					return syntaxTree;
 				}
 
@@ -502,18 +502,18 @@ public:
 			/**
 			 * Constructor
 			 */
-			StringValue(): cache(_UTF8CharacterIterator::UTF8PositionCache()) {}
+			inline StringValue(): cache(_UTF8CharacterIterator::UTF8PositionCache()) {}
 
 			/**
 			 * Constructor
 			 * @param value value
 			 */
-			StringValue(const string& value): value(value) {}
+			inline StringValue(const string& value): value(value) {}
 
 			/**
 			 * @return value
 			 */
-			const string& getValue() const {
+			inline const string& getValue() const {
 				return value;
 			}
 
@@ -521,7 +521,7 @@ public:
 			 * Set value
 			 * @param value value
 			 */
-			void setValue(const string& value) {
+			inline void setValue(const string& value) {
 				this->value = value;
 				cache.removeCache();
 			}
@@ -529,14 +529,14 @@ public:
 			/**
 			 * @return const cache
 			 */
-			const _UTF8CharacterIterator::UTF8PositionCache& getCache() const {
+			inline const _UTF8CharacterIterator::UTF8PositionCache& getCache() const {
 				return cache;
 			}
 
 			/**
 			 * @return cache
 			 */
-			_UTF8CharacterIterator::UTF8PositionCache& getCache() {
+			inline _UTF8CharacterIterator::UTF8PositionCache& getCache() {
 				return cache;
 			}
 
@@ -544,13 +544,21 @@ public:
 			 * Set cache
 			 * @param cache cache
 			 */
-			void setCache(const _UTF8CharacterIterator::UTF8PositionCache& cache) {
+			inline void setCache(const _UTF8CharacterIterator::UTF8PositionCache& cache) {
 				this->cache = cache;
 			}
 
 		private:
 			string value;
 			_UTF8CharacterIterator::UTF8PositionCache cache;
+		};
+
+		/**
+		 * Function value
+		 */
+		struct FunctionValue {
+			string value;
+			int functionIdx;
 		};
 
 		/**
@@ -2369,7 +2377,7 @@ public:
 		/**
 		 * Constructor
 		 */
-		StateMachineState() {}
+		inline StateMachineState() {}
 
 		/**
 		 * Destructor
@@ -2414,7 +2422,7 @@ public:
 		 * @param returnValueType return value type
 		 * @param returnValueNullable true if return value can also be a null value
 		 */
-		Method(
+		inline Method(
 			const vector<ArgumentType>& argumentTypes = {},
 			VariableType returnValueType = VariableType::TYPE_NULL,
 			bool returnValueNullable = false
@@ -2446,7 +2454,7 @@ public:
 		/**
 		 * @return arguments
 		 */
-		const vector<ArgumentType>& getArgumentTypes() const {
+		inline const vector<ArgumentType>& getArgumentTypes() const {
 			return argumentTypes;
 		}
 
@@ -2485,14 +2493,14 @@ public:
 		/**
 		 * @return return value type
 		 */
-		const VariableType& getReturnValueType() const {
+		inline const VariableType& getReturnValueType() const {
 			return returnValueType;
 		}
 
 		/**
 		 * @return if return value can be null
 		 */
-		bool isReturnValueNullable() const {
+		inline bool isReturnValueNullable() const {
 			return returnValueNullable;
 		}
 
@@ -2546,7 +2554,7 @@ public:
 		/**
 		 * Constructor
 		 */
-		SyntaxTreeNode():
+		inline SyntaxTreeNode():
 			type(SCRIPTSYNTAXTREENODE_NONE),
 			value(Variable()),
 			pointer(0ll),
@@ -2559,7 +2567,7 @@ public:
 		 * @param pointer pointer to method
 		 * @param arguments arguments
 		 */
-		SyntaxTreeNode(
+		inline SyntaxTreeNode(
 			Type type,
 			const Variable& value,
 			Method* method,
@@ -2577,7 +2585,7 @@ public:
 		 * @param functionIdx function index
 		 * @param arguments arguments
 		 */
-		SyntaxTreeNode(
+		inline SyntaxTreeNode(
 			Type type,
 			const Variable& value,
 			uint64_t functionIdx,
@@ -2662,7 +2670,7 @@ public:
 		 * @param callableFunction callable function
 		 * @param functionArguments function arguments
 		 */
-		Script(
+		inline Script(
 			Type type,
 			int line,
 			// applies only for on and on-enabled
@@ -2805,7 +2813,7 @@ protected:
 			 * @param breakStatement break statement
 			 * @param parameter switch variable / iteration function
 			 */
-			Block(
+			inline Block(
 				BlockType type,
 				bool match,
 				const Statement* continueStatement,
@@ -2890,7 +2898,7 @@ protected:
 	 * Go to statement
 	 * @param statement statement
 	 */
-	void gotoStatement(const Statement& statement) {
+	inline void gotoStatement(const Statement& statement) {
 		setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 		getScriptState().gotoStatementIdx = statement.statementIdx;
 	}
@@ -2899,7 +2907,7 @@ protected:
 	 * Go to statement goto from given statement
 	 * @param statement statement
 	 */
-	void gotoStatementGoto(const Statement& statement) {
+	inline void gotoStatementGoto(const Statement& statement) {
 		setScriptStateState(MiniScript::STATEMACHINESTATE_NEXT_STATEMENT);
 		getScriptState().gotoStatementIdx = statement.gotoStatementIdx;
 	}
@@ -3130,12 +3138,12 @@ private:
 			 * Constructor
 			 * @param dataTypes data types
 			 */
-			ShutdownRAII(vector<DataType*>& dataTypes): dataTypes(dataTypes) {}
+			inline ShutdownRAII(vector<DataType*>& dataTypes): dataTypes(dataTypes) {}
 
 			/**
 			 * Destructor
 			 */
-			~ShutdownRAII() {
+			inline ~ShutdownRAII() {
 				for (const auto dataType: dataTypes) delete dataType;
 				dataTypes.clear();
 			}
@@ -3170,7 +3178,12 @@ private:
 	 * Garbage collection data type
 	 */
 	struct GarbageCollectionDataType {
-		GarbageCollectionDataType(
+		/**
+		 * Constructor
+		 * @param dataType data type
+		 * @param context script context
+		 */
+		inline GarbageCollectionDataType(
 			DataType* dataType,
 			DataType::ScriptContext* context):
 			dataType(dataType),
@@ -3856,7 +3869,7 @@ public:
 	/**
 	 * @return scripts
 	 */
-	const vector<Script>& getScripts() {
+	inline const vector<Script>& getScripts() {
 		return scripts;
 	}
 
