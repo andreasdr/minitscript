@@ -128,7 +128,7 @@ See an example:
 
 Please note, default block is optional.
 
-## 2.3. forTime, forCondition, for, break, continue
+## 2.3. forTime, forCondition, for, break, continue, forEach
 
 forTime and forCondition are loops and belong to flow control also:
 
@@ -156,6 +156,7 @@ forCondition takes a single boolean value as argument. The loop will be executed
 ```
 
 TODO: for, break, continue
+TODO: forEach
 
 # 3. Functions/Stacklets/Callables
 

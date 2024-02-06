@@ -7,6 +7,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <regex>
 #include <span>
 #include <stack>
 #include <string>
@@ -57,6 +58,7 @@ using std::map;
 using std::move;
 using std::remove;
 using std::reverse;
+using std::smatch;
 using std::sort;
 using std::span;
 using std::stack;
@@ -1691,12 +1693,12 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 	auto lineIdx = LINE_FIRST;
 	auto currentLineIdx = 0;
 	auto statementIdx = STATEMENTIDX_FIRST;
-	enum GotoStatementType { GOTOSTATEMENTTYPE_FOR, GOTOSTATEMENTTYPE_IF, GOTOSTATEMENTTYPE_ELSE, GOTOSTATEMENTTYPE_ELSEIF, GOTOSTATEMENTTYPE_SWITCH, GOTOSTATEMENTTYPE_CASE, GOTOSTATEMENTTYPE_DEFAULT };
-	struct GotoStatementStruct {
-		GotoStatementType type;
+	struct Block {
+		enum Type { TYPE_FOR, TYPE_FOREACH, TYPE_IF, TYPE_ELSE, TYPE_ELSEIF, TYPE_SWITCH, TYPE_CASE, TYPE_DEFAULT };
+		Type type;
 		int statementIdx;
 	};
-	stack<GotoStatementStruct> gotoStatementStack;
+	vector<Block> blockStack;
 	//
 	for (auto i = 0; i < scriptCode.size(); i++) {
 		//
@@ -1975,48 +1977,49 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				scriptValid = false;
 			} else
 			if (statementCode == "end") {
-				if (gotoStatementStack.empty() == false) {
-					auto gotoStatementStackElement = gotoStatementStack.top();
-					gotoStatementStack.pop();
-					switch(gotoStatementStackElement.type) {
-						case GOTOSTATEMENTTYPE_FOR:
+				if (blockStack.empty() == false) {
+					auto block = blockStack.back();
+					blockStack.erase(blockStack.begin() + blockStack.size() - 1);
+					switch(block.type) {
+						case Block::TYPE_FOR:
+						case Block::TYPE_FOREACH:
 							{
-								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, gotoStatementStackElement.statementIdx);
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, block.statementIdx);
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 							}
 							break;
-						case GOTOSTATEMENTTYPE_IF:
+						case Block::TYPE_IF:
 							{
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
-						case GOTOSTATEMENTTYPE_ELSE:
+						case Block::TYPE_ELSE:
 							{
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
-						case GOTOSTATEMENTTYPE_ELSEIF:
+						case Block::TYPE_ELSEIF:
 							{
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
-						case GOTOSTATEMENTTYPE_SWITCH:
+						case Block::TYPE_SWITCH:
 							{
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
-						case GOTOSTATEMENTTYPE_CASE:
+						case Block::TYPE_CASE:
 							{
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size() + 1;
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size() + 1;
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
-						case GOTOSTATEMENTTYPE_DEFAULT:
+						case Block::TYPE_DEFAULT:
 							{
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size() + 1;
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size() + 1;
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
@@ -2027,19 +2030,19 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 				}
 			} else
 			if (statementCode == "else") {
-				if (gotoStatementStack.empty() == false) {
-					auto gotoStatementStackElement = gotoStatementStack.top();
-					gotoStatementStack.pop();
-					switch(gotoStatementStackElement.type) {
-						case GOTOSTATEMENTTYPE_IF:
+				if (blockStack.empty() == false) {
+					auto block = blockStack.back();
+					blockStack.erase(blockStack.begin() + blockStack.size() - 1);
+					switch(block.type) {
+						case Block::TYPE_IF:
 							{
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
-						case GOTOSTATEMENTTYPE_ELSEIF:
+						case Block::TYPE_ELSEIF:
 							{
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
 							}
 							break;
@@ -2051,11 +2054,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							scriptValid = false;
 							break;
 					}
-					gotoStatementStack.push(
-						{
-							.type = GOTOSTATEMENTTYPE_ELSE,
-							.statementIdx = statementIdx
-						}
+					blockStack.emplace_back(
+						Block::TYPE_ELSE,
+						statementIdx
 					);
 				} else {
 					_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": else without if");
@@ -2074,19 +2075,19 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					STATEMENTIDX_NONE
 				);
 				auto executableStatement = doStatementPreProcessing(statementCode, elseIfStatement);
-				if (gotoStatementStack.empty() == false) {
-					auto gotoStatementStackElement = gotoStatementStack.top();
-					gotoStatementStack.pop();
-					switch(gotoStatementStackElement.type) {
-						case GOTOSTATEMENTTYPE_IF:
+				if (blockStack.empty() == false) {
+					auto block = blockStack.back();
+					blockStack.erase(blockStack.begin() + blockStack.size() - 1);
+					switch(block.type) {
+						case Block::TYPE_IF:
 							{
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
 							}
 							break;
-						case GOTOSTATEMENTTYPE_ELSEIF:
+						case Block::TYPE_ELSEIF:
 							{
-								scripts.back().statements[gotoStatementStackElement.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+								scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 								scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
 							}
 							break;
@@ -2095,11 +2096,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							scriptValid = false;
 							break;
 					}
-					gotoStatementStack.push(
-						{
-							.type = GOTOSTATEMENTTYPE_ELSEIF,
-							.statementIdx = statementIdx
-						}
+					blockStack.emplace_back(
+						Block::TYPE_ELSEIF,
+						statementIdx
 					);
 				} else {
 					_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": elseif without if");
@@ -2109,6 +2108,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					scriptValid = false;
 				}
 			} else {
+				smatch matches;
 				Statement generatedStatement(
 					currentLineIdx,
 					STATEMENTIDX_FIRST,
@@ -2116,12 +2116,12 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					_StringTools::replace(_StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
 					STATEMENTIDX_NONE
 				);
-				auto executableStatement = doStatementPreProcessing(statementCode, generatedStatement);
-				if (_StringTools::regexMatch(executableStatement, "^for[\\s]*\\(.*\\)$") == true) {
+				if (_StringTools::regexMatch(statementCode, "^for[\\s]*\\(.*\\)$") == true) {
 					// parse for statement
 					string_view forMethodName;
 					vector<string_view> forArguments;
 					string accessObjectMemberStatement;
+					string executableStatement = doStatementPreProcessing(statementCode, generatedStatement);
 					// success?
 					if (parseStatement(executableStatement, forMethodName, forArguments, generatedStatement, accessObjectMemberStatement) == true &&
 						forArguments.size() == 3) {
@@ -2129,14 +2129,12 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						string initializeStatement = string(forArguments[0]);
 						scripts.back().statements.emplace_back(currentLineIdx, statementIdx++, statementCode, initializeStatement, STATEMENTIDX_NONE);
 						//
-						gotoStatementStack.push(
-							{
-								.type = GOTOSTATEMENTTYPE_FOR,
-								.statementIdx = statementIdx
-							}
+						blockStack.emplace_back(
+							Block::TYPE_FOR,
+							statementIdx
 						);
 						//
-						executableStatement = "forCondition(" + string(forArguments[1]) + ", -> { " + string(forArguments[2]) + " })";
+						statementCode = "forCondition(" + string(forArguments[1]) + ", -> { " + string(forArguments[2]) + " })";
 					} else {
 						_Console::printLine(scriptFileName + ": Invalid for statement");
 						//
@@ -2147,55 +2145,91 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						return false;
 					}
 				} else
-				if (_StringTools::regexMatch(executableStatement, "^forTime[\\s]*\\(.*\\)$") == true ||
-					_StringTools::regexMatch(executableStatement, "^forCondition[\\s]*\\(.*\\)$") == true) {
-					gotoStatementStack.push(
-						{
-							.type = GOTOSTATEMENTTYPE_FOR,
-							.statementIdx = statementIdx
-						}
+				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*\\)$", &matches) == true) {
+
+					auto entryVariable = matches[1].str();
+					auto containerVariable = matches[2].str();
+					auto iterationDepth = 0;
+					for (const auto& block: blockStack) {
+						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
+					}
+					auto iterationVariable = string("$___it_" + to_string(iterationDepth));
+					/*
+					setVariable("$it", 0)
+					setVariable("$var", $array[$it])
+					forCondition($it < $array->getSize(), -> { $it++; if ($it < $array->getSize()); $var = $array[$it]; end; })
+						//
+					end
+					*/
+					// create initialize statement
+					scripts.back().statements.emplace_back(
+						currentLineIdx,
+						statementIdx++,
+						statementCode,
+						doStatementPreProcessing(iterationVariable + " = 0", generatedStatement),
+						STATEMENTIDX_NONE
+					);
+					scripts.back().statements.emplace_back(
+						currentLineIdx,
+						statementIdx++,
+						statementCode,
+						doStatementPreProcessing(entryVariable + " = " + containerVariable + "[" + iterationVariable + "]", generatedStatement),
+						STATEMENTIDX_NONE
+					);
+					//
+					blockStack.emplace_back(
+						Block::TYPE_FOREACH,
+						statementIdx
+					);
+					//
+					statementCode = "forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), -> { " + iterationVariable + "++" + "; if (" + iterationVariable + " < " + containerVariable + "->getSize()); " + entryVariable + " = " + containerVariable + "[" + iterationVariable + "]" "; " + "else; " + entryVariable + " = null; end; " + "})";
+					_Console::printLine(statementCode);
+				} else
+				if (_StringTools::regexMatch(statementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
+					_StringTools::regexMatch(statementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_FOR,
+						statementIdx
 					);
 				} else
-				if (_StringTools::regexMatch(executableStatement, "^if[\\s]*\\(.*\\)$") == true) {
-					gotoStatementStack.push(
-						{
-							.type = GOTOSTATEMENTTYPE_IF,
-							.statementIdx = statementIdx
-						}
+				if (_StringTools::regexMatch(statementCode, "^if[\\s]*\\(.*\\)$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_IF,
+						statementIdx
 					);
 				} else
-				if (_StringTools::regexMatch(executableStatement, "^switch[\\s]*\\(.*\\)$") == true) {
-					gotoStatementStack.push(
-						{
-							.type = GOTOSTATEMENTTYPE_SWITCH,
-							.statementIdx = STATEMENTIDX_NONE
-						}
+				if (_StringTools::regexMatch(statementCode, "^switch[\\s]*\\(.*\\)$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_SWITCH,
+						STATEMENTIDX_NONE
 					);
 				} else
-				if (_StringTools::regexMatch(executableStatement, "^case[\\s]*\\(.*\\)$") == true) {
-					gotoStatementStack.push(
-						{
-							.type = GOTOSTATEMENTTYPE_CASE,
-							.statementIdx = statementIdx
-						}
+				if (_StringTools::regexMatch(statementCode, "^case[\\s]*\\(.*\\)$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_CASE,
+						statementIdx
 					);
 				} else
-				if (_StringTools::regexMatch(executableStatement, "^default[\\s]*$") == true) {
-					gotoStatementStack.push(
-						{
-							.type = GOTOSTATEMENTTYPE_DEFAULT,
-							.statementIdx = statementIdx
-						}
+				if (_StringTools::regexMatch(statementCode, "^default[\\s]*$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_DEFAULT,
+						statementIdx
 					);
 				}
-				scripts.back().statements.emplace_back(currentLineIdx, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
+				scripts.back().statements.emplace_back(
+					currentLineIdx,
+					statementIdx,
+					statementCode,
+					doStatementPreProcessing(statementCode, generatedStatement),
+					STATEMENTIDX_NONE
+				);
 			}
 			statementIdx++;
 		}
 	}
 
 	// check for unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end
-	if (scriptValid == true && gotoStatementStack.empty() == false) {
+	if (scriptValid == true && blockStack.empty() == false) {
 		_Console::printLine(scriptFileName + ": unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 		//
 		parseErrors.push_back("Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");

@@ -123,6 +123,16 @@ on: nothing
 			break
 		end
 	end
+	# test forEach with array
+	console.printLine("test forEach with array")
+	$array1 = [1,2,3,4,5,6,7,8,9,10]
+	$array2 = [a,b,c]
+	forEach($var1: $array1)
+		console.printLine("$var1 = " + $var1)
+		forEach($var2: $array2)
+			console.printLine("	$var2 = " + $var2)
+		end
+	end 
 	console.printLine("done")
 	script.stop()
 end
