@@ -2145,15 +2145,24 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						return false;
 					}
 				} else
-				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*\\)$", &matches) == true) {
-
+				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*\\)$", &matches) == true) {
+					auto entryReference = false;
 					auto entryVariable = matches[1].str();
+					if (_StringTools::startsWith(entryVariable, "&") == true) {
+						entryReference = true;
+						entryVariable = _StringTools::substring(entryVariable, 1);
+					}
 					auto containerVariable = matches[2].str();
 					auto iterationDepth = 0;
 					for (const auto& block: blockStack) {
 						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
 					}
 					auto iterationVariable = string("$___it_" + to_string(iterationDepth));
+					string iterationUpdate =
+						entryReference == true?
+							"setVariableReference(\"" + entryVariable + "\", getVariableReference(\"" + containerVariable + "[" + iterationVariable + "]\"))":
+							entryVariable + " = " + containerVariable + "[" + iterationVariable + "]";
+
 					/*
 					setVariable("$it", 0)
 					setVariable("$var", $array[$it])
@@ -2173,7 +2182,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						currentLineIdx,
 						statementIdx++,
 						statementCode,
-						doStatementPreProcessing(entryVariable + " = " + containerVariable + "[" + iterationVariable + "]", generatedStatement),
+						doStatementPreProcessing(iterationUpdate, generatedStatement),
 						STATEMENTIDX_NONE
 					);
 					//
@@ -2182,7 +2191,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						statementIdx
 					);
 					//
-					statementCode = "forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), -> { " + iterationVariable + "++" + "; if (" + iterationVariable + " < " + containerVariable + "->getSize()); " + entryVariable + " = " + containerVariable + "[" + iterationVariable + "]" "; " + "else; unsetVariable(\"" + entryVariable + "\"); end; " + "})";
+					statementCode = "forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), -> { " + iterationVariable + "++" + "; if (" + iterationVariable + " < " + containerVariable + "->getSize()); " + iterationUpdate + "; " + "else; unsetVariable(\"" + entryVariable + "\"); end; " + "})";
 				} else
 				if (_StringTools::regexMatch(statementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
 					_StringTools::regexMatch(statementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {

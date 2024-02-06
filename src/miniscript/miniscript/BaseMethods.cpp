@@ -1341,6 +1341,43 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new MethodSetVariable(miniScript));
 	}
+	// set variable reference
+	{
+		//
+		class MethodSetVariableReference: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodSetVariableReference(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "value", .optional = false, .reference = true, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {
+				//
+			}
+			const string getMethodName() override {
+				return "setVariableReference";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string variable;
+				if (arguments.size() == 2 &&
+					MiniScript::getStringValue(arguments, 0, variable) == true) {
+					miniScript->setVariable(variable, arguments[1], &statement, true);
+					returnValue = arguments[1];
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+			bool isPrivate() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodSetVariableReference(miniScript));
+	}
 	// unset variable
 	{
 		//

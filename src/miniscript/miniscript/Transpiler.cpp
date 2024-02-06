@@ -995,6 +995,7 @@ void Transpiler::determineVariables(int scriptIdx, const MiniScript::SyntaxTreeN
 				if ((syntaxTreeNode.value.getValueAsString() == "getVariable" ||
 					syntaxTreeNode.value.getValueAsString() == "getVariableReference" ||
 					syntaxTreeNode.value.getValueAsString() == "setVariable" ||
+					syntaxTreeNode.value.getValueAsString() == "setVariableReference" ||
 					syntaxTreeNode.value.getValueAsString() == "setConstant" ||
 					syntaxTreeNode.value.getValueAsString() == "unsetVariable") &&
 					syntaxTreeNode.arguments.empty() == false &&
@@ -1372,6 +1373,7 @@ void Transpiler::generateArrayAccessMethods(
 				if (syntaxTree.value.getValueAsString() == "getVariable" ||
 					syntaxTree.value.getValueAsString() == "getVariableReference" ||
 					syntaxTree.value.getValueAsString() == "setVariable" ||
+					syntaxTree.value.getValueAsString() == "setVariableReference" ||
 					syntaxTree.value.getValueAsString() == "setConstant") {
 					//
 					auto lamdaIndent = StringTools::indent(string(), "\t", depth);
@@ -2096,6 +2098,7 @@ bool Transpiler::transpileStatement(
 				(syntaxTree.value.getValueAsString() == "getVariable" ||
 				syntaxTree.value.getValueAsString() == "getVariableReference" ||
 				syntaxTree.value.getValueAsString() == "setVariable" ||
+				syntaxTree.value.getValueAsString() == "setVariableReference" ||
 				syntaxTree.value.getValueAsString() == "setConstant")) {
 				//
 				for (auto argumentIdx = 0; argumentIdx < syntaxTree.arguments.size(); argumentIdx++) {
@@ -2496,6 +2499,7 @@ bool Transpiler::transpileStatement(
 		(syntaxTree.value.getValueAsString() == "getVariable" ||
 		syntaxTree.value.getValueAsString() == "getVariableReference" ||
 		syntaxTree.value.getValueAsString() == "setVariable" ||
+		syntaxTree.value.getValueAsString() == "setVariableReference" ||
 		syntaxTree.value.getValueAsString() == "setConstant" ||
 		syntaxTree.value.getValueAsString() == "unsetVariable") &&
 		syntaxTree.arguments.empty() == false &&
@@ -2510,7 +2514,7 @@ bool Transpiler::transpileStatement(
 			minIndentString + depthIndentString + "\t",
 			syntaxTree.value.getValueAsString() == "getVariable",
 			syntaxTree.value.getValueAsString() == "getVariableReference",
-			syntaxTree.value.getValueAsString() == "setVariable",
+			syntaxTree.value.getValueAsString() == "setVariable" || syntaxTree.value.getValueAsString() == "setVariableReference",
 			syntaxTree.value.getValueAsString() == "setConstant",
 			syntaxTree.value.getValueAsString() == "unsetVariable"
 		);
