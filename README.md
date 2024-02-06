@@ -1087,6 +1087,8 @@ end
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Set constant                                                                                     |
 | <sub>setConstant($constant: String, $value: Mixed): Mixed</sub>                                  |
+| Get variable type                                                                                |
+| <sub>getType($variable: Mixed): String</sub>                                                     |
 | Get variable                                                                                     |
 | <sub>getVariable($variable: String): Mixed</sub>                                                 |
 | Set variable                                                                                     |

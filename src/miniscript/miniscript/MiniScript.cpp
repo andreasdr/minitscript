@@ -1695,6 +1695,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 	auto statementIdx = STATEMENTIDX_FIRST;
 	struct Block {
 		enum Type { TYPE_FOR, TYPE_FOREACH, TYPE_IF, TYPE_ELSE, TYPE_ELSEIF, TYPE_SWITCH, TYPE_CASE, TYPE_DEFAULT };
+		Block(Type type, int statementIdx): type(type), statementIdx(statementIdx) {}
 		Type type;
 		int statementIdx;
 	};
@@ -2157,7 +2158,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					/*
 					setVariable("$it", 0)
 					setVariable("$var", $array[$it])
-					forCondition($it < $array->getSize(), -> { $it++; if ($it < $array->getSize()); $var = $array[$it]; end; })
+					forCondition($it < $array->getSize(), -> { $it++; if ($it < $array->getSize()); $var = $array[$it]; else; $var = null; end; })
 						//
 					end
 					*/
@@ -2183,7 +2184,6 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					);
 					//
 					statementCode = "forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), -> { " + iterationVariable + "++" + "; if (" + iterationVariable + " < " + containerVariable + "->getSize()); " + entryVariable + " = " + containerVariable + "[" + iterationVariable + "]" "; " + "else; " + entryVariable + " = null; end; " + "})";
-					_Console::printLine(statementCode);
 				} else
 				if (_StringTools::regexMatch(statementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
 					_StringTools::regexMatch(statementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {
