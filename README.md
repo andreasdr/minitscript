@@ -1089,6 +1089,8 @@ end
 | <sub>setConstant($constant: String, $value: Mixed): Mixed</sub>                                  |
 | Get variable type                                                                                |
 | <sub>getType($variable: Mixed): String</sub>                                                     |
+| Returns if variable exists                                                                       |
+| <sub>hasVariable($variable: String): Boolean</sub>                                               |
 | Get variable                                                                                     |
 | <sub>getVariable($variable: String): Mixed</sub>                                                 |
 | Set variable                                                                                     |

@@ -1274,7 +1274,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new MethodHasVariable(miniScript));
 	}
-
 	// get variable
 	{
 		//
