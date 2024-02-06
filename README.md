@@ -1093,8 +1093,6 @@ end
 | <sub>getVariable($variable: String): Mixed</sub>                                                 |
 | Set variable                                                                                     |
 | <sub>setVariable($variable: String, $value: Mixed): Mixed</sub>                                  |
-| Release reference, if it exists, of given variable and set to null                               |
-| <sub>unsetVariable($variable: String): Null</sub>                                                |
 | Add                                                                                              |
 | <sub>add($a: Mixed, $b: Mixed): Mixed</sub>                                                      |
 | Logical and                                                                                      |

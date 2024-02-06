@@ -133,19 +133,18 @@ on: nothing
 			console.printLine("	$var2 = " + $var2)
 		end
 	end
-	console.printLine("test forEach with array and a reference to the array entry") 
+	console.printLine("test forEach with array") 
 	$array3 = [1,2,3]
+	console.printLine("$array = " + $array3)
 	forEach($var3: $array3)
 		console.printLine("$var3 = " + $var3)
 	end
-	$i = 3 
+	console.printLine("test forEach with array and reference to its entries")
+	$i = 3
 	forEach(&$var3: $array3)
-		console.printLine("$i = " + $i + ", $var3 = " + $var3)
 		$var3 = $i--
-	end 
-	forEach($var3: $array3)
-		console.printLine("$var3 = " + $var3)
 	end
+	console.printLine("$array = " + $array3) 
 	console.printLine("done")
 	script.stop()
 end

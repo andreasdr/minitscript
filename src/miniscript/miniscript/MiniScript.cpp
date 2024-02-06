@@ -2160,7 +2160,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					auto iterationVariable = string("$___it_" + to_string(iterationDepth));
 					string iterationUpdate =
 						entryReference == true?
-							"setVariableReference(\"" + entryVariable + "\", getVariableReference(\"" + containerVariable + "[" + iterationVariable + "]\"))":
+							"setVariableReference(\"" + entryVariable + "\", " + containerVariable + "[" + iterationVariable + "])":
 							entryVariable + " = " + containerVariable + "[" + iterationVariable + "]";
 
 					/*
@@ -2170,7 +2170,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						//
 					end
 					*/
-					// create initialize statement
+					// create initialize statements
 					scripts.back().statements.emplace_back(
 						currentLineIdx,
 						statementIdx++,
@@ -4343,7 +4343,11 @@ inline void MiniScript::setVariableInternal(const string& variableStatement, Var
 	// common case
 	if (variablePtr != nullptr) {
 		if (variablePtr->isConstant() == false) {
-			variablePtr->setValue(variable);
+			if (createReference == true) {
+				variablePtr->setReference(&variable);
+			} else {
+				variablePtr->setValue(variable);
+			}
 		} else {
 			_Console::printLine(getStatementInformation(*statement) + ": constant: " + variableStatement + ": Assignment of constant is not allowed");
 		}

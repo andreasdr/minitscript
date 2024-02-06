@@ -1405,6 +1405,9 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
+			bool isPrivate() const override {
+				return true;
+			}
 		};
 		miniScript->registerMethod(new MethodUnsetVariable(miniScript));
 	}

@@ -241,6 +241,7 @@ private:
 	 * @param getVariable issue get variable access
 	 * @param getVariableReference issue get variable reference access
 	 * @param setVariable set variable
+	 * @param setVariableReference set variable reference
 	 * @param setConstant set constant
 	 * @param unsetVariable unset variable
 	 * @param returnValue return value
@@ -258,6 +259,7 @@ private:
 		bool getVariable,
 		bool getVariableReference,
 		bool setVariable,
+		bool setVariableReference,
 		bool setConstant,
 		bool unsetVariable,
 		const string& returnValueStatement = "returnValue = ",

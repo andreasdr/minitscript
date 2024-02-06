@@ -606,16 +606,6 @@ public:
 		}
 
 		/**
-		 * Set reference
-		 * @param variable variable
-		 */
-		inline void setReference(Variable* variable) {
-			typeReferenceConstantBits|= REFERENCE_BIT_VALUE;
-			ir.reference = (Variable*)variable;
-			ir.reference->acquireReference();
-		}
-
-		/**
 		 * Acquire reference
 		 */
 		inline void acquireReference() {
@@ -821,6 +811,22 @@ public:
 				unsetReference();
 			}
 			setType(TYPE_NULL);
+		}
+
+		/**
+		 * Set reference
+		 * @param variable variable
+		 */
+		inline void setReference(const Variable* variable) {
+			unset();
+			typeReferenceConstantBits|= REFERENCE_BIT_VALUE;
+			if (variable->isReference() == true) {
+				ir.reference = variable->ir.reference;
+				ir.reference->acquireReference();
+			} else {
+				ir.reference = (Variable*)variable;
+				ir.reference->acquireReference();
+			}
 		}
 
 		/**
@@ -4457,7 +4463,11 @@ public:
 				auto& existingVariable = variableIt->second;
 				if (existingVariable->isConstant() == false) {
 					// if we set a variable in variable scope that did exist before, we can safely remove the constness
-					existingVariable->setValue(variable);
+					if (createReference == true) {
+						existingVariable->setReference(&variable);
+					} else {
+						existingVariable->setValue(variable);
+					}
 				} else {
 					_Console::printLine(getStatementInformation(*statement) + ": constant: " + variableStatement + ": Assignment of constant is not allowed");
 				}
