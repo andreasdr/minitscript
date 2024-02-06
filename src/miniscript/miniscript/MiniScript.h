@@ -4314,7 +4314,7 @@ public:
 	}
 
 	/**
-	 * Returns variable by given variable statement and variable pointer
+	 * Returns variable determined by given variable statement and variable pointer
 	 * @param variablePtr variable pointer
 	 * @param variableStatement variable statement
 	 * @param statement optional statement the variable is read in
@@ -4347,7 +4347,7 @@ public:
 	}
 
 	/**
-	 * Unsets variable by given variable statement
+	 * Unsets variable determined by given variable statement and variable pointer
 	 * @param variablePtr variable pointer
 	 * @param variableStatement variable statement
 	 * @param statement optional statement the variable is read in
