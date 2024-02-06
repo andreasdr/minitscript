@@ -2172,27 +2172,29 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					end
 					*/
 					// create initialize statements
-					scripts.back().statements.emplace_back(
-						currentLineIdx,
-						statementIdx++,
-						statementCode,
-						doStatementPreProcessing("if (script.isNative() == true)", generatedStatement),
-						STATEMENTIDX_NONE
-					);
-					scripts.back().statements.emplace_back(
-						currentLineIdx,
-						statementIdx++,
-						statementCode,
-						doStatementPreProcessing("setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + ")", generatedStatement),
-						STATEMENTIDX_NONE
-					);
-					scripts.back().statements.emplace_back(
-						currentLineIdx,
-						statementIdx++,
-						statementCode,
-						doStatementPreProcessing("end", generatedStatement),
-						STATEMENTIDX_NONE
-					);
+					if (entryReference == true) {
+						scripts.back().statements.emplace_back(
+							currentLineIdx,
+							statementIdx++,
+							statementCode,
+							doStatementPreProcessing("if (script.isNative() == true)", generatedStatement),
+							STATEMENTIDX_NONE
+						);
+						scripts.back().statements.emplace_back(
+							currentLineIdx,
+							statementIdx++,
+							statementCode,
+							doStatementPreProcessing("setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + ")", generatedStatement),
+							STATEMENTIDX_NONE
+						);
+						scripts.back().statements.emplace_back(
+							currentLineIdx,
+							statementIdx++,
+							statementCode,
+							doStatementPreProcessing("end", generatedStatement),
+							STATEMENTIDX_NONE
+						);
+					}
 					scripts.back().statements.emplace_back(
 						currentLineIdx,
 						statementIdx++,
@@ -2220,11 +2222,16 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						"if (" + iterationVariable + " < " + containerVariable + "->getSize()); " +
 						iterationUpdate + "; " +
 						"else; " +
-						"if (script.isNative() == true); " +
-						"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
-						"else; " +
-						"setVariableReference(\"" + entryVariable + "\", $NULL); " +
-						"end; " +
+						(entryReference == true?
+							string() +
+							"if (script.isNative() == true); " +
+							"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
+							"else; " +
+							"setVariableReference(\"" + entryVariable + "\", $NULL); " +
+							"end; "
+							:
+							"setVariable(\"" + entryVariable + "\", $NULL); "
+						) +
 						"end; " +
 						"})";
 				} else
