@@ -2191,7 +2191,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						statementIdx
 					);
 					//
-					statementCode = "forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), -> { " + iterationVariable + "++" + "; if (" + iterationVariable + " < " + containerVariable + "->getSize()); " + iterationUpdate + "; " + "else; unsetVariable(\"" + entryVariable + "\"); end; " + "})";
+					statementCode = "forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), -> { " + iterationVariable + "++" + "; if (" + iterationVariable + " < " + containerVariable + "->getSize()); " + iterationUpdate + "; " + "else; setVariableReference(\"" + entryVariable + "\", $NULL); end; " + "})";
 				} else
 				if (_StringTools::regexMatch(statementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
 					_StringTools::regexMatch(statementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {

@@ -1192,7 +1192,6 @@ void Transpiler::generateVariableAccess(
 	bool setVariable,
 	bool setVariableReference,
 	bool setConstant,
-	bool unsetVariable,
 	const string& returnValueStatement,
 	const string& statementEnd,
 	int getArgumentIdx,
@@ -1262,14 +1261,6 @@ void Transpiler::generateVariableAccess(
 					generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
 					generatedCode+= createGlobalVariableName(globalVariable) + ".setReference(&arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				}
-			} else
-			if (unsetVariable == true) {
-				if (haveVariableStatement == true) {
-					generatedCode+= indent + "unsetVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &statement)" + statementEnd;
-				} else {
-					generatedCode+= indent + createGlobalVariableName(globalVariable) + ".unset();" + "\n";
-					generatedCode+= indent + createGlobalVariableName(globalVariable) + " = getVariable(\"" + variableName + "\", nullptr, true)" + statementEnd;
-				}
 			}
 		} else {
 			const auto& localVariable = variableName;
@@ -1309,14 +1300,6 @@ void Transpiler::generateVariableAccess(
 				} else {
 					generatedCode+= indent + "if (_lv." + createLocalVariableName(localVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
 					generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setReference(&arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
-				}
-			} else
-			if (unsetVariable == true) {
-				if (haveVariableStatement == true) {
-					generatedCode+= indent + "unsetVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement)" + statementEnd;
-				} else {
-					generatedCode+= indent + "_lv." + createLocalVariableName(localVariable) + ".unset();" + "\n";
-					generatedCode+= indent + "_lv." + createLocalVariableName(localVariable) + " = getVariable(\"" + localVariable + "\", nullptr, true);" + statementEnd;
 				}
 			}
 		}
@@ -1359,14 +1342,6 @@ void Transpiler::generateVariableAccess(
 			} else {
 				generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
 				generatedCode+= createGlobalVariableName(globalVariable) + ".setReference(&arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
-			}
-		} else
-		if (unsetVariable == true) {
-			if (haveVariableStatement == true) {
-				generatedCode+= indent + "unsetVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement)" + statementEnd;
-			} else {
-				generatedCode+= indent + createGlobalVariableName(globalVariable) + ".unset();" + "\n";
-				generatedCode+= indent + createGlobalVariableName(globalVariable) + " = getVariable(\"" + globalVariable + "\", nullptr, true)" + statementEnd;
 			}
 		}
 	}
@@ -2467,7 +2442,6 @@ bool Transpiler::transpileStatement(
 				false,
 				false,
 				false,
-				false,
 				"auto EVALUATEMEMBERACCESS_ARGUMENT" + to_string(callArgumentIdx) + " = "
 			);
 		} else {
@@ -2492,7 +2466,6 @@ bool Transpiler::transpileStatement(
 					minIndentString + depthIndentString + "\t\t",
 					false,
 					true,
-					false,
 					false,
 					false,
 					false,
@@ -2543,8 +2516,7 @@ bool Transpiler::transpileStatement(
 			syntaxTree.value.getValueAsString() == "getVariableReference",
 			syntaxTree.value.getValueAsString() == "setVariable",
 			syntaxTree.value.getValueAsString() == "setVariableReference",
-			syntaxTree.value.getValueAsString() == "setConstant",
-			syntaxTree.value.getValueAsString() == "unsetVariable"
+			syntaxTree.value.getValueAsString() == "setConstant"
 		);
 	} else {
 		// generate code

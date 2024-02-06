@@ -18,6 +18,8 @@ using _Hex = miniscript::utilities::Hex;
 using _Time = miniscript::utilities::Time;
 
 void BaseMethods::registerConstants(MiniScript* miniScript) {
+	// TODO: check why this needs to be a constant with forEach
+	miniScript->setVariable("$NULL", MiniScript::Variable());
 }
 
 void BaseMethods::registerMethods(MiniScript* miniScript) {
@@ -1242,6 +1244,38 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new MethodGetType(miniScript));
 	}
+	// has variable
+	{
+		//
+		class MethodHasVariable: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodHasVariable(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_BOOLEAN
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "hasVariable";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string variable;
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, variable) == true) {
+					returnValue = miniScript->hasVariable(variable, &statement);
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodHasVariable(miniScript));
+	}
+
+	// get variable
 	{
 		//
 		class MethodGetVariable: public MiniScript::Method {
@@ -1377,39 +1411,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 		};
 		miniScript->registerMethod(new MethodSetVariableReference(miniScript));
-	}
-	// unset variable
-	{
-		//
-		class MethodUnsetVariable: public MiniScript::Method {
-		private:
-			MiniScript* miniScript { nullptr };
-		public:
-			MethodUnsetVariable(MiniScript* miniScript):
-				MiniScript::Method(
-					{
-						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false }
-					},
-					MiniScript::TYPE_NULL
-				),
-				miniScript(miniScript) {}
-			const string getMethodName() override {
-				return "unsetVariable";
-			}
-			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
-				string variable;
-				if (arguments.size() == 1 &&
-					MiniScript::getStringValue(arguments, 0, variable) == true) {
-					miniScript->unsetVariable(variable, &statement);
-				} else {
-					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
-				}
-			}
-			bool isPrivate() const override {
-				return true;
-			}
-		};
-		miniScript->registerMethod(new MethodUnsetVariable(miniScript));
 	}
 	// set constant
 	{
