@@ -2158,6 +2158,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
 					}
 					auto iterationVariable = string("$___it_" + to_string(iterationDepth));
+					auto entryVariableBackup = string("$___eb_" + to_string(iterationDepth));
 					string iterationUpdate =
 						entryReference == true?
 							"setVariableReference(\"" + entryVariable + "\", " + containerVariable + "[" + iterationVariable + "])":
@@ -2171,6 +2172,27 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					end
 					*/
 					// create initialize statements
+					scripts.back().statements.emplace_back(
+						currentLineIdx,
+						statementIdx++,
+						statementCode,
+						doStatementPreProcessing("if (script.isNative() == true)", generatedStatement),
+						STATEMENTIDX_NONE
+					);
+					scripts.back().statements.emplace_back(
+						currentLineIdx,
+						statementIdx++,
+						statementCode,
+						doStatementPreProcessing("setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + ")", generatedStatement),
+						STATEMENTIDX_NONE
+					);
+					scripts.back().statements.emplace_back(
+						currentLineIdx,
+						statementIdx++,
+						statementCode,
+						doStatementPreProcessing("end", generatedStatement),
+						STATEMENTIDX_NONE
+					);
 					scripts.back().statements.emplace_back(
 						currentLineIdx,
 						statementIdx++,
@@ -2191,7 +2213,20 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						statementIdx
 					);
 					//
-					statementCode = "forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), -> { " + iterationVariable + "++" + "; if (" + iterationVariable + " < " + containerVariable + "->getSize()); " + iterationUpdate + "; " + "else; setVariableReference(\"" + entryVariable + "\", $NULL); end; " + "})";
+					statementCode =
+						"forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), " +
+						"-> { " +
+						iterationVariable + "++" + "; " +
+						"if (" + iterationVariable + " < " + containerVariable + "->getSize()); " +
+						iterationUpdate + "; " +
+						"else; " +
+						"if (script.isNative() == true); " +
+						"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
+						"else; " +
+						"setVariableReference(\"" + entryVariable + "\", $NULL); " +
+						"end; " +
+						"end; " +
+						"})";
 				} else
 				if (_StringTools::regexMatch(statementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
 					_StringTools::regexMatch(statementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {
