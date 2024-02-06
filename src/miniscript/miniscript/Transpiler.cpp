@@ -1258,7 +1258,7 @@ void Transpiler::generateVariableAccess(
 					generatedCode+= indent + "unsetVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &statement)" + statementEnd;
 				} else {
 					generatedCode+= indent + createGlobalVariableName(globalVariable) + ".unset();" + "\n";
-					generatedCode+= indent + createGlobalVariableName(globalVariable) + " = getVariable(\"$$." + StringTools::substring(globalVariable, 1) + "\", nullptr, true)" + statementEnd;
+					generatedCode+= indent + createGlobalVariableName(globalVariable) + " = getVariable(\"" + variableName + "\", nullptr, true)" + statementEnd;
 				}
 			}
 		} else {
@@ -1340,7 +1340,7 @@ void Transpiler::generateVariableAccess(
 				generatedCode+= indent + "unsetVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement)" + statementEnd;
 			} else {
 				generatedCode+= indent + createGlobalVariableName(globalVariable) + ".unset();" + "\n";
-				generatedCode+= indent + createGlobalVariableName(globalVariable) + " = getVariable(\"$$." + StringTools::substring(globalVariable, 1) + "\", nullptr, true)" + statementEnd;
+				generatedCode+= indent + createGlobalVariableName(globalVariable) + " = getVariable(\"" + globalVariable + "\", nullptr, true)" + statementEnd;
 			}
 		}
 	}
