@@ -995,7 +995,8 @@ void Transpiler::determineVariables(int scriptIdx, const MiniScript::SyntaxTreeN
 				if ((syntaxTreeNode.value.getValueAsString() == "getVariable" ||
 					syntaxTreeNode.value.getValueAsString() == "getVariableReference" ||
 					syntaxTreeNode.value.getValueAsString() == "setVariable" ||
-					syntaxTreeNode.value.getValueAsString() == "setConstant") &&
+					syntaxTreeNode.value.getValueAsString() == "setConstant" ||
+					syntaxTreeNode.value.getValueAsString() == "unsetVariable") &&
 					syntaxTreeNode.arguments.empty() == false &&
 					syntaxTreeNode.arguments[0].type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
 					//
@@ -1189,6 +1190,7 @@ void Transpiler::generateVariableAccess(
 	bool getVariableReference,
 	bool setVariable,
 	bool setConstant,
+	bool unsetVariable,
 	const string& returnValueStatement,
 	const string& statementEnd,
 	int getArgumentIdx,
@@ -1250,6 +1252,14 @@ void Transpiler::generateVariableAccess(
 						generatedCode+= indent + "setConstant(" + createGlobalVariableName(globalVariable) + ");" + "\n";
 					}
 				}
+			} else
+			if (unsetVariable == true) {
+				if (haveVariableStatement == true) {
+					generatedCode+= indent + "unsetVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &statement)" + statementEnd;
+				} else {
+					generatedCode+= indent + createGlobalVariableName(globalVariable) + ".unset();" + "\n";
+					generatedCode+= indent + createGlobalVariableName(globalVariable) + " = getVariable(\"$$." + StringTools::substring(globalVariable, 1) + "\", nullptr, true)" + statementEnd;
+				}
 			}
 		} else {
 			const auto& localVariable = variableName;
@@ -1281,6 +1291,14 @@ void Transpiler::generateVariableAccess(
 					if (setConstant == true) {
 						generatedCode+= indent + "setConstant(_lv." + createLocalVariableName(localVariable) + ");" + "\n";
 					}
+				}
+			} else
+			if (unsetVariable == true) {
+				if (haveVariableStatement == true) {
+					generatedCode+= indent + "unsetVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement)" + statementEnd;
+				} else {
+					generatedCode+= indent + "_lv." + createLocalVariableName(localVariable) + ".unset();" + "\n";
+					generatedCode+= indent + "_lv." + createLocalVariableName(localVariable) + " = getVariable(\"" + localVariable + "\", nullptr, true);" + statementEnd;
 				}
 			}
 		}
@@ -1315,6 +1333,14 @@ void Transpiler::generateVariableAccess(
 				if (setConstant == true) {
 					generatedCode+= indent + "setConstant(" + createGlobalVariableName(globalVariable) + ");" + "\n";
 				}
+			}
+		} else
+		if (unsetVariable == true) {
+			if (haveVariableStatement == true) {
+				generatedCode+= indent + "unsetVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement)" + statementEnd;
+			} else {
+				generatedCode+= indent + createGlobalVariableName(globalVariable) + ".unset();" + "\n";
+				generatedCode+= indent + createGlobalVariableName(globalVariable) + " = getVariable(\"$$." + StringTools::substring(globalVariable, 1) + "\", nullptr, true)" + statementEnd;
 			}
 		}
 	}
@@ -2412,6 +2438,7 @@ bool Transpiler::transpileStatement(
 				true,
 				false,
 				false,
+				false,
 				"auto EVALUATEMEMBERACCESS_ARGUMENT" + to_string(callArgumentIdx) + " = "
 			);
 		} else {
@@ -2436,6 +2463,7 @@ bool Transpiler::transpileStatement(
 					minIndentString + depthIndentString + "\t\t",
 					false,
 					true,
+					false,
 					false,
 					false,
 					string(),
@@ -2468,7 +2496,8 @@ bool Transpiler::transpileStatement(
 		(syntaxTree.value.getValueAsString() == "getVariable" ||
 		syntaxTree.value.getValueAsString() == "getVariableReference" ||
 		syntaxTree.value.getValueAsString() == "setVariable" ||
-		syntaxTree.value.getValueAsString() == "setConstant") &&
+		syntaxTree.value.getValueAsString() == "setConstant" ||
+		syntaxTree.value.getValueAsString() == "unsetVariable") &&
 		syntaxTree.arguments.empty() == false &&
 		syntaxTree.arguments[0].type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
 		// generate variable access
@@ -2482,7 +2511,8 @@ bool Transpiler::transpileStatement(
 			syntaxTree.value.getValueAsString() == "getVariable",
 			syntaxTree.value.getValueAsString() == "getVariableReference",
 			syntaxTree.value.getValueAsString() == "setVariable",
-			syntaxTree.value.getValueAsString() == "setConstant"
+			syntaxTree.value.getValueAsString() == "setConstant",
+			syntaxTree.value.getValueAsString() == "unsetVariable"
 		);
 	} else {
 		// generate code

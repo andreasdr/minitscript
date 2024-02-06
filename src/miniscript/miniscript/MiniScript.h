@@ -4236,7 +4236,7 @@ public:
 	}
 
 	/**
-	 * Returns if variable with given name exists
+	 * Returns if variable determined by given variable statement exists
 	 * @param variableStatement variable statement
 	 * @param statement optional statement the variable is read in
 	 * @return variable exists
@@ -4271,7 +4271,7 @@ public:
 	}
 
 	/**
-	 * Returns variable with given name
+	 * Returns variable determined by given variable statement
 	 * @param variableStatement variable statement
 	 * @param statement optional statement the variable is read in
 	 * @param createReference optional flag for creating variable references
@@ -4314,7 +4314,7 @@ public:
 	}
 
 	/**
-	 * Returns variable with given name
+	 * Returns variable by given variable statement and variable pointer
 	 * @param variablePtr variable pointer
 	 * @param variableStatement variable statement
 	 * @param statement optional statement the variable is read in
@@ -4347,7 +4347,70 @@ public:
 	}
 
 	/**
-	 * Set constant
+	 * Unsets variable by given variable statement
+	 * @param variablePtr variable pointer
+	 * @param variableStatement variable statement
+	 * @param statement optional statement the variable is read in
+	 * @param createReference optional flag for creating variable references
+	 * @return variable
+	 */
+	inline void unsetVariable(Variable* variablePtr, const string& variableStatement, const Statement* statement = nullptr) {
+		//
+		if (isVariableAccess(variableStatement, statement) == false) return;
+		//
+		Variable* parentVariable = nullptr;
+		string key;
+		int64_t arrayIdx = ARRAYIDX_NONE;
+		int setAccessBool = SETACCESSBOOL_NONE;
+		variablePtr = evaluateVariableAccessIntern(variablePtr, variableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, true);
+		// set '.' operator
+		if (setAccessBool != SETACCESSBOOL_NONE) {
+			return;
+		} else
+		// we have a pointer to a ordinary variable
+		if (variablePtr != nullptr) {
+			//
+			variablePtr->unset();
+		}
+	}
+
+	/**
+	 * Unsets variable determined by given variable statement
+	 * @param variableStatement variable statement
+	 * @param statement optional statement the variable is read in
+	 */
+	inline void unsetVariable(const string& variableStatement, const Statement* statement = nullptr) {
+		//
+		if (isVariableAccess(variableStatement, statement) == false) return;
+		//
+		string variableName;
+		// global accessor
+		string globalVariableStatement;
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		} else
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
+		}
+
+		//
+		Variable* parentVariable = nullptr;
+		string key;
+		int64_t arrayIdx = ARRAYIDX_NONE;
+		int setAccessBool = SETACCESSBOOL_NONE;
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, true, globalVariableStatement.empty() == false);
+		// set '.' operator
+		if (setAccessBool != SETACCESSBOOL_NONE) {
+			// no op
+		} else
+		// we have a pointer to a ordinary variable
+		if (variablePtr != nullptr) {
+			variablePtr->unset();
+		}
+	}
+
+	/**
+	 * Set constant by given variable statement and variable
 	 * @param variableStatement variable statement
 	 * @param variable variable
 	 */
@@ -4358,7 +4421,7 @@ public:
 	}
 
 	/**
-	 * Set variable
+	 * Set variable by given variable statement and variable
 	 * @param variableStatement variable statement
 	 * @param variable variable
 	 * @param statement optional statement the variable is written in
@@ -4410,7 +4473,7 @@ public:
 	}
 
 	/**
-	 * Set variable
+	 * Set variable by given variable pointer, variable statement and variable
 	 * @param variablePtr variable pointer
 	 * @param variableStatement variable statement
 	 * @param variable variable

@@ -21,6 +21,184 @@ void BaseMethods::registerConstants(MiniScript* miniScript) {
 }
 
 void BaseMethods::registerMethods(MiniScript* miniScript) {
+	// script internal base methods
+	{
+		//
+		class MethodInternalScriptEvaluate: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodInternalScriptEvaluate(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "statement", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "internal.script.evaluate";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() != 1) {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				} else
+				if (arguments.size() == 1) {
+					returnValue = arguments[0];
+				}
+			}
+			bool isPrivate() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodInternalScriptEvaluate(miniScript));
+	}
+	{
+		//
+		class MethodInternalEvaluateMemberAccess: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodInternalEvaluateMemberAccess(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = true },
+						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "this", .optional = false, .reference = false, .nullable = true },
+						{ .type = MiniScript::TYPE_STRING, .name = "member", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED,
+					true
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "internal.script.evaluateMemberAccess";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				// Current layout:
+				//	0: variable name of object, 1: variable content of object
+				//	2: object method to call
+				//	3: variable name of argument 0; 4: variable content of argument 0
+				//	5: variable name of argument 1; 6: variable content of argument 1
+				//	..
+				//
+				string variable;
+				string member;
+				//
+				if (arguments.size() < 3 ||
+					miniScript->getStringValue(arguments, 2, member, false) == false) {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				} else {
+					// do we have a this variable name?
+					{
+						string thisVariableName;
+						if (arguments[0].getType() != MiniScript::TYPE_NULL && arguments[0].getStringValue(thisVariableName) == true) {
+							// yep, looks like that, we always use a reference here
+							#if defined(__MINISCRIPT_TRANSPILATION__)
+								arguments[1] = MiniScript::Variable::createReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENT0);
+							#else
+								arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
+							#endif
+						}
+					}
+					// check if map, if so fetch function assignment of member property
+					auto functionScriptIdx = MiniScript::SCRIPTIDX_NONE;
+					if (arguments[1].getType() == MiniScript::TYPE_MAP) {
+						string function;
+						auto mapValue = arguments[1].getMapEntry(member);
+						if (mapValue.getType() == MiniScript::TYPE_FUNCTION_ASSIGNMENT && mapValue.getFunctionValue(function, functionScriptIdx) == true) {
+							if (functionScriptIdx == MiniScript::SCRIPTIDX_NONE) functionScriptIdx = miniScript->getFunctionScriptIdx(function);
+						}
+					}
+					//
+					const auto& className = arguments[1].getTypeAsString();
+					//
+					if (className.empty() == false || functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
+						//
+						MiniScript::Method* method { nullptr };
+						if (functionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+							#if defined(__MINISCRIPT_TRANSPILATION__)
+								method = evaluateMemberAccessArrays[static_cast<int>(arguments[1].getType()) - static_cast<int>(MiniScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
+							#else
+								method = miniScript->getMethod(className + "::" + member);
+							#endif
+						}
+						if (method != nullptr || functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
+							// create method call arguments
+							vector<MiniScript::Variable> callArguments(1 + (arguments.size() - 3) / 2);
+							//	this
+							callArguments[0] = move(arguments[1]);
+							//	additional method call arguments
+							{
+								auto callArgumentIdx = 1;
+								for (auto argumentIdx = 3; argumentIdx < arguments.size(); argumentIdx+=2) {
+									// do we have a this variable name?
+									string argumentVariableName;
+									if (arguments[argumentIdx].getType() != MiniScript::TYPE_NULL && arguments[argumentIdx].getStringValue(argumentVariableName) == true) {
+										#if defined(__MINISCRIPT_TRANSPILATION__)
+											if (method != nullptr) {
+												arguments[argumentIdx + 1] =
+													callArgumentIdx >= method->getArgumentTypes().size() || method->getArgumentTypes()[callArgumentIdx].reference == false?
+														MiniScript::Variable::createNonReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]):
+														EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1];
+											} else
+											if (functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
+												arguments[argumentIdx + 1] =
+													callArgumentIdx >= miniScript->getScripts()[functionScriptIdx].arguments.size() || miniScript->getScripts()[functionScriptIdx].arguments[callArgumentIdx].reference == false?
+														MiniScript::Variable::createNonReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]):
+														EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1];
+											}
+										#else
+											// yep, looks like that
+											if (method != nullptr) {
+												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentIdx].reference);
+											} else
+											if (functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
+												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionScriptIdx].arguments.size()?false:miniScript->getScripts()[functionScriptIdx].arguments[callArgumentIdx].reference);
+											}
+										#endif
+									}
+									//
+									callArguments[callArgumentIdx] = move(arguments[argumentIdx + 1]);
+									callArgumentIdx++;
+								}
+							}
+							//
+							span callArgumentsSpan(callArguments);
+							//
+							if (method != nullptr) {
+								method->executeMethod(callArgumentsSpan, returnValue, statement);
+							} else
+							if (functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
+								miniScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
+							}
+							// write back arguments from call arguments
+							//	this
+							arguments[1].setValue(callArgumentsSpan[0]);
+							//	additional arguments
+							{
+								auto callArgumentIdx = 1;
+								for (auto argumentIdx = 3; argumentIdx < arguments.size(); argumentIdx+=2) {
+									arguments[argumentIdx] = move(callArgumentsSpan[callArgumentIdx]);
+									callArgumentIdx++;
+								}
+							}
+						} else {
+							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Class/object member not found: " + member + "()");
+						}
+					} else {
+						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+					}
+				}
+			}
+			bool isVariadic() const override {
+				return true;
+			}
+			bool isPrivate() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodInternalEvaluateMemberAccess(miniScript));
+	}
 	// base methods
 	{
 		//
@@ -1162,6 +1340,36 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 		};
 		miniScript->registerMethod(new MethodSetVariable(miniScript));
+	}
+	// unset variable
+	{
+		//
+		class MethodUnsetVariable: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodUnsetVariable(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_NULL
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "unsetVariable";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string variable;
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, variable) == true) {
+					miniScript->unsetVariable(variable, &statement);
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodUnsetVariable(miniScript));
 	}
 	// set constant
 	{

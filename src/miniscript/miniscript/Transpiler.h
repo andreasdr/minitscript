@@ -242,6 +242,7 @@ private:
 	 * @param getVariableReference issue get variable reference access
 	 * @param setVariable set variable
 	 * @param setConstant set constant
+	 * @param unsetVariable unset variable
 	 * @param returnValue return value
 	 * @param statementEnd statement end
 	 * @param getArgumentIdx get argument index
@@ -258,6 +259,7 @@ private:
 		bool getVariableReference,
 		bool setVariable,
 		bool setConstant,
+		bool unsetVariable,
 		const string& returnValueStatement = "returnValue = ",
 		const string& statementEnd = ";\n",
 		int getArgumentIdx = 0,

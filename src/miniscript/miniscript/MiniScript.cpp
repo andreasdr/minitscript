@@ -169,8 +169,7 @@ const vector<string> MiniScript::getTranspilationUnits() {
 		"src/miniscript/miniscript/SetMethods.cpp",
 		"src/miniscript/miniscript/StringMethods.cpp",
 		"src/miniscript/miniscript/TimeMethods.cpp",
-		"src/miniscript/miniscript/XMLMethods.cpp",
-		"src/miniscript/miniscript/MiniScript.cpp"
+		"src/miniscript/miniscript/XMLMethods.cpp"
 	};
 }
 
@@ -2158,7 +2157,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					/*
 					setVariable("$it", 0)
 					setVariable("$var", $array[$it])
-					forCondition($it < $array->getSize(), -> { $it++; if ($it < $array->getSize()); $var = $array[$it]; else; $var = null; end; })
+					forCondition($it < $array->getSize(), -> { $it++; if ($it < $array->getSize()); $var = $array[$it]; else; unsetVariable("$var"); end; })
 						//
 					end
 					*/
@@ -2183,7 +2182,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						statementIdx
 					);
 					//
-					statementCode = "forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), -> { " + iterationVariable + "++" + "; if (" + iterationVariable + " < " + containerVariable + "->getSize()); " + entryVariable + " = " + containerVariable + "[" + iterationVariable + "]" "; " + "else; " + entryVariable + " = null; end; " + "})";
+					statementCode = "forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), -> { " + iterationVariable + "++" + "; if (" + iterationVariable + " < " + containerVariable + "->getSize()); " + entryVariable + " = " + containerVariable + "[" + iterationVariable + "]" "; " + "else; unsetVariable(\"" + entryVariable + "\"); end; " + "})";
 				} else
 				if (_StringTools::regexMatch(statementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
 					_StringTools::regexMatch(statementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {
@@ -3471,184 +3470,6 @@ void MiniScript::registerMethods() {
 	// unregister old registered methods
 	for (const auto& [scriptMethodId, scriptMethod]: methods) delete scriptMethod;
 	methods.clear();
-	// script intern base methods
-	{
-		//
-		class MethodInternalScriptEvaluate: public Method {
-		private:
-			MiniScript* miniScript { nullptr };
-		public:
-			MethodInternalScriptEvaluate(MiniScript* miniScript):
-				Method(
-					{
-						{ .type = VariableType::TYPE_PSEUDO_MIXED, .name = "statement", .optional = false, .reference = false, .nullable = false }
-					},
-					TYPE_PSEUDO_MIXED
-				),
-				miniScript(miniScript) {}
-			const string getMethodName() override {
-				return "internal.script.evaluate";
-			}
-			void executeMethod(span<Variable>& arguments, Variable& returnValue, const Statement& statement) override {
-				if (arguments.size() != 1) {
-					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
-				} else
-				if (arguments.size() == 1) {
-					returnValue = arguments[0];
-				}
-			}
-			bool isPrivate() const override {
-				return true;
-			}
-		};
-		registerMethod(new MethodInternalScriptEvaluate(this));
-	}
-	{
-		//
-		class MethodInternalEvaluateMemberAccess: public Method {
-		private:
-			MiniScript* miniScript { nullptr };
-		public:
-			MethodInternalEvaluateMemberAccess(MiniScript* miniScript):
-				Method(
-					{
-						{ .type = VariableType::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = true },
-						{ .type = VariableType::TYPE_PSEUDO_MIXED, .name = "this", .optional = false, .reference = false, .nullable = true },
-						{ .type = VariableType::TYPE_STRING, .name = "member", .optional = false, .reference = false, .nullable = false }
-					},
-					TYPE_PSEUDO_MIXED,
-					true
-				),
-				miniScript(miniScript) {}
-			const string getMethodName() override {
-				return "internal.script.evaluateMemberAccess";
-			}
-			void executeMethod(span<Variable>& arguments, Variable& returnValue, const Statement& statement) override {
-				// Current layout:
-				//	0: variable name of object, 1: variable content of object
-				//	2: object method to call
-				//	3: variable name of argument 0; 4: variable content of argument 0
-				//	5: variable name of argument 1; 6: variable content of argument 1
-				//	..
-				//
-				string variable;
-				string member;
-				//
-				if (arguments.size() < 3 ||
-					miniScript->getStringValue(arguments, 2, member, false) == false) {
-					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
-				} else {
-					// do we have a this variable name?
-					{
-						string thisVariableName;
-						if (arguments[0].getType() != MiniScript::TYPE_NULL && arguments[0].getStringValue(thisVariableName) == true) {
-							// yep, looks like that, we always use a reference here
-							#if defined(__MINISCRIPT_TRANSPILATION__)
-								arguments[1] = Variable::createReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENT0);
-							#else
-								arguments[1] = miniScript->getVariable(thisVariableName, &statement, true);
-							#endif
-						}
-					}
-					// check if map, if so fetch function assignment of member property
-					auto functionScriptIdx = MiniScript::SCRIPTIDX_NONE;
-					if (arguments[1].getType() == TYPE_MAP) {
-						string function;
-						auto mapValue = arguments[1].getMapEntry(member);
-						if (mapValue.getType() == MiniScript::TYPE_FUNCTION_ASSIGNMENT && mapValue.getFunctionValue(function, functionScriptIdx) == true) {
-							if (functionScriptIdx == MiniScript::SCRIPTIDX_NONE) functionScriptIdx = miniScript->getFunctionScriptIdx(function);
-						}
-					}
-					//
-					const auto& className = arguments[1].getTypeAsString();
-					//
-					if (className.empty() == false || functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
-						//
-						Method* method { nullptr };
-						if (functionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
-							#if defined(__MINISCRIPT_TRANSPILATION__)
-								method = evaluateMemberAccessArrays[static_cast<int>(arguments[1].getType()) - static_cast<int>(MiniScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
-							#else
-								method = miniScript->getMethod(className + "::" + member);
-							#endif
-						}
-						if (method != nullptr || functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
-							// create method call arguments
-							vector<Variable> callArguments(1 + (arguments.size() - 3) / 2);
-							//	this
-							callArguments[0] = move(arguments[1]);
-							//	additional method call arguments
-							{
-								auto callArgumentIdx = 1;
-								for (auto argumentIdx = 3; argumentIdx < arguments.size(); argumentIdx+=2) {
-									// do we have a this variable name?
-									string argumentVariableName;
-									if (arguments[argumentIdx].getType() != MiniScript::TYPE_NULL && arguments[argumentIdx].getStringValue(argumentVariableName) == true) {
-										#if defined(__MINISCRIPT_TRANSPILATION__)
-											if (method != nullptr) {
-												arguments[argumentIdx + 1] =
-													callArgumentIdx >= method->getArgumentTypes().size() || method->getArgumentTypes()[callArgumentIdx].reference == false?
-														Variable::createNonReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]):
-														EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1];
-											} else
-											if (functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
-												arguments[argumentIdx + 1] =
-													callArgumentIdx >= miniScript->getScripts()[functionScriptIdx].arguments.size() || miniScript->getScripts()[functionScriptIdx].arguments[callArgumentIdx].reference == false?
-														Variable::createNonReferenceVariable(&EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1]):
-														EVALUATEMEMBERACCESS_ARGUMENTS[callArgumentIdx - 1];
-											}
-										#else
-											// yep, looks like that
-											if (method != nullptr) {
-												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= method->getArgumentTypes().size()?false:method->getArgumentTypes()[callArgumentIdx].reference);
-											} else
-											if (functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
-												arguments[argumentIdx + 1] = miniScript->getVariable(argumentVariableName, &statement, callArgumentIdx >= miniScript->getScripts()[functionScriptIdx].arguments.size()?false:miniScript->getScripts()[functionScriptIdx].arguments[callArgumentIdx].reference);
-											}
-										#endif
-									}
-									//
-									callArguments[callArgumentIdx] = move(arguments[argumentIdx + 1]);
-									callArgumentIdx++;
-								}
-							}
-							//
-							span callArgumentsSpan(callArguments);
-							//
-							if (method != nullptr) {
-								method->executeMethod(callArgumentsSpan, returnValue, statement);
-							} else
-							if (functionScriptIdx != MiniScript::SCRIPTIDX_NONE) {
-								miniScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
-							}
-							// write back arguments from call arguments
-							//	this
-							arguments[1].setValue(callArgumentsSpan[0]);
-							//	additional arguments
-							{
-								auto callArgumentIdx = 1;
-								for (auto argumentIdx = 3; argumentIdx < arguments.size(); argumentIdx+=2) {
-									arguments[argumentIdx] = move(callArgumentsSpan[callArgumentIdx]);
-									callArgumentIdx++;
-								}
-							}
-						} else {
-							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Class/object member not found: " + member + "()");
-						}
-					} else {
-						MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
-					}
-				}
-			}
-			bool isVariadic() const override {
-				return true;
-			}
-			bool isPrivate() const override {
-				return true;
-			}
-		};
-		registerMethod(new MethodInternalEvaluateMemberAccess(this));
-	}
 
 	// register math methods
 	miniScriptMath = make_unique<MathMethods>(this);
