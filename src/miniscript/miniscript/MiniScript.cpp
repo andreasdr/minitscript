@@ -2320,6 +2320,13 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							doStatementPreProcessing(containerVariable + " = " + containerInitializer, generatedStatement),
 							STATEMENTIDX_NONE
 						);
+						scripts.back().statements.emplace_back(
+							currentLineIdx,
+							statementIdx++,
+							statementCode,
+							doStatementPreProcessing("console.printLine('a: ' + " + containerVariable + ")", generatedStatement),
+							STATEMENTIDX_NONE
+						);
 					}
 					scripts.back().statements.emplace_back(
 						currentLineIdx,
@@ -4061,7 +4068,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			// no op
 		} else
 		if (viewIsKey(mapKey) == false) {
-			_Console::printLine(miniScript->getStatementInformation(statement) + ": a invalid key name, ignoring map entry: " + string(mapKey));
+			_Console::printLine(miniScript->getStatementInformation(statement) + ": invalid key name, ignoring map entry: " + string(mapKey));
 		} else {
 			// quoted map value
 			if (quotedMapValueStart != string::npos && quotedMapValueEnd != string::npos) {

@@ -176,7 +176,7 @@ on: nothing
 	end
 	console.printLine("$map = " + $map)
 	console.printLine("test forEach with map initializer") 
-	forEach($key, $value: {x: 24, y: 25: z: 16})
+	forEach($key, $value: {x: 24, y: 25, z: 26})
 		console.printLine("$key = " + $key + ", $value = " + $value)
 	end
 	console.printLine("done")
