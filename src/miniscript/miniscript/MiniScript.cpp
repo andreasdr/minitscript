@@ -2287,7 +2287,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					string iterationUpdate =
 						entryKeyVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]; " +
 						(entryValueReference == true?
-							"setVariableReference(\"" + entryValueVariable + "\", " + containerVariable + "->getReference(" + entryKeyVariable + "))":
+							"setVariableReference(\"" + entryValueVariable + "\", Map::getReference(" + containerVariable + ", " + entryKeyVariable + "))":
 							entryValueVariable + " = " + containerVariable + "->get(" + entryKeyVariable + ")"
 						);
 					//
