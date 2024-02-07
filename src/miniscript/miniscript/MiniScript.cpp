@@ -2136,26 +2136,34 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						//
 						statementCode = "forCondition(" + string(forArguments[1]) + ", -> { " + string(forArguments[2]) + " })";
 					} else {
-						_Console::printLine(scriptFileName + ": Invalid for statement");
+						_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": Invalid for statement");
 						//
-						parseErrors.push_back("Invalid for statement");
+						parseErrors.push_back(to_string(currentLineIdx) + ": Invalid for statement");
 						//
 						scriptValid = false;
 						//
 						return false;
 					}
 				} else
-				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*\\)$", &matches) == true) {
+				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+					auto iterationDepth = 0;
+					for (const auto& block: blockStack) {
+						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
+					}
+					//
 					auto entryReference = false;
 					auto entryVariable = matches[1].str();
 					if (_StringTools::startsWith(entryVariable, "&") == true) {
 						entryReference = true;
 						entryVariable = _StringTools::substring(entryVariable, 1);
 					}
+					auto containerByInitializer = false;
 					auto containerVariable = matches[2].str();
-					auto iterationDepth = 0;
-					for (const auto& block: blockStack) {
-						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
+					string containerInitializer;
+					if (_StringTools::startsWith(containerVariable, "[") == true || _StringTools::startsWith(containerVariable, "{") == true) {
+						containerByInitializer = true;
+						containerInitializer = containerVariable;
+						containerVariable = string("$___cv_" + to_string(iterationDepth));
 					}
 					auto initializationStackletVariable = string("$___is_" + to_string(iterationDepth));
 					auto containerVariableType = string("$___vt_" + to_string(iterationDepth));
@@ -2167,6 +2175,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						entryReference == true?
 							"setVariableReference(\"" + entryVariable + "\", " + containerArrayVariable + "[" + iterationVariable + "])":
 							entryVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]";
+					//
 					string initialization =
 						initializationStackletVariable + " = -> { " +
 						containerVariableType + " = getType(" + containerVariable + "); " +
@@ -2194,6 +2203,15 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						iterationUpdate + "; " +
 						"}";
 					//
+					if (containerByInitializer == true) {
+						scripts.back().statements.emplace_back(
+							currentLineIdx,
+							statementIdx++,
+							statementCode,
+							doStatementPreProcessing(containerVariable + " = " + containerInitializer, generatedStatement),
+							STATEMENTIDX_NONE
+						);
+					}
 					scripts.back().statements.emplace_back(
 						currentLineIdx,
 						statementIdx++,
@@ -2232,13 +2250,14 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							:
 							"setVariable(\"" + entryVariable + "\", $___NULL); "
 						) +
+						(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $___ARRAY); ":"") +
 						"end; " +
 						"})";
 				} else
 				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\(.*\\)$", &matches) == true) {
-					_Console::printLine(scriptFileName + ": Invalid forEach statement");
+					_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx) + ": Invalid forEach statement");
 					//
-					parseErrors.push_back("Invalid forEach statement");
+					parseErrors.push_back(to_string(currentLineIdx) + ": Invalid forEach statement");
 					//
 					scriptValid = false;
 					//

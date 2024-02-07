@@ -156,6 +156,14 @@ on: nothing
 		$key = "abc"
 	end
 	console.printLine("$set = " + $set)
+	console.printLine("test forEach with array initializer") 
+	forEach($var3: [5,6,7])
+		console.printLine("$var3 = " + $var3)
+	end
+	console.printLine("test forEach with set initializer") 
+	forEach($var3: {a,b,c})
+		console.printLine("$var3 = " + $var3)
+	end
 	console.printLine("done")
 	script.stop()
 end
