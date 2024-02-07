@@ -164,6 +164,17 @@ on: nothing
 	forEach($var3: {a,b,c})
 		console.printLine("$var3 = " + $var3)
 	end
+	console.printLine("test forEach with map")
+	$map = {a: 1, b: 2, c: 3}
+	forEach($key, $value: $map)
+		console.printLine("$key = " + $key + ", $value = " + $value)
+	end
+	console.printLine("test forEach with map with references to the values")
+	$i = 100
+	forEach($key, &$value: $map)
+		$value = $i++
+	end
+	console.printLine("$map = " + $map)
 	console.printLine("done")
 	script.stop()
 end

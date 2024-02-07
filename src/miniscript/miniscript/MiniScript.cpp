@@ -2145,6 +2145,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						return false;
 					}
 				} else
+				// array forEach
 				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
 					auto iterationDepth = 0;
 					for (const auto& block: blockStack) {
@@ -2249,6 +2250,116 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							"end; "
 							:
 							"setVariable(\"" + entryVariable + "\", $___NULL); "
+						) +
+						(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $___ARRAY); ":"") +
+						"end; " +
+						"})";
+				} else
+				// map forEach
+				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*,[\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+					auto iterationDepth = 0;
+					for (const auto& block: blockStack) {
+						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
+					}
+					//
+					auto entryKeyVariable = matches[1].str();
+					auto entryValueReference = false;
+					auto entryValueVariable = matches[2].str();
+					if (_StringTools::startsWith(entryValueVariable, "&") == true) {
+						entryValueReference = true;
+						entryValueVariable = _StringTools::substring(entryValueVariable, 1);
+					}
+					auto containerByInitializer = false;
+					auto containerVariable = matches[3].str();
+					string containerInitializer;
+					if (_StringTools::startsWith(containerVariable, "[") == true || _StringTools::startsWith(containerVariable, "{") == true) {
+						containerByInitializer = true;
+						containerInitializer = containerVariable;
+						containerVariable = string("$___cv_" + to_string(iterationDepth));
+					}
+					auto initializationStackletVariable = string("$___is_" + to_string(iterationDepth));
+					auto containerVariableType = string("$___vt_" + to_string(iterationDepth));
+					auto iterationVariable = string("$___it_" + to_string(iterationDepth));
+					auto entryValueVariableBackup = string("$___evb_" + to_string(iterationDepth));
+					auto containerArrayVariable = string("$___cav_" + to_string(iterationDepth));
+					auto containerArrayVariableBackup = string("$___cavb_" + to_string(iterationDepth));
+					string iterationUpdate =
+						entryKeyVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]; " +
+						(entryValueReference == true?
+							"setVariableReference(\"" + entryValueVariable + "\", " + containerVariable + "->get(" + entryKeyVariable + "))":
+							entryValueVariable + " = " + containerVariable + "->get(" + entryKeyVariable + ")"
+						);
+					//
+					string initialization =
+						initializationStackletVariable + " = -> { " +
+						containerVariableType + " = getType(" + containerVariable + "); " +
+						"if (" + containerVariableType + " == \"Map\"); " +
+							containerArrayVariable + " = " + containerVariable + "->getKeys(); " +
+						"else; " +
+							"console.printLine(\"forEach() expects map as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
+							"script.emit(\"error\"); " +
+						"end; ";
+					// create initialize statements
+					if (entryValueReference == true) {
+						initialization+=
+							string() +
+							"if (script.isNative() == true); " +
+							"setVariableReference(\"" + entryValueVariableBackup + "\", " + entryValueVariable + "); " +
+							"end; ";
+					}
+					initialization+=
+						iterationVariable + " = 0; " +
+						iterationUpdate + "; " +
+						"}";
+					//
+					if (containerByInitializer == true) {
+						scripts.back().statements.emplace_back(
+							currentLineIdx,
+							statementIdx++,
+							statementCode,
+							doStatementPreProcessing(containerVariable + " = " + containerInitializer, generatedStatement),
+							STATEMENTIDX_NONE
+						);
+					}
+					scripts.back().statements.emplace_back(
+						currentLineIdx,
+						statementIdx++,
+						statementCode,
+						doStatementPreProcessing(initialization, generatedStatement),
+						STATEMENTIDX_NONE
+					);
+					scripts.back().statements.emplace_back(
+						currentLineIdx,
+						statementIdx++,
+						statementCode,
+						"internal.script.callStacklet(" + initializationStackletVariable + ")",
+						STATEMENTIDX_NONE
+					);
+					blockStack.emplace_back(
+						Block::TYPE_FOREACH,
+						statementIdx
+					);
+					//
+					statementCode =
+						"forCondition(" + iterationVariable + " < " + containerArrayVariable + "->getSize(), " +
+						"-> { " +
+						iterationVariable + "++" + "; " +
+						"if (" + iterationVariable + " < " + containerArrayVariable + "->getSize()); " +
+							iterationUpdate + "; " +
+						"else; " +
+						(entryValueReference == true?
+							string() +
+							"if (script.isNative() == true); " +
+								"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
+								"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
+							"else; " +
+								"setVariableReference(\"" + containerArrayVariable + "\", $___ARRAY); " +
+								"setVariableReference(\"" + entryValueVariable + "\", $___NULL); " +
+							"end; " +
+							"setVariable(\"" + entryKeyVariable + "\", $___NULL); "
+							:
+							"setVariable(\"" + entryValueVariable + "\", $___NULL); " +
+							"setVariable(\"" + entryKeyVariable + "\", $___NULL); "
 						) +
 						(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $___ARRAY); ":"") +
 						"end; " +

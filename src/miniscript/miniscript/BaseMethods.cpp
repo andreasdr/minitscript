@@ -1,4 +1,6 @@
 #include <span>
+#include <unordered_map>
+#include <vector>
 
 #include <miniscript/miniscript.h>
 #include <miniscript/miniscript/BaseMethods.h>
@@ -8,6 +10,8 @@
 #include <miniscript/utilities/Time.h>
 
 using std::span;
+using std::unordered_map;
+using std::vector;
 
 using miniscript::miniscript::BaseMethods;
 
@@ -21,6 +25,7 @@ void BaseMethods::registerConstants(MiniScript* miniScript) {
 	// TODO: check why this needs to be a constant with forEach
 	miniScript->setVariable("$___NULL", MiniScript::Variable());
 	miniScript->setVariable("$___ARRAY", MiniScript::Variable(vector<MiniScript::Variable*>()));
+	miniScript->setVariable("$___MAP", MiniScript::Variable(unordered_map<string, MiniScript::Variable*>()));
 }
 
 void BaseMethods::registerMethods(MiniScript* miniScript) {
