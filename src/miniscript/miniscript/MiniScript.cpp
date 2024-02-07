@@ -2145,7 +2145,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						return false;
 					}
 				} else
-				// array forEach
+				// array/set forEach
 				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
 					auto iterationDepth = 0;
 					for (const auto& block: blockStack) {
@@ -2286,7 +2286,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					string iterationUpdate =
 						entryKeyVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]; " +
 						(entryValueReference == true?
-							"setVariableReference(\"" + entryValueVariable + "\", " + containerVariable + "->get(" + entryKeyVariable + "))":
+							"setVariableReference(\"" + entryValueVariable + "\", " + containerVariable + "->getReference(" + entryKeyVariable + "))":
 							entryValueVariable + " = " + containerVariable + "->get(" + entryKeyVariable + ")"
 						);
 					//

@@ -1843,6 +1843,19 @@ public:
 		}
 
 		/**
+		 * Get entry pointer from map with given key
+		 * @param key key
+		 * @return map entry from given key
+		 */
+		inline const Variable* getMapEntryPtr(const string& key) const {
+			if (getType() != TYPE_MAP) return nullptr;
+			const auto& mapValue = getMapValueReference();
+			auto it = mapValue.find(key);
+			if (it != mapValue.end()) return it->second;
+			return nullptr;
+		}
+
+		/**
 		 * Set entry in map with given key
 		 * @param key key
 		 * @param value value

@@ -198,6 +198,41 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
+		class MethodMapGetReference: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodMapGetReference(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
+						{ .type = MiniScript::TYPE_STRING, .name = "key", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "Map::getReference";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string key;
+				if (arguments.size() == 2 &&
+					arguments[0].getType() == MiniScript::TYPE_MAP &&
+					MiniScript::getStringValue(arguments, 1, key) == true) {
+					auto mapEntryPtr = arguments[0].getMapEntryPtr(key);
+					if (mapEntryPtr != nullptr) returnValue = MiniScript::Variable::createReferenceVariable(mapEntryPtr);
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+			virtual bool isPrivate() const {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodMapGetReference(miniScript));
+	}
+	{
+		//
 		class MethodMapRemove: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
