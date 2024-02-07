@@ -2157,83 +2157,92 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					for (const auto& block: blockStack) {
 						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
 					}
+					auto initializationStackletVariable = string("$___is_" + to_string(iterationDepth));
+					auto containerVariableType = string("$___vt_" + to_string(iterationDepth));
 					auto iterationVariable = string("$___it_" + to_string(iterationDepth));
-					auto entryVariableBackup = string("$___eb_" + to_string(iterationDepth));
+					auto entryVariableBackup = string("$___evb_" + to_string(iterationDepth));
+					auto containerArrayVariable = string("$___cav_" + to_string(iterationDepth));
+					auto containerArrayVariableBackup = string("$___cavb_" + to_string(iterationDepth));
 					string iterationUpdate =
 						entryReference == true?
-							"setVariableReference(\"" + entryVariable + "\", " + containerVariable + "[" + iterationVariable + "])":
-							entryVariable + " = " + containerVariable + "[" + iterationVariable + "]";
-
-					/*
-					setVariable("$it", 0)
-					setVariable("$var", $array[$it])
-					forCondition($it < $array->getSize(), -> { $it++; if ($it < $array->getSize()); $var = $array[$it]; else; unsetVariable("$var"); end; })
-						//
-					end
-					*/
+							"setVariableReference(\"" + entryVariable + "\", " + containerArrayVariable + "[" + iterationVariable + "])":
+							entryVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]";
+					string initialization =
+						initializationStackletVariable + " = -> { " +
+						containerVariableType + " = getType(" + containerVariable + "); " +
+						"if (" + containerVariableType + " == \"Array\"); " +
+							"if (script.isNative() == true); " +
+								"setVariableReference(\"" + containerArrayVariableBackup + "\", " + containerArrayVariable + "); " +
+							"end; " +
+							"setVariableReference(\"" + containerArrayVariable + "\", " + containerVariable + "); " +
+						"elseif (" + containerVariableType + " == \"Set\"); " +
+							containerArrayVariable + " = " + containerVariable + "->getKeys(); " +
+						"else; " +
+							"console.printLine(\"forEach() expects array or set as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
+							"script.emit(\"error\"); " +
+						"end; ";
 					// create initialize statements
 					if (entryReference == true) {
-						scripts.back().statements.emplace_back(
-							currentLineIdx,
-							statementIdx++,
-							statementCode,
-							doStatementPreProcessing("if (script.isNative() == true)", generatedStatement),
-							STATEMENTIDX_NONE
-						);
-						scripts.back().statements.emplace_back(
-							currentLineIdx,
-							statementIdx++,
-							statementCode,
-							doStatementPreProcessing("setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + ")", generatedStatement),
-							STATEMENTIDX_NONE
-						);
-						scripts.back().statements.emplace_back(
-							currentLineIdx,
-							statementIdx++,
-							statementCode,
-							doStatementPreProcessing("end", generatedStatement),
-							STATEMENTIDX_NONE
-						);
+						initialization+=
+							string() +
+							"if (script.isNative() == true); " +
+							"setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + "); " +
+							"end; ";
 					}
-					scripts.back().statements.emplace_back(
-						currentLineIdx,
-						statementIdx++,
-						statementCode,
-						doStatementPreProcessing(iterationVariable + " = 0", generatedStatement),
-						STATEMENTIDX_NONE
-					);
-					scripts.back().statements.emplace_back(
-						currentLineIdx,
-						statementIdx++,
-						statementCode,
-						doStatementPreProcessing(iterationUpdate, generatedStatement),
-						STATEMENTIDX_NONE
-					);
+					initialization+=
+						iterationVariable + " = 0; " +
+						iterationUpdate + "; " +
+						"}";
 					//
+					scripts.back().statements.emplace_back(
+						currentLineIdx,
+						statementIdx++,
+						statementCode,
+						doStatementPreProcessing(initialization, generatedStatement),
+						STATEMENTIDX_NONE
+					);
+					scripts.back().statements.emplace_back(
+						currentLineIdx,
+						statementIdx++,
+						statementCode,
+						"internal.script.callStacklet(" + initializationStackletVariable + ")",
+						STATEMENTIDX_NONE
+					);
 					blockStack.emplace_back(
 						Block::TYPE_FOREACH,
 						statementIdx
 					);
 					//
 					statementCode =
-						"forCondition(" + iterationVariable + " < " + containerVariable + "->getSize(), " +
+						"forCondition(" + iterationVariable + " < " + containerArrayVariable + "->getSize(), " +
 						"-> { " +
 						iterationVariable + "++" + "; " +
-						"if (" + iterationVariable + " < " + containerVariable + "->getSize()); " +
-						iterationUpdate + "; " +
+						"if (" + iterationVariable + " < " + containerArrayVariable + "->getSize()); " +
+							iterationUpdate + "; " +
 						"else; " +
 						(entryReference == true?
 							string() +
 							"if (script.isNative() == true); " +
-							"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
+								"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
+								"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
 							"else; " +
-							"setVariableReference(\"" + entryVariable + "\", $NULL); " +
+								"setVariableReference(\"" + containerArrayVariable + "\", $___ARRAY); " +
+								"setVariableReference(\"" + entryVariable + "\", $___NULL); " +
 							"end; "
 							:
-							"setVariable(\"" + entryVariable + "\", $NULL); "
+							"setVariable(\"" + entryVariable + "\", $___NULL); "
 						) +
 						"end; " +
 						"})";
+				} else
+				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\(.*\\)$", &matches) == true) {
+					_Console::printLine(scriptFileName + ": Invalid forEach statement");
+					//
+					parseErrors.push_back("Invalid forEach statement");
+					//
+					scriptValid = false;
+					//
+					return false;
 				} else
 				if (_StringTools::regexMatch(statementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
 					_StringTools::regexMatch(statementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {

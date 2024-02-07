@@ -139,12 +139,23 @@ on: nothing
 	forEach($var3: $array3)
 		console.printLine("$var3 = " + $var3)
 	end
-	console.printLine("test forEach with array and reference to its entries")
+	console.printLine("test forEach with array and references to its entries")
 	$i = 3
 	forEach(&$var3: $array3)
 		$var3 = $i--
 	end
-	console.printLine("$array = " + $array3) 
+	console.printLine("$array = " + $array3)
+	console.printLine("test forEach with set")
+	$set = {a,b,c}
+	console.printLine("$set = " + $set)
+	forEach($key: $set)
+		console.printLine("$key = " + $key)
+	end
+	console.printLine("test forEach with set and references to its entries, which is not intended to work as one would expect as map keys are basic strings")
+	forEach(&$key: $set)
+		$key = "abc"
+	end
+	console.printLine("$set = " + $set)
 	console.printLine("done")
 	script.stop()
 end

@@ -19,7 +19,8 @@ using _Time = miniscript::utilities::Time;
 
 void BaseMethods::registerConstants(MiniScript* miniScript) {
 	// TODO: check why this needs to be a constant with forEach
-	miniScript->setVariable("$NULL", MiniScript::Variable());
+	miniScript->setVariable("$___NULL", MiniScript::Variable());
+	miniScript->setVariable("$___ARRAY", MiniScript::Variable(vector<MiniScript::Variable*>()));
 }
 
 void BaseMethods::registerMethods(MiniScript* miniScript) {
@@ -200,6 +201,45 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 		};
 		miniScript->registerMethod(new MethodInternalEvaluateMemberAccess(miniScript));
+	}
+	{
+		//
+		class MethodScriptCallStacklet: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodScriptCallStacklet(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STACKLET_ASSIGNMENT, .name = "stacklet", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "internal.script.callStacklet";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string stacklet;
+				auto stackletScriptIdx = MiniScript::SCRIPTIDX_NONE;
+				if (arguments.size() >= 1 &&
+					miniScript->getStackletValue(arguments, 0, stacklet, stackletScriptIdx) == true) {
+					if (stackletScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+						stackletScriptIdx = miniScript->getFunctionScriptIdx(stacklet);
+					}
+					if (stackletScriptIdx == MiniScript::SCRIPTIDX_NONE || miniScript->getScripts()[stackletScriptIdx].type != MiniScript::Script::TYPE_STACKLET) {
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Stacklet not found: " + stacklet);
+					} else {
+						vector<MiniScript::Variable> callArguments(0);
+						span callArgumentsSpan(callArguments);
+						miniScript->callStacklet(stackletScriptIdx, callArgumentsSpan, returnValue);
+					}
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodScriptCallStacklet(miniScript));
 	}
 	// base methods
 	{
