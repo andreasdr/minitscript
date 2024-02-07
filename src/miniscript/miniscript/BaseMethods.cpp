@@ -1456,6 +1456,38 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new MethodSetVariableReference(miniScript));
 	}
+	// Unset variable reference
+	{
+		//
+		class MethodUnsetVariableReference: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodUnsetVariableReference(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false }
+					}
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "unsetVariableReference";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string variable;
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, variable) == true) {
+					miniScript->unsetVariable(variable, &statement);
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+			bool isPrivate() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodUnsetVariableReference(miniScript));
+	}
 	// set constant
 	{
 		//

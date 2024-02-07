@@ -2245,8 +2245,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 								"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
 								"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
 							"else; " +
-								"setVariableReference(\"" + containerArrayVariable + "\", $___ARRAY); " +
-								"setVariableReference(\"" + entryVariable + "\", $___NULL); " +
+								"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
+								"unsetVariableReference(\"" + entryVariable + "\"); " +
+								"setVariable(\"" + containerArrayVariable + "\", $___ARRAY); " +
 							"end; "
 							:
 							"setVariable(\"" + entryVariable + "\", $___NULL); "
@@ -2360,8 +2361,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 								"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
 								"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
 							"else; " +
-								"setVariableReference(\"" + containerArrayVariable + "\", $___ARRAY); " +
-								"setVariableReference(\"" + entryValueVariable + "\", $___NULL); " +
+								"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
+								"unsetVariableReference(\"" + entryValueVariable + "\"); " +
+								"setVariable(\"" + containerArrayVariable + "\", $___ARRAY); " +
 							"end; " +
 							"setVariable(\"" + entryKeyVariable + "\", $___NULL); "
 							:
