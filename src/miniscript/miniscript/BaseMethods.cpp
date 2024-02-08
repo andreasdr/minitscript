@@ -209,11 +209,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
-		class MethodScriptCallStacklet: public MiniScript::Method {
+		class MethodInternalScriptCallStacklet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
 		public:
-			MethodScriptCallStacklet(MiniScript* miniScript):
+			MethodInternalScriptCallStacklet(MiniScript* miniScript):
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STACKLET_ASSIGNMENT, .name = "stacklet", .optional = false, .reference = false, .nullable = false }
@@ -243,8 +243,11 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
+			bool isPrivate() const override {
+				return true;
+			}
 		};
-		miniScript->registerMethod(new MethodScriptCallStacklet(miniScript));
+		miniScript->registerMethod(new MethodInternalScriptCallStacklet(miniScript));
 	}
 	// base methods
 	{
