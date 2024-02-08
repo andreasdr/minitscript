@@ -3525,7 +3525,8 @@ const string MiniScript::getScriptInformation(int scriptIdx, bool includeStateme
 			string() +
 			"\t" + "    " + ": start" + "\n";
 		for (const auto& statement: script.statements) {
-			result+= "\t" + _StringTools::padLeft(to_string(statement.statementIdx), "0", 4) + ": " + _StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t\t") + (statement.gotoStatementIdx != STATEMENTIDX_NONE?" (gotoStatement " + to_string(statement.gotoStatementIdx) + ")":"") + "\n";
+			string newLineIndent; for (auto i = 0; i < indent + 2; i++) newLineIndent+= "  ";
+			result+= "\t" + _StringTools::padLeft(to_string(statement.statementIdx), "0", 4) + ": " + _StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t    :" + newLineIndent) + (statement.gotoStatementIdx != STATEMENTIDX_NONE?" (gotoStatement " + to_string(statement.gotoStatementIdx) + ")":"") + "\n";
 		}
 		result+= "\n";
 	}
