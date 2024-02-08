@@ -2846,8 +2846,11 @@ const string Transpiler::createSourceCode(MiniScript::Script::Type scriptType, c
 			if (syntaxTreeNode.value.getValueAsString() == "elseif") indent-= 1; else
 			if (syntaxTreeNode.value.getValueAsString() == "else") indent-= 1; else
 			if (syntaxTreeNode.value.getValueAsString() == "end") indent-= 1; else
-			if (syntaxTreeNode.value.getValueAsString() == "forTime") indent+= 0; else
-			if (syntaxTreeNode.value.getValueAsString() == "forCondition") indent+= 0;
+			if (syntaxTreeNode.value.getValueAsString() == "forTime") indent-= 0; else
+			if (syntaxTreeNode.value.getValueAsString() == "forCondition") indent-= 0; else
+			if (syntaxTreeNode.value.getValueAsString() == "switch") indent-= 0; else
+			if (syntaxTreeNode.value.getValueAsString() == "case") indent-= 1; else
+			if (syntaxTreeNode.value.getValueAsString() == "default") indent-= 1;
 		}
 		for (auto i = 0; i < indent; i++) result+= "\t";
 		result+= createSourceCode(syntaxTreeNode) + "\n";
@@ -2855,9 +2858,12 @@ const string Transpiler::createSourceCode(MiniScript::Script::Type scriptType, c
 			if (syntaxTreeNode.value.getValueAsString() == "if") indent+= 1; else
 			if (syntaxTreeNode.value.getValueAsString() == "elseif") indent+= 1; else
 			if (syntaxTreeNode.value.getValueAsString() == "else") indent+= 1; else
-			if (syntaxTreeNode.value.getValueAsString() == "end") indent-= 0; else
+			if (syntaxTreeNode.value.getValueAsString() == "end") indent+= 0; else
 			if (syntaxTreeNode.value.getValueAsString() == "forTime") indent+= 1; else
-			if (syntaxTreeNode.value.getValueAsString() == "forCondition") indent+= 1;
+			if (syntaxTreeNode.value.getValueAsString() == "forCondition") indent+= 1; else
+			if (syntaxTreeNode.value.getValueAsString() == "switch") indent+= 0; else
+			if (syntaxTreeNode.value.getValueAsString() == "case") indent+= 1; else
+			if (syntaxTreeNode.value.getValueAsString() == "default") indent+= 1;
 		}
 	}
 	return result;
