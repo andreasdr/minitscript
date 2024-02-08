@@ -173,7 +173,14 @@ const vector<string> MiniScript::getTranspilationUnits() {
 	};
 }
 
-MiniScript::MiniScript() {
+MiniScript::MiniScript():
+	errorStatement(
+		LINE_NONE,
+		STATEMENTIDX_NONE,
+		string(),
+		string(),
+		STATEMENTIDX_NONE
+	) {
 	for (auto dataType: dataTypes) {
 		if (dataType->isRequiringGarbageCollection() == false) continue;
 		// create script context
@@ -212,10 +219,16 @@ void MiniScript::complain(const string& methodName, const Statement& statement) 
 	auto argumentsInformation = getArgumentsInformation(methodName);
 	if (argumentsInformation.empty() == true) argumentsInformation = "None";
 	_Console::printLine(methodName + "(): " + getStatementInformation(statement) + ": argument mismatch: expected arguments: " + argumentsInformation);
+	//
+	errorMessage = "An method usage complain has occurred";
+	errorStatement = statement;
 }
 
 void MiniScript::complain(const string& methodName, const Statement& statement, const string& message) {
 	_Console::printLine(methodName + "(): " + getStatementInformation(statement) + ": " + message);
+	//
+	errorMessage = "An method usage complain with message has occurred: " + message;
+	errorStatement = statement;
 }
 
 void MiniScript::registerMethod(Method* method) {

@@ -475,4 +475,59 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new MethodScriptIsNative(miniScript));
 	}
+	{
+		//
+		class MethodScriptErrorGetMessage: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodScriptErrorGetMessage(MiniScript* miniScript):
+				MiniScript::Method({}, MiniScript::TYPE_STRING, true),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "script.error.getMessage";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() == 0) {
+					const auto& errorStatement = miniScript->getErrorStatement();
+					if (errorStatement.line != MiniScript::LINE_NONE) {
+						returnValue.setValue(miniScript->getErrorMessage());
+					}
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodScriptErrorGetMessage(miniScript));
+	}
+	{
+		//
+		class MethodScriptErrorGetStatement: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodScriptErrorGetStatement(MiniScript* miniScript):
+				MiniScript::Method({}, MiniScript::TYPE_MAP, true),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "script.error.getStatement";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() == 0) {
+					const auto& errorStatement = miniScript->getErrorStatement();
+					if (errorStatement.line != MiniScript::LINE_NONE) {
+						returnValue.setType(MiniScript::TYPE_MAP);
+						returnValue.setMapEntry("script", MiniScript::Variable(miniScript->getScriptPathName() + "/" + miniScript->getScriptFileName()));
+						returnValue.setMapEntry("line", MiniScript::Variable(static_cast<int64_t>(errorStatement.line)));
+						returnValue.setMapEntry("statementIndex", MiniScript::Variable(static_cast<int64_t>(errorStatement.statementIdx)));
+						returnValue.setMapEntry("statement", MiniScript::Variable(errorStatement.statement));
+						returnValue.setMapEntry("executableStatement", MiniScript::Variable(errorStatement.executableStatement));
+					}
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		miniScript->registerMethod(new MethodScriptErrorGetStatement(miniScript));
+	}
 }

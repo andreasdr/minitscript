@@ -2962,6 +2962,9 @@ protected:
 
 	unique_ptr<MathMethods> miniScriptMath;
 
+	Statement errorStatement;
+	string errorMessage;
+
 	/**
 	 * Initialize native mini script
 	 */
@@ -3863,6 +3866,20 @@ public:
 			result+= to_string(argumentIdx);
 		}
 		return result;
+	}
+
+	/**
+	 * @return error message
+	 */
+	const string& getErrorMessage() {
+		return errorMessage;
+	}
+
+	/**
+	 * @return error statement
+	 */
+	const Statement& getErrorStatement() {
+		return errorStatement;
 	}
 
 	/**
