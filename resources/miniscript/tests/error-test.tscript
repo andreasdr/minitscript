@@ -12,7 +12,7 @@ on: nothing
 	console.printLine("error-test: Nothing")
 	console.printLine("---------------------")
 	console.printLine()
-	console.printLine("Calling a method with wrong arguments, to emit the error script, we take else if")
+	console.printLine("Calling a method with wrong arguments, to emit the error script, we take default")
 	default("abc", 123)
 	script.stop()
 end
