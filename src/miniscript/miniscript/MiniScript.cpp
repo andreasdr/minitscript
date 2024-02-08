@@ -2146,7 +2146,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					}
 				} else
 				// array/set forEach
-				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
 					auto iterationDepth = 0;
 					for (const auto& block: blockStack) {
 						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
@@ -2186,7 +2186,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							"end; " +
 							"setVariableReference(\"" + containerArrayVariable + "\", " + containerVariable + "); " +
 						"elseif (" + containerVariableType + " == \"Set\"); " +
-							containerArrayVariable + " = " + containerVariable + "->getKeys(); " +
+							containerArrayVariable + " = Set::getKeys(" + containerVariable + "); " +
 						"else; " +
 							"console.printLine(\"forEach() expects array or set as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
 							"script.emit(\"error\"); " +
@@ -2233,10 +2233,10 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					);
 					//
 					statementCode =
-						"forCondition(" + iterationVariable + " < " + containerArrayVariable + "->getSize(), " +
+						"forCondition(" + iterationVariable + " < Array::getSize(" + containerArrayVariable + "), " +
 						"-> { " +
 						iterationVariable + "++" + "; " +
-						"if (" + iterationVariable + " < " + containerArrayVariable + "->getSize()); " +
+						"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
 							iterationUpdate + "; " +
 						"else; " +
 						(entryReference == true?
@@ -2257,7 +2257,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						"})";
 				} else
 				// map forEach
-				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*,[\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\:[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+				if (_StringTools::regexMatch(statementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*,[\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
 					auto iterationDepth = 0;
 					for (const auto& block: blockStack) {
 						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
@@ -2288,14 +2288,14 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 						entryKeyVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]; " +
 						(entryValueReference == true?
 							"setVariableReference(\"" + entryValueVariable + "\", Map::getReference(" + containerVariable + ", " + entryKeyVariable + "))":
-							entryValueVariable + " = " + containerVariable + "->get(" + entryKeyVariable + ")"
+							entryValueVariable + " = Map::get(" + containerVariable + ", " + entryKeyVariable + ")"
 						);
 					//
 					string initialization =
 						initializationStackletVariable + " = -> { " +
 						containerVariableType + " = getType(" + containerVariable + "); " +
 						"if (" + containerVariableType + " == \"Map\"); " +
-							containerArrayVariable + " = " + containerVariable + "->getKeys(); " +
+							containerArrayVariable + " = Map::getKeys(" + containerVariable + "); " +
 						"else; " +
 							"console.printLine(\"forEach() expects map as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
 							"script.emit(\"error\"); " +
@@ -2321,13 +2321,6 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 							doStatementPreProcessing(containerVariable + " = " + containerInitializer, generatedStatement),
 							STATEMENTIDX_NONE
 						);
-						scripts.back().statements.emplace_back(
-							currentLineIdx,
-							statementIdx++,
-							statementCode,
-							doStatementPreProcessing("console.printLine('a: ' + " + containerVariable + ")", generatedStatement),
-							STATEMENTIDX_NONE
-						);
 					}
 					scripts.back().statements.emplace_back(
 						currentLineIdx,
@@ -2349,10 +2342,10 @@ bool MiniScript::parseScriptInternal(const string& scriptCode) {
 					);
 					//
 					statementCode =
-						"forCondition(" + iterationVariable + " < " + containerArrayVariable + "->getSize(), " +
+						"forCondition(" + iterationVariable + " < Array::getSize(" + containerArrayVariable + "), " +
 						"-> { " +
 						iterationVariable + "++" + "; " +
-						"if (" + iterationVariable + " < " + containerArrayVariable + "->getSize()); " +
+						"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
 							iterationUpdate + "; " +
 						"else; " +
 						(entryValueReference == true?
