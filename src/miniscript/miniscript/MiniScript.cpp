@@ -3498,8 +3498,34 @@ const string MiniScript::getScriptInformation(int scriptIdx, bool includeStateme
 		result+= "\n";
 	}
 	if (includeStatements == true) {
+		auto indent = 1;
+		auto formatStatement = [&](const string& statement) {
+			string result;
+			auto statementMethodEndIdx = _StringTools::indexOf(statement, "(");
+			if (statementMethodEndIdx == string::npos) statementMethodEndIdx = statement.size();
+			auto statementMethod = _StringTools::trim(_StringTools::substring(statement, 0, statementMethodEndIdx));
+			if (statementMethod == "elseif") indent-= 1; else
+			if (statementMethod == "else") indent-= 1; else
+			if (statementMethod == "case") indent-= 1; else
+			if (statementMethod == "default") indent-= 1; else
+			if (statementMethod == "end") indent-= 1;
+			for (auto i = 0; i < indent; i++) result+= "  ";
+			result+= statement;
+			if (statementMethod == "if") indent+= 1; else
+			if (statementMethod == "elseif") indent+= 1; else
+			if (statementMethod == "else") indent+= 1; else
+			if (statementMethod == "forTime") indent+= 1; else
+			if (statementMethod == "forCondition") indent+= 1; else
+			if (statementMethod == "switch") indent+= 1; else
+			if (statementMethod == "case") indent+= 1; else
+			if (statementMethod == "default") indent+= 1;
+			return result;
+		};
+		result+=
+			string() +
+			"\t" + "    " + ": start" + "\n";
 		for (const auto& statement: script.statements) {
-			result+= "\t" + to_string(statement.statementIdx) + ": " + _StringTools::replace(statement.executableStatement, "\n", "\n\t\t") + (statement.gotoStatementIdx != STATEMENTIDX_NONE?" (gotoStatement " + to_string(statement.gotoStatementIdx) + ")":"") + "\n";
+			result+= "\t" + _StringTools::padLeft(to_string(statement.statementIdx), "0", 4) + ": " + _StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t\t") + (statement.gotoStatementIdx != STATEMENTIDX_NONE?" (gotoStatement " + to_string(statement.gotoStatementIdx) + ")":"") + "\n";
 		}
 		result+= "\n";
 	}
