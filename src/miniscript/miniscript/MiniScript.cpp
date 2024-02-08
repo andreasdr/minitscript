@@ -884,16 +884,9 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 		} else
 		// method call
 		if (argument.empty() == false &&
-			_StringTools::viewStartsWith(argument, "\"") == false &&
-			_StringTools::viewEndsWith(argument, "\"") == false &&
-			_StringTools::viewStartsWith(argument, "'") == false &&
-			_StringTools::viewEndsWith(argument, "'") == false &&
-			_StringTools::viewStartsWith(argument, "[") == false &&
-			_StringTools::viewEndsWith(argument, "]") == false &&
-			_StringTools::viewStartsWith(argument, "}") == false &&
-			_StringTools::viewEndsWith(argument, "}") == false &&
-			argument.find('(') != string::npos &&
-			argument.find(')') != string::npos) {
+			viewIsStringLiteral(argument) == false &&
+			viewIsInitializer(argument) == false &&
+			viewIsCall(argument) == true) {
 			// method call
 			string_view subMethodName;
 			vector<string_view> subArguments;
@@ -911,10 +904,7 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 		} else {
 			// string literal
 			Variable argumentValue;
-			if ((_StringTools::viewStartsWith(argument, "\"") == true &&
-				_StringTools::viewEndsWith(argument, "\"") == true) ||
-				(_StringTools::viewStartsWith(argument, "'") == true &&
-				_StringTools::viewEndsWith(argument, "'") == true)) {
+			if (viewIsStringLiteral(argument) == true) {
 				//
 				Variable value;
 				value.setValue(deescape(_StringTools::viewSubstring(argument, 1, argument.size() - 1), statement));
@@ -1057,7 +1047,6 @@ bool MiniScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTre
 int MiniScript::getStackletScopeScriptIdx(int scriptIdx) {
 	if (scriptIdx < 0 || scriptIdx >= scripts.size() ||
 		scripts[scriptIdx].type != MiniScript::Script::TYPE_STACKLET) {
-		_Console::printLine("MiniScript::getStackletScopeScriptIdx(): No stacklet: " + to_string(scriptIdx));
 		return MiniScript::SCRIPTIDX_NONE;
 	}
 	//
@@ -3056,15 +3045,31 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 							operatorCandidate+= processedStatement[i + 1];
 						}
 						if (operatorString == operatorCandidate && (nextOperator.idx == OPERATORIDX_NONE || priorizedOperator > nextOperator.operator_)) {
-							if (i > 0 && isOperatorChar(processedStatement[i - 1]) == true) {
+							auto isMemberAccessOrAssignmentOperator = [](const string& candidate) { return candidate == "->"; };
+							if (operatorString.size() == 1 &&
+								i > 0 &&
+								isOperatorChar(processedStatement[i - 1]) == true &&
+								(isMemberAccessOrAssignmentOperator(processedStatement[i - 1] + operatorString) == true ||
+								isOperator(processedStatement[i - 1] + operatorString) == true)) {
 								continue;
 							}
-							if (operatorString.size() == 2 && i + 2 < processedStatement.size() && isOperatorChar(processedStatement[i + 2]) == true) {
+							if (operatorString.size() == 1 &&
+								i + 1 < processedStatement.size() &&
+								isOperatorChar(processedStatement[i + 1]) == true &&
+								(isMemberAccessOrAssignmentOperator(operatorString + processedStatement[i + 1]) == true ||
+								isOperator(operatorString + processedStatement[i + 1]) == true)) {
+								continue;
+							}
+							if (operatorString.size() == 2 &&
+								i > 0 &&
+								isOperatorChar(processedStatement[i - 1]) == true) {
+								continue;
+							}
+							if (operatorString.size() == 2 &&
+								i + 2 < processedStatement.size() &&
+								isOperatorChar(processedStatement[i + 2]) == true) {
 								continue;
 							} else
-							if (operatorString.size() == 1 && i + 1 < processedStatement.size() && isOperatorChar(processedStatement[i + 1]) == true) {
-								continue;
-							}
 							if (priorizedOperator == OPERATOR_SUBTRACTION) {
 								string leftArgumentBrackets;
 								auto leftArgumentLeft = 0;
@@ -3269,8 +3274,10 @@ bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, s
 			//
 			auto objectCandidate = _StringTools::viewTrim(string_view(&executableStatement[objectStartIdxCandidate], objectEndIdxCandidate - objectStartIdxCandidate));
 			auto methodCandidate = _StringTools::viewTrim(string_view(&executableStatement[memberCallStartIdxCandidate], memberCallEndIdxCandidate - memberCallStartIdxCandidate));
-			//
-			if (objectCandidate.empty() == false && methodCandidate.empty() == false) {
+			// we need to check the serious candidates here
+			if (objectCandidate.empty() == false &&
+				methodCandidate.empty() == false &&
+				(viewIsStringLiteral(objectCandidate) == true || viewIsVariableAccess(objectCandidate) == true || viewIsCall(objectCandidate) == true)) {
 				//
 				objectStartIdx = objectStartIdxCandidate;
 				objectEndIdx = objectEndIdxCandidate;
@@ -3288,7 +3295,6 @@ bool MiniScript::getObjectMemberAccess(const string_view& executableStatement, s
 		//
 		lc = c;
 	}
-
 	//
 	return objectMemberAccess;
 }

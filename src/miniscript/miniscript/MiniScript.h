@@ -2151,10 +2151,7 @@ public:
 			if (viewIsStackletAssignment(value, functionOrStacklet) == true) {
 				setStackletAssignment(string(functionOrStacklet));
 			} else
-			// function call
-			//	TODO: improve me
-			if (value.find('(') != string::npos &&
-				value.find(')') != string::npos) {
+			if (viewIsCall(value) == true) {
 				setFunctionCallStatement(miniScript->doStatementPreProcessing(string(value), statement), miniScript, scriptIdx, statement);
 			} else
 			// variable
@@ -3790,6 +3787,42 @@ private:
 	static bool viewIsKey(const string_view& candidate);
 
 	/**
+	 * Returns if a given string is a string literal
+	 * @param candidate candidate
+	 * @return if string is a string literal
+	 */
+	inline static bool viewIsStringLiteral(const string_view& candidate) {
+		return
+			(_StringTools::viewStartsWith(candidate, "\"") == true && _StringTools::viewEndsWith(candidate, "\"") == true) ||
+			(_StringTools::viewStartsWith(candidate, "'") == true && _StringTools::viewEndsWith(candidate, "'") == true);
+
+	}
+
+	/**
+	 * Returns if a given string is a array/map/set initializer
+	 * @param candidate candidate
+	 * @return if string is a array/map/set initializer
+	 */
+	inline static bool viewIsInitializer(const string_view& candidate) {
+		return
+			(_StringTools::viewStartsWith(candidate, "[") == true && _StringTools::viewEndsWith(candidate, "]") == true) ||
+			(_StringTools::viewStartsWith(candidate, "{") == true && _StringTools::viewEndsWith(candidate, "}") == true);
+
+	}
+
+	/**
+	 * Returns if a given string is a method/function call
+	 * @param candidate candidate
+	 * @return if string is a method/function call
+	 */
+	inline static bool viewIsCall(const string_view& candidate) {
+		// TODO: improve me!
+		auto leftBracketIdx = candidate.find('(');
+		auto rightBracketIdx = candidate.rfind(')');
+		return leftBracketIdx > 0 && rightBracketIdx > leftBracketIdx;
+	}
+
+	/**
 	 * Set variable recursively to be a constant
 	 * @param variable variable
 	 */
@@ -4117,6 +4150,18 @@ public:
 			case(OPERATOR_MAX): return "MAX";
 			default: return "INVALID";
 		}
+	}
+
+	/**
+	 * Is given candidate a operator string
+	 * @param candidate candidate
+	 * @return operator
+	 */
+	inline static bool isOperator(const string& candidate) {
+		for (int i = OPERATOR_NONE + 1; i < OPERATOR_MAX; i++) {
+			if (candidate == getOperatorAsString(static_cast<Operator>(i))) return true;
+		}
+		return false;
 	}
 
 	/**
