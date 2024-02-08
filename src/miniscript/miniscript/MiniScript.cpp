@@ -2790,6 +2790,7 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 		length = 0;
 		for (int i = position; i >= 0; i--) {
 			auto c = statement[i];
+			auto lc = i > 0?statement[i - 1]:'\0';
 			if ((c == '"' || c == '\'') && lc != '\\') {
 				if (quote == '\0') {
 					quote = c;
@@ -2847,8 +2848,6 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 				argument = c + argument;
 			}
 			length++;
-			//
-			lc = c;
 		}
 		return trimArgument(argument);
 	};

@@ -40,14 +40,13 @@ Also note the focus on easy integration into other products and easy customizabi
 
 - Whats left to do for 1.0 BETA release
   - parser bugs
-    - console.printLine("\t$j = " + $j)
     - $stacklet =->{ console.printLine("my stacklet") }
   - some adjustments
     - if calling methods use always references by default for non primitive data types like byte array/array/set/map
     - inline functions: improve error messages
     - private script variable? 
     - garbage collection per object?
-    - $Math::EPSILON vs $math::EPSILON
+    - $Math::EPSILON vs $math::EPSILON or use :: as namespace separator instead of .
   - make event system optional    
   - documentation
     - detailed docu for methods and section
