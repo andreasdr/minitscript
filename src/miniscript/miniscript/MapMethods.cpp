@@ -188,7 +188,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MiniScript::TYPE_MAP &&
 					MiniScript::getStringValue(arguments, 1, key) == true) {
-					returnValue = arguments[0].getMapEntry(key);
+					returnValue.setValue(arguments[0].getMapEntry(key));
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}

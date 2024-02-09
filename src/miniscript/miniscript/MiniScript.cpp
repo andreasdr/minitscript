@@ -262,7 +262,7 @@ void MiniScript::executeNextStatement() {
 	if (VERBOSE == true) _Console::printLine("MiniScript::executeScriptLine(): " + getStatementInformation(statement));
 
 	//
-	auto returnValue = executeStatement(syntaxTree, statement);
+	executeStatement(syntaxTree, statement);
 
 	//
 	scriptState.statementIdx++;
@@ -850,9 +850,12 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 			//
 			Variable value;
 			value.setValue(deescape(argument, statement));
-
 			// look up getVariable method
-			string methodName = argumentIdx >= argumentReferences.size() || argumentReferences[argumentIdx] == false?"getVariable":"getVariableReference";
+			string methodName =
+				argumentIdx >= argumentReferences.size() || argumentReferences[argumentIdx] == false?
+					(method != nullptr?"getMethodArgumentVariable":"getVariable"):
+					"getVariableReference";
+			//
 			Method* method = nullptr;
 			{
 				auto methodsIt = methods.find(methodName);
@@ -2681,7 +2684,7 @@ int MiniScript::determineScriptIdxToStart() {
 			// emit condition
 		} else {
 			auto conditionMet = true;
-			auto returnValue = Variable();
+			Variable returnValue;
 			if (evaluateInternal(script.condition, script.executableCondition, returnValue) == true) {
 				auto returnValueBoolValue = false;
 				if (returnValue.getBooleanValue(returnValueBoolValue, false) == false) {
@@ -3384,7 +3387,7 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 	{
 		const auto& scriptState = getScriptState();
 		// run this function dude
-		returnValue = scriptState.returnValue;
+		returnValue.setValue(scriptState.returnValue);
 	}
 	// done, pop the function script state
 	if (pushScriptState == true) {
@@ -4669,9 +4672,11 @@ inline bool MiniScript::evaluateInternal(const string& statement, const string& 
 		}
 		getScriptState().running = true;
 		//
-		returnValue = executeStatement(
-			evaluateSyntaxTree,
-			evaluateStatement
+		returnValue.setValue(
+			executeStatement(
+				evaluateSyntaxTree,
+				evaluateStatement
+			)
 		);
 		//
 		if (pushScriptState == true) popScriptState();

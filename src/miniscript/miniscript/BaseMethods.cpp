@@ -52,7 +52,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				} else
 				if (arguments.size() == 1) {
-					returnValue = arguments[0];
+					returnValue.setValue(arguments[0]);
 				}
 			}
 			bool isPrivate() const override {
@@ -272,7 +272,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					if (miniScript->isFunctionRunning() == false) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No function is being executed, return($value) has no effect");
 					} else
-					if (arguments.size() == 1) miniScript->getScriptState().returnValue = arguments[0];
+					if (arguments.size() == 1) miniScript->getScriptState().returnValue.setValue(arguments[0]);
 					miniScript->stopRunning();
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -1264,7 +1264,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 		};
 		miniScript->registerMethod(new MethodOr(miniScript));
 	}
-	// get variable
+	// get type
 	{
 		//
 		class MethodGetType: public MiniScript::Method {
@@ -1284,7 +1284,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() == 1) {
-					returnValue = arguments[0].getTypeAsString();
+					returnValue.setValue(arguments[0].getTypeAsString());
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
@@ -1314,7 +1314,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				string variable;
 				if (arguments.size() == 1 &&
 					MiniScript::getStringValue(arguments, 0, variable) == true) {
-					returnValue = miniScript->hasVariable(variable, &statement);
+					returnValue.setValue(miniScript->hasVariable(variable, &statement));
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
@@ -1344,13 +1344,46 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				string variable;
 				if (arguments.size() == 1 &&
 					MiniScript::getStringValue(arguments, 0, variable) == true) {
-					returnValue = miniScript->getVariable(variable, &statement);
+					returnValue.setValue(miniScript->getVariable(variable, &statement));
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
 		};
 		miniScript->registerMethod(new MethodGetVariable(miniScript));
+	}
+	// get variable for method arguments
+	{
+		//
+		class MethodGetMethodArgumentVariable: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodGetMethodArgumentVariable(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_STRING, .name = "variable", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "getMethodArgumentVariable";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string variable;
+				if (arguments.size() == 1 &&
+					MiniScript::getStringValue(arguments, 0, variable) == true) {
+					returnValue = miniScript->getMethodArgumentVariable(variable, &statement);
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+			bool isPrivate() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodGetMethodArgumentVariable(miniScript));
 	}
 	// get variable reference
 	{
@@ -1378,9 +1411,6 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
-			}
-			bool isPrivate() const override {
-				return true;
 			}
 		};
 		miniScript->registerMethod(new MethodGetVariableReference(miniScript));
@@ -1411,7 +1441,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 2 &&
 					MiniScript::getStringValue(arguments, 0, variable) == true) {
 					miniScript->setVariable(variable, arguments[1], &statement);
-					returnValue = arguments[1];
+					returnValue.setValue(arguments[1]);
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
@@ -1448,7 +1478,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 2 &&
 					MiniScript::getStringValue(arguments, 0, variable) == true) {
 					miniScript->setVariable(variable, arguments[1], &statement, true);
-					returnValue = arguments[1];
+					returnValue.setValue(arguments[1]);
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
@@ -1518,7 +1548,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MiniScript::getStringValue(arguments, 0, constant) == true) {
 					MiniScript::setConstant(arguments[1]);
 					miniScript->setVariable(constant, arguments[1], &statement);
-					returnValue = arguments[1];
+					returnValue.setValue(arguments[1]);
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}

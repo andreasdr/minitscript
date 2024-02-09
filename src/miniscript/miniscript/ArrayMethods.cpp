@@ -158,7 +158,7 @@ void ArrayMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MiniScript::TYPE_ARRAY &&
 					MiniScript::getIntegerValue(arguments, 1, index) == true) {
-					returnValue = arguments[0].getArrayEntry(index);
+					returnValue.setValue(arguments[0].getArrayEntry(index));
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}

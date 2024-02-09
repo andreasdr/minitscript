@@ -42,7 +42,6 @@ Also note the focus on easy integration into other products and easy customizabi
   - bug
   		"on: error; script.stop(); end" -> script does not stop
   - some adjustments
-    - if calling methods use always references by default for non primitive data types like byte array/array/set/map
     - inline functions: improve error messages
     - private script variable? 
     - garbage collection per object?

@@ -591,13 +591,6 @@ public:
 		}
 
 		/**
-		 * @return is reference
-		 */
-		inline bool isReference() const {
-			return (typeReferenceConstantBits & REFERENCE_BIT_VALUE) == REFERENCE_BIT_VALUE;
-		}
-
-		/**
 		 * @return unset reference
 		 */
 		inline void unsetReference() {
@@ -803,6 +796,13 @@ public:
 		}
 
 		/**
+		 * @return is reference
+		 */
+		inline bool isReference() const {
+			return (typeReferenceConstantBits & REFERENCE_BIT_VALUE) == REFERENCE_BIT_VALUE;
+		}
+
+		/**
 		 * Unset variable
 		 */
 		inline void unset() {
@@ -827,6 +827,32 @@ public:
 				ir.reference = (Variable*)variable;
 				ir.reference->acquireReference();
 			}
+		}
+
+		/**
+		 * Create variable optimized for method argument usage
+		 * @param variable variable
+		 * @returns reference/non reference variable based on data type
+		 */
+		inline static Variable createMethodArgumentVariable(const Variable* variable) {
+			auto createReference = false;
+			switch(variable->getType()) {
+				case(TYPE_FUNCTION_CALL):
+				case(TYPE_FUNCTION_ASSIGNMENT):
+				case(TYPE_STACKLET_ASSIGNMENT):
+				case(TYPE_STRING):
+				case(TYPE_BYTEARRAY):
+				case(TYPE_ARRAY):
+				case(TYPE_MAP):
+				case(TYPE_SET):
+					createReference = true;
+					break;
+				default:
+					createReference = variable->getType() >= TYPE_PSEUDO_DATATYPES;
+					break;
+			}
+			//
+			return createReference == true?createReferenceVariable(variable):createNonReferenceVariable(variable);
 		}
 
 		/**
@@ -4349,6 +4375,80 @@ public:
 		}
 		//
 		return false;
+	}
+
+	/**
+	 * Returns variable determined by given variable statement optimized for method argument usage
+	 * @param variableStatement variable statement
+	 * @param statement optional statement the variable is read in
+	 * @return variable
+	 */
+	inline const Variable getMethodArgumentVariable(const string& variableStatement, const Statement* statement = nullptr) {
+		//
+		if (isVariableAccess(variableStatement, statement) == false) return Variable();
+		//
+		string variableName;
+		// global accessor
+		string globalVariableStatement;
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		} else
+		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
+			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
+		}
+
+		//
+		Variable* parentVariable = nullptr;
+		string key;
+		int64_t arrayIdx = ARRAYIDX_NONE;
+		int setAccessBool = SETACCESSBOOL_NONE;
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, true, globalVariableStatement.empty() == false);
+		// set '.' operator
+		if (setAccessBool != SETACCESSBOOL_NONE) {
+			return Variable(setAccessBool == SETACCESSBOOL_TRUE);
+		} else
+		// we have a pointer to a ordinary variable
+		if (variablePtr != nullptr) {
+			// if we return any variable we can safely remove the constness, a reference can of course keep its constness
+			auto variable = Variable::createMethodArgumentVariable(variablePtr);
+			if (variable.isReference() == false) variable.unsetConstant();
+			return variable;
+		} else {
+			// nothing to return
+			return Variable();
+		}
+	}
+
+	/**
+	 * Returns variable determined by given variable statement and variable pointer optimized for method argument usage
+	 * @param variablePtr variable pointer
+	 * @param variableStatement variable statement
+	 * @param statement optional statement the variable is read in
+	 * @return variable
+	 */
+	inline const Variable getMethodArgumentVariable(Variable* variablePtr, const string& variableStatement, const Statement* statement = nullptr) {
+		//
+		if (isVariableAccess(variableStatement, statement) == false) return Variable();
+		//
+		Variable* parentVariable = nullptr;
+		string key;
+		int64_t arrayIdx = ARRAYIDX_NONE;
+		int setAccessBool = SETACCESSBOOL_NONE;
+		variablePtr = evaluateVariableAccessIntern(variablePtr, variableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, true);
+		// set '.' operator
+		if (setAccessBool != SETACCESSBOOL_NONE) {
+			return Variable(setAccessBool == SETACCESSBOOL_TRUE);
+		} else
+		// we have a pointer to a ordinary variable
+		if (variablePtr != nullptr) {
+			// if we return any variable we can safely remove the constness, a reference can of course keep its constness
+			auto variable = Variable::createMethodArgumentVariable(variablePtr);
+			if (variable.isReference() == false) variable.unsetConstant();
+			return variable;
+		} else {
+			// nothing to return
+			return Variable();
+		}
 	}
 
 	/**

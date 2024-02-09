@@ -238,6 +238,7 @@ private:
 	 * @param variableName variable name
 	 * @param accessName access name
 	 * @param indent indent
+	 * @param getMethodArgumentVariable get method argument variable
 	 * @param getVariable issue get variable access
 	 * @param getVariableReference issue get variable reference access
 	 * @param setVariable set variable
@@ -255,6 +256,7 @@ private:
 		int scriptIdx,
 		const string& variableName,
 		const string& indent,
+		bool getMethodArgumentVariable,
 		bool getVariable,
 		bool getVariableReference,
 		bool setVariable,

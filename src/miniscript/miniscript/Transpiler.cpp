@@ -992,7 +992,8 @@ void Transpiler::determineVariables(int scriptIdx, const MiniScript::SyntaxTreeN
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 
 			{
-				if ((syntaxTreeNode.value.getValueAsString() == "getVariable" ||
+				if ((syntaxTreeNode.value.getValueAsString() == "getMethodArgumentVariable" ||
+					syntaxTreeNode.value.getValueAsString() == "getVariable" ||
 					syntaxTreeNode.value.getValueAsString() == "getVariableReference" ||
 					syntaxTreeNode.value.getValueAsString() == "setVariable" ||
 					syntaxTreeNode.value.getValueAsString() == "setVariableReference" ||
@@ -1187,6 +1188,7 @@ void Transpiler::generateVariableAccess(
 	int scriptIdx,
 	const string& variableName,
 	const string& indent,
+	bool getMethodArgumentVariable,
 	bool getVariable,
 	bool getVariableReference,
 	bool setVariable,
@@ -1225,6 +1227,13 @@ void Transpiler::generateVariableAccess(
 				globalVariableIdx = 8;
 			}
 			auto haveVariableStatement = variableHasStatement(globalVariable);
+			if (getMethodArgumentVariable == true) {
+				if (haveVariableStatement == true) {
+					generatedCode+= indent + returnValueStatement + "getMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &statement)" + statementEnd;
+				} else {
+					generatedCode+= indent + returnValueStatement + "Variable::createMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ")" + statementEnd;
+				}
+			} else
 			if (getVariable == true) {
 				if (haveVariableStatement == true) {
 					generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &statement, false)" + statementEnd;
@@ -1265,6 +1274,13 @@ void Transpiler::generateVariableAccess(
 		} else {
 			const auto& localVariable = variableName;
 			auto haveVariableStatement = variableHasStatement(localVariable);
+			if (getMethodArgumentVariable == true) {
+				if (haveVariableStatement == true) {
+					generatedCode+= indent + returnValueStatement + "getMethodArgumentVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement)" + statementEnd;
+				} else {
+					generatedCode+= indent + returnValueStatement + "Variable::createMethodArgumentVariable(&_lv." + createLocalVariableName(localVariable) + ")" + statementEnd;
+				}
+			} else
 			if (getVariable == true) {
 				if (haveVariableStatement == true) {
 					generatedCode+= indent + returnValueStatement + "getVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, false)" + statementEnd;
@@ -1307,6 +1323,13 @@ void Transpiler::generateVariableAccess(
 		//
 		const auto& globalVariable = variableName;
 		auto haveVariableStatement = variableHasStatement(globalVariable);
+		if (getMethodArgumentVariable == true) {
+			if (haveVariableStatement == true) {
+				generatedCode+= indent + returnValueStatement + "getMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement)" + statementEnd;
+			} else {
+				generatedCode+= indent + returnValueStatement + "Variable::createMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ")" + statementEnd;
+			}
+		} else
 		if (getVariable == true) {
 			if (haveVariableStatement == true) {
 				generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, false)" + statementEnd;
@@ -1370,7 +1393,8 @@ void Transpiler::generateArrayAccessMethods(
 			}
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 			{
-				if (syntaxTree.value.getValueAsString() == "getVariable" ||
+				if (syntaxTree.value.getValueAsString() == "getMethodArgumentVariable" ||
+					syntaxTree.value.getValueAsString() == "getVariable" ||
 					syntaxTree.value.getValueAsString() == "getVariableReference" ||
 					syntaxTree.value.getValueAsString() == "setVariable" ||
 					syntaxTree.value.getValueAsString() == "setVariableReference" ||
@@ -2095,7 +2119,8 @@ bool Transpiler::transpileStatement(
 			//
 			if ((scriptConditionIdx != MiniScript::SCRIPTIDX_NONE ||
 				scriptIdx != MiniScript::SCRIPTIDX_NONE) &&
-				(syntaxTree.value.getValueAsString() == "getVariable" ||
+				(syntaxTree.value.getValueAsString() == "getMethodArgumentVariable" ||
+				syntaxTree.value.getValueAsString() == "getVariable" ||
 				syntaxTree.value.getValueAsString() == "getVariableReference" ||
 				syntaxTree.value.getValueAsString() == "setVariable" ||
 				syntaxTree.value.getValueAsString() == "setVariableReference" ||
@@ -2438,6 +2463,7 @@ bool Transpiler::transpileStatement(
 				syntaxTree.arguments[0].value.getValueAsString(),
 				minIndentString + depthIndentString + "\t",
 				false,
+				false,
 				true,
 				false,
 				false,
@@ -2464,6 +2490,7 @@ bool Transpiler::transpileStatement(
 					scriptIdx,
 					syntaxTree.arguments[argumentIdx].value.getValueAsString(),
 					minIndentString + depthIndentString + "\t\t",
+					false,
 					false,
 					true,
 					false,
@@ -2496,7 +2523,9 @@ bool Transpiler::transpileStatement(
 	// do we have a variable look up or setting a variable?
 	// 	transfer to use local method and global class variables
 	if (syntaxTree.type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD &&
-		(syntaxTree.value.getValueAsString() == "getVariable" ||
+
+		(syntaxTree.value.getValueAsString() == "getMethodArgumentVariable" ||
+		syntaxTree.value.getValueAsString() == "getVariable" ||
 		syntaxTree.value.getValueAsString() == "getVariableReference" ||
 		syntaxTree.value.getValueAsString() == "setVariable" ||
 		syntaxTree.value.getValueAsString() == "setVariableReference" ||
@@ -2512,6 +2541,7 @@ bool Transpiler::transpileStatement(
 			scriptIdx,
 			syntaxTree.arguments[0].value.getValueAsString(),
 			minIndentString + depthIndentString + "\t",
+			syntaxTree.value.getValueAsString() == "getMethodArgumentVariable",
 			syntaxTree.value.getValueAsString() == "getVariable",
 			syntaxTree.value.getValueAsString() == "getVariableReference",
 			syntaxTree.value.getValueAsString() == "setVariable",
