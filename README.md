@@ -43,6 +43,8 @@ Also note the focus on easy integration into other products and easy customizabi
   		"on: error; script.stop(); end" -> script does not stop
   - some adjustments
     - inline functions: improve error messages
+    - initializers: set up lamda function indices
+    - lamda functions in array initializer
     - private script variable? 
     - garbage collection per object?
     - $Math::EPSILON vs $math::EPSILON or use :: as namespace separator instead of .

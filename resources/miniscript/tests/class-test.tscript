@@ -14,11 +14,9 @@ on: nothing
 	console.printLine()
 	#
 	$car = {
-		# member variables
 		wheelCount: 4,
 		color: "blue",
 		horsePower: 75,
-		# member methods
 		setWheelCount: ($wheelCount) -> 
 			{
 				$this.wheelCount = $wheelCount
@@ -26,6 +24,7 @@ on: nothing
 		setColor: ($color) ->
 			{
 				$this.color = $color
+				case
 			},
 		setHorsePower: ($horsePower) -> 
 			{

@@ -30,6 +30,7 @@ using std::array;
 using std::exchange;
 using std::make_unique;
 using std::move;
+using std::pair;
 using std::remove;
 using std::sort;
 using std::span;
@@ -2978,7 +2979,7 @@ protected:
 	int64_t timeEnabledConditionsCheckLast { TIME_NONE };
 
 	vector<string> parseErrors;
-	vector<string> deferredInlineScriptCodes;
+	vector<pair<int, string>> deferredInlineScriptCodes;
 
 	int inlineFunctionIdx { 0 };
 	int inlineStackletIdx { 0 };
@@ -2987,6 +2988,8 @@ protected:
 
 	Statement errorStatement;
 	string errorMessage;
+
+	string deferredEmit;
 
 	/**
 	 * Initialize native mini script
@@ -3189,10 +3192,11 @@ protected:
 	 * @param variable variable
 	 * @param arguments arguments
 	 * @param functionScriptCode function script code
+	 * @param lineIdx start line index of lamda function
 	 * @param populateThis populate this variable, which applies to lamda member function of maps/objects
 	 * @param statement statement
 	 */
-	void createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, bool populateThis, const Statement& statement);
+	void createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement);
 
 	/***
 	 * Create stacklet for given variable
@@ -3318,9 +3322,10 @@ private:
 	/**
 	 * Parse script code into this MiniScript instance
 	 * @param scriptCode script code
+	 * @param lineIdxOffset line index offset
 	 * @return success
 	 */
-	bool parseScriptInternal(const string& scriptCode);
+	bool parseScriptInternal(const string& scriptCode, int lineIdxOffset = 0);
 
 
 	/**
@@ -3646,9 +3651,10 @@ private:
 	 * @param candidate candidate
 	 * @param arguments arguments
 	 * @param functionScriptCode function script code
+	 * @param lineIdx start line index
 	 * @return if candidate is a lambda function
 	 */
-	inline static bool viewIsLamdaFunction(const string_view& candidate, vector<string_view>& arguments, string_view& functionScriptCode) {
+	inline static bool viewIsLamdaFunction(const string_view& candidate, vector<string_view>& arguments, string_view& functionScriptCode, int& lineIdx) {
 		if (candidate.size() == 0) return false;
 		//
 		auto i = 0;
@@ -3714,6 +3720,10 @@ private:
 		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
 		//
 		if (candidate[i++] != '{') return false;
+		//
+		for (auto j = 0; j < i - 1; j++) {
+			if (candidate[j] == '\n') lineIdx++;
+		}
 		//
 		auto scriptCodeStartIdx = i;
 		auto scriptCodeEndIdx = string::npos;
@@ -4083,6 +4093,13 @@ public:
 	 * Start error script
 	 */
 	inline void startErrorScript() {
+		//
+		if (isFunctionRunning() == true) {
+			stopRunning();
+			deferredEmit = "error";
+			return;
+		}
+		//
 		emit("error");
 	}
 
