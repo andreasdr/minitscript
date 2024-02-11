@@ -31,13 +31,13 @@ PLATFORM = Unknown
 ifeq ($(OS), Darwin)
 	# MacOSX
 	LIBS_LDFLAGS = -lssl -lcrypto
-	STACKFLAGS = -Wl,-stack_size -Wl,10485760
+	STACKFLAGS = -Wl,-stack_size -Wl,0xA00000
 	PLATFORM = Darwin
 else ifeq ($(OS), FreeBSD)
 	# FreeBSD
 	INCLUDES := $(INCLUDES) -I/usr/local/include
 	LIBS_LDFLAGS = -L/usr/local/lib -lssl -lcrypto
-	STACKFLAGS = -Wl,-stack_size -Wl,10485760
+	STACKFLAGS = -Wl,-stack_size -Wl,0xA00000
 	PLATFORM = FreeBSD
 else ifeq ($(OS), NetBSD)
 	# NetBSD
