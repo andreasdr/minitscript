@@ -31,28 +31,28 @@ PLATFORM = Unknown
 ifeq ($(OS), Darwin)
 	# MacOSX
 	LIBS_LDFLAGS = -lssl -lcrypto
-	STACKFLAGS = -Wl,-stack_size -Wl,10485760
+	STACKFLAGS = -Wl,-stack_size -Wl,0xA00000
 	PLATFORM = Darwin
 else ifeq ($(OS), FreeBSD)
 	# FreeBSD
-	INCLUDES = $(INCLUDES) -I/usr/local/include
+	INCLUDES := $(INCLUDES) -I/usr/local/include
 	LIBS_LDFLAGS = -L/usr/local/lib -lssl -lcrypto
-	STACKFLAGS = -Wl,-stack_size -Wl,10485760
+	STACKFLAGS = -Wl,-stack_size -Wl,0xA00000
 	PLATFORM = FreeBSD
 else ifeq ($(OS), NetBSD)
 	# NetBSD
-	INCLUDES = $(INCLUDES) -I/usr/pkg/include
+	INCLUDES := $(INCLUDES) -I/usr/pkg/include
 	LIBS_LDFLAGS = -L/usr/pkg/lib -lssl -lcrypto
 	PLATFORM = NetBSD
 else ifeq ($(OS), OpenBSD)
 	# OpenBSD
-	INCLUDES = $(INCLUDES) -I/usr/local/include
+	INCLUDES := $(INCLUDES) -I/usr/local/include
 	LIBS_LDFLAGS = -L/usr/local/lib -lssl -lcrypto
 	STACKFLAGS = -Wl,-stack_size -Wl,10485760
 	PLATFORM = OpenBSD
 else ifeq ($(OS), Haiku)
 	# Haiku
-	INCLUDES = $(INCLUDES) -I/boot/system/develop/headers
+	INCLUDES := $(INCLUDES) -I/boot/system/develop/headers
 	LIBS_LDFLAGS = -lnetwork -lssl -lcrypto
 	PLATFORM = Haiku
 else ifeq ($(OS), Linux)
@@ -60,7 +60,7 @@ else ifeq ($(OS), Linux)
 	LIBS_LDFLAGS = -L/usr/lib64 -lssl -lcrypto
 	PLATFORM = Linux
 else ifeq ($(OSSHORT), Msys)
-	INCLUDES = $(INCLUDES) -I/mingw64/include
+	INCLUDES := $(INCLUDES) -I/mingw64/include
 	LIBS_LDFLAGS = -L/mingw64/lib -lws2_32 -lssl -lcrypto
 	STACKFLAGS = -Wl,--stack,10485760
 	PLATFORM = Msys
