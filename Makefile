@@ -1,11 +1,11 @@
 #
 BIN = bin
 LIB_DIR = lib
-OBJ := obj
+OBJ = obj
 
 # determine platform
-OSSHORT := $(shell sh -c 'uname -o 2>/dev/null')
-OS := $(shell sh -c 'uname -s 2>/dev/null')
+OSSHORT = $(shell sh -c 'uname -o 2>/dev/null')
+OS = $(shell sh -c 'uname -s 2>/dev/null')
 
 #
 NAME = miniscript
@@ -16,7 +16,7 @@ else ifeq ($(OSSHORT), Msys)
 else
 	LIB_EXT = .so
 endif
-LIB := lib$(NAME)$(LIB_EXT)
+LIB = lib$(NAME)$(LIB_EXT)
 MAIN_LDFLAGS = -L $(LIB_DIR) -l $(NAME)
 
 #
@@ -24,42 +24,52 @@ CPPVERSION = -std=c++2a
 OFLAGS = -O3
 EXTRAFLAGS = 
 INCLUDES = -Isrc -Iext -I.
+STACKFLAGS =
+PLATFORM = Unknown
 
 # set platform specific flags
 ifeq ($(OS), Darwin)
 	# MacOSX
-	LIBS_LDFLAGS := -lssl -lcrypto
+	LIBS_LDFLAGS = -lssl -lcrypto
+	STACKFLAGS = -Wl,-stack_size -Wl,10485760
+	PLATFORM = Darwin
 else ifeq ($(OS), FreeBSD)
 	# FreeBSD
-	INCLUDES := $(INCLUDES) -I/usr/local/include
-	LIBS_LDFLAGS := -L/usr/local/lib -lssl -lcrypto
+	INCLUDES = $(INCLUDES) -I/usr/local/include
+	LIBS_LDFLAGS = -L/usr/local/lib -lssl -lcrypto
+	STACKFLAGS = -Wl,-stack_size -Wl,10485760
+	PLATFORM = FreeBSD
 else ifeq ($(OS), NetBSD)
 	# NetBSD
-	INCLUDES := $(INCLUDES) -I/usr/pkg/include
-	LIBS_LDFLAGS := -L/usr/pkg/lib -lssl -lcrypto
+	INCLUDES = $(INCLUDES) -I/usr/pkg/include
+	LIBS_LDFLAGS = -L/usr/pkg/lib -lssl -lcrypto
+	PLATFORM = NetBSD
 else ifeq ($(OS), OpenBSD)
 	# OpenBSD
-	INCLUDES := $(INCLUDES) -I/usr/local/include
-	LIBS_LDFLAGS := -L/usr/local/lib -lssl -lcrypto
+	INCLUDES = $(INCLUDES) -I/usr/local/include
+	LIBS_LDFLAGS = -L/usr/local/lib -lssl -lcrypto
+	STACKFLAGS = -Wl,-stack_size -Wl,10485760
+	PLATFORM = OpenBSD
 else ifeq ($(OS), Haiku)
 	# Haiku
-	INCLUDES := $(INCLUDES) -I/boot/system/develop/headers
-	LIBS_LDFLAGS := -lnetwork -lssl -lcrypto
+	INCLUDES = $(INCLUDES) -I/boot/system/develop/headers
+	LIBS_LDFLAGS = -lnetwork -lssl -lcrypto
+	PLATFORM = Haiku
 else ifeq ($(OS), Linux)
 	# Linux
-	LIBS_LDFLAGS := -L/usr/lib64 -lssl -lcrypto
-else
-	INCLUDES := $(INCLUDES) -I/mingw64/include
-	LIBS_LDFLAGS := -L/mingw64/lib -lws2_32 -lssl -lcrypto
+	LIBS_LDFLAGS = -L/usr/lib64 -lssl -lcrypto
+	PLATFORM = Linux
+else ifeq ($(OSSHORT), Msys)
+	INCLUDES = $(INCLUDES) -I/mingw64/include
+	LIBS_LDFLAGS = -L/mingw64/lib -lws2_32 -lssl -lcrypto
+	STACKFLAGS = -Wl,--stack,10485760
+	PLATFORM = Msys
 endif
 
 #
-LIBS_LDFLAGS := $(LIBS_LDFLAGS)
-
-#
-CPPFLAGS := $(INCLUDES)
-CFLAGS := -g $(OFLAGS) $(EXTRAFLAGS) -pipe -MMD -MP -DNDEBUG -fPIC
-CXXFLAGS := $(CFLAGS) $(CPPVERSION)
+CPPFLAGS = $(INCLUDES)
+CFLAGS = -g $(OFLAGS) $(EXTRAFLAGS) -pipe -MMD -MP -DNDEBUG -fPIC
+CXXFLAGS = $(CFLAGS) $(CPPVERSION)
 
 SRC = src
 
@@ -158,16 +168,22 @@ $(MAINS):$(BIN)/%:$(SRC)/%-main.cpp $(LIB_DIR)/$(LIB)
 	@mkdir -p $(dir $@);
 	@scripts/windows-mingw-create-executable-rc.sh "$<" $@.rc
 	@windres $@.rc -o coff -o $@.rc.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $@.rc.o $< $(MAIN_LDFLAGS)
+	$(CXX) $(STACKFLAGS) $(CPPFLAGS) $(CXXFLAGS) -o $@ $@.rc.o $< $(MAIN_LDFLAGS) 
 	@rm $@.rc
 	@rm $@.rc.o
 else
 $(MAINS):$(BIN)/%:$(SRC)/%-main.cpp $(LIB_DIR)/$(LIB)
 	@mkdir -p $(dir $@);
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $< $(MAIN_LDFLAGS)
+	$(CXX) $(STACKFLAGS) $(CPPFLAGS) $(CXXFLAGS) -o $@ $< $(MAIN_LDFLAGS)
 endif
 
-mains: $(MAINS)
+platform-check:
+ifeq ($(PLATFORM), Unknown)
+	@echo "Unknown platform. Exiting";\
+	exit 1;
+endif
+
+mains: platform-check $(MAINS)
 
 all: mains
 

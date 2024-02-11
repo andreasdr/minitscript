@@ -58,8 +58,8 @@ void Generator::generateLibrary(
 	libraryCode+= string() + "auto scriptURI = pathName + \"/\" + fileName;" + "\n";
 	string libraryIncludes;
 	for (const auto& scriptClassPair: scriptClassPairs) {
-		auto scriptURI = scriptClassPair.first;
-		auto className = scriptClassPair.second;
+		const auto& scriptURI = scriptClassPair.first;
+		const auto& className = scriptClassPair.second;
 		libraryIncludes+= string() + "#include \"" + className + ".h\"" + "\n";
 		libraryCode+= string() + "\t" + "if (scriptURI == \"" + scriptURI + "\") {" + "\n";
 		libraryCode+= string() + "\t\t" + "script = make_unique<" + className + ">();" + "\n";
