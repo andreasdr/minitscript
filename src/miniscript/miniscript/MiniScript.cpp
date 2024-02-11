@@ -4180,7 +4180,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 						}
 					}
 					//
-					i = j;
+					i = j - 1;
 					break;
 				} else {
 					// non hash as first character after new line
