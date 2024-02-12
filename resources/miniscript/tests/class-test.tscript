@@ -25,6 +25,7 @@ on: nothing
 			},
 		setColor: ($color) ->
 			{
+				# hass
 				$this.color = $color
 				case
 			},

@@ -1701,6 +1701,8 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 }
 
 bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset) {
+	_Console::printLine("MiniScript::parseScriptInternal(): init: offset: " + to_string(lineIdxOffset));
+	_Console::printLine("MiniScript::parseScriptInternal(): " + scriptCode);
 	//
 	auto scriptCount = scripts.size();
 	auto haveScript = false;
@@ -2480,7 +2482,8 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 			}
 		}
 	}
-
+	//
+	_Console::printLine("MiniScript::parseScriptInternal(): done");
 	//
 	return scriptValid;
 }
@@ -3864,7 +3867,6 @@ void MiniScript::registerVariables() {
 }
 
 void MiniScript::createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement) {
-	_Console::printLine(to_string(inlineFunctionIdx) + ": " + to_string(lineIdx));
 	// function declaration
 	auto functionName = string() + "lamda_function_" + to_string(inlineFunctionIdx++);
 	auto inlineFunctionScriptCode = "function: " + functionName + "(";
@@ -4054,6 +4056,13 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 }
 
 const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initializerString, MiniScript* miniScript, int scriptIdx, const Statement& statement) {
+	/*
+	// Those data seems to be correct
+	_Console::printLine("map initializer: init: @" + to_string(statement.line));
+	_Console::printLine(initializerString);
+	_Console::printLine("map initializer: done");
+	*/
+	//
 	Variable variable;
 	variable.setType(TYPE_MAP);
 	//
@@ -4074,7 +4083,8 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 	enum ParseMode { PARSEMODE_KEY, PARSEMODE_VALUE };
 	auto parseMode = PARSEMODE_KEY;
 	auto hasValues = false;
-	auto inlineFunctionSignatureStart = string::npos;
+	auto inlineFunctionSignatureStartCandidate = string::npos;
+	auto inlineFunctionLineIdxCandidate = LINE_NONE;
 	auto inlineFunctionLineIdx = LINE_NONE;
 
 	//
@@ -4146,9 +4156,9 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 		quotedMapValueEnd = string::npos;
 		mapValueStart = string::npos;
 		mapValueEnd = string::npos;
-		inlineFunctionSignatureStart = string::npos;
+		inlineFunctionSignatureStartCandidate = string::npos;
+		inlineFunctionLineIdxCandidate = LINE_NONE;
 		inlineFunctionLineIdx = LINE_NONE;
-
 		//
 		parseMode = PARSEMODE_KEY;
 	};
@@ -4174,10 +4184,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 					comment = true;
 					// iterate until next new line
 					for (j++; j < initializerString.size(); j++) {
-						if (initializerString[j] == '\n') {
-							lineIdx++;
-							break;
-						}
+						if (initializerString[j] == '\n') break;
 					}
 					//
 					i = j - 1;
@@ -4251,18 +4258,20 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 				bracketCount++;
 				//
 				if (bracketCount == 1) {
-					inlineFunctionLineIdx = lineIdx;
-					inlineFunctionSignatureStart = i;
+					inlineFunctionSignatureStartCandidate = i;
+					inlineFunctionLineIdxCandidate = lineIdx;
 				}
 			} else
 			if (c == ')') {
 				bracketCount--;
 				// function assignment
-				if (inlineFunctionSignatureStart != string::npos && bracketCount == 0 && mapValueStart == string::npos) {
-					mapValueStart = inlineFunctionSignatureStart;
+				if (inlineFunctionSignatureStartCandidate != string::npos && bracketCount == 0 && mapValueStart == string::npos) {
+					mapValueStart = inlineFunctionSignatureStartCandidate;
+					inlineFunctionLineIdx = inlineFunctionLineIdxCandidate;
 				}
 				//
-				inlineFunctionSignatureStart = string::npos;
+				inlineFunctionSignatureStartCandidate = string::npos;
+				inlineFunctionLineIdxCandidate = LINE_NONE;
 			} else
 			// map/set initializer
 			if (c == '{' && squareBracketCount == 0 && bracketCount == 0) {
@@ -4316,8 +4325,8 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 						quotedMapKeyEnd = string::npos;
 						mapKeyStart = string::npos;
 						mapKeyEnd = string::npos;
-						inlineFunctionSignatureStart = string::npos;
-
+						inlineFunctionSignatureStartCandidate = string::npos;
+						inlineFunctionLineIdxCandidate = LINE_NONE;
 						// map value
 						if (mapValueStart != string::npos) {
 							mapValueEnd = i;
@@ -4325,13 +4334,11 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 							if (mapValueLength > 0) {
 								auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 								if (mapValueStringView.empty() == false) {
-									//
 									vector<string_view> lamdaFunctionArguments;
 									string_view lamdaFunctionScriptCode;
 									int lamdaFunctionLineIdx = inlineFunctionLineIdx;
 									if (viewIsLamdaFunction(mapValueStringView, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx) == true) {
-										_Console::print("lambda: " + to_string(lamdaFunctionLineIdx));
-										_Console::printLine(lamdaFunctionScriptCode);
+										_Console::printLine("lamda check@" + to_string(inlineFunctionLineIdx));
 										Variable mapValue;
 										miniScript->createLamdaFunction(mapValue, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx, true, statement);
 										variable.setMapEntry(string(mapKey), mapValue);
@@ -4346,8 +4353,9 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 							//
 							mapValueStart = string::npos;
 							mapValueEnd = string::npos;
-							inlineFunctionLineIdx = LINE_NONE;
 						}
+						//
+						inlineFunctionLineIdx = LINE_NONE;
 					}
 					//
 					parseMode = PARSEMODE_KEY;
@@ -4390,9 +4398,9 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 						quotedMapKeyEnd = string::npos;
 						mapKeyStart = string::npos;
 						mapKeyEnd = string::npos;
-						inlineFunctionSignatureStart = string::npos;
-
-						// map value
+						inlineFunctionSignatureStartCandidate = string::npos;
+						inlineFunctionLineIdxCandidate = LINE_NONE;
+						// array value
 						if (mapValueStart != string::npos) {
 							mapValueEnd = i;
 							auto mapValueLength = mapValueEnd - mapValueStart + 1;
@@ -4407,6 +4415,8 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 							mapValueStart = string::npos;
 							mapValueEnd = string::npos;
 						}
+						//
+						inlineFunctionLineIdx = LINE_NONE;
 					}
 					//
 					parseMode = PARSEMODE_KEY;
