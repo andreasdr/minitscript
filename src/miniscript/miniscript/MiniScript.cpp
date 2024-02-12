@@ -1552,7 +1552,6 @@ void MiniScript::execute() {
 }
 
 const string MiniScript::getNextStatement(const string& scriptCode, int& i, int& line) {
-	// TODO: as we remove # comment lines our line indices for map initializers are broken
 	string statementCode;
 	vector<string> statementCodeLines;
 	statementCodeLines.emplace_back();
@@ -1687,9 +1686,8 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 	auto lineIdx = 0;
 	for (const auto& line: statementCodeLines) {
 		auto trimmedLine = _StringTools::trim(line);
-		if (trimmedLine.empty() == true) continue;
 		statementCode+= trimmedLine;
-		if (lineIdx != statementCodeLines.size() - 1) statementCode+= "\n";
+		if (statementCode.empty() == false && lineIdx != statementCodeLines.size() - 1) statementCode+= "\n";
 		lineIdx++;
 	}
 
@@ -1701,8 +1699,6 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 }
 
 bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset) {
-	_Console::printLine("MiniScript::parseScriptInternal(): init: offset: " + to_string(lineIdxOffset));
-	_Console::printLine("MiniScript::parseScriptInternal(): " + scriptCode);
 	//
 	auto scriptCount = scripts.size();
 	auto haveScript = false;
@@ -2482,8 +2478,6 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 			}
 		}
 	}
-	//
-	_Console::printLine("MiniScript::parseScriptInternal(): done");
 	//
 	return scriptValid;
 }
@@ -3552,7 +3546,16 @@ const string MiniScript::getScriptInformation(int scriptIdx, bool includeStateme
 			"\t" + "    " + ": start" + "\n";
 		for (const auto& statement: script.statements) {
 			string newLineIndent; for (auto i = 0; i < indent + 2; i++) newLineIndent+= "  ";
-			result+= "\t" + _StringTools::padLeft(to_string(statement.statementIdx), "0", 4) + ": " + _StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t    :" + newLineIndent) + (statement.gotoStatementIdx != STATEMENTIDX_NONE?" (gotoStatement " + to_string(statement.gotoStatementIdx) + ")":"") + "\n";
+			result+=
+				"\t" +
+				/*
+				_StringTools::padLeft(to_string(statement.statementIdx), "0", 4) +
+				"|" +
+				*/
+				_StringTools::padLeft(to_string(statement.line), "0", 4) +
+				": " +
+				_StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t    :" + newLineIndent) +
+				(statement.gotoStatementIdx != STATEMENTIDX_NONE?" (gotoStatement " + to_string(statement.gotoStatementIdx) + ")":"") + "\n";
 		}
 		result+= "\n";
 	}
@@ -3883,7 +3886,9 @@ void MiniScript::createLamdaFunction(Variable& variable, const vector<string_vie
 	inlineFunctionScriptCode+= "\n";
 	inlineFunctionScriptCode+= string() + "end" + "\n";
 	// store it to be parsed later
-	deferredInlineScriptCodes.push_back(make_pair(lineIdx, inlineFunctionScriptCode));
+	//	we can reduce line index by function head
+	//	our line counting does not start at 1 here, but at zero
+	deferredInlineScriptCodes.push_back(make_pair(lineIdx - 2, inlineFunctionScriptCode));
 	//
 	variable.setFunctionAssignment(functionName);
 }
@@ -4056,12 +4061,6 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 }
 
 const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initializerString, MiniScript* miniScript, int scriptIdx, const Statement& statement) {
-	/*
-	// Those data seems to be correct
-	_Console::printLine("map initializer: init: @" + to_string(statement.line));
-	_Console::printLine(initializerString);
-	_Console::printLine("map initializer: done");
-	*/
 	//
 	Variable variable;
 	variable.setType(TYPE_MAP);
@@ -4338,7 +4337,6 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 									string_view lamdaFunctionScriptCode;
 									int lamdaFunctionLineIdx = inlineFunctionLineIdx;
 									if (viewIsLamdaFunction(mapValueStringView, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx) == true) {
-										_Console::printLine("lamda check@" + to_string(inlineFunctionLineIdx));
 										Variable mapValue;
 										miniScript->createLamdaFunction(mapValue, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx, true, statement);
 										variable.setMapEntry(string(mapKey), mapValue);
