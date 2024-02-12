@@ -3386,6 +3386,14 @@ private:
 	bool setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
 
 	/**
+	  * Setup function and stacket script indices
+	  * @param variable variable
+	  * @param statement statement
+	  * @return success
+	  */
+	bool setupFunctionAndStackletScriptIndices(Variable& variable, const Statement& statement);
+
+	/**
 	 * Return stacklet scope script index
 	 * @param scriptIdx stacklet script index
 	 * @return stacklet scope script index

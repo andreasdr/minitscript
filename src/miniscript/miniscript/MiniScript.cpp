@@ -984,51 +984,66 @@ bool MiniScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTre
 	switch (syntaxTreeNode.type) {
 		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
 			{
-				if (syntaxTreeNode.value.getType() == MiniScript::TYPE_FUNCTION_ASSIGNMENT) {
-					string function;
-					auto functionScriptIdx = SCRIPTIDX_NONE;
-					if (syntaxTreeNode.value.getFunctionValue(function, functionScriptIdx) == false ||
-						(functionScriptIdx = getFunctionScriptIdx(function)) == SCRIPTIDX_NONE) {
-						//
-						_Console::printLine(
-							getStatementInformation(statement) +
-							": Function not found: " +
-							syntaxTreeNode.value.getValueAsString()
-						);
-						//
-						parseErrors.push_back(
-							getStatementInformation(statement) +
-							": Function not found: " +
-							syntaxTreeNode.value.getValueAsString()
-						);
-						//
-						return false;
-					}
-					//
-					syntaxTreeNode.value.setFunctionAssignment(function, functionScriptIdx);
-				} else
-				if (syntaxTreeNode.value.getType() == MiniScript::TYPE_STACKLET_ASSIGNMENT) {
-					string stacklet;
-					auto stackletScriptIdx = SCRIPTIDX_NONE;
-					if (syntaxTreeNode.value.getStackletValue(stacklet, stackletScriptIdx) == false ||
-						(stackletScriptIdx = getFunctionScriptIdx(stacklet)) == SCRIPTIDX_NONE) {
-						//
-						_Console::printLine(
-							getStatementInformation(statement) +
-							": Stacklet not found" +
-							syntaxTreeNode.value.getValueAsString()
-						);
-						//
-						parseErrors.push_back(
-							getStatementInformation(statement) +
-							": Stacklet not found: " +
-							syntaxTreeNode.value.getValueAsString()
-						);
-						//
-						return false;
-					}
-					//
-					syntaxTreeNode.value.setStackletAssignment(stacklet, stackletScriptIdx);
+				switch(syntaxTreeNode.value.getType()) {
+					case(MiniScript::TYPE_ARRAY):
+					case(MiniScript::TYPE_MAP):
+						{
+							if (setupFunctionAndStackletScriptIndices(syntaxTreeNode.value, statement) == false) return false;
+							//
+							break;
+						}
+					case(MiniScript::TYPE_FUNCTION_ASSIGNMENT):
+						{
+							string function;
+							auto functionScriptIdx = SCRIPTIDX_NONE;
+							if (syntaxTreeNode.value.getFunctionValue(function, functionScriptIdx) == false ||
+								(functionScriptIdx = getFunctionScriptIdx(function)) == SCRIPTIDX_NONE) {
+								//
+								_Console::printLine(
+									getStatementInformation(statement) +
+									": Function not found: " +
+									syntaxTreeNode.value.getValueAsString()
+								);
+								//
+								parseErrors.push_back(
+									getStatementInformation(statement) +
+									": Function not found: " +
+									syntaxTreeNode.value.getValueAsString()
+								);
+								//
+								return false;
+							}
+							//
+							syntaxTreeNode.value.setFunctionAssignment(function, functionScriptIdx);
+							//
+							break;
+						}
+					case(MiniScript::TYPE_STACKLET_ASSIGNMENT):
+						{
+							string stacklet;
+							auto stackletScriptIdx = SCRIPTIDX_NONE;
+							if (syntaxTreeNode.value.getStackletValue(stacklet, stackletScriptIdx) == false ||
+								(stackletScriptIdx = getFunctionScriptIdx(stacklet)) == SCRIPTIDX_NONE) {
+								//
+								_Console::printLine(
+									getStatementInformation(statement) +
+									": Stacklet not found" +
+									syntaxTreeNode.value.getValueAsString()
+								);
+								//
+								parseErrors.push_back(
+									getStatementInformation(statement) +
+									": Stacklet not found: " +
+									syntaxTreeNode.value.getValueAsString()
+								);
+								//
+								return false;
+							}
+							//
+							syntaxTreeNode.value.setStackletAssignment(stacklet, stackletScriptIdx);
+							//
+							break;
+						}
 				}
 				//
 				break;
@@ -1044,6 +1059,87 @@ bool MiniScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTre
 			}
 		default:
 			break;
+	}
+	//
+	return true;
+}
+
+bool MiniScript::setupFunctionAndStackletScriptIndices(Variable& variable, const Statement& statement) {
+	switch (variable.getType()) {
+		case TYPE_ARRAY:
+			{
+				auto arrayPointer = variable.getArrayPointer();
+				if (arrayPointer == nullptr) break;
+				for (auto arrayEntry: *arrayPointer) {
+					if (setupFunctionAndStackletScriptIndices(*arrayEntry, statement) == false) return false;
+				}
+				//
+				break;
+			}
+		case TYPE_MAP:
+			{
+				//
+				auto mapPointer = variable.getMapPointer();
+				if (mapPointer == nullptr) break;
+				for (auto& [mapKey, mapValue]: *mapPointer) {
+					if (setupFunctionAndStackletScriptIndices(*mapValue, statement) == false) return false;
+				}
+				//
+				break;
+			}
+		case TYPE_FUNCTION_ASSIGNMENT:
+			{
+				string function;
+				auto functionScriptIdx = SCRIPTIDX_NONE;
+				if (variable.getFunctionValue(function, functionScriptIdx) == false ||
+					(functionScriptIdx = getFunctionScriptIdx(function)) == SCRIPTIDX_NONE) {
+					//
+					_Console::printLine(
+						getStatementInformation(statement) +
+						": Function not found: " +
+						variable.getValueAsString()
+					);
+					//
+					parseErrors.push_back(
+						getStatementInformation(statement) +
+						": Function not found: " +
+						variable.getValueAsString()
+					);
+					//
+					return false;
+				}
+				//
+				variable.setFunctionAssignment(function, functionScriptIdx);
+				//
+				break;
+			}
+		case TYPE_STACKLET_ASSIGNMENT:
+			{
+				string stacklet;
+				auto stackletScriptIdx = SCRIPTIDX_NONE;
+				if (variable.getStackletValue(stacklet, stackletScriptIdx) == false ||
+					(stackletScriptIdx = getFunctionScriptIdx(stacklet)) == SCRIPTIDX_NONE) {
+					//
+					_Console::printLine(
+						getStatementInformation(statement) +
+						": Stacklet not found" +
+						variable.getValueAsString()
+					);
+					//
+					parseErrors.push_back(
+						getStatementInformation(statement) +
+						": Stacklet not found: " +
+						variable.getValueAsString()
+					);
+					//
+					return false;
+				}
+				//
+				variable.setStackletAssignment(stacklet, stackletScriptIdx);
+				//
+				break;
+			}
+		default: break;
 	}
 	//
 	return true;
