@@ -1667,6 +1667,9 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 		if (c != '-' && c != '>' &&
 			c != ' ' && c != '\t' && c != '\n' && c != '\r') canExpectStacklet = c == ',' || c == '(';
 		// handle quotes
+		if (hash == true && c != '\n') {
+			// no op
+		} else
 		if ((c == '"' || c == '\'') && lc != '\\') {
 			if (quote == '\0') {
 				quote = c;
@@ -1678,9 +1681,6 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 			statementCodeLines.back() += c;
 			//
 			inlineFunctionArguments = false;
-		} else
-		if (hash == true && c != '\n') {
-			// no op
 		} else
 		if (quote != '\0') {
 			// no op
