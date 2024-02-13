@@ -4395,7 +4395,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 					// insert map key value pair
 					insertMapKeyValuePair();
 				} else
-				// otherwise push inner array initializer
+				// otherwise push inner map initializer
 				if (curlyBracketCount == 1) {
 					// parse and insert into map
 					string_view mapKey;
@@ -4436,10 +4436,14 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 										Variable mapValue;
 										miniScript->createLamdaFunction(mapValue, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx, true, statement);
 										variable.setMapEntry(string(mapKey), mapValue);
+										//
+										hasValues = true;
 									} else {
 										// map/set
 										auto mapValue = initializeMapSet(mapValueStringView, miniScript, scriptIdx, statement);
 										variable.setMapEntry(string(mapKey), mapValue);
+										//
+										hasValues = true;
 									}
 
 								}
@@ -4503,6 +4507,8 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 								if (mapValueStringView.empty() == false) {
 									auto mapValue = initializeArray(mapValueStringView, miniScript, scriptIdx, statement);
 									variable.setMapEntry(string(mapKey), mapValue);
+									//
+									hasValues = true;
 								}
 							}
 							//
