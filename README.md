@@ -1446,10 +1446,10 @@ end
 
 | Name                                                        | Value                              |
 |-------------------------------------------------------------|------------------------------------|
-| $Application::CPU                                           | X64                                |
+| $Application::CPU                                           | e.g. X64                           |
 | $Application::EXITCODE_FAILURE                              | 1                                  |
 | $Application::EXITCODE_SUCCESS                              | 0                                  |
-| $Application::OS                                            | Windows-MSC                        |
+| $Application::OS                                            | e.g. Windows-MSC                   |
 | $HTTPClient::HTTP_STATUS_ACCEPTED                           | 202                                |
 | $HTTPClient::HTTP_STATUS_ALREADYREPORTED                    | 208                                |
 | $HTTPClient::HTTP_STATUS_BADGATEWAY                         | 502                                |
