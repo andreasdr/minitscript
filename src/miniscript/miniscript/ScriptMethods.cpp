@@ -334,6 +334,58 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 	}
 	{
 		//
+		class MethodScriptCallFunction: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			MethodScriptCallFunction(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_FUNCTION_ASSIGNMENT, .name = "function", .optional = false, .reference = false, .nullable = false }
+					},
+					MiniScript::TYPE_PSEUDO_MIXED
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "script.callFunction";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				string function;
+				auto functionScriptIdx = MiniScript::SCRIPTIDX_NONE;
+				if (arguments.size() >= 1 &&
+					miniScript->getFunctionValue(arguments, 0, function, functionScriptIdx) == true) {
+					if (functionScriptIdx == MiniScript::SCRIPTIDX_NONE) {
+						functionScriptIdx = miniScript->getFunctionScriptIdx(function);
+					}
+					if (functionScriptIdx == MiniScript::SCRIPTIDX_NONE || miniScript->getScripts()[functionScriptIdx].type != MiniScript::Script::TYPE_FUNCTION) {
+						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Function not found: " + function);
+					} else {
+						#if defined (__clang__)
+							// Clang currently does not support initializing span using begin and end iterators,
+							vector<MiniScript::Variable> callArguments(arguments.size() - 1);
+							for (auto i = 1; i < arguments.size(); i++) callArguments[i - 1] = move(arguments[i]);
+							// call
+							span callArgumentsSpan(callArguments);
+							miniScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
+							// move back arguments
+							for (auto i = 1; i < arguments.size(); i++) arguments[i] = move(callArguments[i - 1]);
+						#else
+							span callArgumentsSpan(arguments.begin() + 1, arguments.end());
+							miniScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
+						#endif
+					}
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+			bool isVariadic() const override {
+				return true;
+			}
+		};
+		miniScript->registerMethod(new MethodScriptCallFunction(miniScript));
+	}
+	{
+		//
 		class MethodScriptCallStacklet: public MiniScript::Method {
 		private:
 			MiniScript* miniScript { nullptr };
@@ -387,7 +439,7 @@ void ScriptMethods::registerMethods(MiniScript* miniScript) {
 			}
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				int64_t stackletScriptIdx;
-				if (arguments.size() >= 1 &&
+				if (arguments.size() == 1 &&
 					miniScript->getIntegerValue(arguments, 0, stackletScriptIdx) == true) {
 					if (stackletScriptIdx == MiniScript::SCRIPTIDX_NONE ||
 						stackletScriptIdx < 0 ||

@@ -42,7 +42,6 @@ Also note the focus on easy integration into other products and easy customizabi
   - bug
   		"on: error; script.stop(); end" -> script does not stop
   - some adjustments
-    - lamda functions in array initializer
     - private script variable? 
     - garbage collection per object?
     - $Math::EPSILON vs $math::EPSILON or use :: as namespace separator instead of .
@@ -1397,6 +1396,8 @@ end
 | <sub>script.getVariables(): Map</sub>                                                            |
 | Call script function                                                                             |
 | <sub>script.call($function: String, ...): Mixed</sub>                                            |
+| Call function by function variable                                                               |
+| <sub>script.callFunction($function: Function, ...): Mixed</sub>                                  |
 | Call script stacklet                                                                             |
 | <sub>script.callStacklet($stacklet: String): Mixed</sub>                                         |
 | Disable a specific named condition                                                               |

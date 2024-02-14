@@ -227,7 +227,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				string stacklet;
 				auto stackletScriptIdx = MiniScript::SCRIPTIDX_NONE;
-				if (arguments.size() >= 1 &&
+				if (arguments.size() == 1 &&
 					miniScript->getStackletValue(arguments, 0, stacklet, stackletScriptIdx) == true) {
 					if (stackletScriptIdx == MiniScript::SCRIPTIDX_NONE) {
 						stackletScriptIdx = miniScript->getFunctionScriptIdx(stacklet);

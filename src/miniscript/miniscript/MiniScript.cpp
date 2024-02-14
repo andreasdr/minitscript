@@ -4008,6 +4008,7 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 	Variable variable;
 	variable.setType(TYPE_ARRAY);
 	//
+	auto lineIdx = statement.line;
 	auto bracketCount = 0;
 	auto squareBracketCount = 0;
 	auto curlyBracketCount = 0;
@@ -4016,6 +4017,10 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 	auto arrayValueEnd = string::npos;
 	auto quotedArrayValueStart = string::npos;
 	auto quotedArrayValueEnd = string::npos;
+	auto inlineFunctionSignatureStartCandidate = string::npos;
+	auto inlineFunctionLineIdxCandidate = LINE_NONE;
+	auto inlineFunctionLineIdx = LINE_NONE;
+	//
 	auto lc = '\0';
 	auto i = 0;
 	//
@@ -4049,10 +4054,43 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 		quotedArrayValueEnd = string::npos;
 		arrayValueStart = string::npos;
 		arrayValueEnd = string::npos;
+		//
+		inlineFunctionSignatureStartCandidate = string::npos;
+		inlineFunctionLineIdxCandidate = LINE_NONE;
+		inlineFunctionLineIdx = LINE_NONE;
 	};
 	//
 	for (; i < initializerString.size(); i++) {
 		auto c = initializerString[i];
+		// newline/line index
+		if (c == '\n') {
+			lineIdx++;
+			// check for comment line
+			auto comment = false;
+			for (auto j = i + 1; j < initializerString.size(); j++) {
+				auto _c = initializerString[j];
+				// space after newline
+				if (_Character::isSpace(_c) == true) {
+					// no op
+				} else
+				// comment start
+				if (_c == '#') {
+					comment = true;
+					// iterate until next new line
+					for (j++; j < initializerString.size(); j++) {
+						if (initializerString[j] == '\n') break;
+					}
+					//
+					i = j - 1;
+					break;
+				} else {
+					// non hash as first character after new line
+					break;
+				}
+			}
+			//
+			if (comment == true) continue;
+		}
 		// quotes
 		if (squareBracketCount == 1 && curlyBracketCount == 0 && (c == '"' || c == '\'') && lc != '\\') {
 			if (quote == '\0') {
@@ -4073,10 +4111,24 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 			} else
 			// possible function call
 			if (c == '(') {
+				//
 				bracketCount++;
+				//
+				if (bracketCount == 1) {
+					inlineFunctionSignatureStartCandidate = i;
+					inlineFunctionLineIdxCandidate = lineIdx;
+				}
 			} else
 			if (c == ')') {
 				bracketCount--;
+				// function assignment
+				if (inlineFunctionSignatureStartCandidate != string::npos && bracketCount == 0 && arrayValueStart == string::npos) {
+					arrayValueStart = inlineFunctionSignatureStartCandidate;
+					inlineFunctionLineIdx = inlineFunctionLineIdxCandidate;
+				}
+				//
+				inlineFunctionSignatureStartCandidate = string::npos;
+				inlineFunctionLineIdxCandidate = LINE_NONE;
 			} else
 			// array initializer
 			if (c == '[' && curlyBracketCount == 0 && bracketCount == 0) {
@@ -4096,6 +4148,9 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 				// otherwise push inner array initializer
 				if (squareBracketCount == 1) {
 					// parse and push
+					inlineFunctionSignatureStartCandidate = string::npos;
+					inlineFunctionLineIdxCandidate = LINE_NONE;
+					//
 					if (arrayValueStart != string::npos) {
 						arrayValueEnd = i;
 						auto arrayValueLength = arrayValueEnd - arrayValueStart + 1;
@@ -4110,35 +4165,53 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 						arrayValueStart = string::npos;
 						arrayValueEnd = string::npos;
 					}
+					//
+					inlineFunctionLineIdx = LINE_NONE;
 				}
 			} else
 			// map/set initializer
 			if (c == '{' && squareBracketCount == 1 && bracketCount == 0) {
 				// we have a inner map/set initializer, mark it
-				if (curlyBracketCount == 0) arrayValueStart = i;
+				if (curlyBracketCount == 0) {
+					if (arrayValueStart == string::npos) arrayValueStart = i;
+				}
 				// increase curly bracket count
 				curlyBracketCount++;
 			} else
-			// end of map/set initializer
+			// end of map/set initializer or inline lamda function
 			if (c == '}' && squareBracketCount == 1 && bracketCount == 0) {
 				curlyBracketCount--;
 				// otherwise push inner array initializer
 				if (curlyBracketCount == 0) {
 					// parse and push
+					inlineFunctionSignatureStartCandidate = string::npos;
+					inlineFunctionLineIdxCandidate = LINE_NONE;
+					//
 					if (arrayValueStart != string::npos) {
 						arrayValueEnd = i;
 						auto arrayValueLength = arrayValueEnd - arrayValueStart + 1;
 						if (arrayValueLength > 0) {
 							auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 							if (arrayValueStringView.empty() == false) {
-								auto arrayValue = initializeMapSet(arrayValueStringView, miniScript, scriptIdx, statement);
-								variable.pushArrayEntry(arrayValue);
+								vector<string_view> lamdaFunctionArguments;
+								string_view lamdaFunctionScriptCode;
+								int lamdaFunctionLineIdx = inlineFunctionLineIdx;
+								if (viewIsLamdaFunction(arrayValueStringView, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx) == true) {
+									Variable arrayValue;
+									miniScript->createLamdaFunction(arrayValue, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx, false, statement);
+									variable.pushArrayEntry(arrayValue);
+								} else {
+									auto arrayValue = initializeMapSet(arrayValueStringView, miniScript, scriptIdx, statement);
+									variable.pushArrayEntry(arrayValue);
+								}
 							}
 						}
 						//
 						arrayValueStart = string::npos;
 						arrayValueEnd = string::npos;
 					}
+					//
+					inlineFunctionLineIdx = LINE_NONE;
 				}
 			} else
 			// set up argument start
@@ -4174,13 +4247,14 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 	auto quotedMapKeyEnd = string::npos;
 	auto quotedMapValueStart = string::npos;
 	auto quotedMapValueEnd = string::npos;
-	auto i = 0;
 	enum ParseMode { PARSEMODE_KEY, PARSEMODE_VALUE };
 	auto parseMode = PARSEMODE_KEY;
-	auto hasValues = false;
 	auto inlineFunctionSignatureStartCandidate = string::npos;
 	auto inlineFunctionLineIdxCandidate = LINE_NONE;
 	auto inlineFunctionLineIdx = LINE_NONE;
+	auto hasValues = false;
+	//
+	auto i = 0;
 
 	//
 	auto insertMapKeyValuePair = [&]() -> void {
@@ -4230,6 +4304,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			// unquoted map value
 			if (mapValueStart != string::npos && mapValueEnd != string::npos) {
 				auto mapValueLength = mapValueEnd - mapValueStart + 1;
+				//
 				if (mapValueLength > 0) {
 					auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 					if (mapValueStringView.empty() == false) {
@@ -4251,6 +4326,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 		quotedMapValueEnd = string::npos;
 		mapValueStart = string::npos;
 		mapValueEnd = string::npos;
+		//
 		inlineFunctionSignatureStartCandidate = string::npos;
 		inlineFunctionLineIdxCandidate = LINE_NONE;
 		inlineFunctionLineIdx = LINE_NONE;
@@ -4374,12 +4450,10 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 				curlyBracketCount++;
 				// we have a inner map/set initializer, mark it
 				if (curlyBracketCount == 2) {
-					if (mapValueStart == string::npos) {
-						mapValueStart = i;
-					}
+					if (mapValueStart == string::npos) mapValueStart = i;
 				}
 			} else
-			// end of map/set initializer
+			// end of map/set initializer or inline lamda function
 			if (c == '}' && squareBracketCount == 0 && bracketCount == 0) {
 				//
 				curlyBracketCount--;

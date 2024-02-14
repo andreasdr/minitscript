@@ -53,6 +53,20 @@ on: nothing
 	$sum = 0
 	$map->forEach(($key, $value, &$sum) -> { $sum = $sum + $value }, $sum)
 	console.printLine("map.forEach() sum test: {a: 1, b: 2, c: 3}: " + $sum)
+	# inline functions in arrays
+	console.printLine("testing inline functions in arrays")
+	$functions = [
+		# testing a comment here
+		($v) -> { console.printLine("a: " + $v) },
+		($v) -> { console.printLine("b: " + $v) },
+		# testing a comment here
+		($v) -> { console.printLine("c: " + $v) }
+	]
+	$v = 1
+	forEach($f in $functions)
+		script.callFunction($f, $v)
+		$v++
+	end 
 	# done
 	script.stop()
 end
