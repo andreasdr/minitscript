@@ -817,7 +817,7 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 			SyntaxTreeNode subSyntaxTree(SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {});
 			syntaxTree.arguments.push_back(subSyntaxTree);
 		} else
-		if (viewIsStacklet(argument, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode) == true) {
+		if (viewIsStacklet(argument, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode, lamdaFunctionStackletLineIdx) == true) {
 			string scopeName;
 			// empty scope means root scope
 			if (scriptIdx != SCRIPTIDX_NONE) {
@@ -828,7 +828,7 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 				// TODO: as well as stacklets
 			}
 			Variable variable;
-			createStacklet(variable, scopeName, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode, statement);
+			createStacklet(variable, scopeName, lamdaFunctionStackletArguments, lamdaFunctionStackletScriptCode, lamdaFunctionStackletLineIdx, statement);
 			SyntaxTreeNode subSyntaxTree(SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {});
 			syntaxTree.arguments.push_back(subSyntaxTree);
 		} else
@@ -3989,7 +3989,7 @@ void MiniScript::createLamdaFunction(Variable& variable, const vector<string_vie
 	variable.setFunctionAssignment(functionName);
 }
 
-void MiniScript::createStacklet(Variable& variable, const string& scopeName, const vector<string_view>& arguments, const string_view& stackletScriptCode, const Statement& statement) {
+void MiniScript::createStacklet(Variable& variable, const string& scopeName, const vector<string_view>& arguments, const string_view& stackletScriptCode, int lineIdx, const Statement& statement) {
 	// stacklet declaration
 	auto stackletName = string() + "stacklet_" + to_string(inlineStackletIdx++);
 	auto inlineStackletScriptCode = "stacklet: " + stackletName + "(" + scopeName + ")" + "\n";
@@ -3998,8 +3998,9 @@ void MiniScript::createStacklet(Variable& variable, const string& scopeName, con
 	inlineStackletScriptCode+= "\n";
 	inlineStackletScriptCode+= string() + "end" + "\n";
 	// store it to be parsed later
-	// TODO: line index
-	deferredInlineScriptCodes.push_back(make_pair(-1, inlineStackletScriptCode));
+	//	we can reduce line index by function head
+	//	our line counting does not start at 1 here, but at zero
+	deferredInlineScriptCodes.push_back(make_pair(lineIdx - 2, inlineStackletScriptCode));
 	//
 	variable.setStackletAssignment(stackletName);
 }

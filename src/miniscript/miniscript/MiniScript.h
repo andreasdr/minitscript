@@ -3205,9 +3205,10 @@ protected:
 	 * @param scopeName scope name
 	 * @param arguments arguments
 	 * @param stackletScriptCode stacklet script code
+	 * @param lineIdx start line index of lamda function
 	 * @param statement statement
 	 */
-	void createStacklet(Variable& variable, const string& scopeName, const vector<string_view>& arguments, const string_view& stackletScriptCode, const Statement& statement);
+	void createStacklet(Variable& variable, const string& scopeName, const vector<string_view>& arguments, const string_view& stackletScriptCode, int lineIdx, const Statement& statement);
 
 	/**
 	 * Initialize array by initializer string
@@ -3759,9 +3760,10 @@ private:
 	 * @param candidate candidate
 	 * @param arguments arguments
 	 * @param stackletScriptCode stacklet script code
+	 * @param lineIdx start line index
 	 * @return if candidate is a stacklet function
 	 */
-	inline static bool viewIsStacklet(const string_view& candidate, vector<string_view>& arguments, string_view& stackletScriptCode) {
+	inline static bool viewIsStacklet(const string_view& candidate, vector<string_view>& arguments, string_view& stackletScriptCode, int& lineIdx) {
 		if (candidate.size() == 0) return false;
 		//
 		auto i = 0;
@@ -3777,6 +3779,10 @@ private:
 		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
 		//
 		if (candidate[i++] != '{') return false;
+		//
+		for (auto j = 0; j < i - 1; j++) {
+			if (candidate[j] == '\n') lineIdx++;
+		}
 		//
 		auto scriptCodeStartIdx = i;
 		auto scriptCodeEndIdx = string::npos;

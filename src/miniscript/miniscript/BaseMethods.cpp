@@ -419,8 +419,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						auto& block = blockStack.back();
-						if ((block.type == MiniScript::ScriptState::BLOCKTYPE_FUNCTION && miniScript->scriptStateStack.size() > 1) ||
-							block.type == MiniScript::ScriptState::BLOCKTYPE_STACKLET) {
+						if (block.type == MiniScript::ScriptState::BLOCKTYPE_FUNCTION || block.type == MiniScript::ScriptState::BLOCKTYPE_STACKLET) {
 							miniScript->stopRunning();
 						} else
 						if (block.type ==  MiniScript::ScriptState::BLOCKTYPE_FOR && block.parameter.getType() == MiniScript::TYPE_INTEGER) {
