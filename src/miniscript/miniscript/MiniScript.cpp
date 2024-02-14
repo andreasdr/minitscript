@@ -3965,9 +3965,9 @@ void MiniScript::registerVariables() {
 	for (const auto dataType: dataTypes) dataType->registerConstants(this);
 }
 
-void MiniScript::createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement) {
+void MiniScript::createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement, const string& nameHint) {
 	// function declaration
-	auto functionName = string() + "lamda_function_" + to_string(inlineFunctionIdx++);
+	auto functionName = string() + "lamda_function_" + (nameHint.empty() == true?"":_StringTools::toLowerCase(nameHint) + "_") + to_string(inlineFunctionIdx++);
 	auto inlineFunctionScriptCode = "function: " + functionName + "(";
 	if (populateThis == true) inlineFunctionScriptCode+= "&$this";
 	auto argumentIdx = 0;
@@ -4434,7 +4434,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 									int lamdaFunctionLineIdx = inlineFunctionLineIdx;
 									if (viewIsLamdaFunction(mapValueStringView, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx) == true) {
 										Variable mapValue;
-										miniScript->createLamdaFunction(mapValue, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx, true, statement);
+										miniScript->createLamdaFunction(mapValue, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx, true, statement, string(mapKey));
 										variable.setMapEntry(string(mapKey), mapValue);
 										//
 										hasValues = true;
@@ -4877,7 +4877,6 @@ inline const MiniScript::Variable MiniScript::initializeVariable(const Variable&
 
 inline bool MiniScript::viewIsKey(const string_view& candidate) {
 	if (candidate.size() == 0) return false;
-	if (candidate[0] == '$') return false;
 	for (auto i = 0; i < candidate.size(); i++) {
 		auto c = candidate[i];
 		if (_Character::isAlphaNumeric(c) == false && c != '_') return false;

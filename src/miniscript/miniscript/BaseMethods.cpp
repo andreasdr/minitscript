@@ -181,7 +181,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							}
 							// write back arguments from call arguments
 							//	this
-							arguments[1].setValue(callArgumentsSpan[0]);
+							arguments[1] = move(callArgumentsSpan[0]);
 							//	additional arguments
 							{
 								auto callArgumentIdx = 1;
@@ -419,8 +419,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						auto& block = blockStack.back();
-						if ((block.type == MiniScript::ScriptState::BLOCKTYPE_FUNCTION || block.type == MiniScript::ScriptState::BLOCKTYPE_STACKLET) &&
-							miniScript->scriptStateStack.size() <= 2) {
+						if ((block.type == MiniScript::ScriptState::BLOCKTYPE_FUNCTION && miniScript->scriptStateStack.size() > 1) ||
+							block.type == MiniScript::ScriptState::BLOCKTYPE_STACKLET) {
 							miniScript->stopRunning();
 						} else
 						if (block.type ==  MiniScript::ScriptState::BLOCKTYPE_FOR && block.parameter.getType() == MiniScript::TYPE_INTEGER) {

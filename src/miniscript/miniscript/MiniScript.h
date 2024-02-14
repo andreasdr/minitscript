@@ -3195,8 +3195,9 @@ protected:
 	 * @param lineIdx start line index of lamda function
 	 * @param populateThis populate this variable, which applies to lamda member function of maps/objects
 	 * @param statement statement
+	 * @param nameHint name hint
 	 */
-	void createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement);
+	void createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement, const string& nameHint = string());
 
 	/***
 	 * Create stacklet for given variable

@@ -48,7 +48,24 @@ on: nothing
 				$wheelCount = $this.wheelCount
 				$color = $this.color
 				$horsePower = $this.horsePower
-			},
+			}
+		checkEngine: () -> {
+			$engine = {
+				start: () -> {
+					console.printLine("\tstarted engine")
+				},
+				stop: () -> {
+					console.printLine("\tstopped engine")
+				}
+				check: () -> {
+					console.printLine("checking engine")
+					$this->start()
+					$this->stop()
+					console.printLine("\tdone")
+				},
+			}
+			$engine->check()
+		}
 	}
 	#
 	console.dump($car)
@@ -73,6 +90,8 @@ on: nothing
 		", horse power: ", 
 		$horsePower
 	)
+	# check engine
+	$car->checkEngine()
 	#
 	script.stop()
 end
