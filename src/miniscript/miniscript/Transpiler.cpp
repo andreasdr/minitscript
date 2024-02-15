@@ -1261,11 +1261,9 @@ void Transpiler::generateVariableAccess(
 						generatedCode+= "{ ";
 						generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); ";
 						generatedCode+= indent + "setConstant(" + createGlobalVariableName(globalVariable) + ");" ;
-						generatedCode+= returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
-						generatedCode+= "}";
-						generatedCode+= "\n";
+						generatedCode+= "} ";
 					} else {
-						generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "]); " + "\n";
+						generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "]); ";
 					}
 					generatedCode+= returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				}
@@ -1315,10 +1313,9 @@ void Transpiler::generateVariableAccess(
 						generatedCode+= "{ ";
 						generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); ";
 						generatedCode+= indent + "setConstant(_lv." + createLocalVariableName(localVariable) + ");";
-						generatedCode+= "}";
-						generatedCode+= "\n";
+						generatedCode+= "} ";
 					} else {
-						generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "]); " + "\n";
+						generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "]); ";
 					}
 					generatedCode+= returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				}
@@ -1370,10 +1367,9 @@ void Transpiler::generateVariableAccess(
 					generatedCode+= "{ ";
 					generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); ";
 					generatedCode+= indent + "setConstant(" + createGlobalVariableName(globalVariable) + ");";
-					generatedCode+= "}";
-					generatedCode+= "\n";
+					generatedCode+= "} ";
 				} else {
-					generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "]); " + "\n";
+					generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "]); ";
 				}
 				generatedCode+= returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 			}
