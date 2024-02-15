@@ -41,7 +41,6 @@ Also note the focus on easy integration into other products and easy customizabi
 - Whats left to do for 1.0 BETA release
   - bugs
     - "on: error; script.stop(); end" -> script does not stop
-    - multiline stacklet in forCondition
     - error in stacklet(invalid case call) leads to memory corruption
   - some adjustments
     - private script variable? 

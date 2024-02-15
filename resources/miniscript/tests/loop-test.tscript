@@ -99,7 +99,11 @@ on: nothing
 	#	means it keeps variables and such 
 	console.printLine("test forCondition with a iteration function")
 	$i = 0
-	forCondition($i < 5, -> { $i++ })
+	forCondition($i < 5, -> 
+		{ 
+			$i++ 
+		}
+	)
 		if ($i == 3)
 			continue
 		end
