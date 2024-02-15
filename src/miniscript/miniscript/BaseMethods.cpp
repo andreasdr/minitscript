@@ -22,10 +22,9 @@ using _Hex = miniscript::utilities::Hex;
 using _Time = miniscript::utilities::Time;
 
 void BaseMethods::registerConstants(MiniScript* miniScript) {
-	// TODO: check why this needs to be a constant with forEach
-	miniScript->setVariable("$___NULL", MiniScript::Variable());
-	miniScript->setVariable("$___ARRAY", MiniScript::Variable(vector<MiniScript::Variable*>()));
-	miniScript->setVariable("$___MAP", MiniScript::Variable(unordered_map<string, MiniScript::Variable*>()));
+	miniScript->setConstant("$___NULL", MiniScript::Variable());
+	miniScript->setConstant("$___ARRAY", MiniScript::Variable(vector<MiniScript::Variable*>()));
+	miniScript->setConstant("$___MAP", MiniScript::Variable(unordered_map<string, MiniScript::Variable*>()));
 }
 
 void BaseMethods::registerMethods(MiniScript* miniScript) {
@@ -1439,7 +1438,13 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				string variable;
 				if (arguments.size() == 2 &&
 					MiniScript::getStringValue(arguments, 0, variable) == true) {
-					miniScript->setVariable(variable, arguments[1], &statement);
+					if (arguments[1].isConstant() == true) {
+						auto constantVariable = MiniScript::Variable::createNonReferenceVariable(&arguments[1]);
+						MiniScript::unsetConstant(constantVariable);
+						miniScript->setVariable(variable, constantVariable, &statement);
+					} else {
+						miniScript->setVariable(variable, arguments[1], &statement);
+					}
 					returnValue.setValue(arguments[1]);
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());

@@ -3879,6 +3879,12 @@ private:
 	 */
 	static void setConstantInternal(Variable& variable);
 
+	/**
+	 * Set variable recursively to be a non constant
+	 * @param variable variable
+	 */
+	static void unsetConstantInternal(Variable& variable);
+
 public:
 	/**
 	 * Initialize
@@ -3892,6 +3898,15 @@ public:
 	inline static void setConstant(Variable& variable) {
 		if (variable.isConstant() == true) return;
 		setConstantInternal(variable);
+	}
+
+	/**
+	 * Set variable recursively to be a non constant
+	 * @param variable variable
+	 */
+	inline static void unsetConstant(Variable& variable) {
+		if (variable.isConstant() == false) return;
+		unsetConstantInternal(variable);
 	}
 
 	/**

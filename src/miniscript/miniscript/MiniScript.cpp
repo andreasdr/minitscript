@@ -3650,8 +3650,12 @@ const string MiniScript::getScriptInformation(int scriptIdx, bool includeStateme
 				*/
 				_StringTools::padLeft(to_string(statement.line), "0", 4) +
 				": " +
-				_StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t    :" + newLineIndent) +
-				(statement.gotoStatementIdx != STATEMENTIDX_NONE?" (gotoStatement " + to_string(statement.gotoStatementIdx) + ")":"") + "\n";
+				_StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t    :" + newLineIndent)
+				/*
+				+
+				(statement.gotoStatementIdx != STATEMENTIDX_NONE?" (gotoStatement " + to_string(statement.gotoStatementIdx) + ")":"")
+				*/
+				+ "\n";
 		}
 		result+= "\n";
 	}
@@ -5066,6 +5070,38 @@ void MiniScript::setConstantInternal(Variable& variable) {
 				if (mapPointer == nullptr) break;
 				for (const auto& [mapKey, mapValue]: *mapPointer) {
 					setConstant(*mapValue);
+				}
+				//
+				break;
+			}
+		default:
+			break;
+	}
+}
+
+void MiniScript::unsetConstantInternal(Variable& variable) {
+	if (variable.isReference() == true) {
+		_Console::printLine("MiniScript::unsetConstantInternal(): Can not unset constant if reference variable is given.");
+		return;
+	}
+	variable.unsetConstant();
+	switch (variable.getType()) {
+		case TYPE_ARRAY:
+			{
+				auto arrayPointer = variable.getArrayPointer();
+				if (arrayPointer == nullptr) break;
+				for (const auto arrayEntry: *arrayPointer) {
+					unsetConstant(*arrayEntry);
+				}
+				//
+				break;
+			}
+		case TYPE_MAP:
+			{
+				auto mapPointer = variable.getMapPointer();
+				if (mapPointer == nullptr) break;
+				for (const auto& [mapKey, mapValue]: *mapPointer) {
+					unsetConstant(*mapValue);
 				}
 				//
 				break;
