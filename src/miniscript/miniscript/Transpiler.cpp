@@ -977,6 +977,28 @@ void Transpiler::determineVariables(MiniScript* miniScript, unordered_set<string
 }
 
 void Transpiler::determineVariables(int scriptIdx, const MiniScript::SyntaxTreeNode& syntaxTreeNode, unordered_set<string>& globalVariables, vector<unordered_set<string>>& localVariables) {
+	auto addVariable = [&](const string& variableStatement) -> void {
+		//
+		if (scriptIdx == MiniScript::SCRIPTIDX_NONE ||
+			StringTools::startsWith(variableStatement, "$$.") == true ||
+			StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
+			//
+			if (StringTools::startsWith(variableStatement, "$$.") == true) {
+				const auto variableName = createVariableName("$" + StringTools::substring(variableStatement, string_view("$$.").size()));
+				globalVariables.insert(variableName);
+			} else
+			if (StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
+				const auto variableName = createVariableName("$" + StringTools::substring(variableStatement, string_view("$GLOBAL.").size()));
+				globalVariables.insert(variableName);
+			} else {
+				const auto variableName = createVariableName(variableStatement);
+				globalVariables.insert(variableName);
+			}
+		} else {
+			const auto variableName = createVariableName(variableStatement);
+			localVariables[scriptIdx].insert(variableName);
+		}
+	};
 	//
 	switch (syntaxTreeNode.type) {
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
@@ -990,7 +1012,6 @@ void Transpiler::determineVariables(int scriptIdx, const MiniScript::SyntaxTreeN
 				break;
 			}
 		case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
-
 			{
 				if ((syntaxTreeNode.value.getValueAsString() == "getMethodArgumentVariable" ||
 					syntaxTreeNode.value.getValueAsString() == "getVariable" ||
@@ -1002,26 +1023,16 @@ void Transpiler::determineVariables(int scriptIdx, const MiniScript::SyntaxTreeN
 					syntaxTreeNode.arguments.empty() == false &&
 					syntaxTreeNode.arguments[0].type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
 					//
-					const auto variableStatement = syntaxTreeNode.arguments[0].value.getValueAsString();
-					//
-					if (scriptIdx == MiniScript::SCRIPTIDX_NONE ||
-						StringTools::startsWith(variableStatement, "$$.") == true ||
-						StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
-						//
-						if (StringTools::startsWith(variableStatement, "$$.") == true) {
-							const auto variableName = createVariableName("$" + StringTools::substring(variableStatement, string_view("$$.").size()));
-							globalVariables.insert(variableName);
-						} else
-						if (StringTools::startsWith(variableStatement, "$GLOBAL.") == true) {
-							const auto variableName = createVariableName("$" + StringTools::substring(variableStatement, string_view("$GLOBAL.").size()));
-							globalVariables.insert(variableName);
-						} else {
-							const auto variableName = createVariableName(variableStatement);
-							globalVariables.insert(variableName);
+					addVariable(syntaxTreeNode.arguments[0].value.getValueAsString());
+				} else
+				if (syntaxTreeNode.value.getValueAsString() == "internal.script.evaluateMemberAccess") {
+					if (syntaxTreeNode.arguments[0].value.getType() == MiniScript::TYPE_STRING) {
+						addVariable(syntaxTreeNode.arguments[0].value.getValueAsString());
+					}
+					for (auto i = 3; i < syntaxTreeNode.arguments.size(); i+= 2) {
+						if (syntaxTreeNode.arguments[i].value.getType() == MiniScript::TYPE_STRING) {
+							addVariable(syntaxTreeNode.arguments[i].value.getValueAsString());
 						}
-					} else {
-						const auto variableName = createVariableName(variableStatement);
-						localVariables[scriptIdx].insert(variableName);
 					}
 				}
 				//
