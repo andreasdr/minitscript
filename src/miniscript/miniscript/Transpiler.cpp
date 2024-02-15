@@ -1271,7 +1271,7 @@ void Transpiler::generateVariableAccess(
 					if (setConstant == true) {
 						generatedCode+= "{ ";
 						generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); ";
-						generatedCode+= indent + "setConstant(" + createGlobalVariableName(globalVariable) + ");" ;
+						generatedCode+= "setConstant(" + createGlobalVariableName(globalVariable) + "); ";
 						generatedCode+= "} ";
 					} else {
 						generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "]); ";
@@ -1323,7 +1323,7 @@ void Transpiler::generateVariableAccess(
 					if (setConstant == true) {
 						generatedCode+= "{ ";
 						generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); ";
-						generatedCode+= indent + "setConstant(_lv." + createLocalVariableName(localVariable) + ");";
+						generatedCode+= "setConstant(_lv." + createLocalVariableName(localVariable) + "); ";
 						generatedCode+= "} ";
 					} else {
 						generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "]); ";
@@ -1377,7 +1377,7 @@ void Transpiler::generateVariableAccess(
 				if (setConstant == true) {
 					generatedCode+= "{ ";
 					generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); ";
-					generatedCode+= indent + "setConstant(" + createGlobalVariableName(globalVariable) + ");";
+					generatedCode+= "setConstant(" + createGlobalVariableName(globalVariable) + "); ";
 					generatedCode+= "} ";
 				} else {
 					generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "]); ";
