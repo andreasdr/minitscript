@@ -1438,13 +1438,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				string variable;
 				if (arguments.size() == 2 &&
 					MiniScript::getStringValue(arguments, 0, variable) == true) {
-					if (arguments[1].isConstant() == true) {
-						auto constantVariable = MiniScript::Variable::createNonReferenceVariable(&arguments[1]);
-						MiniScript::unsetConstant(constantVariable);
-						miniScript->setVariable(variable, constantVariable, &statement);
-					} else {
-						miniScript->setVariable(variable, arguments[1], &statement);
-					}
+					miniScript->setVariable(variable, arguments[1].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[1]):arguments[1], &statement);
 					returnValue.setValue(arguments[1]);
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());

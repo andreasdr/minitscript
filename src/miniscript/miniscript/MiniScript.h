@@ -857,6 +857,17 @@ public:
 		}
 
 		/**
+		 * Create non const/reference variable
+		 * @param variable variable
+		 * @return non const/reference variable
+		 */
+		inline static Variable createNonConstVariable(const Variable* variable) {
+			auto nonConstVariable = createNonReferenceVariable(variable);
+			MiniScript::unsetConstant(nonConstVariable);
+			return nonConstVariable;
+		}
+
+		/**
 		 * Create reference variable
 		 * @param variable variable
 		 * @returns reference variable
