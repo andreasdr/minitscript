@@ -266,13 +266,13 @@ void MiniScript::executeNextStatement() {
 	//
 	executeStatement(syntaxTree, statement);
 	//
-	if (emitted == false) {
-		scriptState.statementIdx++;
-		if (scriptState.statementIdx >= script.statements.size()) {
-			scriptState.scriptIdx = SCRIPTIDX_NONE;
-			scriptState.statementIdx = STATEMENTIDX_NONE;
-			setScriptStateState(STATEMACHINESTATE_WAIT_FOR_CONDITION);
-		}
+	if (emitted == true) return;
+	//
+	scriptState.statementIdx++;
+	if (scriptState.statementIdx >= script.statements.size()) {
+		scriptState.scriptIdx = SCRIPTIDX_NONE;
+		scriptState.statementIdx = STATEMENTIDX_NONE;
+		setScriptStateState(STATEMACHINESTATE_WAIT_FOR_CONDITION);
 	}
 }
 
