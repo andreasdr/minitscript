@@ -366,12 +366,14 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	//
 	string generatedDetermineScriptIdxToStartDefinition = "\n";
 	generatedDetermineScriptIdxToStartDefinition+= "int " + miniScriptClassName + "::determineScriptIdxToStart() {" + "\n";
+	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "#define MINISCRIPT_METHOD_POPSTACK()" + "\n";
 	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "if (native == false) return MiniScript::determineScriptIdxToStart();" + "\n";
 	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "// MiniScript setup" + "\n";
 	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "auto miniScript = this;" + "\n";
 	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
 	string generatedDetermineNamedScriptIdxToStartDefinition = "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= "int " + miniScriptClassName + "::determineNamedScriptIdxToStart() {" + "\n";
+	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "#define MINISCRIPT_METHOD_POPSTACK()" + "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "if (native == false) return MiniScript::determineNamedScriptIdxToStart();" + "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "auto miniScript = this;" + "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "for (const auto& enabledNamedCondition: enabledNamedConditions) {" + "\n";
@@ -582,12 +584,14 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	generatedDetermineScriptIdxToStartDefinition+= "\n";
 	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
 	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "return " + to_string(nothingScriptIdx) + ";" + "\n";
+	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "#undef MINISCRIPT_METHOD_POPSTACK" + "\n";
 	generatedDetermineScriptIdxToStartDefinition+= string() + "}" + "\n";
 	//
 	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "}" + "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "return SCRIPTIDX_NONE;" + "\n";
+	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "#undef MINISCRIPT_METHOD_POPSTACK" + "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= string() + "}" + "\n";
 
 	//
