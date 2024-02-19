@@ -225,7 +225,7 @@ void MapMethods::registerMethods(MiniScript* miniScript) {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
-			virtual bool isPrivate() const {
+			virtual bool isPrivate() const override {
 				return true;
 			}
 		};

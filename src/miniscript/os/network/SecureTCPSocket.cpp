@@ -187,7 +187,7 @@ int SecureTCPSocket::openSSLVerifyCallback(int preverify, X509_STORE_CTX *x509_c
 const string SecureTCPSocket::openSSLGetErrors() {
 	string result;
 	int err;
-	while (err = ERR_get_error()) {
+	while ((err = ERR_get_error()) != 0) {
 		auto errorMessage = ERR_error_string(err, 0);
 		if (errorMessage == nullptr) return result;
 		result+= string(errorMessage) + "\n";

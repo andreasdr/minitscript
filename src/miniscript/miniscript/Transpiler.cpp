@@ -2882,11 +2882,13 @@ const string Transpiler::createSourceCode(MiniScript::Script::Type scriptType, c
 			}
 		case MiniScript::Script::TYPE_ONENABLED:
 			{
-				result+= "on-enabled: "; break;
+				result+= "on-enabled: ";
 				if (condition.empty() == false) {
 					result+= condition;
 				}
+				break;
 			}
+		default: break;
 	}
 	if (conditionSyntaxTree.type != MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_NONE)
 		result+= createSourceCode(conditionSyntaxTree);

@@ -1045,6 +1045,8 @@ bool MiniScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTre
 							//
 							break;
 						}
+					default:
+						break;
 				}
 				//
 				break;
@@ -3049,7 +3051,8 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 		// (
 		if (candidate[i++] != '(') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
 		//
 		auto argumentStartIdx = string::npos;
 		auto argumentEndIdx = string::npos;
@@ -3096,7 +3099,8 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 		//
 		if (i >= candidate.size()) return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
 		//
@@ -3104,7 +3108,8 @@ const string MiniScript::doStatementPreProcessing(const string& processedStateme
 		// >
 		if (candidate[i++] != '>') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
 		//
 		if (candidate[i++] != '{') return false;
 		//
@@ -3609,6 +3614,7 @@ const string MiniScript::getScriptInformation(int scriptIdx, bool includeStateme
 		}
 		case Script::TYPE_ON: result+= "on: "; break;
 		case Script::TYPE_ONENABLED: result+= "on-enabled: "; break;
+		default: break;
 	}
 	if (script.condition.empty() == false)
 		result+= script.condition + argumentsString + "; ";

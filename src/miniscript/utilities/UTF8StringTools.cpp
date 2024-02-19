@@ -196,7 +196,7 @@ const string_view UTF8StringTools::viewTrim(const string_view& str, UTF8Characte
 		}
 	}
 	//
-	if (firstNonSpace == string::npos) return string();
+	if (firstNonSpace == string::npos) return string_view();
 	//
 	return viewSubstring(str, firstNonSpace, lastNonSpace + 1);
 }
