@@ -3523,8 +3523,9 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 	tryGarbageCollection();
 	// if function calls are worked off, we can do the deferred emit
 	if (isFunctionRunning() == false && deferredEmit.empty() == false) {
-		emit(deferredEmit);
+		auto condition = deferredEmit;
 		deferredEmit.clear();
+		emit(condition);
 	}
 	//
 	return true;

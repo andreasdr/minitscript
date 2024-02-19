@@ -3138,6 +3138,14 @@ protected:
 				nullptr,
 				Variable()
 			);
+		} else {
+			scriptState.blockStack.emplace_back(
+				ScriptState::Block::TYPE_NONE,
+				false,
+				nullptr,
+				nullptr,
+				Variable()
+			);
 		}
 		scriptState.scriptIdx = scriptIdx;
 		scriptState.statementIdx = STATEMENTIDX_FIRST;

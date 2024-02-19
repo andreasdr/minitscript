@@ -243,6 +243,12 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	generatedDeclarations+= generatedExecuteCode;
 	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
 	generatedDeclarations+= declarationIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
+	generatedDeclarations+= declarationIndent + "\t" + "if (isFunctionRunning() == false && deferredEmit.empty() == false) {" + "\n";
+	generatedDeclarations+= declarationIndent + "\t\t" + "auto condition = deferredEmit;" + "\n";
+	generatedDeclarations+= declarationIndent + "\t\t" + "deferredEmit.clear();" + "\n";
+	generatedDeclarations+= declarationIndent + "\t\t" + "emit(condition);" + "\n";
+	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
+	generatedDeclarations+= declarationIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
 	generatedDeclarations+= declarationIndent + "\t" + "executeStateMachine();" + "\n";
 	generatedDeclarations+= declarationIndent + "\t" + "// try garbage collection" + "\n";
 	generatedDeclarations+= declarationIndent + "\t" + "tryGarbageCollection();" + "\n";
@@ -280,6 +286,13 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 	emitDefinition+= definitionIndent + "\t" + miniScript->getBaseClass() + "::emit(condition);" + "\n";
 	emitDefinition+= definitionIndent + "\t" + "return;" + "\n";
 	emitDefinition+= definitionIndent + "}" + "\n";
+	emitDefinition+= definitionIndent + "if (isFunctionRunning() == true) {" + "\n";
+	emitDefinition+= definitionIndent + "\t" + "deferredEmit = condition;" + "\n";
+	emitDefinition+= definitionIndent + "\t" + "return;" + "\n";
+	emitDefinition+= definitionIndent + "}" + "\n";
+	emitDefinition+= definitionIndent + "emitted = true;" + "\n";
+
+	//
 	string generatedDefinitions = "\n";
 	string initializeNativeDefinition;
 	initializeNativeDefinition+= "void " + miniScriptClassName + "::initializeNative() {" + "\n";
@@ -2576,6 +2589,7 @@ bool Transpiler::transpileStatement(
 			syntaxTree.value.getValueAsString() == "setConstant"
 		);
 	} else {
+		const auto& script = miniScript->getScripts()[scriptConditionIdx != MiniScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
 		// generate code
 		generatedCode+= minIndentString + depthIndentString + "\t" + "// method code: " + string(method) + "\n";
 		for (auto codeLine: methodCode) {
@@ -2601,6 +2615,9 @@ bool Transpiler::transpileStatement(
 					for (auto i = 0; i < indent; i++) indentString+= "\t";
 					//
 					generatedCode+= minIndentString + indentString + depthIndentString + "\t" + "goto miniscript_statement_" + to_string(statement.gotoStatementIdx) + ";\n";
+				} else {
+					// for now we exit the C++ method after setting the gotoStatement and reenter the C++ method
+					generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + " return;" + "\n";
 				}
 			} else
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->gotoStatement[\\ \\t]*\\(.*\\)[\\ \\t]*;[\\ \\t]*") == true) {
@@ -2610,11 +2627,9 @@ bool Transpiler::transpileStatement(
 				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + " return;" + "\n";
 			} else
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*MINISCRIPT_METHODUSAGE_COMPLAIN[\\ \\t]*\\([\\ \\t]*(.*)\\)[\\ \\t]*;[\\ \\t]*") == true ||
-				StringTools::regexMatch(codeLine, "[\\ \\t]*MINISCRIPT_METHODUSAGE_COMPLAINM[\\ \\t]*\\([\\ \\t]*(.*)[\\ \\t]*,[\\ \\t]*(.*)[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
-				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + " MINISCRIPT_METHOD_POPSTACK(); return" + (returnValue.empty() == false?" " + returnValue:"") + ";\n";
-			} else
-			if (StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->emit[\\ \\t]*\\([\\ \\t]*[a-zA-Z0-9]*[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
-				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + " MINISCRIPT_METHOD_POPSTACK(); return" + (returnValue.empty() == false?" " + returnValue:"") + ";\n";
+				StringTools::regexMatch(codeLine, "[\\ \\t]*MINISCRIPT_METHODUSAGE_COMPLAINM[\\ \\t]*\\([\\ \\t]*(.*)[\\ \\t]*,[\\ \\t]*(.*)[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true ||
+				StringTools::regexMatch(codeLine, "[\\ \\t]*miniScript[\\ \\t]*->emit[\\ \\t]*\\([\\ \\t]*[a-zA-Z0-9]*[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
+				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + (script.type == MiniScript::Script::TYPE_ON || script.type == MiniScript::Script::TYPE_ONENABLED?" MINISCRIPT_METHOD_POPSTACK(); return" + (returnValue.empty() == false?" " + returnValue:"") + ";":"") + "\n";
 			} else {
 				if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*miniScript[\\ \\t]*->[\\ \\t]*setScriptStateState[\\ \\t]*\\([\\ \\t]*.+[\\ \\t]*\\);.*") == true) {
 					scriptStateChanged = true;
