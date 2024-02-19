@@ -1,0 +1,847 @@
+------------------------
+advanced-test: Nothing
+------------------------
+
+---------
+ByteArrays
+---------
+byte array initialized with: $byteArray = ByteArray(): ByteArray([], size: 0, capacity: 0, read position: 0, write position: 0)
+pushed bool value 'true': ByteArray([1], size: 1, capacity: 1, read position: 0, write position: 1)
+pushed int8 value '1': ByteArray([1, 1], size: 2, capacity: 2, read position: 0, write position: 2)
+pushed int16 value '2': ByteArray([1, 1, 2, 0], size: 4, capacity: 4, read position: 0, write position: 4)
+pushed int32 value '3': ByteArray([1, 1, 2, 0, 3, 0, 0, 0], size: 8, capacity: 8, read position: 0, write position: 8)
+pushed int64 value '4': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0], size: 16, capacity: 16, read position: 0, write position: 16)
+pushed float value '1234.4567': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68], size: 20, capacity: 32, read position: 0, write position: 20)
+pushed small string value 'Hi there!': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33], size: 30, capacity: 32, read position: 0, write position: 30)
+pushed medium string value 'Hi there!!': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33], size: 42, capacity: 64, read position: 0, write position: 42)
+pushed large string value 'Hi there!!!': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 11, 0, 0, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 33], size: 57, capacity: 64, read position: 0, write position: 57)
+change int8 value '1' to '5': ByteArray([1, 5, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 11, 0, 0, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 33], size: 57, capacity: 64, read position: 0, write position: 57)
+byte array iteration with $byteArray->readInt8(): 
+read position: 0
+0: 1
+1: 5
+2: 2
+3: 0
+4: 3
+5: 0
+6: 0
+7: 0
+8: 4
+9: 0
+10: 0
+11: 0
+12: 0
+13: 0
+14: 0
+15: 0
+16: 43
+17: 82
+18: 154
+19: 68
+20: 9
+21: 72
+22: 105
+23: 32
+24: 116
+25: 104
+26: 101
+27: 114
+28: 101
+29: 33
+30: 10
+31: 0
+32: 72
+33: 105
+34: 32
+35: 116
+36: 104
+37: 101
+38: 114
+39: 101
+40: 33
+41: 33
+42: 11
+43: 0
+44: 0
+45: 0
+46: 72
+47: 105
+48: 32
+49: 116
+50: 104
+51: 101
+52: 114
+53: 101
+54: 33
+55: 33
+56: 33
+read position: 0
+read bool value 'true': 1
+read int8 value '5': 5
+read int16 value '2': 2
+read int32 value '3': 3
+read int64 value '4': 4
+read float value '1234.4567': 1234.567749
+read small string value 'Hi there!': Hi there!
+read medium string value 'Hi there!!': Hi there!!
+read large string value 'Hi there!!!': Hi there!!!
+removed byte 5 until byte 15: ByteArray([1, 5, 2, 0, 3, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 11, 0, 0, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 33], size: 47, capacity: 64, read position: 57, write position: 57)
+cleared byte array: ByteArray([], size: 0, capacity: 64, read position: 57, write position: 57)
+---------
+Arrays
+---------
+array initialized with: $array = [1, 2, 3, [1, 2, 3], {a: xxx, b: yyy, c: zzz}, {a, b, c}]: [1, 2, 3, [1, 2, 3], {"a": "xxx", "b": "yyy", "c": "zzz"}, {"a", "b", "c"}]
+array initialized with: $array = Array(1, 2, 3): [1, 2, 3]
+array pushed values with: $array->push(8, 9, 10, 99, 10)
+array now looks like: [1, 2, 3, 8, 9, 10, 99, 10]
+array values added with [] operator: 123, 1234, 12345, Array(1,2,3)
+array now looks like: [1, 2, 3, 8, 9, 10, 99, 10, 123, 1234, 12345, [1, 2, 3]]
+array values added with [] operator to push to array of array: 50, 60
+array now looks like: [1, 2, 3, 8, 9, 10, 99, 10, 123, 1234, 12345, [1, 2, 3, 50, 60]]
+array of array: 60 -> 61
+array now looks like: [1, 2, 3, 8, 9, 10, 99, 10, 123, 1234, 12345, [1, 2, 3, 50, 61]]
+array size: 12
+array iteration with $array->get(): 
+0: 1
+1: 2
+2: 3
+3: 8
+4: 9
+5: 10
+6: 99
+7: 10
+8: 123
+9: 1234
+10: 12345
+11: [1, 2, 3, 50, 61]
+array iteration with [] operator: 
+0: 1
+1: 2
+2: 3
+3: 8
+4: 9
+5: 10
+6: 99
+7: 10
+8: 123
+9: 1234
+10: 12345
+11: [1, 2, 3, 50, 61]
+array iteration with [] operator and some index math: 
+0-a: 1
+0-b: 2
+1-a: 3
+1-b: 8
+2-a: 9
+2-b: 10
+3-a: 99
+3-b: 10
+4-a: 123
+4-b: 1234
+5-a: 12345
+5-b: [1, 2, 3, 50, 61]
+array removal of 123, 1234, 12345 using array.removeOf: [1, 2, 3, 8, 9, 10, 99, 10, [1, 2, 3, 50, 61]]
+removed array entry @ 1: [1, 3, 8, 9, 10, 99, 10, [1, 2, 3, 50, 61]]
+array now looks like: [1, 3, 8, 9, 10, 99, 10, [1, 2, 3, 50, 61]]
+array indexOf 10: 4
+array indexOf 10 beginning to search from 6: 6
+sorting of array('abc', 'def', 'ghi', 'jkl', 'mno'): ["abc", "def", "ghi", "jkl", "mno"]
+$array->sort('sortFunctionDesc'): ["mno", "jkl", "ghi", "def", "abc"]
+$array->sort('sortFunctionAsc'): ["abc", "def", "ghi", "jkl", "mno"]
+array reverse: ["mno", "jkl", "ghi", "def", "abc"]
+---------
+Maps
+----------
+map initialized with: $map = {test1: 123, test2: 456, test3: 789, test4: [1, 2, 3], test5: {a: xxx, b: yyy, c: zzz}, test6: {a, b, c}}: {"test1": 123, "test2": 456, "test3": 789, "test4": [1, 2, 3], "test5": {"a": "xxx", "b": "yyy", "c": "zzz"}, "test6": {"a", "b", "c"}}
+map initialized with: $map = map(): {}
+put some key value pairs into map: map->set()
+map now looks like: {"test1": 123, "test2": 456, "test3": 789, "test4": [1, 2, 3], "test5": "Yaaaa"}
+remove test2 via $map->remove: 
+map now looks like: {"test1": 123, "test3": 789, "test4": [1, 2, 3], "test5": "Yaaaa"}
+reading map key(+value) pairs: 
+map does have test2 key using $map->has(): 1
+map does have test8 key using $map->has(): 0
+map value for test1 key using $map->get(): 123
+map value for test2 key using $map->get(): 456
+map value for test3 key using $map->get(): 789
+map value for test4 key using $map->get(): [1, 2, 3]
+map value for test5 key using $map->get(): Yaaaa
+map value for test1 using map dot operator: 123
+map value for test2 using map dot operator: 456
+map value for test3 using map dot operator: 789
+map value for test4 using map dot operator: [1, 2, 3]
+map value for test5 using map dot operator: Yaaaa
+adding map values using map dot operator: 
+map keys: ["test8", "test7", "test6", "test5", "test4", "test3", "test2", "test1"]
+map values: [890, 770, 666, "Yaaaa", [1, 2, 3], 789, 456, 123]
+iterating keys and values using $map->getKeys(): 
+test8 = 890
+test7 = 770
+test6 = 666
+test5 = Yaaaa
+test4 = [1, 2, 3]
+test3 = 789
+test2 = 456
+test1 = 123
+---------
+Sets
+----------
+set initialized with: $set = {test1, test2, test3, test4, test5}: {"test1", "test2", "test3", "test4", "test5"}
+set initialized with: $set = set(): {}
+put some keys into set: $set->insert()
+set now looks like: {"test1", "test2", "test3", "test4", "test5"}
+remove test2 via $set->remove: 
+set now looks like: {"test1", "test3", "test4", "test5"}
+set does have test1 key using $set->has(): 1
+set does have test2 key using $set->has(): 0
+set does have test3 key using $set->has(): 1
+set does have test4 key using $set->has(): 1
+set does have test5 key using $set->has(): 1
+set key for test1 using set dot operator: 1
+set key for test2 using set dot operator: 0
+set key for test3 using set dot operator: 1
+set key for test4 using set dot operator: 1
+set key for test5 using set dot operator: 1
+inserting set values using set dot operator: 
+set keys: ["test9", "test7", "test6", "test5", "test4", "test3", "test1"]
+---------------------------
+application-test: Nothing
+---------------------------
+
+$Application::OS = Linux
+$Application::CPU = X64
+application.getArguments(): ["./bin/miniscript/tools/miniscript"]
+application.execute('uname -a'): Linux andreas-mint 5.15.0-91-generic #101-Ubuntu SMP Tue Nov 14 13:30:08 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+
+--------------------
+base-test: Nothing
+--------------------
+
+-----------------------
+Check bool operations
+-----------------------
+MiniScript will do the job: and(or(equals(MiniScript will do the job, MiniScript will not do the job), equals(it will, it will)), true): 1
+-----------------------
+Check int computation
+-----------------------
+1 + 2 + 3 - 1: 5
+20 / 2: 10
+11 * 10: 110
+2 > 1: 1
+2 < 1: 0
+7 % 4: 3
+$i = 2 && ++$i: 3
+$i = 2 && --$i: 1
+--------------------------
+Check int bit operations
+--------------------------
+~1 & 255: 254
+~0 & 255: 255
+128 | 64: 192
+128 ^ 64: 192
+64 ^ 64: 0
+-------------------------
+Check float computation
+-------------------------
+(1.1 + 2.2 + 3.3) - 1.2: 5.400000
+20 / 1.5: 13.333333
+11.5 * 10.5: 120.750000
+2.2 > 1.3: 1
+2.5 < 1.2: 0
+7.1 % 4.0: 3.100000
+-------------------------
+Additional float methods
+-------------------------
+float.toIntegerValue(1234.5678): 1150964267
+float.fromIntegerValue($floatToInteger): 1234.567749
+-------------
+Hex methods
+-------------
+hex.encode(65535): ffff
+hex.decode('ffff'): 65535
+-------------------------
+Check additional math
+-------------------------
+$Math::PI: 3.141593
+$Math::EPSILON: 0.000000
+$Math::DEG2RAD: 0.017453
+math.acos(0.0): 1.570796
+math.asin(1.0): 1.570796
+math.atan(1.0): 0.785398
+math.atan2(-1.0, -1.0): -2.356194
+math.floor(2.87): 2.000000
+math.ceil(2.87): 3.000000
+math.round(2.37): 2.000000
+math.round(2.87): 3.000000
+math.cos(0.0): 1.000000
+math.sin(0.0): 0.000000
+math.tan(1.0): 1.557408
+math.sqrt(9.0): 3.000000
+math.random(): 0.840188
+math.random(): 0.394383
+math.random(): 0.783099
+math.exp(1.0): 2.718282
+math.log(2.0): 0.693147
+math.sign(-2): -1
+math.sign(-2.0): -1.000000
+math.square(3): 9
+math.square(3.0): 9.000000
+math.min(4, 9): 4
+math.min(4.1, 9.3): 4.100000
+math.max(4, 9): 9
+math.max(4.1, 9.3): 9.300000
+math.abs(-9): 9
+math.abs(-9.3): 9.300000
+math.clamp(-1, 4, 9): 4
+math.clamp(10.0, 4.1, 9.3): 9.300000
+math.pow(2, 16): 65536
+math.pow(2.0, 16.0): 65536.000000
+math.mod(187, 180): 7
+math.mod(-187, 180): -7
+math.absmod(187, 180): 7
+math.absmod(-187, 180): 173
+------------------------
+Check string methods
+------------------------
+String::isInteger(1234): 1
+String::isInteger(abcd): 0
+String::isFloat(1234.1234): 1
+String::isFloat(abcd.abcd): 0
+String::space(0): 1
+String::space(2):   1.1
+String::space(2):   1.2
+String::space(4):     1.2.1
+String::toUpperCase('xxxyyyzzz'): XXXYYYZZZ
+String::toLowerCase('XXXYYYZZZ'): xxxyyyzzz
+String::concatenate('abc', 'def', 'ghi'): abcdefghi
+String::startsWith('abcdef', 'abc'): 1
+String::startsWith('abcdef', 'def'): 0
+String::endsWith('abcdef', 'abc'): 0
+String::endsWith('abcdef', 'def'): 1
+String::replace('abcdef', 'def', 'DEF'): abcDEF
+String::indexOf('abcdef', 'def'): 3
+String::firstIndexOf('abcdef', 'def'): 3
+String::lastIndexOf('abcdef', 'def'): -1
+String::substring('abcdef', 3): def
+String::substring('abcdef', 1, 5): bcde
+String::equalsIgnoreCase('abcdef', 'ABCDEF'): 1
+String::trim('   abcdef   '): 'abcdef'
+String::regexMatch('abcdef', '[a-z]*'): 1
+String::regexMatch('abcdef', '[0-9]*'): 0
+String::regexReplace('abcdef', '[bcde]', '-'): a----f
+String::tokenize('Andreas is a very good boy', ' '): ["Andreas", "is", "a", "very", "good", "boy", "<3"]
+String::getLength('abcdef'): 6
+String::charAt('abcdef', 0): a
+String::charAt('abcdef', 1): b
+String::charAt('abcdef', 2): c
+String::charAt('abcdef', 3): d
+String::charAt('abcdef', 4): e
+String::charAt('abcdef', 5): f
+String::charAt('abcdef', 6): 
+String::padLeft('1011', '0', 8): 00001011
+String::padRight('1011', '0', 8): 10110000
+----------------------------------------
+Check string method access via literal
+----------------------------------------
+getLength() of 'abc' via 'abc'->getLength()(): 3
+getLength() of 'abc' via 'abc' ->getLength()(): 3
+getLength() of 'abc' via 'abc'-> getLength()(): 3
+getLength() of 'abc' via 'abc' -> getLength()(): 3
+getLength() of $abc via $abc->getLength()(): 3
+getLength() of $abc via $abc ->getLength()(): 3
+getLength() of $abc via $abc-> getLength()(): 3
+getLength() of $abc via $abc -> getLength()(): 3
+getLength() of String('abc') via String('abc')->getLength()(): 3
+getLength() of String('abc') via String('abc') ->getLength()(): 3
+getLength() of String('abc') via String('abc')-> getLength()(): 3
+getLength() of String('abc') via String('abc') -> getLength()(): 3
+-----------------------------------
+Check string operator (Operators)
+-----------------------------------
+'abc' + 'def' + 'ghi': abcdefghi
+abc == abc: 1
+abc == def: 0
+abc != abc: 0
+abc != def: 1
+abc < def: 1
+def < abc: 0
+abc <= abc: 1
+abc <= def: 1
+def <= abc: 0
+abc > def: 0
+def > abc: 1
+abc >= abc: 1
+abc >= def: 0
+def >= abc: 1
+------------------------
+'Andreas is a very good boy <3'->toByteArray(): ByteArray([65, 110, 100, 114, 101, 97, 115, 32, 105, 115, 32, 97, 32, 118, 101, 114, 121, 32, 103, 111, 111, 100, 32, 98, 111, 121, 32, 60, 51], size: 29, capacity: 32, read position: 0, write position: 0)
+String::fromByteArray('Andreas is a very good boy <3')->toByteArray()): Andreas is a very good boy <3
+------------------------
+Variable
+------------------------
+1234
+getType(true) = Boolean
+getType(1234) = Integer
+getType(1234.5678) = Float
+getType('Hallo World!') = String
+getType([1,2,3]) = Array
+getType({a,b,c}) = Set
+getType({a:1,b:1,c:1}) = Map
+--------------------
+Lets check forTime
+--------------------
+1: Hello World
+2: Hello World
+3: Hello World
+4: Hello World
+-------------------------
+Lets check forCondition
+-------------------------
+1: Hello World
+2: Hello World
+3: Hello World
+4: Hello World
+5: Hello World
+i -> 6
+---------------------------------------------
+Lets check forCondition with if/elseif/else
+---------------------------------------------
+1:
+i -> 1
+2:
+i -> 2
+3:
+i -> 3
+4:
+else: 4
+-------------------------------------------------------------------------------------
+Test: string concatenation with brackets in string literals: 1(2)
+-------------------------------------------------------------------------------------
+(4.0 + 2.0) / 2.0 + (20.0 / 10.0 * (2.0 + 5)): 17.000000 = 17
+---------------------
+class-test: Nothing
+---------------------
+
+{
+	"checkEngine": () -> lamda_function_checkengine_5(8),
+	"color": "blue",
+	"getProperties": () -> lamda_function_getproperties_4(7),
+	"horsePower": 75,
+	"setColor": () -> lamda_function_setcolor_1(4),
+	"setHorsePower": () -> lamda_function_sethorsepower_2(5),
+	"setWheelCount": () -> lamda_function_setwheelcount_0(3),
+	"showMeWhatYouGot": () -> lamda_function_showmewhatyougot_3(6),
+	"wheelCount": 4
+}
+
+This amazing car has 4 wheels, is colored blue with super nice 75 horses in it
+This amazing car has 3 wheels, is colored red with super nice 25 horses in it
+Car properties, wheels: 3, color: red, horse power: 25
+checking engine
+	started engine
+	stopped engine
+	done
+-----------------------
+console-test: Nothing
+-----------------------
+
+Whats your name: You have the mighty name: Andreas Drewke
+Now printing your name to error console: Andreas Drewke
+-------------------------
+constants-test: Nothing
+-------------------------
+
+constants-test.tscript:21: $PRIMITIVE = 2345: constant: $PRIMITIVE: Assignment of constant is not allowed
+constants-test.tscript:22: $ARRAY = [1,2,3,4]: constant: $ARRAY: Assignment of constant is not allowed
+constants-test.tscript:23: $ARRAY[0] = 5: constant: $ARRAY[0]: Assignment of constant is not allowed
+constants-test.tscript:24: $MAP = {a: 1, b: 2, c: 3, d: 4}: constant: $MAP: Assignment of constant is not allowed
+constants-test.tscript:25: $MAP.a = 5: constant: $MAP.a: Assignment of constant is not allowed
+{"$ARRAY": [1, 2, 3, 4], "$Application::CPU": "X64", "$Application::EXITCODE_FAILURE": 1, "$Application::EXITCODE_SUCCESS": 0, "$Application::OS": "Linux", "$HTTPClient::HTTP_STATUS_ACCEPTED": 202, "$HTTPClient::HTTP_STATUS_ALREADYREPORTED": 208, "$HTTPClient::HTTP_STATUS_BADGATEWAY": 502, "$HTTPClient::HTTP_STATUS_BADREQUEST": 400, "$HTTPClient::HTTP_STATUS_CONFLICT": 409, "$HTTPClient::HTTP_STATUS_CONTENTTOOLARGE": 413, "$HTTPClient::HTTP_STATUS_CONTINUE": 100, "$HTTPClient::HTTP_STATUS_CREATED": 201, "$HTTPClient::HTTP_STATUS_EARLYHINTS": 103, "$HTTPClient::HTTP_STATUS_EXPECTATIONFAILED": 417, "$HTTPClient::HTTP_STATUS_FAILEDDEPENDENCY": 424, "$HTTPClient::HTTP_STATUS_FORBIDDEN": 403, "$HTTPClient::HTTP_STATUS_FOUND": 302, "$HTTPClient::HTTP_STATUS_GATEWAYTIMEOUT": 504, "$HTTPClient::HTTP_STATUS_GONE": 410, "$HTTPClient::HTTP_STATUS_HTTPVERSIONNOTSUPPORTED": 505, "$HTTPClient::HTTP_STATUS_IMATEAPOT": 418, "$HTTPClient::HTTP_STATUS_IMUSED": 226, "$HTTPClient::HTTP_STATUS_INSUFFICIENTSTORAGE": 507, "$HTTPClient::HTTP_STATUS_INTERNALSERVERERROR": 500, "$HTTPClient::HTTP_STATUS_LENGTHREQUIRED": 411, "$HTTPClient::HTTP_STATUS_LOCKED": 423, "$HTTPClient::HTTP_STATUS_LOOPDETECTED": 508, "$HTTPClient::HTTP_STATUS_MAX": 1023, "$HTTPClient::HTTP_STATUS_METHODNOTALLOWED": 405, "$HTTPClient::HTTP_STATUS_MISDIRECTEDREQUEST": 421, "$HTTPClient::HTTP_STATUS_MOVEDPERMANENTLY": 301, "$HTTPClient::HTTP_STATUS_MULTIPLECHOICES": 300, "$HTTPClient::HTTP_STATUS_MULTISTATUS": 207, "$HTTPClient::HTTP_STATUS_NETWORKAUTHENTICATIONREQUIRED": 511, "$HTTPClient::HTTP_STATUS_NOCONTENT": 204, "$HTTPClient::HTTP_STATUS_NONAUTHORITATIVEINFORMATION": 203, "$HTTPClient::HTTP_STATUS_NOTACCEPTABLE": 406, "$HTTPClient::HTTP_STATUS_NOTEXTENDED": 510, "$HTTPClient::HTTP_STATUS_NOTFOUND": 404, "$HTTPClient::HTTP_STATUS_NOTIMPLEMENTED": 501, "$HTTPClient::HTTP_STATUS_NOTMODIFIED": 304, "$HTTPClient::HTTP_STATUS_OK": 200, "$HTTPClient::HTTP_STATUS_PARTIALCONTENT": 206, "$HTTPClient::HTTP_STATUS_PAYLOADTOOLARGE": 413, "$HTTPClient::HTTP_STATUS_PAYMENTREQUIRED": 402, "$HTTPClient::HTTP_STATUS_PERMANENTREDIRECT": 308, "$HTTPClient::HTTP_STATUS_PRECONDITIONFAILED": 412, "$HTTPClient::HTTP_STATUS_PRECONDITIONREQUIRED": 428, "$HTTPClient::HTTP_STATUS_PROCESSING": 102, "$HTTPClient::HTTP_STATUS_PROXYAUTHENTICATIONREQUIRED": 407, "$HTTPClient::HTTP_STATUS_RANGENOTSATISFIABLE": 416, "$HTTPClient::HTTP_STATUS_REQUESTHEADERFIELDSTOOLARGE": 431, "$HTTPClient::HTTP_STATUS_REQUESTTIMEOUT": 408, "$HTTPClient::HTTP_STATUS_RESETCONTENT": 205, "$HTTPClient::HTTP_STATUS_SEEOTHER": 303, "$HTTPClient::HTTP_STATUS_SERVICEUNAVAILABLE": 503, "$HTTPClient::HTTP_STATUS_SWITCHINGPROTOCOLS": 101, "$HTTPClient::HTTP_STATUS_TEMPORARYREDIRECT": 307, "$HTTPClient::HTTP_STATUS_TOOEARLY": 425, "$HTTPClient::HTTP_STATUS_TOOMANYREQUESTS": 429, "$HTTPClient::HTTP_STATUS_UNAUTHORIZED": 401, "$HTTPClient::HTTP_STATUS_UNAVAILABLEFORLEGALREASONS": 451, "$HTTPClient::HTTP_STATUS_UNPROCESSABLECONTENT": 422, "$HTTPClient::HTTP_STATUS_UNPROCESSABLEENTITY": 422, "$HTTPClient::HTTP_STATUS_UNSUPPORTEDMEDIATYPE": 415, "$HTTPClient::HTTP_STATUS_UPGRADEREQUIRED": 426, "$HTTPClient::HTTP_STATUS_URITOOLONG": 414, "$HTTPClient::HTTP_STATUS_USEPROXY": 305, "$HTTPClient::HTTP_STATUS_VARIANTALSONEGOTIATES": 506, "$MAP": {"a": 1, "b": 2, "c": 3, "d": 4}, "$Math::DEG2RAD": 0.017453, "$Math::EPSILON": 0.000000, "$Math::PI": 3.141593, "$PRIMITIVE": 1234, "$___ARRAY": [], "$___MAP": {}, "$___NULL": <Null>}
+-----------------------
+context-test: Nothing
+-----------------------
+
+context-test runs natively: 0
+Context script ids: ["application"]
+Loading script: context-test-2.tscript
+Context script ids: ["context-test-2", "application"]
+Checking if callable hello2() does exist in context-test-2
+Calling hello2 from context-test-2
+context-test-2 runs natively: 0
+Hello from context-test-2 Andreas
+context-test-2: Trying to remove script 'context-test-2'
+An error occurred: script with id context-test-2 is currently in use
+context-test-2: Trying to remove script 'application'
+An error occurred: script with id application is currently in use
+Removing script context-test-2
+Context script ids: ["application"]
+----------------------------
+cryptography-test: Nothing
+----------------------------
+
+cryptography.base64.encode('Andreas is a very good boy'): QW5kcmVhcyBpcyBhIHZlcnkgZ29vZCBib3k=
+cryptography.base64.decode($base64String): Andreas is a very good boy
+cryptography.sha256.encode('Andreas is a very good boy'): 71e3379e675b7005686c6a586b6cd255e68f270a9dac45c26fa3fcdd1a52353e
+--------------------
+emit-test: Nothing
+--------------------
+
+--------------------------------------------------
+Test if enabled naming condition will be emitted
+--------------------------------------------------
+------------------------------------
+named_condition_1 has been emitted
+------------------------------------
+
+-----------
+Test emit
+-----------
+
+SCRIPT JUST EMITTED A CONDITION
+---------------------------------
+
+----------
+Benchmark 
+----------
+Finished. Time: 1812
+--------------------------
+filesystem-test: Nothing
+--------------------------
+
+filesystem.composeURI('filesystem-test', 'test.txt'): filesystem-test/test.txt
+filesystem.getCanonicalURI('filesystem-test/abc/123/../..', 'test.txt'): filesystem-test/test.txt
+filesystem.getFileName('filesystem-test/abc/123/test.txt'): test.txt
+filesystem.getPathName('filesystem-test/abc/123/test.txt'): filesystem-test/abc/123
+filesystem.removeFileExtension('filesystem-test/abc/123/test.txt'): filesystem-test/abc/123/test
+filesystem.isPath('.'): 1
+filesystem.isPath('filesystem-test'): 0
+filesystem.isDrive('filesystem-test'): 0
+filesystem.isDrive('C:'): 1
+filesystem.isDrive('C:/'): 1
+Creating path: filesystem-test
+filesystem.getCurrentWorkingPathName(): /home/andreas/Development/drewke.net/miniscript
+Changing path: filesystem-test
+filesystem.getCurrentWorkingPathName(): /home/andreas/Development/drewke.net/miniscript/filesystem-test
+Changing path: /home/andreas/Development/drewke.net/miniscript
+filesystem.exists('filesystem-test'): 1
+filesystem.exists('filesystem-test-123'): 0
+Listing path: filesystem-test
+File@0: ..
+Creating file: filesystem-test/test.bin
+Reading file size of filesystem-test/test.bin: 6
+Reading file: filesystem-test/test.bin
+filesystem-test/test.bin: ByteArray([1, 2, 3, 4, 5, 6], size: 6, capacity: 6, read position: 0, write position: 0)
+Removing file: filesystem-test/test.bin
+Creating file: filesystem-test/test.txt
+Reading file size of filesystem-test/test.txt: 27
+Reading file: filesystem-test/test.txt
+filesystem-test/test.txt: Arrr. I am a mighty pirate.
+Removing file: filesystem-test/test.txt
+Creating file: filesystem-test/test.txt
+Reading file size of filesystem-test/test.txt: 21
+Reading file: filesystem-test/test.txt
+filesystem-test/test.txt: ["Line 1", "Line 2", "Line 3"]
+Listing path: filesystem-test
+File@0: ..
+File@1: test-renamed.txt
+Removing file: filesystem-test/test-renamed.txt
+Removing path: filesystem-test
+-------------------------
+functions-test: Nothing
+-------------------------
+helloWorldFunction(): Hello world
+factorial(5) = 120
+assignTest(): pre: $a = 0, $b = 1, $c = 2
+assignTest(): post: $a = 0, $b = b, $c = c
+globalVariableTest(): pre: $globalTest = Global Test Variable
+globalVariableTest(): $GLOBAL.globalTest = Global Test Variable
+globalVariableTest(): post: $globalTest = Been there, done that, got the t-shirt
+stackletTest(): $a = 0, $b = b, $c = c, $GLOBAL.globalTest = Been there, done that, got the t-shirt
+------------------------------
+lamdafunctions-test: Nothing
+------------------------------
+
+array.forEach() log test: [1, 2, 3, 4, 5, 6]
+1
+2
+3
+4
+5
+6
+array.forRange(1,3,2) log test: [1, 2, 3, 4, 5, 6]
+2
+4
+6
+array.forEach() sum test: [1, 2, 3, 4, 5, 6]: 21
+array.sort() desc test
+array.forEach() log test: [6, 5, 4, 3, 2, 1]
+6
+5
+4
+3
+2
+1
+set.forEach() log test: {aaa, bbb, ccc}
+aaa
+bbb
+ccc
+set.forEach() log test: {aaa, bbb, ccc}
+set.forEach() concatenate test: {aaa, bbb, ccc}: aaa,bbb,ccc
+c = 3
+b = 2
+a = 1
+map.forEach() sum test: {a: 1, b: 2, c: 3}: 6
+testing inline functions in arrays
+a: 1
+b: 2
+c: 3
+-> stacklet_1(8)
+() -> lamda_function_0(9)
+--------------------
+loop-test: Nothing
+--------------------
+
+tests continue, break
+1
+2
+4
+test continue 2, break 2 
+$i = 0
+    $j = 0
+$i = 1
+    $j = 0
+    $j = 1
+    $j = 2
+    $j = 3
+    $j = 4
+$i = 2
+    $j = 0
+    $j = 1
+    $j = 2
+    $j = 3
+    $j = 4
+$i = 3
+    $j = 0
+    $j = 1
+    $j = 2
+    $j = 3
+    $j = 4
+$i = 4
+    $j = 0
+    $j = 1
+test forCondition with a iteration function
+$i = 0
+$i = 1
+$i = 2
+$i = 4
+test forCondition with a iteration function in a function
+$j = 0
+$j = 1
+$j = 2
+$j = 4
+inlineFunctionTestInFunction3()
+$j = 0
+$k = 0
+$k = 1
+$k = 2
+$k = 3
+$k = 4
+stacklet, yaaaay
+$j = 1
+$k = 0
+$k = 1
+$k = 2
+$k = 3
+$k = 4
+stacklet, yaaaay
+$j = 2
+$k = 0
+$k = 1
+$k = 2
+$k = 3
+$k = 4
+stacklet, yaaaay
+$k = 0
+$k = 1
+$k = 2
+$k = 3
+$k = 4
+stacklet, yaaaay
+$j = 4
+test for
+$i = 0
+$i = 1
+$i = 2
+$i = 4
+test forEach with array
+$var1 = 1
+	$var2 = a
+	$var2 = b
+	$var2 = c
+$var1 = 2
+	$var2 = a
+	$var2 = b
+	$var2 = c
+$var1 = 3
+	$var2 = a
+	$var2 = b
+	$var2 = c
+$var1 = 4
+	$var2 = a
+	$var2 = b
+	$var2 = c
+$var1 = 5
+	$var2 = a
+	$var2 = b
+	$var2 = c
+$var1 = 6
+	$var2 = a
+	$var2 = b
+	$var2 = c
+$var1 = 7
+	$var2 = a
+	$var2 = b
+	$var2 = c
+$var1 = 8
+	$var2 = a
+	$var2 = b
+	$var2 = c
+$var1 = 9
+	$var2 = a
+	$var2 = b
+	$var2 = c
+$var1 = 10
+	$var2 = a
+	$var2 = b
+	$var2 = c
+test forEach with array
+$array = [1, 2, 3]
+$var3 = 1
+$var3 = 2
+$var3 = 3
+test forEach with array and references to its entries
+$array = [3, 2, 1]
+test forEach with set
+$set = {"a", "b", "c"}
+$key = a
+$key = b
+$key = c
+test forEach with set and references to its entries, which is not intended to work as one would expect as map keys are basic strings
+$set = {"a", "b", "c"}
+test forEach with array initializer
+$var3 = 5
+$var3 = 6
+$var3 = 7
+test forEach with set initializer
+$var3 = a
+$var3 = b
+$var3 = c
+test forEach with map
+$key = c, $value = 3
+$key = b, $value = 2
+$key = a, $value = 1
+test forEach with map with references to the values
+$map = {"a": 102, "b": 101, "c": 100}
+test forEach with map initializer
+$key = x, $value = 24
+$key = y, $value = 25
+$key = z, $value = 26
+done
+-----------------------
+network-test: Nothing
+-----------------------
+
+Fetch drewke.net/tdme2/ via HTTP
+Success: 1
+HTTP response status: 200
+HTTP headers: {"Accept-Ranges": "bytes", "Age": "369", "Connection": "close", "Content-Length": "593", "Content-Type": "text/html;charset=ISO-8859-1", "Date": "Mon, 19 Feb 2024 01:57:05 GMT", "Server": "Apache", "Vary": "Accept-Encoding", "Via": "1.1 webcache2 (Varnish/trunk)", "X-Varnish": "6140395630 6135186502"}
+HTTP response: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /tdme2</title>
+ </head>
+ <body>
+<h1>Index of /tdme2</h1>
+<pre>      <a href="?C=N;O=D">Name</a>                                        <a href="?C=M;O=A">Last modified</a>      <a href="?C=S;O=A">Size</a>  <a href="?C=D;O=A">Description</a><hr>      <a href="repository/">repository/</a>                                 2023-10-24 01:46    -   
+      <a href="tdme2-windows-msc-installer-x64-1.9.176.zip">tdme2-windows-msc-installer-x64-1.9.176.zip</a> 2023-04-27 06:24   67M  
+<hr></pre>
+</body></html>
+
+
+Fetch drewke.net/tdme2/ via HTTPS
+Success: 1
+HTTP response status: 200
+HTTP headers: {"Accept-Ranges": "bytes", "Age": "369", "Connection": "close", "Content-Length": "593", "Content-Type": "text/html;charset=ISO-8859-1", "Date": "Mon, 19 Feb 2024 01:57:05 GMT", "Server": "Apache", "Vary": "Accept-Encoding", "Via": "1.1 webcache2 (Varnish/trunk)", "X-Varnish": "6111203708 6107175231"}
+HTTP response: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /tdme2</title>
+ </head>
+ <body>
+<h1>Index of /tdme2</h1>
+<pre>      <a href="?C=N;O=D">Name</a>                                        <a href="?C=M;O=A">Last modified</a>      <a href="?C=S;O=A">Size</a>  <a href="?C=D;O=A">Description</a><hr>      <a href="repository/">repository/</a>                                 2023-10-24 01:46    -   
+      <a href="tdme2-windows-msc-installer-x64-1.9.176.zip">tdme2-windows-msc-installer-x64-1.9.176.zip</a> 2023-04-27 06:24   67M  
+<hr></pre>
+</body></html>
+
+
+HTTP download client: HTTPDownloadClientClass(url: https://download.freebsd.org/releases/ISO-IMAGES/14.0/FreeBSD-14.0-RELEASE-amd64-bootonly.iso, file: FreeBSD-14.0-RELEASE-amd64-bootonly.iso)
+[--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------]
+HTTP Download status code: 200
+HTTP Download response headers: {"Accept-Ranges": "bytes", "Connection": "close", "Content-Length": "447180800", "Content-Security-Policy": "default-src 'self' 'unsafe-inline'", "Content-Type": "application/octet-stream", "Date": "Mon, 19 Feb 2024 02:03:15 GMT", "ETag": "\"654df767-1aa77000\"", "Last-Modified": "Fri, 10 Nov 2023 09:27:03 GMT", "Server": "WeAreTheCloud/v0.01", "Strict-Transport-Security": "max-age=31536000", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "X-XSS-Protection": "1; mode=block"}
+--------------------
+pipe-test: Nothing
+--------------------
+
+Reading from pipe or console input stream: 
+Input was: 
+["Hi there!", "", "Have fun with our mighty Mindty MiniScript!!!", "", "Best regards", "Yours truly"]
+----------------------------
+preprocessor-test: Nothing
+----------------------------
+
+$i: 0
+++$i: 1
+$i++: 1
+$i: 2
+10 * 10: 100
+----------------------
+string-test: Nothing
+----------------------
+
+Hi, lets produce
+a newline, and
+another one: "yarrrrr"
+Some Umlauts love: äöü >>> ÄÖÜ
+Some more Umlauts love: ü
+Some even more Umlauts love: ü
+Beep
+String::regexMatch("Andreas0815", "([A-Za-z]*)([0-9]*)", $matches): ["Andreas0815", "Andreas", "0815"]
+String::regexSearch("Who is this Andreas0815?", "Andreas([0-9]*)", $matches): ["Andreas0815", "0815"]
+----------------------
+switch-test: Nothing
+----------------------
+
+$i = 1
+$j = b
+--------------------
+utf8-test: Nothing
+--------------------
+
+String::indexOf('äbcdüö', 'düö'): 3
+String::firstIndexOf('äbcdüö', 'düö'): 3
+String::lastIndexOf('äbcdüö', 'düö'): -1
+String::substring('äbcdüö', 3): düö
+String::substring('äbcdüö', 1, 5): bcdü
+String::replace('düöäbcdüö', 'düö', 'äüö', 3): düöäbcäüö
+String::length('äbcdüö'): 6
+String::charAt('äbcdüö', 0): ä
+String::charAt('äbcdüö', 1): b
+String::charAt('äbcdüö', 2): c
+String::charAt('äbcdüö', 3): d
+String::charAt('äbcdüö', 4): ü
+String::charAt('äbcdüö', 5): ö
+String::charAt('äbcdüö', 6): 
+String::padLeft('äbcdüö', '_', 10): ____äbcdüö
+String::padRight('äbcdüö', '_', 10): äbcdüö____
+String::tokenize('äbcÄdüöÖäbcÜ123', 'ÄÖÜ'): ["äbc", "düö", "äbc", "123"]
