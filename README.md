@@ -39,8 +39,6 @@ Also note the focus on easy integration into other products and easy customizabi
 ## 1.3. 1.0 BETA release TODO list
 
 - Whats left to do for 1.0 BETA release
-  - bugs
-    - error in stacklet(invalid case call) leads to memory corruption
   - some adjustments
     - private script variable? 
     - garbage collection per object?

@@ -308,7 +308,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::ScriptState::Block* endType = nullptr;
 						vector<int> blockStacksToRemove;
 						for (int i = blockStack.size() - 1; i >= 0; i--) {
-							if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
+							if (blockStack[i].type == MiniScript::ScriptState::Block::TYPE_FOR) {
 								endType = &blockStack[i];
 								level++;
 								blockStacksToRemove.push_back(i);
@@ -367,7 +367,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MiniScript::ScriptState::Block* endType = nullptr;
 						vector<int> blockStacksToRemove;
 						for (int i = blockStack.size() - 1; i >= 0; i--) {
-							if (blockStack[i].type == MiniScript::ScriptState::BLOCKTYPE_FOR) {
+							if (blockStack[i].type == MiniScript::ScriptState::Block::TYPE_FOR) {
 								endType = &blockStack[i];
 								level++;
 								if (level == levels) {
@@ -418,10 +418,10 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					} else {
 						auto& blockStack = miniScript->getScriptState().blockStack;
 						auto& block = blockStack.back();
-						if (block.type == MiniScript::ScriptState::BLOCKTYPE_FUNCTION || block.type == MiniScript::ScriptState::BLOCKTYPE_STACKLET) {
+						if (block.type == MiniScript::ScriptState::Block::TYPE_FUNCTION || block.type == MiniScript::ScriptState::Block::TYPE_STACKLET) {
 							miniScript->stopRunning();
 						} else
-						if (block.type ==  MiniScript::ScriptState::BLOCKTYPE_FOR && block.parameter.getType() == MiniScript::TYPE_INTEGER) {
+						if (block.type ==  MiniScript::ScriptState::Block::TYPE_FOR && block.parameter.getType() == MiniScript::TYPE_INTEGER) {
 							vector<MiniScript::Variable> arguments {};
 							span argumentsSpan(arguments);
 							MiniScript::Variable returnValue;
@@ -434,7 +434,8 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 							}
 						}
 						blockStack.erase(blockStack.begin() + blockStack.size() - 1);
-						if (statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
+						if (miniScript->hasEmitted() == false &&
+							statement.gotoStatementIdx != MiniScript::STATEMENTIDX_NONE) {
 							miniScript->gotoStatementGoto(statement);
 						}
 					}
@@ -480,7 +481,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						miniScript->gotoStatementGoto(statement);
 					} else {
 						scriptState.blockStack.emplace_back(
-							MiniScript::ScriptState::BLOCKTYPE_FORTIME,
+							MiniScript::ScriptState::Block::TYPE_FORTIME,
 							false,
 							&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx - 1],
 							&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx],
@@ -530,7 +531,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						} else {
 							auto& scriptState = miniScript->getScriptState();
 							scriptState.blockStack.emplace_back(
-								MiniScript::ScriptState::BLOCKTYPE_FOR,
+								MiniScript::ScriptState::Block::TYPE_FOR,
 								false,
 								&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx - 1],
 								&miniScript->getScripts()[scriptState.scriptIdx].statements[statement.gotoStatementIdx],
@@ -565,7 +566,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				bool booleanValue;
 				if (arguments.size() == 1 &&
 					miniScript->getBooleanValue(arguments, 0, booleanValue) == true) {
-					miniScript->getScriptState().blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_IF, booleanValue, nullptr, nullptr, MiniScript::Variable());
+					miniScript->getScriptState().blockStack.emplace_back(MiniScript::ScriptState::Block::TYPE_IF, booleanValue, nullptr, nullptr, MiniScript::Variable());
 					if (booleanValue == false) {
 						miniScript->gotoStatementGoto(statement);
 					}
@@ -601,7 +602,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "elseif without if");
 					} else {
 						auto& block = scriptState.blockStack.back();
-						if (block.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_IF) {
+						if (block.type != MiniScript::ScriptState::Block::TYPE_IF) {
 							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "elseif without if");
 						} else
 						if (block.match == true || booleanValue == false) {
@@ -631,7 +632,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 				if (arguments.size() == 0) {
 					auto& scriptState = miniScript->getScriptState();
 					auto& block = scriptState.blockStack.back();
-					if (block.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_IF) {
+					if (block.type != MiniScript::ScriptState::Block::TYPE_IF) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "else without if");
 					} else
 					if (block.match == true) {
@@ -664,7 +665,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
 				if (arguments.size() == 1) {
 					auto& scriptState = miniScript->getScriptState();
-					scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_SWITCH, false, nullptr, nullptr, arguments[0]);
+					scriptState.blockStack.emplace_back(MiniScript::ScriptState::Block::TYPE_SWITCH, false, nullptr, nullptr, arguments[0]);
 				} else {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
@@ -695,7 +696,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "case without switch");
 					} else {
 						auto& block = scriptState.blockStack.back();
-						if (block.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_SWITCH) {
+						if (block.type != MiniScript::ScriptState::Block::TYPE_SWITCH) {
 							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "case without switch");
 						} else {
 							auto match = arguments[0].getValueAsString() == block.parameter.getValueAsString();
@@ -703,7 +704,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 								miniScript->gotoStatementGoto(statement);
 							} else {
 								block.match = match;
-								scriptState.blockStack.emplace_back(MiniScript::ScriptState::BLOCKTYPE_CASE, false, nullptr, nullptr, MiniScript::Variable());
+								scriptState.blockStack.emplace_back(MiniScript::ScriptState::Block::TYPE_CASE, false, nullptr, nullptr, MiniScript::Variable());
 							}
 						}
 					}
@@ -731,7 +732,7 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 						MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "default without switch");
 					} else {
 						auto& block = scriptState.blockStack.back();
-						if (block.type != MiniScript::ScriptState::BlockType::BLOCKTYPE_SWITCH) {
+						if (block.type != MiniScript::ScriptState::Block::TYPE_SWITCH) {
 							MINISCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "default without switch");
 						} else
 						if (block.match == true) {

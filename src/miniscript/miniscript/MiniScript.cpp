@@ -262,7 +262,6 @@ void MiniScript::executeNextStatement() {
 	//
 	const auto& statement = script.statements[scriptState.statementIdx];
 	const auto& syntaxTree = script.syntaxTree[scriptState.statementIdx];
-	if (VERBOSE == true) _Console::printLine("MiniScript::executeScriptLine(): " + getStatementInformation(statement));
 	//
 	executeStatement(syntaxTree, statement);
 	//
@@ -1543,8 +1542,7 @@ bool MiniScript::validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode, 
 }
 
 void MiniScript::emit(const string& condition) {
-	if (VERBOSE == true) _Console::printLine("MiniScript::emit(): " + scriptFileName + ": " + condition);
-	// defer emit if a function is still running
+	// defer emit if a function/stacklet is still running
 	if (isFunctionRunning() == true) {
 		deferredEmit = condition;
 		return;
@@ -3428,15 +3426,16 @@ void MiniScript::dumpScriptState(ScriptState& scriptState, const string& message
 	_Console::printLine(string("\t") + "gotoStatementIdx: " + to_string(scriptState.gotoStatementIdx));
 	_Console::printLine(string("\t") + "variable count: " + to_string(scriptState.variables.size()));
 	_Console::printLine(string("\t") + "block stack count: " + to_string(scriptState.blockStack.size()));
-	array<string, 8> blockStackTypes {
-		"BLOCKTYPE_NONE",
-		"BLOCKTYPE_GLOBAL",
-		"BLOCKTYPE_FUNCTION",
-		"BLOCKTYPE_FOR",
-		"BLOCKTYPE_FORTIME",
-		"BLOCKTYPE_IF",
-		"BLOCKTYPE_SWITCH",
-		"BLOCKTYPE_CASE"
+	array<string, 9> blockStackTypes {
+		"TYPE_NONE",
+		"TYPE_GLOBAL",
+		"TYPE_STACKLET",
+		"TYPE_FUNCTION",
+		"TYPE_FOR",
+		"TYPE_FORTIME",
+		"TYPE_IF",
+		"TYPE_SWITCH",
+		"TYPE_CASE"
 	};
 	for (const auto& block: scriptState.blockStack) {
 		_Console::printLine(string("\t\t") + blockStackTypes[block.type]);
@@ -3445,6 +3444,7 @@ void MiniScript::dumpScriptState(ScriptState& scriptState, const string& message
 }
 
 bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& returnValue, bool pushScriptState) {
+	//
 	if (scriptIdx < 0 || scriptIdx >= scripts.size()) {
 		_Console::printLine("MiniScript::call(): Invalid script index: " + to_string(scriptIdx));
 		return false;
@@ -3452,7 +3452,7 @@ bool MiniScript::call(int scriptIdx, span<Variable>& arguments, Variable& return
 	auto& script = scripts[scriptIdx];
 	//
 	if (script.type != Script::TYPE_FUNCTION &&
-			script.type != Script::TYPE_STACKLET) {
+		script.type != Script::TYPE_STACKLET) {
 		_Console::printLine("MiniScript::call(): " + (script.name.empty() == false?script.name:script.condition) + ": Script is not a function/callable/stacklet.");
 		return false;
 	}

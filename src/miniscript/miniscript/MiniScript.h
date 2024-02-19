@@ -2926,11 +2926,11 @@ protected:
 	 * Script state
 	 */
 	struct ScriptState {
-		enum BlockType { BLOCKTYPE_NONE, BLOCKTYPE_GLOBAL, BLOCKTYPE_STACKLET, BLOCKTYPE_FUNCTION, BLOCKTYPE_FOR, BLOCKTYPE_FORTIME, BLOCKTYPE_IF, BLOCKTYPE_SWITCH, BLOCKTYPE_CASE };
 		/**
 		 * Block
 		 */
 		struct Block {
+			enum Type { TYPE_NONE, TYPE_GLOBAL, TYPE_STACKLET, TYPE_FUNCTION, TYPE_FOR, TYPE_FORTIME, TYPE_IF, TYPE_SWITCH, TYPE_CASE };
 			/**
 			 * Constructor
 			 * @param type block type
@@ -2940,7 +2940,7 @@ protected:
 			 * @param parameter switch variable / iteration function
 			 */
 			inline Block(
-				BlockType type,
+				Type type,
 				bool match,
 				const Statement* continueStatement,
 				const Statement* breakStatement,
@@ -2953,7 +2953,7 @@ protected:
 				parameter(parameter)
 			{}
 			//
-			BlockType type;
+			Type type;
 			bool match;
 			const Statement* continueStatement;
 			const Statement* breakStatement;
@@ -3004,6 +3004,13 @@ protected:
 
 	string deferredEmit;
 	bool emitted { false };
+
+	/**
+	 * @return if script has emitted a condition like error
+	 */
+	inline bool hasEmitted() {
+		return emitted;
+	}
 
 	/**
 	 * Initialize native mini script
@@ -3098,10 +3105,17 @@ protected:
 	}
 
 	/**
-	 * @return is function running
+	 * @return is function/stacklet running
 	 */
 	inline bool isFunctionRunning() {
-		return scriptStateStack.size() > 1;
+		// function?
+		if (scriptStateStack.size() > 1) return true;
+		// stacklet?
+		for (const auto& block: getRootScriptState().blockStack) {
+			if (block.type == ScriptState::Block::TYPE_STACKLET) return true;
+		}
+		// nope
+		return false;
 	}
 
 	/**
@@ -3117,8 +3131,8 @@ protected:
 		if (scriptIdx != SCRIPTIDX_NONE) {
 			scriptState.blockStack.emplace_back(
 				scripts[scriptIdx].type == Script::TYPE_FUNCTION?
-					ScriptState::BLOCKTYPE_FUNCTION:
-					ScriptState::BLOCKTYPE_GLOBAL,
+					ScriptState::Block::TYPE_FUNCTION:
+					ScriptState::Block::TYPE_GLOBAL,
 				false,
 				nullptr,
 				nullptr,
@@ -3142,7 +3156,7 @@ protected:
 	inline void resetStackletScriptExecutationState(int scriptIdx, StateMachineStateId stateMachineState) {
 		auto& scriptState = getScriptState();
 		scriptState.blockStack.emplace_back(
-			ScriptState::BLOCKTYPE_STACKLET,
+			ScriptState::Block::TYPE_STACKLET,
 			false,
 			nullptr,
 			nullptr,
@@ -4142,13 +4156,6 @@ public:
 	 * Start error script
 	 */
 	inline void startErrorScript() {
-		//
-		if (isFunctionRunning() == true) {
-			stopRunning();
-			deferredEmit = "error";
-			return;
-		}
-		//
 		emit("error");
 	}
 
