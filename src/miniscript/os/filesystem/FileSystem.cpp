@@ -43,7 +43,7 @@ void FileSystem::list(const string& pathName, vector<string>& files, FileNameFil
 	if (StringTools::endsWith(_pathName, "/") == false) _pathName+= "/";
 
 	try {
-		for (const auto& entry: std::filesystem::directory_iterator(std::filesystem::u8path(_pathName))) {
+		for (const auto& entry: std::filesystem::directory_iterator(std::filesystem::path((const char8_t*)_pathName.c_str()))) {
 			auto u8FileName = entry.path().filename().u8string();
 			string fileName(u8FileName.size(), 0);
 			for (auto i = 0; i < u8FileName.size(); i++) fileName[i] = u8FileName[i];
@@ -85,7 +85,7 @@ void FileSystem::list(const string& pathName, vector<string>& files, FileNameFil
 
 bool FileSystem::isPath(const string& pathName) {
 	try {
-		auto status = std::filesystem::status(std::filesystem::u8path(pathName));
+		auto status = std::filesystem::status(std::filesystem::path((const char8_t*)pathName.c_str()));
 		return std::filesystem::is_directory(status);
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to check if path: " + pathName + ": " + string(exception.what()));
@@ -100,7 +100,7 @@ bool FileSystem::isDrive(const string& pathName) {
 
 bool FileSystem::exists(const string& uri) {
 	try {
-		return std::filesystem::exists(std::filesystem::u8path(uri));
+		return std::filesystem::exists(std::filesystem::path((const char8_t*)uri.c_str()));
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to check if file exists: " + uri + ": " + string(exception.what()));
 	}
@@ -110,7 +110,7 @@ bool FileSystem::exists(const string& uri) {
 
 uint64_t FileSystem::getFileSize(const string& pathName, const string& fileName) {
 	try {
-		return std::filesystem::file_size(std::filesystem::u8path(pathName + "/" + fileName));
+		return std::filesystem::file_size(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str()));
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to determine file size: " + fileName + ": " + string(exception.what()));
 	}
@@ -119,7 +119,7 @@ uint64_t FileSystem::getFileSize(const string& pathName, const string& fileName)
 }
 
 const string FileSystem::getContentAsString(const string& pathName, const string& fileName) {
-	ifstream ifs(std::filesystem::u8path(composeURI(pathName, fileName)));
+	ifstream ifs(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str()));
 	if (ifs.is_open() == false) {
 		throw FileSystemException("Unable to open file for reading(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -130,7 +130,7 @@ const string FileSystem::getContentAsString(const string& pathName, const string
 }
 
 void FileSystem::setContentFromString(const string& pathName, const string& fileName, const string& content) {
-	ofstream ofs(std::filesystem::u8path(composeURI(pathName, fileName)));
+	ofstream ofs(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str()));
 	if (ofs.is_open() == false) {
 		throw FileSystemException("Unable to open file for writing(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -141,7 +141,7 @@ void FileSystem::setContentFromString(const string& pathName, const string& file
 
 void FileSystem::getContent(const string& pathName, const string& fileName, vector<uint8_t>& content)
 {
-	ifstream ifs(std::filesystem::u8path(composeURI(pathName, fileName)), ifstream::binary);
+	ifstream ifs(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str()), ifstream::binary);
 	if (ifs.is_open() == false) {
 		throw FileSystemException("Unable to open file for reading(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -154,7 +154,7 @@ void FileSystem::getContent(const string& pathName, const string& fileName, vect
 }
 
 void FileSystem::setContent(const string& pathName, const string& fileName, const vector<uint8_t>& content) {
-	ofstream ofs(std::filesystem::u8path(composeURI(pathName, fileName)), ofstream::binary);
+	ofstream ofs(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str()), ofstream::binary);
 	if (ofs.is_open() == false) {
 		throw FileSystemException("Unable to open file for writing(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -164,7 +164,7 @@ void FileSystem::setContent(const string& pathName, const string& fileName, cons
 
 void FileSystem::getContentAsStringArray(const string& pathName, const string& fileName, vector<string>& content)
 {
-	ifstream ifs(std::filesystem::u8path(composeURI(pathName, fileName)));
+	ifstream ifs(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str()));
 	if(ifs.is_open() == false) {
 		throw FileSystemException("Unable to open file for reading(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -179,7 +179,7 @@ void FileSystem::getContentAsStringArray(const string& pathName, const string& f
 
 void FileSystem::setContentFromStringArray(const string& pathName, const string& fileName, const vector<string>& content)
 {
-	ofstream ofs(std::filesystem::u8path(composeURI(pathName, fileName)), ofstream::binary);
+	ofstream ofs(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str()), ofstream::binary);
 	if(ofs.is_open() == false) {
 		throw FileSystemException("Unable to open file for writing(" + to_string(errno) + "): " + pathName + "/" + fileName);
 	}
@@ -268,7 +268,7 @@ const string FileSystem::getCurrentWorkingPathName() {
 
 void FileSystem::changePath(const string& pathName) {
 	try {
-		return std::filesystem::current_path(std::filesystem::u8path(pathName));
+		return std::filesystem::current_path(std::filesystem::path((const char8_t*)pathName.c_str()));
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to change path: " + pathName + ": " + string(exception.what()));
 	}
@@ -299,7 +299,7 @@ const string FileSystem::removeFileExtension(const string& fileName) {
 
 void FileSystem::createPath(const string& pathName) {
 	try {
-		if (std::filesystem::create_directory(std::filesystem::u8path(pathName)) == false) {
+		if (std::filesystem::create_directory(std::filesystem::path((const char8_t*)pathName.c_str())) == false) {
 			throw FileSystemException("Unable to create path: " + pathName);
 		}
 	} catch (Exception& exception) {
@@ -310,11 +310,11 @@ void FileSystem::createPath(const string& pathName) {
 void FileSystem::removePath(const string& pathName, bool recursive) {
 	try {
 		if (recursive == false) {
-			if (std::filesystem::remove(std::filesystem::u8path(pathName)) == false) {
+			if (std::filesystem::remove(std::filesystem::path((const char8_t*)pathName.c_str())) == false) {
 				throw FileSystemException("Unable to remove path: " + pathName);
 			}
 		} else {
-			if (std::filesystem::remove_all(std::filesystem::u8path(pathName)) == false) {
+			if (std::filesystem::remove_all(std::filesystem::path((const char8_t*)pathName.c_str())) == false) {
 				throw FileSystemException("Unable to remove path recursively: " + pathName);
 			}
 		}
@@ -325,7 +325,7 @@ void FileSystem::removePath(const string& pathName, bool recursive) {
 
 void FileSystem::removeFile(const string& pathName, const string& fileName) {
 	try {
-		if (std::filesystem::remove(std::filesystem::u8path(composeURI(pathName, fileName))) == false) {
+		if (std::filesystem::remove(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str())) == false) {
 			throw FileSystemException("Unable to remove file: " + pathName + "/" + fileName);
 		}
 	} catch (Exception& exception) {
@@ -335,7 +335,7 @@ void FileSystem::removeFile(const string& pathName, const string& fileName) {
 
 void FileSystem::rename(const string& fileNameFrom, const string& fileNameTo) {
 	try {
-		std::filesystem::rename(std::filesystem::u8path(fileNameFrom), std::filesystem::u8path(fileNameTo));
+		std::filesystem::rename(std::filesystem::path((const char8_t*)fileNameFrom.c_str()), std::filesystem::path((const char8_t*)fileNameTo.c_str()));
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to rename file: " + fileNameFrom + " -> " + fileNameTo + ": " + string(exception.what()));
 	}

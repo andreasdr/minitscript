@@ -41,12 +41,19 @@ on: nothing
 	$httpDownloadClient->setHeaders({a: 1})
 	console.printLine("HTTP download client: " + $httpDownloadClient)
 	$httpDownloadClient->start()
-	console.print("[")
 	forCondition($httpDownloadClient->isFinished() == false)
-		console.print("-")
+		console.print("\r")
+		console.print("[")
+		for ($i = 0, $i < integer($httpDownloadClient->getProgress() * 68), $i++)
+			console.print("-")
+		end
+		for($i = $i, $i < 68, $i++)
+			console.print(" ")
+		end
+		console.print("] " + integer($httpDownloadClient->getProgress() * 100) + "%")
 		script.wait(1000)
 	end
-	console.printLine("]")
+	console.printLine("\rDownloaded complete: " + $httpDownloadClient->getURL() + " --> " + $httpDownloadClient->getFile())
 	$httpDownloadClient->join()
 	console.printLine("HTTP Download status code: " + $httpDownloadClient->getStatusCode())
 	console.printLine("HTTP Download response headers: " + $httpDownloadClient->getResponseHeaders())

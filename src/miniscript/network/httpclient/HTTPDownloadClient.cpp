@@ -219,7 +219,7 @@ void HTTPDownloadClient::start() {
 
 					{
 						// output file stream
-						ofstream ofs(std::filesystem::u8path(downloadClient->file + ".download"), ofstream::binary);
+						ofstream ofs(std::filesystem::path((const char8_t*)(downloadClient->file + ".download").c_str()), ofstream::binary);
 						if (ofs.is_open() == false) {
 							throw HTTPClientException("Unable to open file for writing(" + to_string(errno) + "): " + (downloadClient->file + ".download"));
 						}
@@ -236,7 +236,7 @@ void HTTPDownloadClient::start() {
 									// flush download file to disk
 									ofs.flush();
 									// input file stream
-									ifstream ifs(std::filesystem::u8path(downloadClient->file + ".download"), ofstream::binary);
+									ifstream ifs(std::filesystem::path((const char8_t*)(downloadClient->file + ".download").c_str()), ofstream::binary);
 									if (ifs.is_open() == false) {
 										throw HTTPClientException("Unable to open file for reading(" + to_string(errno) + "): " + (downloadClient->file + ".download"));
 									}
@@ -269,7 +269,7 @@ void HTTPDownloadClient::start() {
 					// transfer to real file
 					if (downloadClient->statusCode == HTTP_STATUS_OK && isStopRequested() == false) {
 						// input file stream
-						ifstream ifs(std::filesystem::u8path(downloadClient->file + ".download"), ofstream::binary);
+						ifstream ifs(std::filesystem::path((const char8_t*)(downloadClient->file + ".download").c_str()), ofstream::binary);
 						if (ifs.is_open() == false) {
 							throw HTTPClientException("Unable to open file for reading(" + to_string(errno) + "): " + (downloadClient->file + ".download"));
 						}
@@ -283,7 +283,7 @@ void HTTPDownloadClient::start() {
 						ifs.seekg(ifsHeaderSize, ios::beg);
 
 						// output file stream
-						ofstream ofs(std::filesystem::u8path(downloadClient->file), ofstream::binary);
+						ofstream ofs(std::filesystem::path((const char8_t*)downloadClient->file.c_str()), ofstream::binary);
 						if (ofs.is_open() == false) {
 							throw HTTPClientException("Unable to open file for writing(" + to_string(errno) + "): " + downloadClient->file);
 						}

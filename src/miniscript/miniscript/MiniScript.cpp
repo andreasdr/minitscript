@@ -297,7 +297,8 @@ bool MiniScript::parseStatement(const string_view& executableStatement, string_v
 		//
 		auto i = 0;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
 		//
@@ -2771,7 +2772,7 @@ void MiniScript::startScript() {
 	scriptState.running = true;
 	registerVariables();
 	//
-	if (hasCondition("initialze") == true) emit("initialize");
+	if (hasCondition("initialize") == true) emit("initialize");
 }
 
 int MiniScript::determineScriptIdxToStart() {

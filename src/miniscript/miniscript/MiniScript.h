@@ -1351,7 +1351,6 @@ public:
 					value = getIntegerValueReference();
 					return true;
 				case TYPE_FLOAT:
-					_Console::printLine("MiniScript::getIntegerValue(): converting float to integer: precision loss");
 					value = getFloatValueReference();
 					return true;
 				case TYPE_STRING:
@@ -1362,7 +1361,6 @@ public:
 							return true;
 						} else
 						if (_Float::is(stringValue) == true) {
-							_Console::printLine("MiniScript::getIntegerValue(): converting float to integer: precision loss");
 							value = static_cast<int64_t>(_Float::parse(stringValue));
 							return true;
 						} else {
@@ -2107,7 +2105,8 @@ public:
 				// )
 				if (candidate[i++] != ')') return false;
 				// spaces
-				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+				if (i >= candidate.size()) return false;
 				// -
 				if (candidate[i++] != '-') return false;
 				//
@@ -2115,7 +2114,8 @@ public:
 				// >
 				if (candidate[i++] != '>') return false;
 				// spaces
-				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+				if (i >= candidate.size()) return false;
 				//
 				auto functionStartIdx = i;
 				for (; i < candidate.size(); i++) {
@@ -2135,7 +2135,8 @@ public:
 				//
 				auto i = 0;
 				// spaces
-				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+				if (i >= candidate.size()) return false;
 				// -
 				if (candidate[i++] != '-') return false;
 				//
@@ -2143,7 +2144,8 @@ public:
 				// >
 				if (candidate[i++] != '>') return false;
 				// spaces
-				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+				if (i >= candidate.size()) return false;
 				//
 				auto stackletStartIdx = i;
 				for (; i < candidate.size(); i++) {
@@ -3682,7 +3684,8 @@ private:
 		// (
 		if (candidate[i++] != '(') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
 		//
 		auto argumentStartIdx = string::npos;
 		auto argumentEndIdx = string::npos;
@@ -3730,7 +3733,8 @@ private:
 		//
 		if (i >= candidate.size()) return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
 		//
@@ -3738,7 +3742,8 @@ private:
 		// >
 		if (candidate[i++] != '>') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
 		//
 		if (candidate[i++] != '{') return false;
 		//
@@ -3779,7 +3784,8 @@ private:
 		//
 		auto i = 0;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
 		//
@@ -3787,7 +3793,8 @@ private:
 		// >
 		if (candidate[i++] != '>') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++); if (i >= candidate.size()) return false;
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
 		//
 		if (candidate[i++] != '{') return false;
 		//
