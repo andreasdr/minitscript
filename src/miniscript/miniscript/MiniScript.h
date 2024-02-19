@@ -3003,6 +3003,7 @@ protected:
 	string errorMessage;
 
 	string deferredEmit;
+	bool emitted { false };
 
 	/**
 	 * Initialize native mini script

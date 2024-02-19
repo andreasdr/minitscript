@@ -250,6 +250,8 @@ void MiniScript::executeNextStatement() {
 	auto& scriptState = getScriptState();
 	if (scriptState.scriptIdx == SCRIPTIDX_NONE || scriptState.statementIdx == STATEMENTIDX_NONE || scriptState.running == false) return;
 	//
+	emitted = false;
+	//
 	const auto& script = scripts[scriptState.scriptIdx];
 	if (script.statements.empty() == true) return;
 	// take goto statement index into account
@@ -261,16 +263,16 @@ void MiniScript::executeNextStatement() {
 	const auto& statement = script.statements[scriptState.statementIdx];
 	const auto& syntaxTree = script.syntaxTree[scriptState.statementIdx];
 	if (VERBOSE == true) _Console::printLine("MiniScript::executeScriptLine(): " + getStatementInformation(statement));
-
 	//
 	executeStatement(syntaxTree, statement);
-
 	//
-	scriptState.statementIdx++;
-	if (scriptState.statementIdx >= script.statements.size()) {
-		scriptState.scriptIdx = SCRIPTIDX_NONE;
-		scriptState.statementIdx = STATEMENTIDX_NONE;
-		setScriptStateState(STATEMACHINESTATE_WAIT_FOR_CONDITION);
+	if (emitted == false) {
+		scriptState.statementIdx++;
+		if (scriptState.statementIdx >= script.statements.size()) {
+			scriptState.scriptIdx = SCRIPTIDX_NONE;
+			scriptState.statementIdx = STATEMENTIDX_NONE;
+			setScriptStateState(STATEMACHINESTATE_WAIT_FOR_CONDITION);
+		}
 	}
 }
 
@@ -1568,6 +1570,8 @@ void MiniScript::emit(const string& condition) {
 	//
 	getScriptState().running = true;
 	resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);
+	//
+	emitted = true;
 }
 
 void MiniScript::executeStateMachine() {
