@@ -140,8 +140,8 @@ void ApplicationMethods::registerMethods(MiniScript* miniScript) {
 				MiniScript::Method(
 					{
 						{ .type = MiniScript::TYPE_STRING, .name = "command", .optional = false, .reference = false, .nullable = false },
-						{ .type = MiniScript::TYPE_INTEGER, .name = "exitCode", .optional = true, .reference = true, .nullable = false },
-						{ .type = MiniScript::TYPE_STRING, .name = "error", .optional = true, .reference = true, .nullable = false },
+						{ .type = MiniScript::TYPE_INTEGER, .name = "exitCode", .optional = true, .reference = true, .nullable = true },
+						{ .type = MiniScript::TYPE_STRING, .name = "error", .optional = true, .reference = true, .nullable = true },
 					},
 					MiniScript::TYPE_STRING
 				),

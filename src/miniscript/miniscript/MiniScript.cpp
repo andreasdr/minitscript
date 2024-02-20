@@ -2363,12 +2363,12 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 								"else; " +
 									"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
 									"unsetVariableReference(\"" + entryVariable + "\"); " +
-									"setVariable(\"" + containerArrayVariable + "\", $___ARRAY); " +
+									"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
 								"end; "
 								:
-								"setVariable(\"" + entryVariable + "\", $___NULL); "
+								"setVariable(\"" + entryVariable + "\", $$.___NULL); "
 							) +
-							(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $___ARRAY); ":"") +
+							(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
 							"end; " +
 							"})";
 					} else
@@ -2472,14 +2472,14 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 								"else; " +
 									"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
 									"unsetVariableReference(\"" + entryValueVariable + "\"); " +
-									"setVariable(\"" + containerArrayVariable + "\", $___ARRAY); " +
+									"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
 								"end; " +
-								"setVariable(\"" + entryKeyVariable + "\", $___NULL); "
+								"setVariable(\"" + entryKeyVariable + "\", $$.___NULL); "
 								:
-								"setVariable(\"" + entryValueVariable + "\", $___NULL); " +
-								"setVariable(\"" + entryKeyVariable + "\", $___NULL); "
+								"setVariable(\"" + entryValueVariable + "\", $$.___NULL); " +
+								"setVariable(\"" + entryKeyVariable + "\", $$.___NULL); "
 							) +
-							(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $___ARRAY); ":"") +
+							(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
 							"end; " +
 							"})";
 					} else

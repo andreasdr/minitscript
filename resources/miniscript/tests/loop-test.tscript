@@ -50,13 +50,6 @@ end
 
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
-	#bug
-	#$stacklet =->{ console.printLine("xxx") }
-	#works
-	$stacklet = ->{ console.printLine("xxx") }
-	$function  = () ->{ console.printLine("xxx") }
-	console.dump($stacklet)
-	console.dump($function)
 	console.printLine("--------------------")
 	console.printLine("loop-test: Nothing")
 	console.printLine("--------------------")
