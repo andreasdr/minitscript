@@ -176,6 +176,13 @@ on: nothing
 	forEach($key, $value in {x: 24, y: 25, z: 26})
 		console.printLine("$key = " + $key + ", $value = " + $value)
 	end
+	console.printLine("test 2 forEach with map initializer") 
+	forEach($key, $value in {x: 24, y: 25, z: 26})
+		console.printLine("$key = " + $key + ", $value = " + $value)
+		forEach($key, $value in {a: 1, b: 2, c: 3})
+			console.printLine("\t$key = " + $key + ", $value = " + $value)
+		end
+	end
 	console.printLine("done")
 	script.stop()
 end

@@ -1045,7 +1045,7 @@ void Transpiler::determineVariables(int scriptIdx, const MiniScript::SyntaxTreeN
 					syntaxTreeNode.value.getValueAsString() == "setVariable" ||
 					syntaxTreeNode.value.getValueAsString() == "setVariableReference" ||
 					syntaxTreeNode.value.getValueAsString() == "setConstant" ||
-					syntaxTreeNode.value.getValueAsString() == "unsetVariable") &&
+					syntaxTreeNode.value.getValueAsString() == "unsetVariableReference") &&
 					syntaxTreeNode.arguments.empty() == false &&
 					syntaxTreeNode.arguments[0].type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
 					//
@@ -2583,7 +2583,7 @@ bool Transpiler::transpileStatement(
 		syntaxTree.value.getValueAsString() == "setVariable" ||
 		syntaxTree.value.getValueAsString() == "setVariableReference" ||
 		syntaxTree.value.getValueAsString() == "setConstant" ||
-		syntaxTree.value.getValueAsString() == "unsetVariable") &&
+		syntaxTree.value.getValueAsString() == "unsetVariableReference") &&
 		syntaxTree.arguments.empty() == false &&
 		syntaxTree.arguments[0].type == MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
 		// generate variable access
