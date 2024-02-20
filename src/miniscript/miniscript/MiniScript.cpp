@@ -3979,8 +3979,6 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 	auto quote = '\0';
 	auto arrayValueStart = string::npos;
 	auto arrayValueEnd = string::npos;
-	auto quotedArrayValueStart = string::npos;
-	auto quotedArrayValueEnd = string::npos;
 	auto inlineFunctionSignatureStartCandidate = string::npos;
 	auto inlineFunctionLineIdxCandidate = LINE_NONE;
 	auto inlineFunctionLineIdx = LINE_NONE;
@@ -3989,18 +3987,7 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 	auto i = 0;
 	//
 	auto pushToArray = [&]() -> void {
-		// quoted value
-		if (quotedArrayValueStart != string::npos) {
-			quotedArrayValueStart++;
-			auto arrayValueLength = quotedArrayValueEnd - quotedArrayValueStart;
-			if (arrayValueLength > 0) {
-				auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[quotedArrayValueStart], arrayValueLength));
-				if (arrayValueStringView.empty() == false) {
-					variable.pushArrayEntry(string(arrayValueStringView));
-				}
-			}
-		} else
-		// unquoted value
+		// array value
 		if (arrayValueStart != string::npos) {
 			arrayValueEnd = i - 1;
 			auto arrayValueLength = arrayValueEnd - arrayValueStart + 1;
@@ -4014,8 +4001,6 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 			}
 		}
 		//
-		quotedArrayValueStart = string::npos;
-		quotedArrayValueEnd = string::npos;
 		arrayValueStart = string::npos;
 		arrayValueEnd = string::npos;
 		//
@@ -4059,18 +4044,17 @@ const MiniScript::Variable MiniScript::initializeArray(const string_view& initia
 		if (squareBracketCount == 1 && curlyBracketCount == 0 && (c == '"' || c == '\'') && lc != '\\') {
 			if (quote == '\0') {
 				quote = c;
-				quotedArrayValueStart = i;
+				if (arrayValueStart == string::npos) arrayValueStart = i;
 			} else
 			if (quote == c) {
 				quote = '\0';
-				quotedArrayValueEnd = i;
+				if (arrayValueEnd == string::npos) arrayValueEnd = i;
 			}
 		} else
 		// no quote
 		if (quote == '\0') {
 			// , -> push to array
 			if (squareBracketCount == 1 && curlyBracketCount == 0 && bracketCount == 0 && c == ',') {
-				// push to array
 				pushToArray();
 			} else
 			// possible function call
@@ -4220,7 +4204,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 	auto insertMapKeyValuePair = [&]() -> void {
 		//
 		string_view mapKey;
-		// unquoted map key
+		// map key
 		if (mapKeyStart != string::npos && mapKeyEnd != string::npos) {
 			//
 			auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
@@ -4240,7 +4224,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 		if (viewIsKey(mapKey) == false) {
 			_Console::printLine(miniScript->getStatementInformation(statement) + ": invalid key name, ignoring map entry: " + string(mapKey));
 		} else {
-			// unquoted map value
+			// map value
 			if (mapValueStart != string::npos && mapValueEnd != string::npos) {
 				auto mapValueLength = mapValueEnd - mapValueStart + 1;
 				//
@@ -4403,7 +4387,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 				if (curlyBracketCount == 1) {
 					// parse and insert into map
 					string_view mapKey;
-					// unquoted map key
+					// map key
 					if (mapKeyStart != string::npos) {
 						if (mapKeyEnd == string::npos) mapKeyEnd = i;
 						auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
@@ -4472,7 +4456,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 				if (squareBracketCount == 0 && mapValueStart != string::npos && initializerString[mapValueStart] == '[') {
 					// parse and insert into map
 					string_view mapKey;
-					// unquoted map key
+					// map key
 					if (mapKeyStart != string::npos) {
 						auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
 						if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
