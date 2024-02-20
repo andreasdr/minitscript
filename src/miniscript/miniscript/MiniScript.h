@@ -2889,7 +2889,7 @@ public:
 							}
 						case TYPE_STRING:
 							{
-								argumentsString+= (argumentsString.empty() == false?", ":"") + string("\"") + argument.value.getValueAsString() + string("\"");
+								argumentsString+= (argumentsString.empty() == false?", ":"") + string("\"") + escapeString(argument.value.getValueAsString()) + string("\"");
 								break;
 							}
 						default:
@@ -3004,6 +3004,28 @@ protected:
 
 	string deferredEmit;
 	bool emitted { false };
+
+	/**
+	 * Escape string variable
+	 * @param str string
+	 * @return escaped string
+	 */
+	inline static const string escapeString(const string& str) {
+		return
+			_StringTools::replace(
+				_StringTools::replace(
+					_StringTools::replace(
+						str,
+						"\\",
+						"\\\\"
+					),
+					"\"",
+					"\\\""
+				),
+				"\n",
+				"\\n"
+			);
+	}
 
 	/**
 	 * @return if script has emitted a condition like error

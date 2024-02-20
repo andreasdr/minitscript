@@ -7,6 +7,8 @@ on: initialize
 end
 
 function: testSingleScript($script, $className)
+	console.printLine("TESTING: " + $script)
+	console.printLine()
 	$commands = []
 	$commands[] = "rm -rf Tsrc"
 	$commands[] = "mkdir Tsrc"
@@ -16,13 +18,13 @@ function: testSingleScript($script, $className)
 	$commands[] = "make -f TMakefile mains"
 	forEach($command in $commands)
 		console.print("Executing: " + $command)
-		$exitCode = -1
+		$exitCode = null
 		$error = null
 		$result = application.execute($command, $exitCode, $error)
 		if ($exitCode == $$.Application::EXITCODE_SUCCESS)
 			console.printLine(", SUCCESS")
 		else
-			console.printLine(", FAILURE, exiting")
+			console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
 			console.printLine("**********************************************************************")
 			console.printLine($error)
 			application.exit($$.Application::EXITCODE_FAILURE)
@@ -31,11 +33,11 @@ function: testSingleScript($script, $className)
 	# execute binary
 	$command = "./bin/Main"
 	console.print("Executing: " + $command)
-	$exitCode = -1
+	$exitCode = null
 	$error = null
 	$nativeResult = application.execute($command, $exitCode, $error)
 	if ($exitCode != $$.Application::EXITCODE_SUCCESS)
-		console.printLine(", FAILURE, exiting")
+		console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
 		console.printLine("**********************************************************************")
 		console.printLine($error)
 		application.exit($$.Application::EXITCODE_FAILURE)
@@ -44,7 +46,7 @@ function: testSingleScript($script, $className)
 	# execute minscript interpreteer
 	$command = "./bin/miniscript/tools/miniscript " + $script
 	console.print("Executing: " + $command)
-	$exitCode = -1
+	$exitCode = null
 	$error = null
 	$interpreterResult = application.execute($command, $exitCode, $error)
 	if ($exitCode != $$.Application::EXITCODE_SUCCESS)
@@ -54,13 +56,29 @@ function: testSingleScript($script, $className)
 		application.exit($$.Application::EXITCODE_FAILURE)
 	end
 	if ($nativeResult != $interpreterResult)
+		filesystem.setContentFromString(".", "native-test-output-native.log", $nativeResult)
+		filesystem.setContentFromString(".", "native-test-output-interpreter.log", $interpreterResult)
 		console.printLine(", native result != interpreter result")
 		console.printLine("**********************************************************************")
-		console.printLine("\t" + $nativeResult->replace("\n","\n\t"))
+		$command = "diff native-test-output-interpreter.log native-test-output-native.log"
+		$exitCode = null
+		$error = null
+		$diffResult = application.execute($command, $exitCode, $error)
+		filesystem.removeFile(".", "native-test-output-native.log")
+		filesystem.removeFile(".", "native-test-output-interpreter.log")
+		if ($exitCode != 256)
+			console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
+			console.printLine("**********************************************************************")
+			console.printLine($diffResult)
+			console.printLine($error)
+			application.exit($$.Application::EXITCODE_FAILURE)
+		end
+		console.printLine($diffResult->replace("\n","\n\t"))
 		console.printLine("**********************************************************************")
-		console.printLine("\t" + $interpreterResult->replace("\n","\n\t"))
-		console.printLine("**********************************************************************")
+	else
+		console.printLine(", native result == interpreter result")
 	end
+	console.printLine()
 end
 
 # if no condition is met, nothing will be executed, lol :D
@@ -69,8 +87,26 @@ on: nothing
 	console.printLine("native-test: Nothing")
 	console.printLine("---------------------")
 	console.printLine()
-	testSingleScript("resources/miniscript/tests/application-test.tscript", "ApplicationTest")
-	testSingleScript("resources/miniscript/tests/emit-test.tscript", "EmitTest")
+	#testSingleScript("resources/miniscript/tests/advanced-test.tscript", "Main")
+	testSingleScript("resources/miniscript/tests/application-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/base-test.tscript", "Main")
+	testSingleScript("resources/miniscript/tests/class-test.tscript", "Main")
+	# testSingleScript("resources/miniscript/tests/console-test.tscript" < ./tests/console-test.input
+	#testSingleScript("resources/miniscript/tests/constants-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/context-test.tscript", "Main")
+	testSingleScript("resources/miniscript/tests/cryptography-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/emit-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/filesystem-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/functions-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/lamdafunctions-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/loop-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/network-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/pipe-test.tscript < ./tests/pipe-test.input
+	#testSingleScript("resources/miniscript/tests/preprocessor-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/string-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/switch-test.tscript", "Main")
+	#testSingleScript("resources/miniscript/tests/utf8-test.tscript", "Main")
+	
 	script.stop()
 end
 

@@ -306,13 +306,13 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "Script(" + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + getScriptTypeEnumIdentifier(script.type) + "," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + to_string(script.line) + "," + "\n";
-			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(script.condition, "\\", "\\\\"), "\"", "\\\"") + "\"," + "\n";
-			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(script.executableCondition, "\\", "\\\\"), "\"", "\\\"") + "\"," + "\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + escapeString(script.condition) + "\"," + "\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + escapeString(script.executableCondition) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "Statement(" + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + to_string(script.conditionStatement.line) + "," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + to_string(script.conditionStatement.statementIdx) + "," + "\n";
-			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(StringTools::replace(script.conditionStatement.statement, "\\", "\\\\"), "\"", "\\\""), "\n", "\\n") + "\"," + "\n";
-			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(StringTools::replace(script.conditionStatement.executableStatement, "\\", "\\\\"), "\"", "\\\""), "\n", "\\n") + "\"," + "\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(script.conditionStatement.statement) + "\"," + "\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(script.conditionStatement.executableStatement) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + to_string(script.conditionStatement.gotoStatementIdx) + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + ")," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "{}," + "\n";
@@ -324,8 +324,8 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "Statement(" + "\n";
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.line) + "," + "\n";
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.statementIdx) + "," + "\n";
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(StringTools::replace(statement.statement, "\\", "\\\\"), "\n", "\\n"), "\"", "\\\"") + "\"," + "\n";
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + StringTools::replace(StringTools::replace(StringTools::replace(statement.executableStatement, "\\", "\\\\"), "\n", "\\n"), "\"", "\\\"") + "\"," + "\n";
+				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(statement.statement) + "\"," + "\n";
+				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(statement.executableStatement) + "\"," + "\n";
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.gotoStatementIdx) + "\n";
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + ")" + (statementIdx < script.statements.size() - 1?",":"") + "\n";
 				statementIdx++;
@@ -1455,7 +1455,7 @@ void Transpiler::generateArrayAccessMethods(
 					auto lamdaIndent = StringTools::indent(string(), "\t", depth);
 					//
 					for (auto argumentIdx = 0; argumentIdx < syntaxTree.arguments.size(); argumentIdx++) {
-						auto argumentString = StringTools::replace(StringTools::replace(syntaxTree.arguments[argumentIdx].value.getValueAsString(), "\\", "\\\\"), "\"", "\\\"");
+						auto argumentString = escapeString(syntaxTree.arguments[argumentIdx].value.getValueAsString());
 						//
 						auto nextArgumentIndices = argumentIndices;
 						nextArgumentIndices.push_back(argumentIdx);
@@ -1806,7 +1806,7 @@ void Transpiler::generateArrayMapSetVariable(
 				string function;
 				auto functionScriptIdx = MiniScript::SCRIPTIDX_NONE;
 				variable.getFunctionValue(function, functionScriptIdx);
-				function = StringTools::replace(StringTools::replace(function, "\\", "\\\\"), "\"", "\\\"");
+				function = escapeString(function);
 				//
 				generatedDefinitions+= indent + "{" + "\n";
 				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + ";" + "\n";
@@ -1820,7 +1820,7 @@ void Transpiler::generateArrayMapSetVariable(
 				string stacket;
 				auto stackletScriptIdx = MiniScript::SCRIPTIDX_NONE;
 				variable.getStackletValue(stacket, stackletScriptIdx);
-				stacket = StringTools::replace(StringTools::replace(stacket, "\\", "\\\\"), "\"", "\\\"");
+				stacket = escapeString(stacket);
 				//
 				generatedDefinitions+= indent + "{" + "\n";
 				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + ";" + "\n";
@@ -1833,7 +1833,7 @@ void Transpiler::generateArrayMapSetVariable(
 			{
 				string value;
 				variable.getStringValue(value);
-				value = StringTools::replace(StringTools::replace(value, "\\", "\\\\"), "\"", "\\\"");
+				value = escapeString(value);
 				//
 				generatedDefinitions+= indent + "{" + "\n";
 				generatedDefinitions+= indent + "\t" + "Variable variableD" + to_string(initializerDepth) + "(string(\"" + value + "\"));" + "\n";
@@ -1890,7 +1890,7 @@ void Transpiler::generateArrayMapSetVariable(
 				generatedDefinitions+= indent + "\t" + "variableD" + to_string(initializerDepth) + ".setType(TYPE_MAP);" + "\n";
 				const auto mapValue = variable.getMapPointer();
 				for (const auto& [mapEntryName, mapEntryValue]: *mapValue) {
-					auto mapEntryNameEscaped = StringTools::replace(StringTools::replace(mapEntryName, "\\", "\\\\"), "\"", "\\\"");
+					auto mapEntryNameEscaped = escapeString(mapEntryName);
 					generateArrayMapSetVariable(
 						miniScript,
 						scriptConditionIdx,
@@ -2184,7 +2184,7 @@ bool Transpiler::transpileStatement(
 					auto nextArgumentIndices = argumentIndices;
 					nextArgumentIndices.push_back(argumentIdx);
 					//
-					auto argumentString = StringTools::replace(StringTools::replace(syntaxTree.arguments[argumentIdx].value.getValueAsString(), "\\", "\\\\"), "\"", "\\\"");
+					auto argumentString = escapeString(syntaxTree.arguments[argumentIdx].value.getValueAsString());
 					auto arrayAccessStatementIdx = 0;
 					auto arrayAccessStatementLeftIdx = -1;
 					auto arrayAccessStatementRightIdx = -1;
@@ -2358,7 +2358,7 @@ bool Transpiler::transpileStatement(
 										} else {
 											argument.value.getStringValue(value);
 										}
-										value = StringTools::replace(StringTools::replace(value, "\\", "\\\\"), "\"", "\\\"");
+										value = escapeString(value);
 										// take array access statements into account
 										auto arrayAccessStatementOffset = 0;
 										for (auto& arrayAccessStatement: arrayAccessStatements) {
@@ -2396,12 +2396,12 @@ bool Transpiler::transpileStatement(
 					case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
 					case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
 						{
-							argumentsCode.push_back(indent + "Variable()" + (lastArgument == false?",":"") + " // arguments[" + to_string(argumentIdx) + "] --> returnValue of " + argument.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(argument.arguments) + ")");
+							argumentsCode.push_back(indent + "Variable()" + (lastArgument == false?",":"") + " // arguments[" + to_string(argumentIdx) + "] --> returnValue of " + escapeString(argument.value.getValueAsString()) + "(" + miniScript->getArgumentsAsString(argument.arguments) + ")");
 							break;
 						}
 					case MiniScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
 						{
-							argumentsCode.push_back(indent + "Variable()" + (lastArgument == false?",":"") + " // arguments[" + to_string(argumentIdx) + "] --> returnValue of " + argument.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(argument.arguments) + ")");
+							argumentsCode.push_back(indent + "Variable()" + (lastArgument == false?",":"") + " // arguments[" + to_string(argumentIdx) + "] --> returnValue of " + escapeString(argument.value.getValueAsString()) + "(" + miniScript->getArgumentsAsString(argument.arguments) + ")");
 							break;
 						}
 					default:

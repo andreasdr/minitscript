@@ -2285,9 +2285,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 						auto initializationStackletVariable = string("$___is_" + to_string(iterationDepth));
 						auto containerVariableType = string("$___vt_" + to_string(iterationDepth));
 						auto iterationVariable = string("$___it_" + to_string(iterationDepth));
-						auto entryVariableBackup = string("$___evb_" + to_string(iterationDepth));
 						auto containerArrayVariable = string("$___cav_" + to_string(iterationDepth));
-						auto containerArrayVariableBackup = string("$___cavb_" + to_string(iterationDepth));
 						string iterationUpdate =
 							entryReference == true?
 								"setVariableReference(\"" + entryVariable + "\", " + containerArrayVariable + "[" + iterationVariable + "])":
@@ -2297,9 +2295,6 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 							initializationStackletVariable + " = -> { " +
 							containerVariableType + " = getType(" + containerVariable + "); " +
 							"if (" + containerVariableType + " == \"Array\"); " +
-								"if (script.isNative() == true); " +
-									"setVariableReference(\"" + containerArrayVariableBackup + "\", " + containerArrayVariable + "); " +
-								"end; " +
 								"setVariableReference(\"" + containerArrayVariable + "\", " + containerVariable + "); " +
 							"elseif (" + containerVariableType + " == \"Set\"); " +
 								containerArrayVariable + " = Set::getKeys(" + containerVariable + "); " +
@@ -2308,13 +2303,6 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 								"script.emit(\"error\"); " +
 							"end; ";
 						// create initialize statements
-						if (entryReference == true) {
-							initialization+=
-								string() +
-								"if (script.isNative() == true); " +
-								"setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + "); " +
-								"end; ";
-						}
 						initialization+=
 							iterationVariable + " = 0; " +
 							iterationUpdate + "; " +
@@ -2355,19 +2343,10 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
 								iterationUpdate + "; " +
 							"else; " +
-							(entryReference == true?
-								string() +
-								"if (script.isNative() == true); " +
-									"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
-									"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
-								"else; " +
-									"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
-									"unsetVariableReference(\"" + entryVariable + "\"); " +
-									"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
-								"end; "
-								:
-								"setVariable(\"" + entryVariable + "\", $$.___NULL); "
-							) +
+							"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
+							"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
+							"unsetVariableReference(\"" + entryVariable + "\"); " +
+							"setVariable(\"" + entryVariable + "\", $$.___NULL); " +
 							(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
 							"end; " +
 							"})";
@@ -2397,9 +2376,7 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 						auto initializationStackletVariable = string("$___is_" + to_string(iterationDepth));
 						auto containerVariableType = string("$___vt_" + to_string(iterationDepth));
 						auto iterationVariable = string("$___it_" + to_string(iterationDepth));
-						auto entryValueVariableBackup = string("$___evb_" + to_string(iterationDepth));
 						auto containerArrayVariable = string("$___cav_" + to_string(iterationDepth));
-						auto containerArrayVariableBackup = string("$___cavb_" + to_string(iterationDepth));
 						string iterationUpdate =
 							entryKeyVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]; " +
 							(entryValueReference == true?
@@ -2416,14 +2393,6 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 								"console.printLine(\"forEach() expects map as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
 								"script.emit(\"error\"); " +
 							"end; ";
-						// create initialize statements
-						if (entryValueReference == true) {
-							initialization+=
-								string() +
-								"if (script.isNative() == true); " +
-								"setVariableReference(\"" + entryValueVariableBackup + "\", " + entryValueVariable + "); " +
-								"end; ";
-						}
 						initialization+=
 							iterationVariable + " = 0; " +
 							iterationUpdate + "; " +
@@ -2464,21 +2433,11 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
 								iterationUpdate + "; " +
 							"else; " +
-							(entryValueReference == true?
-								string() +
-								"if (script.isNative() == true); " +
-									"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
-									"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
-								"else; " +
-									"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
-									"unsetVariableReference(\"" + entryValueVariable + "\"); " +
-									"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
-								"end; " +
-								"setVariable(\"" + entryKeyVariable + "\", $$.___NULL); "
-								:
-								"setVariable(\"" + entryValueVariable + "\", $$.___NULL); " +
-								"setVariable(\"" + entryKeyVariable + "\", $$.___NULL); "
-							) +
+							"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
+							"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
+							"setVariable(\"" + entryKeyVariable + "\", $$.___NULL); "
+							"unsetVariableReference(\"" + entryValueVariable + "\"); " +
+							"setVariable(\"" + entryValueVariable + "\", $$.___NULL); " +
 							(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
 							"end; " +
 							"})";

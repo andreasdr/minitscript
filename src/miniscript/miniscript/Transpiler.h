@@ -119,6 +119,28 @@ private:
 	}
 
 	/**
+	 * Escape string variable
+	 * @param str string
+	 * @return escaped string
+	 */
+	inline static const string escapeString(const string& str) {
+		return
+			StringTools::replace(
+				StringTools::replace(
+					StringTools::replace(
+						str,
+						"\\",
+						"\\\\"
+					),
+					"\"",
+					"\\\""
+				),
+				"\n",
+				"\\n"
+			);
+	}
+
+	/**
 	 * Check if variable has access statement
 	 * @param variableStatement variable statement
 	 * @return variable has statement
