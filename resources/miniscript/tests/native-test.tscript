@@ -10,10 +10,10 @@ function: testScript($scriptURIs, $input)
 	$scripts = []
 	console.printLine("TESTING: " + $scriptURIs[0])
 	console.printLine()
-	for ($i = 0, $i < $scriptURIs->getSize(), $i++)
+	forEach ($scriptURI in $scriptURIs)
 		$scripts[] = {
-			uri: $scriptURIs[$i],
-			className: "_" + filesystem.removeFileExtension(filesystem.getFileName($scriptURIs[$i]))->regexReplace("[^0-9a-zA-Z]", "_")
+			uri: $scriptURI,
+			className: "_" + filesystem.removeFileExtension(filesystem.getFileName($scriptURI))->regexReplace("[^0-9a-zA-Z]", "_")
 		}
 	end
 	$commands = []
