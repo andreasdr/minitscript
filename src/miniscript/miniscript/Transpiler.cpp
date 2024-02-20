@@ -397,7 +397,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			if (script.type == MiniScript::Script::TYPE_ON && StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true) {
 				string emitDefinitionIndent = "\t";
 				emitDefinition+= emitDefinitionIndent + "if (condition == \"" + emitName + "\") {" + "\n";
-				emitDefinition+= emitDefinitionIndent + "\t" + methodName + "(STATEMENTIDX_FIRST);" + "\n";
+				emitDefinition+= emitDefinitionIndent + "\t" + "resetScriptExecutationState(" + to_string(scriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
 				emitDefinition+= emitDefinitionIndent + "} else" + "\n";
 			}
 
@@ -413,7 +413,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			generatedDefinitions+= "void " + miniScriptClassName + "::" + methodName + "(int miniScriptGotoStatementIdx) {" + "\n";
 			string generatedSubCode;
 
-			// local variables
+			// local variables, which applies to stacklets and functions
 			if (localVariables[scriptIdx].empty() == false) {
 				generatedDefinitions+= definitionIndent + "// local script variables" + "\n";
 				generatedDefinitions+= definitionIndent + "#define MINISCRIPT_METHOD_POPSTACK() " + shortMethodName + "_Stack.pop();" + "\n";
@@ -427,6 +427,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 				generatedDefinitions+= definitionIndent + "//" + "\n";
 				generatedDefinitions+= definitionIndent + "auto& _lv = " + shortMethodName + "_Stack.top();" + "\n";
 			} else {
+				// we can still have a stacklet without local variables
 				if (script.type == MiniScript::Script::TYPE_STACKLET) {
 					auto scopeScriptIdx = miniScript->getStackletScopeScriptIdx(scriptIdx);
 					if (scopeScriptIdx != MiniScript::SCRIPTIDX_NONE) {
@@ -434,7 +435,15 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 						generatedDefinitions+= definitionIndent + "// local script variables" + "\n";
 						generatedDefinitions+= definitionIndent + "auto& _lv = " + scopeShortMethodName + "_Stack.top();" + "\n";
 					}
+				} else
+				// ok, reset emitted for conditions and enabled conditions
+				if (script.type == MiniScript::Script::TYPE_ON ||
+					script.type == MiniScript::Script::TYPE_ONENABLED) {
+					generatedDefinitions+= definitionIndent + "// reset emitted" + "\n";
+					generatedDefinitions+= definitionIndent + "emitted = false;" + "\n";
 				}
+				// no local variables or condition/enabled condition
+				generatedDefinitions+= definitionIndent + "// local script variables" + "\n";
 				generatedDefinitions+= definitionIndent + "#define MINISCRIPT_METHOD_POPSTACK()" + "\n";
 			}
 
@@ -2678,13 +2687,6 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 	string generatedCodeHeader;
 
 	//
-	if (script.type == MiniScript::Script::TYPE_ON || script.type == MiniScript::Script::TYPE_ONENABLED) {
-		generatedCodeHeader+= methodIndent + "// STATEMENTIDX_FIRST means complete method call" + "\n";
-		generatedCodeHeader+= methodIndent + "if (miniScriptGotoStatementIdx == STATEMENTIDX_FIRST) {" + "\n";
-		generatedCodeHeader+= methodIndent + "\t" + "resetScriptExecutationState(" + to_string(scriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
-		generatedCodeHeader+= methodIndent + "}" + "\n";
-	}
-	//
 	generatedCodeHeader+= methodIndent + "// script setup" + "\n";
 	generatedCodeHeader+= methodIndent + "auto miniScript = this;" + "\n";
 	generatedCodeHeader+= methodIndent + "getScriptState().scriptIdx = " + to_string(scriptIdx) + ";" + "\n";
@@ -2720,9 +2722,9 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 			generatedCode+= methodIndent + "{" + "\n";
 			generatedCode+= methodIndent + "\t" + "auto scriptIdxToStart = determineNamedScriptIdxToStart();" + "\n";
 			generatedCode+= methodIndent + "\t" + "if (scriptIdxToStart != SCRIPTIDX_NONE && scriptIdxToStart != getScriptState().scriptIdx) {" + "\n";
-			generatedCode+= methodIndent + "\t" + "resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
-			generatedCode+= methodIndent + "\t" + "timeEnabledConditionsCheckLast = _Time::getCurrentMillis();" + "\n";
-			generatedCode+= methodIndent + "\t" + "return;" + "\n";
+			generatedCode+= methodIndent + "\t\t" + "resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
+			generatedCode+= methodIndent + "\t\t" + "timeEnabledConditionsCheckLast = _Time::getCurrentMillis();" + "\n";
+			generatedCode+= methodIndent + "\t\t" + "return;" + "\n";
 			generatedCode+= methodIndent + "\t" + "}" + "\n";
 			generatedCode+= methodIndent + "}" + "\n";
 		}

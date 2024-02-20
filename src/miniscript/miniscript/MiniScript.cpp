@@ -250,8 +250,6 @@ void MiniScript::executeNextStatement() {
 	auto& scriptState = getScriptState();
 	if (scriptState.scriptIdx == SCRIPTIDX_NONE || scriptState.statementIdx == STATEMENTIDX_NONE || scriptState.running == false) return;
 	//
-	emitted = false;
-	//
 	const auto& script = scripts[scriptState.scriptIdx];
 	if (script.statements.empty() == true) return;
 	// take goto statement index into account
@@ -262,6 +260,8 @@ void MiniScript::executeNextStatement() {
 	//
 	const auto& statement = script.statements[scriptState.statementIdx];
 	const auto& syntaxTree = script.syntaxTree[scriptState.statementIdx];
+	//
+	if (scriptState.statementIdx == STATEMENTIDX_FIRST) emitted = false;
 	//
 	executeStatement(syntaxTree, statement);
 	//
