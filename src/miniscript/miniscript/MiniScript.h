@@ -3017,15 +3017,19 @@ protected:
 			_StringTools::replace(
 				_StringTools::replace(
 					_StringTools::replace(
-						str,
-						"\\",
-						"\\\\"
+						_StringTools::replace(
+							str,
+							"\\",
+							"\\\\"
+						),
+						"\"",
+						"\\\""
 					),
-					"\"",
-					"\\\""
+					"\n",
+					"\\n"
 				),
-				"\n",
-				"\\n"
+				"\r",
+				"\\r"
 			);
 	}
 

@@ -2272,7 +2272,7 @@ bool Transpiler::transpileStatement(
 	generatedCode+= minIndentString + depthIndentString;
 	generatedCode+= "// " + (depth > 0?"depth = " + to_string(depth):"") + (argumentIndices.empty() == false?" / argument index = " + to_string(argumentIndices.back()):"");
 	generatedCode+= depth > 0 || argumentIndices.empty() == false?": ":"";
-	generatedCode+= syntaxTree.value.getValueAsString() + "(" + miniScript->getArgumentsAsString(syntaxTree.arguments) + ")";
+	generatedCode+= escapeString(syntaxTree.value.getValueAsString()) + "(" + miniScript->getArgumentsAsString(syntaxTree.arguments) + ")";
 	generatedCode+= "\n";
 
 	// argument values header

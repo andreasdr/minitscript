@@ -128,15 +128,19 @@ private:
 			StringTools::replace(
 				StringTools::replace(
 					StringTools::replace(
-						str,
-						"\\",
-						"\\\\"
+						StringTools::replace(
+							str,
+							"\\",
+							"\\\\"
+						),
+						"\"",
+						"\\\""
 					),
-					"\"",
-					"\\\""
+					"\n",
+					"\\n"
 				),
-				"\n",
-				"\\n"
+				"\r",
+				"\\r"
 			);
 	}
 
