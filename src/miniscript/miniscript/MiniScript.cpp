@@ -4222,10 +4222,6 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 	auto mapKeyEnd = string::npos;
 	auto mapValueStart = string::npos;
 	auto mapValueEnd = string::npos;
-	auto quotedMapKeyStart = string::npos;
-	auto quotedMapKeyEnd = string::npos;
-	auto quotedMapValueStart = string::npos;
-	auto quotedMapValueEnd = string::npos;
 	enum ParseMode { PARSEMODE_KEY, PARSEMODE_VALUE };
 	auto parseMode = PARSEMODE_KEY;
 	auto inlineFunctionSignatureStartCandidate = string::npos;
@@ -4239,12 +4235,6 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 	auto insertMapKeyValuePair = [&]() -> void {
 		//
 		string_view mapKey;
-		// quoted map key
-		if (quotedMapKeyStart != string::npos && quotedMapKeyEnd != string::npos) {
-			quotedMapKeyStart++;
-			auto mapKeyLength = quotedMapKeyEnd - quotedMapKeyStart;
-			if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[quotedMapKeyStart], mapKeyLength));
-		} else
 		// unquoted map key
 		if (mapKeyStart != string::npos && mapKeyEnd != string::npos) {
 			//
@@ -4255,8 +4245,6 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			}
 		}
 		//
-		quotedMapKeyStart = string::npos;
-		quotedMapKeyEnd = string::npos;
 		mapKeyStart = string::npos;
 		mapKeyEnd = string::npos;
 		// validate map key
@@ -4266,20 +4254,6 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 		if (viewIsKey(mapKey) == false) {
 			_Console::printLine(miniScript->getStatementInformation(statement) + ": invalid key name, ignoring map entry: " + string(mapKey));
 		} else {
-			// quoted map value
-			if (quotedMapValueStart != string::npos && quotedMapValueEnd != string::npos) {
-				quotedMapValueStart++;
-				auto mapValueLength = quotedMapValueEnd - quotedMapValueStart;
-				if (mapValueLength > 0) {
-					auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[quotedMapValueStart], mapValueLength));
-					if (mapValueStringView.empty() == false) {
-						//
-						variable.setMapEntry(string(mapKey), string(mapValueStringView));
-						//
-						hasValues = true;
-					}
-				}
-			} else
 			// unquoted map value
 			if (mapValueStart != string::npos && mapValueEnd != string::npos) {
 				auto mapValueLength = mapValueEnd - mapValueStart + 1;
@@ -4287,6 +4261,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 				if (mapValueLength > 0) {
 					auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 					if (mapValueStringView.empty() == false) {
+						//
 						Variable mapValue;
 						mapValue.setImplicitTypedValueFromStringView(mapValueStringView, miniScript, scriptIdx, statement);
 						//
@@ -4301,8 +4276,6 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			}
 		}
 		//
-		quotedMapValueStart = string::npos;
-		quotedMapValueEnd = string::npos;
 		mapValueStart = string::npos;
 		mapValueEnd = string::npos;
 		//
@@ -4354,35 +4327,23 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 				quote = c;
 				// key?
 				if (parseMode == PARSEMODE_KEY) {
-					quotedMapKeyStart = i;
-					mapKeyStart = string::npos;
+					if (mapKeyStart == string::npos) mapKeyStart = i;
 				} else
 				// value
 				if (parseMode == PARSEMODE_VALUE) {
-					quotedMapValueStart = i;
-					mapValueStart = string::npos;
+					if (mapValueStart == string::npos) mapValueStart = i;
 				}
 			} else
 			// finish the quote
 			if (quote == c) {
 				quote = '\0';
-				// key?
-				if (parseMode == PARSEMODE_KEY) {
-					quotedMapKeyEnd = i;
-				} else
-				// value
-				if (parseMode == PARSEMODE_VALUE) {
-					quotedMapValueEnd = i;
-				}
 			}
 		} else
 		// no quote
 		if (quote == '\0') {
+			// : -> map key separator
 			if (curlyBracketCount == 1 && squareBracketCount == 0 && bracketCount == 0 && c == ':' && nc != ':' && lc != ':' && lc != '\\') {
 				//
-				if (quotedMapKeyStart != string::npos) {
-					quotedMapKeyEnd = i - 1;
-				} else
 				if (mapKeyStart != string::npos) {
 					mapKeyEnd = i - 1;
 				}
@@ -4392,17 +4353,18 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			} else
 			// , -> insert map
 			if (curlyBracketCount == 1 && squareBracketCount == 0 && bracketCount == 0 && c == ',') {
+				// TODO: use parse mode here
 				if (mapValueStart != string::npos) {
 					mapValueEnd = i - 1;
 				} else
-				if (mapKeyStart != string::npos && mapValueStart == string::npos && quotedMapValueStart == string::npos) {
+				if (mapKeyStart != string::npos && mapValueStart == string::npos) {
 					mapKeyEnd = i - 1;
 				}
 				// insert map key value pair
 				insertMapKeyValuePair();
 				// nada
 			} else
-			// possible function call
+			// possible function call or inline function as value
 			if (c == '(') {
 				//
 				bracketCount++;
@@ -4425,6 +4387,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			} else
 			// map/set initializer
 			if (c == '{' && squareBracketCount == 0 && bracketCount == 0) {
+				// TODO: unexpected character if beeing in key parse mode
 				// increase square bracket count
 				curlyBracketCount++;
 				// we have a inner map/set initializer, mark it
@@ -4434,14 +4397,16 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			} else
 			// end of map/set initializer or inline lamda function
 			if (c == '}' && squareBracketCount == 0 && bracketCount == 0) {
-				//
+				// TODO: unexpected character if beeing in key parse mode
 				curlyBracketCount--;
 				// done? insert into map
 				if (curlyBracketCount == 0) {
-					//
+					// TODO: use parse mode here
+					// first guess, we have a value to finish
 					if (mapValueStart != string::npos) {
 						mapValueEnd = i - 1;
 					} else
+					// or a key if parsing a set
 					if (mapKeyStart != string::npos) {
 						mapKeyEnd = i - 1;
 					}
@@ -4452,12 +4417,6 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 				if (curlyBracketCount == 1) {
 					// parse and insert into map
 					string_view mapKey;
-					// quoted map key
-					if (quotedMapKeyStart != string::npos) {
-						quotedMapKeyStart++;
-						auto mapKeyLength = quotedMapKeyEnd - quotedMapKeyStart;
-						if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[quotedMapKeyStart], mapKeyLength));
-					} else
 					// unquoted map key
 					if (mapKeyStart != string::npos) {
 						if (mapKeyEnd == string::npos) mapKeyEnd = i;
@@ -4469,8 +4428,6 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 						_Console::printLine(miniScript->getStatementInformation(statement) + ": invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
 						//
-						quotedMapKeyStart = string::npos;
-						quotedMapKeyEnd = string::npos;
 						mapKeyStart = string::npos;
 						mapKeyEnd = string::npos;
 						inlineFunctionSignatureStartCandidate = string::npos;
@@ -4516,25 +4473,18 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			if (c == '[' && curlyBracketCount == 1 && bracketCount == 0) {
 				// we have a inner array initializer, mark it
 				if (squareBracketCount == 0) {
-					mapValueStart = i;
+					if (mapValueStart == string::npos) mapValueStart = i;
 				}
 				// increase square bracket count
 				squareBracketCount++;
 			} else
 			// end of array initializer
-			if (c == ']' && curlyBracketCount == 1 && bracketCount == 0) {
+			if (c == ']' && squareBracketCount == 1 && curlyBracketCount == 1 && bracketCount == 0) {
 				squareBracketCount--;
 				// otherwise push inner array initializer
-				if (squareBracketCount == 0) {
+				if (squareBracketCount == 0 && mapValueStart != string::npos && initializerString[mapValueStart] == '[') {
 					// parse and insert into map
 					string_view mapKey;
-
-					// quoted map key
-					if (quotedMapKeyStart != string::npos) {
-						quotedMapKeyStart++;
-						auto mapKeyLength = quotedMapKeyEnd - quotedMapKeyStart;
-						if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[quotedMapKeyStart], mapKeyLength));
-					} else
 					// unquoted map key
 					if (mapKeyStart != string::npos) {
 						auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
@@ -4545,8 +4495,6 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 						_Console::printLine(miniScript->getStatementInformation(statement) + ": invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
 						//
-						quotedMapKeyStart = string::npos;
-						quotedMapKeyEnd = string::npos;
 						mapKeyStart = string::npos;
 						mapKeyEnd = string::npos;
 						inlineFunctionSignatureStartCandidate = string::npos;
@@ -4577,10 +4525,10 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			} else
 			// set up map key  start
 			if (curlyBracketCount == 1 && squareBracketCount == 0 && bracketCount == 0 && c != ' ' && c != '\t' && c != '\n') {
-				if (parseMode == PARSEMODE_KEY && mapKeyStart == string::npos && quotedMapKeyStart == string::npos) {
+				if (parseMode == PARSEMODE_KEY && mapKeyStart == string::npos) {
 					mapKeyStart = i;
 				} else
-				if (parseMode == PARSEMODE_VALUE && mapValueStart == string::npos && quotedMapValueStart == string::npos) {
+				if (parseMode == PARSEMODE_VALUE && mapValueStart == string::npos) {
 					mapValueStart = i;
 				}
 			}

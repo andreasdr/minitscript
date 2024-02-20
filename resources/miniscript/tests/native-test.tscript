@@ -1,120 +1,34 @@
 # initialize
 on: initialize
-	console.printLine("------------------------")
-	console.printLine("native-test: Initialize")
-	console.printLine("------------------------")
-	console.printLine()
 end
 
-function: testSingleScript($script, $className)
-	console.printLine("TESTING: " + $script)
+function: testScript($scriptURIs)
+	$scriptsArrayTestA = []
+	$scriptsArrayTestB = []
+	$scripts = []
+	console.printLine("TESTING: " + $scriptURIs[0])
 	console.printLine()
-	$commands = []
-	$commands[] = "rm -rf Tsrc"
-	$commands[] = "mkdir Tsrc"
-	$commands[] = "./bin/miniscript/tools/miniscripttranspiler " + $script + " Tsrc/" + $className
-	$commands[] = "./bin/miniscript/tools/miniscriptmain " + $script + " " + $className + " Tsrc/Main-main.cpp"
-	$commands[] = "./bin/miniscript/tools/miniscriptmakefile Tsrc TMakefile"
-	$commands[] = "make -f TMakefile mains"
-	forEach($command in $commands)
-		console.print("Executing: " + $command)
-		$exitCode = null
-		$error = null
-		$result = application.execute($command, $exitCode, $error)
-		if ($exitCode == $$.Application::EXITCODE_SUCCESS)
-			console.printLine(", SUCCESS")
-		else
-			console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
-			console.printLine("**********************************************************************")
-			console.printLine($error)
-			application.exit($$.Application::EXITCODE_FAILURE)
-		end
+	for ($i = 0, $i < $scriptURIs->getSize(), $i++)
+		console.printLine($i + ": " + $scriptURIs[$i])
+		$scripts[] = {
+			uri: $scriptURIs[$i],
+			className: "_" + filesystem.removeFileExtension(filesystem.getFileName($scriptURIs[$i]))->regexReplace("[^0-9a-zA-Z]", "_")
+		}
+		$scriptsArrayTestA[] = $scriptURIs[$i]
+		$scriptsArrayTestB[] = "_" + filesystem.removeFileExtension(filesystem.getFileName($scriptURIs[$i]))->regexReplace("[^0-9a-zA-Z]", "_")
 	end
-	# execute binary
-	$command = "./bin/Main"
-	console.print("Executing: " + $command)
-	$exitCode = null
-	$error = null
-	$nativeResult = application.execute($command, $exitCode, $error)
-	if ($exitCode != $$.Application::EXITCODE_SUCCESS)
-		console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
-		console.printLine("**********************************************************************")
-		console.printLine($error)
-		application.exit($$.Application::EXITCODE_FAILURE)
-	end
-	console.printLine(", SUCCESS")
-	# execute minscript interpreteer
-	$command = "./bin/miniscript/tools/miniscript " + $script
-	console.print("Executing: " + $command)
-	$exitCode = null
-	$error = null
-	$interpreterResult = application.execute($command, $exitCode, $error)
-	if ($exitCode != $$.Application::EXITCODE_SUCCESS)
-		console.printLine(", FAILURE, exiting")
-		console.printLine("**********************************************************************")
-		console.printLine($error)
-		application.exit($$.Application::EXITCODE_FAILURE)
-	end
-	if ($nativeResult != $interpreterResult)
-		filesystem.setContentFromString(".", "native-test-output-native.log", $nativeResult)
-		filesystem.setContentFromString(".", "native-test-output-interpreter.log", $interpreterResult)
-		console.printLine(", native result != interpreter result")
-		console.printLine("**********************************************************************")
-		$command = "diff native-test-output-interpreter.log native-test-output-native.log"
-		$exitCode = null
-		$error = null
-		$diffResult = application.execute($command, $exitCode, $error)
-		filesystem.removeFile(".", "native-test-output-native.log")
-		filesystem.removeFile(".", "native-test-output-interpreter.log")
-		if ($exitCode != 256)
-			console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
-			console.printLine("**********************************************************************")
-			console.printLine($diffResult)
-			console.printLine($error)
-			application.exit($$.Application::EXITCODE_FAILURE)
-		end
-		console.printLine($diffResult->replace("\n","\n\t"))
-		console.printLine("**********************************************************************")
-	else
-		console.printLine(", native result == interpreter result")
-	end
-	console.printLine()
+	console.printLine("scripts: " + $scripts)
+	console.printLine("$scriptsArrayTestA: " + $scriptsArrayTestA)
+	console.printLine("$scriptsArrayTestB: " + $scriptsArrayTestB)
 end
 
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
-	console.printLine("---------------------")
-	console.printLine("native-test: Nothing")
-	console.printLine("---------------------")
-	console.printLine()
-	#testSingleScript("resources/miniscript/tests/advanced-test.tscript", "Main")
-	testSingleScript("resources/miniscript/tests/application-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/base-test.tscript", "Main")
-	testSingleScript("resources/miniscript/tests/class-test.tscript", "Main")
-	# testSingleScript("resources/miniscript/tests/console-test.tscript" < ./tests/console-test.input
-	#testSingleScript("resources/miniscript/tests/constants-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/context-test.tscript", "Main")
-	testSingleScript("resources/miniscript/tests/cryptography-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/emit-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/filesystem-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/functions-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/lamdafunctions-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/loop-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/network-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/pipe-test.tscript < ./tests/pipe-test.input
-	#testSingleScript("resources/miniscript/tests/preprocessor-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/string-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/switch-test.tscript", "Main")
-	#testSingleScript("resources/miniscript/tests/utf8-test.tscript", "Main")
-	
+	testScript(["resources/miniscript/tests/class-test.tscript"])
 	script.stop()
 end
 
 # an error has occurred
 on: error
-	console.printLine("------------------")
-	console.printLine("native-test: Error")
-	console.printLine("------------------")
-	console.printLine("An error occurred")
 	script.stop()
 end
