@@ -2177,6 +2177,9 @@ public:
 			if (_Float::viewIs(value) == true) {
 				setValue(_Float::viewParse(value));
 			} else
+			if (viewIsStringLiteral(value) == true) {
+				setValue(miniScript->deescape(dequote(value), statement));
+			} else
 			if (_StringTools::viewStartsWith(value, "{") == true &&
 				_StringTools::viewEndsWith(value, "}") == true) {
 				*this = initializeMapSet(value, miniScript, scriptIdx, statement);
@@ -2194,7 +2197,6 @@ public:
 			if (viewIsCall(value) == true) {
 				setFunctionCallStatement(miniScript->doStatementPreProcessing(string(value), statement), miniScript, scriptIdx, statement);
 			} else
-			// variable
 			if (viewIsVariableAccess(value) == true) {
 				setFunctionCallStatement("getVariable(\"" + string(value) + "\")", miniScript, scriptIdx, statement);
 			} else {
@@ -3906,10 +3908,33 @@ private:
 	 * @return if string is a string literal
 	 */
 	inline static bool viewIsStringLiteral(const string_view& candidate) {
-		return
-			(_StringTools::viewStartsWith(candidate, "\"") == true && _StringTools::viewEndsWith(candidate, "\"") == true) ||
-			(_StringTools::viewStartsWith(candidate, "'") == true && _StringTools::viewEndsWith(candidate, "'") == true);
+		// we need a " or ' and a " or ' :DDD
+		if (candidate.size() < 2) return false;
+		auto i = 0;
+		// check for head quote
+		if (candidate[i] != '"' && candidate[i] != '\'') return false;
+		// detect quote
+		auto quote = candidate[i++];
+		// check for tail quote
+		if (candidate[candidate.size() - 1] != quote) return false;
+		//
+		auto lc = '\0';
+		for (; i < candidate.size() - 1; i++) {
+			auto c = candidate[i];
+			if (c == quote && lc != '\\') return false;
+			lc = c;
+		}
+		//
+		return true;
+	}
 
+	/**
+	 * Dequote a string
+	 * @param str string
+	 * @return dequoted string
+	 */
+	inline static string_view dequote(const string_view& str) {
+		return _StringTools::viewSubstring(str, 1, str.size() - 1);
 	}
 
 	/**

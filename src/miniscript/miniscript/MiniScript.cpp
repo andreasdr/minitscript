@@ -909,31 +909,16 @@ bool MiniScript::createStatementSyntaxTree(int scriptIdx, const string_view& met
 				return false;
 			}
 		} else {
-			// string literal
-			Variable argumentValue;
-			if (viewIsStringLiteral(argument) == true) {
-				//
-				Variable value;
-				value.setValue(deescape(_StringTools::viewSubstring(argument, 1, argument.size() - 1), statement));
-				//
-				syntaxTree.arguments.emplace_back(
-					SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
-					value,
-					nullptr,
-					initializer_list<SyntaxTreeNode>{}
-				);
-			} else {
-				// implicitely literal
-				Variable value;
-				value.setImplicitTypedValueFromStringView(argument, this, scriptIdx, statement);
-				//
-				syntaxTree.arguments.emplace_back(
-					SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
-					value,
-					nullptr,
-					initializer_list<SyntaxTreeNode>{}
-				);
-			}
+			// implicitely literal
+			Variable value;
+			value.setImplicitTypedValueFromStringView(argument, this, scriptIdx, statement);
+			//
+			syntaxTree.arguments.emplace_back(
+				SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
+				value,
+				nullptr,
+				initializer_list<SyntaxTreeNode>{}
+			);
 		}
 		//
 		argumentIdx++;
@@ -4241,6 +4226,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 			auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
 			if (mapKeyLength > 0) {
 				mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
+				if (viewIsStringLiteral(mapKey) == true) mapKey = dequote(mapKey);
 				if (mapKey.empty() == true) mapKey = string_view();
 			}
 		}
@@ -4422,6 +4408,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 						if (mapKeyEnd == string::npos) mapKeyEnd = i;
 						auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
 						if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
+						if (viewIsStringLiteral(mapKey) == true) mapKey = dequote(mapKey);
 					}
 					// validate map key
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
@@ -4489,6 +4476,7 @@ const MiniScript::Variable MiniScript::initializeMapSet(const string_view& initi
 					if (mapKeyStart != string::npos) {
 						auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
 						if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
+						if (viewIsStringLiteral(mapKey) == true) mapKey = dequote(mapKey);
 					}
 					// validate map key
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
