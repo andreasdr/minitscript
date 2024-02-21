@@ -1637,7 +1637,7 @@ void MiniScript::execute() {
 	tryGarbageCollection();
 }
 
-const string MiniScript::getNextStatement(const string& scriptCode, int& i, int& line) {
+bool MiniScript::getNextStatement(const string& scriptCode, int& i, int& line, string& statement) {
 	string statementCode;
 	vector<string> statementCodeLines;
 	statementCodeLines.emplace_back();
@@ -1674,7 +1674,14 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 		} else
 		if (quote != '\0') {
 			// no op
-			statementCodeLines.back() += c;
+			if (c == '\n') {
+				_Console::printLine(scriptFileName + ":" + to_string(line) + ": Newline within string literal is not allowed");
+				parseErrors.push_back(scriptFileName + ":" + to_string(line) + ": Newline within string literal is not allowed");
+				//
+				return false;
+			} else {
+				statementCodeLines.back() += c;
+			}
 		} else
 		// brackets
 		if (c == '(') {
@@ -1780,8 +1787,9 @@ const string MiniScript::getNextStatement(const string& scriptCode, int& i, int&
 	// add last line index
 	if (i == scriptCode.size() && scriptCode.back() != '\n') ++line;
 
-	//
-	return statementCode;
+	// done
+	statement = statementCode;
+	return true;
 }
 
 bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset) {
@@ -1804,7 +1812,12 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 		currentLineIdx = lineIdx;
 
 		// try to get next statement code
-		auto statementCode = getNextStatement(scriptCode, i, lineIdx);
+		string statementCode;
+		if (getNextStatement(scriptCode, i, lineIdx, statementCode) == false) {
+			//
+			scriptValid = false;
+			return false;
+		}
 
 		// add last line index
 		if (i == scriptCode.size() && scriptCode.back() != '\n') ++lineIdx;
@@ -1823,7 +1836,13 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 				i++;
 				// we need the condition or name
 				for (; i < scriptCode.size(); i++) {
-					auto nextStatementCode = getNextStatement(scriptCode, i, lineIdx);
+					string nextStatementCode;
+					if (getNextStatement(scriptCode, i, lineIdx, nextStatementCode) == false) {
+						//
+						scriptValid = false;
+						return false;
+					}
+					//
 					if (nextStatementCode.empty() == false) {
 						statementCode+= " " + nextStatementCode;
 						break;
@@ -1848,7 +1867,13 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 					i++;
 					//
 					for (; i < scriptCode.size(); i++) {
-						auto nextStatementCode = getNextStatement(scriptCode, i, lineIdx);
+						string nextStatementCode;
+						if (getNextStatement(scriptCode, i, lineIdx, nextStatementCode) == false) {
+							//
+							scriptValid = false;
+							return false;
+						}
+						//
 						if (nextStatementCode.empty() == false) {
 							//
 							if (_StringTools::startsWith(nextStatementCode, "function:") == true ||
@@ -1900,7 +1925,12 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 					i++;
 					//
 					for (; i < scriptCode.size(); i++) {
-						auto nextStatementCode = getNextStatement(scriptCode, i, lineIdx);
+						string nextStatementCode;
+						if (getNextStatement(scriptCode, i, lineIdx, nextStatementCode) == false) {
+							//
+							scriptValid = false;
+							return false;
+						}
 						if (nextStatementCode.empty() == false) {
 							statementCode+= " " + nextStatementCode;
 							break;
@@ -1966,17 +1996,15 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 					if (leftBracketIdx != string::npos || leftBracketIdx != string::npos) {
 						if (leftBracketIdx == string::npos) {
 							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
-							//
 							parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
-							//
 							scriptValid = false;
+							return false;
 						} else
 						if (rightBracketIdx == string::npos) {
 							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
-							//
 							parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": unbalanced bracket count");
-							//
 							scriptValid = false;
+							return false;
 						} else {
 							auto argumentNamesString = _StringTools::trim(_StringTools::substring(statement, leftBracketIdx + 1, rightBracketIdx));
 							auto argumentNamesTokenized = _StringTools::tokenize(argumentNamesString, ",");
@@ -1996,10 +2024,10 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 										);
 									} else {
 										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": invalid argument name: '" + argumentNameTrimmed + "'");
-										//
 										parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": invalid argument name: '" + argumentNameTrimmed + "'");
-										//
 										scriptValid = false;
+										return false;
+
 									}
 								} else
 								if (scriptType == Script::TYPE_STACKLET) {
@@ -2010,10 +2038,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 										);
 									} else {
 										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
-										//
 										parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
-										//
 										scriptValid = false;
+										return false;
 									}
 								}
 							}
@@ -2055,10 +2082,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 				);
 			} else {
 				_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
-				//
 				parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
-				//
 				scriptValid = false;
+				return false;
 			}
 		} else {
 			//
@@ -2069,10 +2095,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 				_StringTools::startsWith(statementCode, "callable:") == true
 			) {
 				_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
-				//
 				parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
-				//
 				scriptValid = false;
+				return false;
 			} else {
 				//
 				auto regexStatementCode = _StringTools::replace(statementCode, "\n", " ");
@@ -2149,11 +2174,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 								break;
 							default:
 								_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if/elseif");
-								//
 								parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": else without if/elseif");
-								//
 								scriptValid = false;
-								break;
+								return false;
 						}
 						blockStack.emplace_back(
 							Block::TYPE_ELSE,
@@ -2161,10 +2184,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 						);
 					} else {
 						_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if");
-						//
 						parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": else without if");
-						//
 						scriptValid = false;
+						return false;
 					}
 				} else
 				if (_StringTools::regexMatch(regexStatementCode, "^elseif[\\s]*\\(.*\\)$") == true) {
@@ -2194,8 +2216,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 								break;
 							default:
 								_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
+								parseErrors.push_back(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
 								scriptValid = false;
-								break;
+								return false;
 						}
 						blockStack.emplace_back(
 							Block::TYPE_ELSEIF,
@@ -2203,10 +2226,9 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 						);
 					} else {
 						_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
-						//
 						parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
-						//
 						scriptValid = false;
+						return false;
 					}
 				} else {
 					smatch matches;
@@ -2238,11 +2260,8 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 							statementCode = "forCondition(" + string(forArguments[1]) + ", -> { " + string(forArguments[2]) + " })";
 						} else {
 							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
-							//
 							parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
-							//
 							scriptValid = false;
-							//
 							return false;
 						}
 					} else
@@ -2280,21 +2299,23 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 						//
 						string initialization =
 							initializationStackletVariable + " = -> { " +
-							"if (script.isNative() == true); " +
-								"setVariableReference(\"" + containerArrayVariableBackup + "\", " + containerArrayVariable + "); " +
-								"setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + "); " +
-							"end; " +
-							containerVariableType + " = getType(" + containerVariable + "); " +
-							"if (" + containerVariableType + " == \"Array\"); " +
-								"setVariableReference(\"" + containerArrayVariable + "\", " + containerVariable + "); " +
-							"elseif (" + containerVariableType + " == \"Set\"); " +
-								containerArrayVariable + " = Set::getKeys(" + containerVariable + "); " +
-							"else; " +
-								"console.printLine(\"forEach() expects array or set as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
-								"script.emit(\"error\"); " +
-							"end; " +
-							iterationVariable + " = 0; " +
-							iterationUpdate + "; " +
+								"if (script.isNative() == true); " +
+									"setVariableReference(\"" + containerArrayVariableBackup + "\", " + containerArrayVariable + "); " +
+									"setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + "); " +
+								"end; " +
+								containerVariableType + " = getType(" + containerVariable + "); " +
+								"if (" + containerVariableType + " == \"Array\"); " +
+									"setVariableReference(\"" + containerArrayVariable + "\", " + containerVariable + "); " +
+								"elseif (" + containerVariableType + " == \"Set\"); " +
+									containerArrayVariable + " = Set::getKeys(" + containerVariable + "); " +
+								"else; " +
+									"console.printLine(\"forEach() expects array or set as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
+									"script.emit(\"error\"); " +
+								"end; " +
+								iterationVariable + " = 0; " +
+								"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
+									iterationUpdate + "; " +
+								"end;" +
 							"}";
 						//
 						if (containerByInitializer == true) {
@@ -2328,21 +2349,21 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 						statementCode =
 							"forCondition(" + iterationVariable + " < Array::getSize(" + containerArrayVariable + "), " +
 							"-> { " +
-							iterationVariable + "++" + "; " +
-							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
-								iterationUpdate + "; " +
-							"else; " +
-								"if (script.isNative() == true); " +
-									"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
-									"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
+								iterationVariable + "++" + "; " +
+								"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
+									iterationUpdate + "; " +
 								"else; " +
-									"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
-									"unsetVariableReference(\"" + entryVariable + "\"); " +
+									"if (script.isNative() == true); " +
+										"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
+										"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
+									"else; " +
+										"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
+										"unsetVariableReference(\"" + entryVariable + "\"); " +
+									"end; " +
+									"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
+									"setVariable(\"" + entryVariable + "\", $$.___NULL); " +
+									(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
 								"end; " +
-								"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
-								"setVariable(\"" + entryVariable + "\", $$.___NULL); " +
-								(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
-							"end; " +
 							"})";
 					} else
 					// map forEach
@@ -2382,19 +2403,21 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 						//
 						string initialization =
 							initializationStackletVariable + " = -> { " +
-							"if (script.isNative() == true); " +
-								"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
-								"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
-							"end; " +
-							containerVariableType + " = getType(" + containerVariable + "); " +
-							"if (" + containerVariableType + " == \"Map\"); " +
-								containerArrayVariable + " = Map::getKeys(" + containerVariable + "); " +
-							"else; " +
-								"console.printLine(\"forEach() expects map as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
-								"script.emit(\"error\"); " +
-							"end; " +
-							iterationVariable + " = 0; " +
-							iterationUpdate + "; " +
+								"if (script.isNative() == true); " +
+									"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
+									"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
+								"end; " +
+								containerVariableType + " = getType(" + containerVariable + "); " +
+								"if (" + containerVariableType + " == \"Map\"); " +
+									containerArrayVariable + " = Map::getKeys(" + containerVariable + "); " +
+								"else; " +
+									"console.printLine(\"forEach() expects map as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
+									"script.emit(\"error\"); " +
+								"end; " +
+								iterationVariable + " = 0; " +
+								"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
+									iterationUpdate + "; " +
+								"end; " +
 							"}";
 						//
 						if (containerByInitializer == true) {
@@ -2428,31 +2451,28 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 						statementCode =
 							"forCondition(" + iterationVariable + " < Array::getSize(" + containerArrayVariable + "), " +
 							"-> { " +
-							iterationVariable + "++" + "; " +
-							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
-								iterationUpdate + "; " +
-							"else; " +
-								"if (script.isNative() == true); " +
-									"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
-									"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
-								"else; "
-									"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
-									"unsetVariableReference(\"" + entryValueVariable + "\"); " +
-								"end; " +
-								"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
-								"setVariable(\"" + entryKeyVariable + "\", $$.___NULL); "
-								"setVariable(\"" + entryValueVariable + "\", $$.___NULL); " +
-								(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
-							"end;"
+								iterationVariable + "++" + "; " +
+								"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
+									iterationUpdate + "; " +
+								"else; " +
+									"if (script.isNative() == true); " +
+										"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
+										"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
+									"else; "
+										"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
+										"unsetVariableReference(\"" + entryValueVariable + "\"); " +
+									"end; " +
+									"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
+									"setVariable(\"" + entryKeyVariable + "\", $$.___NULL); "
+									"setVariable(\"" + entryValueVariable + "\", $$.___NULL); " +
+									(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
+								"end;"
 							"})";
 					} else
 					if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\(.*\\)$", &matches) == true) {
 						_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
-						//
 						parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
-						//
 						scriptValid = false;
-						//
 						return false;
 					} else
 					if (_StringTools::regexMatch(regexStatementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
@@ -2502,11 +2522,8 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 	// check for unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end
 	if (scriptValid == true && blockStack.empty() == false) {
 		_Console::printLine(scriptFileName + ": unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
-		//
 		parseErrors.push_back("Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
-		//
 		scriptValid = false;
-		//
 		return false;
 	}
 
@@ -2519,12 +2536,12 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 			vector<string_view> arguments;
 			string accessObjectMemberStatement;
 			if (parseStatement(script.executableCondition, method, arguments, script.conditionStatement, accessObjectMemberStatement) == false) {
-				//
 				scriptValid = false;
+				return false;
 			} else
 			if (createStatementSyntaxTree(SCRIPTIDX_NONE, method, arguments, script.conditionStatement, script.conditionSyntaxTree) == false) {
-				//
 				scriptValid = false;
+				return false;
 			}
 		}
 		// create script syntax tree
@@ -2536,12 +2553,12 @@ bool MiniScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset
 			vector<string_view> arguments;
 			string accessObjectMemberStatement;
 			if (parseStatement(statement.executableStatement, methodName, arguments, statement, accessObjectMemberStatement) == false) {
-				//
 				scriptValid = false;
+				return false;
 			} else
 			if (createStatementSyntaxTree(scriptIdx, methodName, arguments, statement, syntaxTree) == false) {
-				//
 				scriptValid = false;
+				return false;
 			}
 		}
 	}
@@ -2620,10 +2637,8 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	for (auto scriptIdx = 0; scriptIdx < scripts.size(); scriptIdx++) {
 		//
 		if (setupFunctionAndStackletScriptIndices(scriptIdx) == false) {
-			//
 			scriptValid = false;
-			//
-			break;
+			return;
 		}
 	}
 	// validations
@@ -2638,10 +2653,8 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				if (script.arguments.size() != 1) {
 					_Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
 					parseErrors.push_back(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
-					//
 					scriptValid = false;
-					//
-					break;
+					return;
 				}
 				//
 				auto stackletScopeScriptIdx = getFunctionScriptIdx(script.arguments[0].name);
@@ -2649,19 +2662,15 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				if (stackletScopeScriptIdx == SCRIPTIDX_NONE) {
 					_Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
 					parseErrors.push_back(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
-					//
 					scriptValid = false;
-					//
-					break;
+					return;
 				} else
 				// invalid: stacklet can not have itself as scope stacklet
 				if (stackletScopeScriptIdx == scriptIdx) {
 					_Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
 					parseErrors.push_back(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
-					//
 					scriptValid = false;
-					//
-					break;
+					return;
 				}
 			}
 			//
@@ -2670,10 +2679,8 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				script.type == MiniScript::Script::TYPE_ONENABLED) {
 				//
 				if (validateStacklets(scriptIdx) == false) {
-					//
 					scriptValid = false;
-					//
-					break;
+					return;
 				}
 			}
 			//
@@ -2682,20 +2689,16 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 				if (script.callable == true) {
 					//
 					if (validateCallable(script.condition) == false) {
-						//
 						scriptValid = false;
-						//
-						break;
+						return;
 					}
 				} else {
 					//
 					vector<string> functionStack;
 					//
 					if (validateContextFunctions(script.condition, functionStack) == false) {
-						//
 						scriptValid = false;
-						//
-						break;
+						return;
 					}
 				}
 			}
@@ -2714,13 +2717,9 @@ void MiniScript::parseScript(const string& pathName, const string& fileName) {
 	}
 	if (haveErrorScript == false) {
 		_Console::printLine(scriptPathName + "/" + scriptFileName + ": script needs to define an error condition");
-		//
 		parseErrors.push_back("Script needs to define an error condition");
-		//
 		scriptValid = false;
-		//
 		return;
-
 	}
 
 	//

@@ -3404,9 +3404,10 @@ private:
 	 * @param scriptCode script code
 	 * @param i character index
 	 * @param line line
-	 * @return next statement
+	 * @param statement statement
+	 * @return success
 	 */
-	const string getNextStatement(const string& scriptCode, int& i, int& line);
+	bool getNextStatement(const string& scriptCode, int& i, int& line, string& statement);
 
 	/**
 	 * Parse a statement

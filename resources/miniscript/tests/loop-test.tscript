@@ -183,6 +183,21 @@ on: nothing
 			console.printLine("\t$key = " + $key + ", $value = " + $value)
 		end
 	end
+	console.printLine("test forEach with empty array")
+	$array = []
+	forEach($entry in $array)
+		console.printLine($entry)
+	end
+	console.printLine("test forEach with empty set")
+	$set = Set()
+	forEach($entry in $set)
+		console.printLine($entry)
+	end
+	console.printLine("test forEach with empty map")
+	$map = Map()
+	forEach($key,$value in $map)
+		console.printLine($key + " -> " + $value)
+	end
 	console.printLine("done")
 	script.stop()
 end

@@ -160,7 +160,7 @@ int main(int argc, char** argv)
 		);
 		if (script != nullptr) {
 			// verbose
-			if (verbose == true) Console::printLine(script->getInformation());
+			if (verbose == true && script->isValid() == true) Console::printLine(script->getInformation());
 			//
 			if (script->isValid() == false) {
 				Console::printLine(pathToScript + ": Script not valid. Exiting!");
