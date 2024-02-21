@@ -2312,7 +2312,7 @@ public:
 					result+= "<Null>";
 					break;
 				case TYPE_BOOLEAN:
-					result+= getBooleanValueReference() == true?"1":"0";
+					result+= getBooleanValueReference() == true?"true":"false";
 					break;
 				case TYPE_INTEGER:
 					result+= to_string(getIntegerValueReference());
