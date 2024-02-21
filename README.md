@@ -41,7 +41,6 @@ Also note the focus on easy integration into other products and easy customizabi
 - Whats left to do for 1.0 BETA release
   - some adjustments
     - private script variable? 
-    - garbage collection per object?
     - $Math::EPSILON vs $math::EPSILON or use :: as namespace separator instead of .
   - make event system optional    
   - documentation

@@ -182,6 +182,7 @@ MiniScript::MiniScript():
 		string(),
 		STATEMENTIDX_NONE
 	) {
+	//
 	for (auto dataType: dataTypes) {
 		if (dataType->isRequiringGarbageCollection() == false) continue;
 		// create script context
