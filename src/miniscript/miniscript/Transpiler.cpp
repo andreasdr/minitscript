@@ -499,7 +499,7 @@ void Transpiler::transpile(MiniScript* miniScript, const string& transpilationFi
 			generatedDefinitions+= arrayAccessMethodsDefinitions;
 
 			//
-			transpile(miniScript, generatedSubCode, scriptIdx, methodCodeMap, allMethods);
+			transpile(miniScript, miniScriptClassName, generatedSubCode, scriptIdx, methodCodeMap, allMethods);
 			generatedDefinitions+= generatedSubCode;
 
 			// local variables
@@ -2670,7 +2670,7 @@ bool Transpiler::transpileStatement(
 	return true;
 }
 
-bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int scriptIdx, const unordered_map<string, vector<string>>& methodCodeMap, const unordered_set<string>& allMethods) {
+bool Transpiler::transpile(MiniScript* miniScript, const string& className, string& generatedCode, int scriptIdx, const unordered_map<string, vector<string>>& methodCodeMap, const unordered_set<string>& allMethods) {
 	if (scriptIdx < 0 || scriptIdx >= miniScript->getScripts().size()) {
 		Console::printLine("Transpiler::transpile(): invalid script index");
 		return false;
@@ -2768,7 +2768,7 @@ bool Transpiler::transpile(MiniScript* miniScript, string& generatedCode, int sc
 	generatedCode+= methodIndent + "setScriptStateState(STATEMACHINESTATE_WAIT_FOR_CONDITION);" + "\n";
 
 	//
-	generatedCodeHeader+= methodIndent + "if (miniScriptGotoStatementIdx != STATEMENTIDX_NONE && miniScriptGotoStatementIdx != STATEMENTIDX_FIRST) _Console::printLine(\"Transpiler::" + methodName + "(): Can not go to statement \" + to_string(miniScriptGotoStatementIdx));" + "\n";
+	generatedCodeHeader+= methodIndent + "if (miniScriptGotoStatementIdx != STATEMENTIDX_NONE && miniScriptGotoStatementIdx != STATEMENTIDX_FIRST) _Console::printLine(\"" + className + "::" + methodName + "(): Can not go to statement \" + to_string(miniScriptGotoStatementIdx));" + "\n";
 	//
 	generatedCode = generatedCodeHeader + generatedCode;
 	return true;

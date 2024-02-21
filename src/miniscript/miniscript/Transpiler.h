@@ -445,6 +445,7 @@ private:
 	/**
 	 * Transpile a script statement
 	 * @param miniScript MiniScript instance
+	 * @param className MiniScript class name
 	 * @param generatedCode generated code
 	 * @param scriptIdx script index
 	 * @param methodCodeMap method code map
@@ -453,6 +454,7 @@ private:
 	 */
 	static bool transpile(
 		MiniScript* miniScript,
+		const string& className,
 		string& generatedCode,
 		int scriptIdx,
 		const unordered_map<string, vector<string>>& methodCodeMap,
