@@ -1293,7 +1293,7 @@ void Transpiler::generateVariableAccess(
 						generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 					}
 				} else {
-					generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
+					generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + globalVariable + ": assignment of constant is not allowed\"); else ";
 					if (setConstant == true) {
 						generatedCode+= "{ ";
 						generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); ";
@@ -1309,7 +1309,7 @@ void Transpiler::generateVariableAccess(
 				if (haveVariableStatement == true) {
 					generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[" + to_string(setArgumentIdx) + "], &statement, true); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				} else {
-					generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
+					generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + globalVariable + ": assignment of constant is not allowed\"); else ";
 					generatedCode+= createGlobalVariableName(globalVariable) + ".setReference(&arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				}
 			}
@@ -1345,7 +1345,7 @@ void Transpiler::generateVariableAccess(
 						generatedCode+= indent + "setVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 					}
 				} else {
-					generatedCode+= indent + "if (_lv." + createLocalVariableName(localVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
+					generatedCode+= indent + "if (_lv." + createLocalVariableName(localVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + localVariable + ": assignment of constant is not allowed\"); else ";
 					if (setConstant == true) {
 						generatedCode+= "{ ";
 						generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); ";
@@ -1361,7 +1361,7 @@ void Transpiler::generateVariableAccess(
 				if (haveVariableStatement == true) {
 					generatedCode+= indent + "setVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement, true); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				} else {
-					generatedCode+= indent + "if (_lv." + createLocalVariableName(localVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
+					generatedCode+= indent + "if (_lv." + createLocalVariableName(localVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + localVariable + ": assignment of constant is not allowed\"); else ";
 					generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setReference(&arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				}
 			}
@@ -1399,7 +1399,7 @@ void Transpiler::generateVariableAccess(
 					generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MiniScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "], &statement); " + returnValueStatement + "arguments[" + to_string(getArgumentIdx) + "]" + statementEnd;
 				}
 			} else {
-				generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
+				generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + globalVariable + ": assignment of constant is not allowed\"); else ";
 				if (setConstant == true) {
 					generatedCode+= "{ ";
 					generatedCode+= createGlobalVariableName(globalVariable) + ".setValue(arguments[" + to_string(setArgumentIdx) + "]); ";
@@ -1415,7 +1415,7 @@ void Transpiler::generateVariableAccess(
 			if (haveVariableStatement == true) {
 				generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement, true); " + returnValueStatement + "arguments[" + to_string(getArgumentIdx) + "]" + statementEnd;
 			} else {
-				generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": constant: Assignment of constant is not allowed\"); else ";
+				generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + globalVariable + ": assignment of constant is not allowed\"); else ";
 				generatedCode+= createGlobalVariableName(globalVariable) + ".setReference(&arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 			}
 		}
@@ -2245,7 +2245,7 @@ bool Transpiler::transpileStatement(
 			//
 			break;
 		default:
-			Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": function or method call expected, but got literal or 'none' syntaxTree");
+			Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": Function or method call expected, but got literal or 'none' syntaxTree");
 			return false;
 
 	}
@@ -2387,7 +2387,7 @@ bool Transpiler::transpileStatement(
 									break;
 								default:
 									{
-										Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": '" + argument.value.getAsString() + "': unknown argument type: " + argument.value.getTypeAsString());
+										Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": '" + argument.value.getAsString() + "': Unknown argument type: " + argument.value.getTypeAsString());
 										break;
 									}
 							}
@@ -2426,7 +2426,7 @@ bool Transpiler::transpileStatement(
 	// enabled named conditions
 	if (method == MiniScript::METHOD_ENABLENAMEDCONDITION && syntaxTree.arguments.empty() == false) {
 		if (syntaxTree.arguments.size() != 1) {
-			Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": " + MiniScript::METHOD_ENABLENAMEDCONDITION + "(): expected string argument @ 0");
+			Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": " + MiniScript::METHOD_ENABLENAMEDCONDITION + "(): Expected string argument @ 0");
 		} else {
 			string name = syntaxTree.arguments[0].value.getValueAsString();
 			enabledNamedConditions.erase(
@@ -2442,7 +2442,7 @@ bool Transpiler::transpileStatement(
 	} else
 	if (method == MiniScript::METHOD_DISABLENAMEDCONDITION && syntaxTree.arguments.empty() == false) {
 		if (syntaxTree.arguments.size() != 1) {
-			Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": " + MiniScript::METHOD_DISABLENAMEDCONDITION + "(): expected string argument @ 0");
+			Console::printLine("Transpiler::transpileStatement(): " + miniScript->getStatementInformation(statement) + ": " + MiniScript::METHOD_DISABLENAMEDCONDITION + "(): Expected string argument @ 0");
 		} else {
 			string name = syntaxTree.arguments[0].value.getValueAsString();
 			enabledNamedConditions.erase(

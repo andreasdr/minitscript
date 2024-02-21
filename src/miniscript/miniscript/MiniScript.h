@@ -1488,9 +1488,9 @@ public:
 				return true;
 			} else {
 				if (statement != nullptr) {
-					_Console::printLine(miniScript->getStatementInformation(*statement) + ": expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
+					_Console::printLine(miniScript->getStatementInformation(*statement) + ": Expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
 				} else {
-					_Console::printLine(miniScript->getScriptFileName() + ": expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
+					_Console::printLine(miniScript->getScriptFileName() + ": Expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
 				}
 			}
 			return false;
@@ -4440,12 +4440,12 @@ public:
 	 */
 	inline bool isVariableAccess(const string& candidate, const Statement* statement = nullptr) {
 		if (candidate.size() < 2) {
-			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": empty variable statement");
+			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": empty variable statement");
 			return false;
 		}
 		auto i = 0;
 		if (candidate[i++] != '$') {
-			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must begin with an $");
+			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": variable statement must begin with an $");
 			return false;
 		}
 		if (candidate[i] == '$') i++;
@@ -4460,16 +4460,16 @@ public:
 				squareBracketCount--;
 			} else
 			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
-				_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": invalid character in variable statement: '" + c + "'");
+				_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": invalid character in variable statement: '" + c + "'");
 				return false;
 			}
 		}
 		if (candidate.size() == 2 && string_view(candidate) == string_view("$$", 2)) {
-			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $$");
+			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $$");
 			return false;
 		}
 		if (candidate.size() == 7 && string_view(candidate) == string_view("$GLOBAL", 7)) {
-			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": variable: " + candidate + ": variable statement must not be $GLOBAL");
+			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $GLOBAL");
 			return false;
 		}
 		return true;
@@ -4777,7 +4777,7 @@ public:
 						existingVariable->setValue(variable);
 					}
 				} else {
-					_Console::printLine(getStatementInformation(*statement) + ": constant: " + variableStatement + ": Assignment of constant is not allowed");
+					_Console::printLine(getStatementInformation(*statement) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 				}
 				return;
 			} else {
