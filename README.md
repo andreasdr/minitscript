@@ -1,4 +1,4 @@
-This is the home of the MiniScript script language. This document and repository is WIP. Expect a BETA release around 2024-02-15. 
+This is the home of the MiniScript script language. This document and repository is WIP. Expect a BETA release around 2024-03-01. 
 See section 1.3. for 1.0 BETA release TODO list.
 
 # 1. Introduction
