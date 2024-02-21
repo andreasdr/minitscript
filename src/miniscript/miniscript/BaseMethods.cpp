@@ -1411,6 +1411,9 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
 			}
+			bool isPrivate() const override {
+				return true;
+			}
 		};
 		miniScript->registerMethod(new MethodGetVariableReference(miniScript));
 	}
@@ -1880,5 +1883,35 @@ void BaseMethods::registerMethods(MiniScript* miniScript) {
 			}
 		};
 		miniScript->registerMethod(new MethodHexDecode(miniScript));
+	}
+	{
+		//
+		class SwapMethod: public MiniScript::Method {
+		private:
+			MiniScript* miniScript { nullptr };
+		public:
+			SwapMethod(MiniScript* miniScript):
+				MiniScript::Method(
+					{
+						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = true, .nullable = false },
+						{ .type = MiniScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = true, .nullable = false }
+					}
+				),
+				miniScript(miniScript) {}
+			const string getMethodName() override {
+				return "swap";
+			}
+			void executeMethod(span<MiniScript::Variable>& arguments, MiniScript::Variable& returnValue, const MiniScript::Statement& statement) override {
+				if (arguments.size() == 2) {
+					// TODO: improve me!!!
+					auto tmp = MiniScript::Variable::createNonReferenceVariable(&arguments[0]);
+					arguments[0].setValue(arguments[1]);
+					arguments[1].setValue(tmp);
+				} else {
+					MINISCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		miniScript->registerMethod(new SwapMethod(miniScript));
 	}
 }

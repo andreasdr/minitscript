@@ -1165,6 +1165,8 @@ end
 | <sub>return([$value: Mixed]): Null</sub>                                                         |
 | Subtract                                                                                         |
 | <sub>sub($a: Mixed, $b: Mixed): Mixed</sub>                                                      |
+| Swap two variables                                                                               |
+| <sub>swap(&$a: Mixed, &$b: Mixed): Null</sub>                                                    |
 | Begins switch block to match a given value to case values or a default                           |
 | <sub>switch($value: Mixed): Null</sub>                                                           |
 

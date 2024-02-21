@@ -47,6 +47,14 @@ on: nothing
 	console.printLine("2.5 < 1.2: ", 2.5 < 1.2)
 	console.printLine("7.1 % 4.0: ", 7.1 % 4.0)
 	console.printLine("-------------------------")
+	console.printLine("Miscellaneous")
+	$a = 1
+	$b = 2
+	console.printLine("$a = " + $a + ", $b = " + $b)
+	swap($a, $b)
+	console.printLine("swap($a, $b): $a = " + $a + ", $b = " + $b)
+	console.printLine("-------------------------")
+	console.printLine("-------------------------")
 	console.printLine("Additional float methods")
 	console.printLine("-------------------------")
 	$floatToInteger = float.toIntegerValue(1234.5678)
