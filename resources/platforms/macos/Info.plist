@@ -9,11 +9,11 @@
 	<key>CFBundleIconFile</key>
 	<string>{__ICON__}</string>
 	<key>CFBundleIdentifier</key>
-	<string>drewke.net.miniscript.{__EXECUTABLE_LOWERCASE__}</string>
+	<string>drewke.net.minitscript.{__EXECUTABLE_LOWERCASE__}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>MiniScript {__EXECUTABLE__}</string>
+	<string>MinitScript {__EXECUTABLE__}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

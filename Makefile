@@ -8,7 +8,7 @@ OSSHORT = $(shell sh -c 'uname -o 2>/dev/null')
 OS = $(shell sh -c 'uname -s 2>/dev/null')
 
 #
-NAME = miniscript
+NAME = minitscript
 ifeq ($(OS), Darwin)
 	LIB_EXT = .dylib
 else ifeq ($(OSSHORT), Msys)
@@ -74,66 +74,66 @@ CXXFLAGS = $(CFLAGS) $(CPPVERSION)
 SRC = src
 
 SRCS = \
-	src/miniscript/miniscript/ApplicationMethods.cpp \
-	src/miniscript/miniscript/ArrayMethods.cpp \
-	src/miniscript/miniscript/BaseMethods.cpp \
-	src/miniscript/miniscript/ByteArrayMethods.cpp \
-	src/miniscript/miniscript/CryptographyMethods.cpp \
-	src/miniscript/miniscript/ConsoleMethods.cpp \
-	src/miniscript/miniscript/ContextMethods.cpp \
-	src/miniscript/miniscript/Context.cpp \
-	src/miniscript/miniscript/Documentation.cpp \
-	src/miniscript/miniscript/FileSystemMethods.cpp \
-	src/miniscript/miniscript/Generator.cpp \
-	src/miniscript/miniscript/HTTPDownloadClientClass.cpp \
-	src/miniscript/miniscript/JSONMethods.cpp \
-	src/miniscript/miniscript/Library.cpp \
-	src/miniscript/miniscript/MapMethods.cpp \
-	src/miniscript/miniscript/MathMethods.cpp \
-	src/miniscript/miniscript/MiniScript.cpp \
-	src/miniscript/miniscript/NetworkMethods.cpp \
-	src/miniscript/miniscript/ScriptMethods.cpp \
-	src/miniscript/miniscript/SetMethods.cpp \
-	src/miniscript/miniscript/StringMethods.cpp \
-	src/miniscript/miniscript/TimeMethods.cpp \
-	src/miniscript/miniscript/Transpiler.cpp \
-	src/miniscript/miniscript/XMLMethods.cpp \
-	src/miniscript/miniscript/Version.cpp \
-	src/miniscript/network/httpclient/HTTPClient.cpp \
-	src/miniscript/network/httpclient/HTTPClientException.cpp \
-	src/miniscript/network/httpclient/HTTPDownloadClient.cpp \
-	src/miniscript/os/filesystem/FileSystem.cpp \
-	src/miniscript/os/network/Network.cpp \
-	src/miniscript/os/network/NetworkException.cpp \
-	src/miniscript/os/network/NetworkIOException.cpp \
-	src/miniscript/os/network/NetworkSocket.cpp \
-	src/miniscript/os/network/NetworkSocketClosedException.cpp \
-	src/miniscript/os/network/NetworkSocketException.cpp \
-	src/miniscript/os/network/SecureTCPSocket.cpp \
-	src/miniscript/os/network/TCPSocket.cpp \
-	src/miniscript/utilities/Base64.cpp \
-	src/miniscript/utilities/Console.cpp \
-	src/miniscript/utilities/ErrorConsole.cpp \
-	src/miniscript/utilities/ExceptionBase.cpp \
-	src/miniscript/utilities/Float.cpp \
-	src/miniscript/utilities/Hex.cpp \
-	src/miniscript/utilities/Integer.cpp \
-	src/miniscript/utilities/Properties.cpp \
-	src/miniscript/utilities/SHA256.cpp \
-	src/miniscript/utilities/StringTools.cpp \
-	src/miniscript/utilities/StringTokenizer.cpp \
-	src/miniscript/utilities/UTF8StringTools.cpp \
-	src/miniscript/utilities/UTF8StringTokenizer.cpp
+	src/minitscript/minitscript/ApplicationMethods.cpp \
+	src/minitscript/minitscript/ArrayMethods.cpp \
+	src/minitscript/minitscript/BaseMethods.cpp \
+	src/minitscript/minitscript/ByteArrayMethods.cpp \
+	src/minitscript/minitscript/CryptographyMethods.cpp \
+	src/minitscript/minitscript/ConsoleMethods.cpp \
+	src/minitscript/minitscript/ContextMethods.cpp \
+	src/minitscript/minitscript/Context.cpp \
+	src/minitscript/minitscript/Documentation.cpp \
+	src/minitscript/minitscript/FileSystemMethods.cpp \
+	src/minitscript/minitscript/Generator.cpp \
+	src/minitscript/minitscript/HTTPDownloadClientClass.cpp \
+	src/minitscript/minitscript/JSONMethods.cpp \
+	src/minitscript/minitscript/Library.cpp \
+	src/minitscript/minitscript/MapMethods.cpp \
+	src/minitscript/minitscript/MathMethods.cpp \
+	src/minitscript/minitscript/MinitScript.cpp \
+	src/minitscript/minitscript/NetworkMethods.cpp \
+	src/minitscript/minitscript/ScriptMethods.cpp \
+	src/minitscript/minitscript/SetMethods.cpp \
+	src/minitscript/minitscript/StringMethods.cpp \
+	src/minitscript/minitscript/TimeMethods.cpp \
+	src/minitscript/minitscript/Transpiler.cpp \
+	src/minitscript/minitscript/XMLMethods.cpp \
+	src/minitscript/minitscript/Version.cpp \
+	src/minitscript/network/httpclient/HTTPClient.cpp \
+	src/minitscript/network/httpclient/HTTPClientException.cpp \
+	src/minitscript/network/httpclient/HTTPDownloadClient.cpp \
+	src/minitscript/os/filesystem/FileSystem.cpp \
+	src/minitscript/os/network/Network.cpp \
+	src/minitscript/os/network/NetworkException.cpp \
+	src/minitscript/os/network/NetworkIOException.cpp \
+	src/minitscript/os/network/NetworkSocket.cpp \
+	src/minitscript/os/network/NetworkSocketClosedException.cpp \
+	src/minitscript/os/network/NetworkSocketException.cpp \
+	src/minitscript/os/network/SecureTCPSocket.cpp \
+	src/minitscript/os/network/TCPSocket.cpp \
+	src/minitscript/utilities/Base64.cpp \
+	src/minitscript/utilities/Console.cpp \
+	src/minitscript/utilities/ErrorConsole.cpp \
+	src/minitscript/utilities/ExceptionBase.cpp \
+	src/minitscript/utilities/Float.cpp \
+	src/minitscript/utilities/Hex.cpp \
+	src/minitscript/utilities/Integer.cpp \
+	src/minitscript/utilities/Properties.cpp \
+	src/minitscript/utilities/SHA256.cpp \
+	src/minitscript/utilities/StringTools.cpp \
+	src/minitscript/utilities/StringTokenizer.cpp \
+	src/minitscript/utilities/UTF8StringTools.cpp \
+	src/minitscript/utilities/UTF8StringTokenizer.cpp
 
 MAIN_SRCS = \
-	src/miniscript/tools/miniscript-main.cpp \
-	src/miniscript/tools/miniscriptdocumentation-main.cpp \
-	src/miniscript/tools/miniscriptlibrary-main.cpp \
-	src/miniscript/tools/miniscriptmain-main.cpp \
-	src/miniscript/tools/miniscriptmakefile-main.cpp \
-	src/miniscript/tools/miniscriptnmakefile-main.cpp \
-	src/miniscript/tools/miniscripttranspiler-main.cpp \
-	src/miniscript/tools/miniscriptuntranspiler-main.cpp
+	src/minitscript/tools/minitscript-main.cpp \
+	src/minitscript/tools/minitscriptdocumentation-main.cpp \
+	src/minitscript/tools/minitscriptlibrary-main.cpp \
+	src/minitscript/tools/minitscriptmain-main.cpp \
+	src/minitscript/tools/minitscriptmakefile-main.cpp \
+	src/minitscript/tools/minitscriptnmakefile-main.cpp \
+	src/minitscript/tools/minitscripttranspiler-main.cpp \
+	src/minitscript/tools/minitscriptuntranspiler-main.cpp
 
 MAINS = $(MAIN_SRCS:$(SRC)/%-main.cpp=$(BIN)/%)
 OBJS = $(SRCS:$(SRC)/%.cpp=$(OBJ)/%.o)

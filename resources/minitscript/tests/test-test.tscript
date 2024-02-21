@@ -1,0 +1,31 @@
+# initialize
+on: initialize
+	console.printLine("------------------------")
+	console.printLine("test-test: Initialize")
+	console.printLine("------------------------")
+	console.printLine()
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.printLine("---------------------")
+	console.printLine("test-test: Nothing")
+	console.printLine("---------------------")
+	console.printLine()
+	$a = 1
+	$b = 1
+	if ($a === $b)
+		console.printLine("XXX")
+	end
+	#
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.printLine("------------------")
+	console.printLine("test-test: Error")
+	console.printLine("------------------")
+	console.printLine("An error occurred")
+	script.stop()
+end

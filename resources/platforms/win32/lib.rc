@@ -7,12 +7,12 @@ BEGIN
     BLOCK "080904E4"
     BEGIN
       VALUE "CompanyName", "drewke.net, mindty.com"
-      VALUE "FileDescription", "MiniScript {__LIBRARY__}"
+      VALUE "FileDescription", "MinitScript {__LIBRARY__}"
       VALUE "FileVersion", "1.0.0"
       VALUE "InternalName", "{__LIBRARY__}.dll"
       VALUE "LegalCopyright", "Copyright (c) 2021-2023 Andreas Drewke"
       VALUE "OriginalFilename", "{__LIBRARY__}.dll"
-      VALUE "ProductName", "MiniScript"
+      VALUE "ProductName", "MinitScript"
       VALUE "ProductVersion", "1.0.0"
     END
   END

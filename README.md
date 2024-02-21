@@ -1,24 +1,24 @@
-This is the home of the MiniScript script language. This document and repository is WIP. Expect a BETA release around 2024-03-01. 
+This is the home of the MinitScript script language. This document and repository is WIP. Expect a BETA release around 2024-03-01. 
 See section 1.3. for 1.0 BETA release TODO list.
 
 # 1. Introduction
 
-MiniScript was developed as part of our [TDME2 3D Engine](https://github.com/Mindty-Kollektiv/tdme2) to match
+MinitScript was developed as part of our [TDME2 3D Engine](https://github.com/Mindty-Kollektiv/tdme2) to match
 the requirements for high performance script execution, as well as straight forward game logic scripting.
 
-MiniScript might borrow some ideas from JavaScript, Kotlin, PHP and even C# and C++, which you might like and find familier.
+MinitScript might borrow some ideas from JavaScript, Kotlin, PHP and even C# and C++, which you might like and find familier.
 Also note the focus on easy integration into other products and easy customizability and extendability.
 
 ## 1.1. Open source
 
-- MiniScript is open source
-  - please check the [license](https://github.com/Mindty-Kollektiv/miniscript/blob/main/LICENSE)
-  - you find the source code at [https://github.com/Mindty-Kollektiv/miniscript](https://github.com/Mindty-Kollektiv/miniscript) 
-  - here you find developer [documentation including collaboration graphs and API](https://www.mindty.com/products/miniscript/documentation/)
+- MinitScript is open source
+  - please check the [license](https://github.com/Mindty-Kollektiv/minitscript/blob/main/LICENSE)
+  - you find the source code at [https://github.com/Mindty-Kollektiv/minitscript](https://github.com/Mindty-Kollektiv/minitscript) 
+  - here you find developer [documentation including collaboration graphs and API](https://www.mindty.com/products/minitscript/documentation/)
 
 ## 1.2. Language features
 
-- Introduction to MiniScript language features:
+- Introduction to MinitScript language features:
   - very small implementation of a scripting language
   - runs on every CPU, OS, ... due to its simplicity, so its highly portable
   - can be easily extended by writing state machine machine states and script methods in C++ as well as custom data types
@@ -222,13 +222,13 @@ Stacklets take no argument if used in root scope. It can take a single argument 
 
 TODO: Example  
 
-A special type of functions are callables. Callables are functions that are used to interact between MiniScript scripts.
+A special type of functions are callables. Callables are functions that are used to interact between MinitScript scripts.
  
 Despite the fact that a callable function of a script can be called from another script, 
-they have the limitation that they must not contain MiniScript C++ method calls that require a context function.
+they have the limitation that they must not contain MinitScript C++ method calls that require a context function.
 
 Context functions are functions that require a special context. You can ignore this fow now. 
-Default MiniScript does not provide script methods by C++ that require a context. 
+Default MinitScript does not provide script methods by C++ that require a context. 
 
 ```
 ...
@@ -260,7 +260,7 @@ end
 
 # 4. Data types and variables
 
-Default MiniScript works with the following data types:
+Default MinitScript works with the following data types:
 - boolean
 - integer
 - float
@@ -679,9 +679,9 @@ Iterating sets using Set::forEach() and a lamda function
 
 ## 4.6. Classes
 
-Classes in MiniScript can be represented by maps, a constructed map with function assignments and/or definitions can be called object, see map section in 4.4.
+Classes in MinitScript can be represented by maps, a constructed map with function assignments and/or definitions can be called object, see map section in 4.4.
 
-Creating a object in MiniScript works by using map initializer plus () -> methodName function assignment, or () -> { console.dump($this) } inline function definition.
+Creating a object in MinitScript works by using map initializer plus () -> methodName function assignment, or () -> { console.dump($this) } inline function definition.
 Please see a example below.
 
 ```
@@ -1552,8 +1552,8 @@ Please note:
 
 ## 10.1. Links
 
-- MiniScript, see [README.md](./README.md)
-- MiniScript How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
+- MinitScript, see [README.md](./README.md)
+- MinitScript How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
 - The Mindty Kollektiv [Discord Server](https://discord.gg/Na4ACaFD)
 
 # 11. Donation 

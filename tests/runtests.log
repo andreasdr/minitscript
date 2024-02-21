@@ -218,7 +218,7 @@ application-test: Nothing
 
 $Application::OS = Linux
 $Application::CPU = X64
-application.getArguments(): ["./bin/miniscript/tools/miniscript"]
+application.getArguments(): ["./bin/minitscript/tools/minitscript"]
 application.execute('uname -a'): Linux andreas-mint 5.15.0-91-generic #101-Ubuntu SMP Tue Nov 14 13:30:08 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
 
 -----------------------
@@ -232,7 +232,7 @@ base-test: Nothing
 -----------------------
 Check bool operations
 -----------------------
-MiniScript will do the job: and(or(equals(MiniScript will do the job, MiniScript will not do the job), equals(it will, it will)), true): true
+MinitScript will do the job: and(or(equals(MinitScript will do the job, MinitScript will not do the job), equals(it will, it will)), true): true
 -----------------------
 Check int computation
 -----------------------
@@ -560,10 +560,10 @@ filesystem.isDrive('filesystem-test'): false
 filesystem.isDrive('C:'): true
 filesystem.isDrive('C:/'): true
 Creating path: filesystem-test
-filesystem.getCurrentWorkingPathName(): /home/andreas/Development/drewke.net/miniscript
+filesystem.getCurrentWorkingPathName(): /home/andreas/Development/drewke.net/minitscript
 Changing path: filesystem-test
-filesystem.getCurrentWorkingPathName(): /home/andreas/Development/drewke.net/miniscript/filesystem-test
-Changing path: /home/andreas/Development/drewke.net/miniscript
+filesystem.getCurrentWorkingPathName(): /home/andreas/Development/drewke.net/minitscript/filesystem-test
+Changing path: /home/andreas/Development/drewke.net/minitscript
 filesystem.exists('filesystem-test'): true
 filesystem.exists('filesystem-test-123'): false
 Listing path: filesystem-test
@@ -870,7 +870,7 @@ pipe-test: Nothing
 
 Reading from pipe or console input stream: 
 Input was: 
-["Hi there!", "", "Have fun with our mighty Mindty MiniScript!!!", "", "Best regards", "Yours truly"]
+["Hi there!", "", "Have fun with our mighty Mindty MinitScript!!!", "", "Best regards", "Yours truly"]
 -------------------------------
 preprocessor-test: Initialize
 ------------------------------
