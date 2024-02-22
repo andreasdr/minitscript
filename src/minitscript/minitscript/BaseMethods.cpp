@@ -95,9 +95,11 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					minitScript->getStringValue(arguments, 2, member, false) == false) {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				} else {
+					// complain?
+					auto complain = true;
 					// do we have a this variable name?
+					string thisVariableName;
 					{
-						string thisVariableName;
 						if (arguments[0].getType() != MinitScript::TYPE_NULL && arguments[0].getStringValue(thisVariableName) == true) {
 							// yep, looks like that, we always use a reference here
 							#if defined(__MINITSCRIPT_TRANSPILATION__)
@@ -113,6 +115,13 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 						string function;
 						auto mapValue = arguments[1].getMapEntry(member);
 						if (mapValue.getType() == MinitScript::TYPE_FUNCTION_ASSIGNMENT && mapValue.getFunctionValue(function, functionScriptIdx) == true) {
+							// check if private and private scope
+							if (mapValue.isPrivate() == true && arguments[1].isPrivateScope() == false) {
+								complain = false;
+								functionScriptIdx = MinitScript::SCRIPTIDX_NONE;
+								_Console::printLine(minitScript->getStatementInformation(statement) + ": Private variable: " + thisVariableName + ": access not allowed from outside of object");
+							} else
+							// no function idx, so get it
 							if (functionScriptIdx == MinitScript::SCRIPTIDX_NONE) functionScriptIdx = minitScript->getFunctionScriptIdx(function);
 						}
 					}
@@ -190,10 +199,10 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 								}
 							}
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Class/object member not found: " + member + "()");
+							if (complain == true) MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Class/object member not found: " + member + "()");
 						}
 					} else {
-						MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+						if (complain == true) MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
 				}
 			}

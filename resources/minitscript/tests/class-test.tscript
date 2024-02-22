@@ -94,6 +94,10 @@ on: nothing
 			)
 			checkPrivateScopeNonReference($this)
 			checkPrivateScopeReference($this)
+			$this->testPrivateFunction()
+		},
+		-testPrivateFunction: () -> {
+			console.printLine("\ttestPrivateFunction(): Hello World")
 		}
 	}
 	#
@@ -137,6 +141,7 @@ on: nothing
 	# check engine
 	$car->checkEngine()
 	$car->testPrivacy()
+	$car->testPrivateFunction()
 	#
 	script.stop()
 end
