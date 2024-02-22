@@ -4266,13 +4266,17 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 	auto insertMapKeyValuePair = [&]() -> void {
 		//
 		string_view mapKey;
+		auto dequotedMapKey = false;
 		// map key
 		if (mapKeyStart != string::npos && mapKeyEnd != string::npos) {
 			//
 			auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
 			if (mapKeyLength > 0) {
 				mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
-				if (viewIsStringLiteral(mapKey) == true) mapKey = dequote(mapKey);
+				if (viewIsStringLiteral(mapKey) == true) {
+					mapKey = dequote(mapKey);
+					dequotedMapKey = true;
+				}
 				if (mapKey.empty() == true) mapKey = string_view();
 			}
 		}
@@ -4286,7 +4290,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 		if (viewIsKey(mapKey) == false) {
 			_Console::printLine(minitScript->getStatementInformation(statement) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 		} else {
-			auto _private = viewIsKeyPrivate(mapKey);
+			auto _private = dequotedMapKey == true?false:viewIsKeyPrivate(mapKey);
 			if (_private == true) mapKey = viewGetPrivateKey(mapKey);
 			// map value
 			if (mapValueStart != string::npos && mapValueEnd != string::npos) {
@@ -4451,18 +4455,22 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 				if (curlyBracketCount == 1) {
 					// parse and insert into map
 					string_view mapKey;
+					auto dequotedMapKey = false;
 					// map key
 					if (mapKeyStart != string::npos) {
 						if (mapKeyEnd == string::npos) mapKeyEnd = i;
 						auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
 						if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
-						if (viewIsStringLiteral(mapKey) == true) mapKey = dequote(mapKey);
+						if (viewIsStringLiteral(mapKey) == true) {
+							mapKey = dequote(mapKey);
+							dequotedMapKey = true;
+						}
 					}
 					// validate map key
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
 						_Console::printLine(minitScript->getStatementInformation(statement) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
-						auto _private = viewIsKeyPrivate(mapKey);
+						auto _private = dequotedMapKey == true?false:viewIsKeyPrivate(mapKey);
 						if (_private == true) mapKey = viewGetPrivateKey(mapKey);
 						//
 						mapKeyStart = string::npos;
@@ -4522,17 +4530,21 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 				if (squareBracketCount == 0 && mapValueStart != string::npos && initializerString[mapValueStart] == '[') {
 					// parse and insert into map
 					string_view mapKey;
+					auto dequotedMapKey = false;
 					// map key
 					if (mapKeyStart != string::npos) {
 						auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
 						if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
-						if (viewIsStringLiteral(mapKey) == true) mapKey = dequote(mapKey);
+						if (viewIsStringLiteral(mapKey) == true) {
+							mapKey = dequote(mapKey);
+							dequotedMapKey = true;
+						}
 					}
 					// validate map key
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
 						_Console::printLine(minitScript->getStatementInformation(statement) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
-						auto _private = viewIsKeyPrivate(mapKey);
+						auto _private = dequotedMapKey == true?false:viewIsKeyPrivate(mapKey);
 						if (_private == true) mapKey = viewGetPrivateKey(mapKey);
 						//
 						mapKeyStart = string::npos;

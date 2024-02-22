@@ -98,7 +98,8 @@ on: nothing
 		},
 		-testPrivateFunction: () -> {
 			console.printLine("\ttestPrivateFunction(): Hello World")
-		}
+		},
+		"-quotedKeytest": -1
 	}
 	#
 	console.dump($car)
