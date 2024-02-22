@@ -1905,7 +1905,7 @@ void Transpiler::generateArrayMapSetVariable(
 						generatedDefinitions,
 						depth,
 						initializerDepth + 1,
-						"variableD" + to_string(initializerDepth) + ".setMapEntry(\"" + mapEntryNameEscaped + "\", variableD" + to_string(initializerDepth + 1) + ");"
+						"variableD" + to_string(initializerDepth) + ".setMapEntry(\"" + mapEntryNameEscaped + "\", variableD" + to_string(initializerDepth + 1) + ", " + (mapEntryValue->isPrivate() == true?"true":"false") + ");"
 					);
 				}
 				generatedDefinitions+= indent + "\t" + postStatement + "\n";
