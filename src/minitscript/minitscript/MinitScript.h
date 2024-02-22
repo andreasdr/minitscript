@@ -407,6 +407,7 @@ public:
 	 */
 	class Variable {
 		friend class MinitScript;
+		friend class BaseMethods;
 
 	private:
 		/**
@@ -484,9 +485,11 @@ public:
 		};
 
 		//
-		static constexpr uint32_t TYPE_BITS_VALUE { 1073741823 }; // 2 ^ 30 - 1
-		static constexpr uint32_t CONSTANT_BIT_VALUE { 1073741824 }; // 2 ^ 30
-		static constexpr uint32_t REFERENCE_BIT_VALUE { 2147483648 }; // 2 ^ 31
+		static constexpr uint32_t TYPE_BITS_VALUE { 268435455 }; // 2 ^ 28 - 1
+		static constexpr uint32_t CONSTANT_BIT_VALUE { 268435456 }; // 2 ^ 28
+		static constexpr uint32_t REFERENCE_BIT_VALUE { 536870912 }; // 2 ^ 29
+		static constexpr uint32_t PRIVATE_BIT_VALUE { 1073741824 }; // 2 ^ 30
+		static constexpr uint32_t PRIVATESCOPE_BIT_VALUE { 2147483648 }; // 2 ^ 31
 
 		//
 		union ir {
@@ -588,15 +591,36 @@ public:
 		 * Unset constant
 		 */
 		inline void unsetConstant() {
-			typeReferenceConstantBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE;
+			typeReferenceConstantBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
 		}
 
 		/**
 		 * @return unset reference
 		 */
 		inline void unsetReference() {
-			typeReferenceConstantBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE;
+			typeReferenceConstantBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
 			ir.reference = nullptr;
+		}
+
+		/**
+		 * Set private
+		 */
+		inline void setPrivate() {
+			typeReferenceConstantBits|= PRIVATE_BIT_VALUE;
+		}
+
+		/**
+		 * Set private scope
+		 */
+		inline void setPrivateScope() {
+			typeReferenceConstantBits|= PRIVATESCOPE_BIT_VALUE;
+		}
+
+		/**
+		 * Unset private scope
+		 */
+		inline void unsetPrivateScope() {
+			typeReferenceConstantBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE | CONSTANT_BIT_VALUE | PRIVATE_BIT_VALUE;
 		}
 
 		/**
@@ -804,6 +828,24 @@ public:
 		}
 
 		/**
+		 * @return is private
+		 */
+		inline bool isPrivate() const {
+			return
+				(typeReferenceConstantBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE ||
+				(isReference() == true && (ir.reference->typeReferenceConstantBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE);
+		}
+
+		/**
+		 * @return is private scope
+		 */
+		inline bool isPrivateScope() const {
+			return
+				(typeReferenceConstantBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE ||
+				(isReference() == true && (ir.reference->typeReferenceConstantBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE);
+		}
+
+		/**
 		 * Unset variable
 		 */
 		inline void unset() {
@@ -828,6 +870,13 @@ public:
 				ir.reference = (Variable*)variable;
 				ir.reference->acquireReference();
 			}
+			// we need to copy those properties
+			//	as we can tag a reference variable instance (which points to the original)
+			//	as private, private scope and constant itself too
+			//	no matter which properties the original variable has
+			if (variable->isConstant() == true) setConstant();
+			if (variable->isPrivate() == true) setPrivate();
+			if (variable->isPrivateScope() == true) setPrivateScope();
 		}
 
 		/**
@@ -874,11 +923,7 @@ public:
 		 */
 		inline static Variable createReferenceVariable(const Variable* variable) {
 			Variable referenceVariable;
-			if (variable->isReference() == true) {
-				referenceVariable.setReference(variable->ir.reference);
-			} else {
-				referenceVariable.setReference((Variable*)variable);
-			}
+			referenceVariable.setReference((Variable*)variable);
 			return referenceVariable;
 		}
 
@@ -889,11 +934,7 @@ public:
 		 */
 		inline static Variable* createReferenceVariablePointer(const Variable* variable) {
 			auto referenceVariable = new Variable();
-			if (variable->isReference() == true) {
-				referenceVariable->setReference(variable->ir.reference);
-			} else {
-				referenceVariable->setReference((Variable*)variable);
-			}
+			referenceVariable->setReference((Variable*)variable);
 			return referenceVariable;
 		}
 
@@ -905,7 +946,7 @@ public:
 		inline static Variable createNonReferenceVariable(const Variable* variable) {
 			Variable nonReferenceVariable;
 			//
-			copyVariable(nonReferenceVariable, *variable);
+			copyVariable(nonReferenceVariable, *variable, true);
 			//
 			return nonReferenceVariable;
 		}
@@ -918,7 +959,7 @@ public:
 		inline static Variable* createNonReferenceVariablePointer(const Variable* variable) {
 			auto nonReferenceVariable = new Variable();
 			//
-			copyVariable(*nonReferenceVariable, *variable);
+			copyVariable(*nonReferenceVariable, *variable, true);
 			//
 			return nonReferenceVariable;
 		}
@@ -927,8 +968,9 @@ public:
 		 * Copy variable
 		 * @param from from
 		 * @param to to
+		 * @param properties copy also properties
 		 */
-		inline static void copyVariable(Variable& to, const Variable& from) {
+		inline static void copyVariable(Variable& to, const Variable& from, bool properties) {
 			// initial setup
 			to.setType(from.getType());
 			// do the copy
@@ -1004,7 +1046,11 @@ public:
 					MinitScript::dataTypes[dataTypeIdx]->copyVariable(to, from);
 			}
 			//
-			if (from.isConstant() == true) to.setConstant();
+			if (properties == true) {
+				if (from.isConstant() == true) to.setConstant();
+				if (from.isPrivate() == true) to.setPrivate();
+				if (from.isPrivateScope() == true) to.setPrivateScope();
+			}
 		}
 
 		/**
@@ -1013,9 +1059,9 @@ public:
 		 */
 		inline Variable(const Variable& variable) {
 			if (variable.isReference() == true) {
-				setReference(variable.ir.reference);
+				setReference(&variable);
 			} else {
-				copyVariable(*this, variable);
+				copyVariable(*this, variable, true);
 			}
 		}
 
@@ -1042,9 +1088,9 @@ public:
 			unset();
 			//
 			if (variable.isReference() == true) {
-				setReference(variable.ir.reference);
+				setReference(&variable);
 			} else {
-				copyVariable(*this, variable);
+				copyVariable(*this, variable, true);
 			}
 			//
 			return *this;
@@ -1222,11 +1268,15 @@ public:
 			if (isReference() == true) {
 				ir.reference->typeReferenceConstantBits =
 					static_cast<uint32_t>(newType) |
-					((ir.reference->typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0);
+					((ir.reference->typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0) |
+					((ir.reference->typeReferenceConstantBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE?PRIVATE_BIT_VALUE:0) |
+					((ir.reference->typeReferenceConstantBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE?PRIVATESCOPE_BIT_VALUE:0);
 			} else {
 				typeReferenceConstantBits =
 					static_cast<uint32_t>(newType) |
-					((typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0);
+					((typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0) |
+					((typeReferenceConstantBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE?PRIVATE_BIT_VALUE:0) |
+					((typeReferenceConstantBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE?PRIVATESCOPE_BIT_VALUE:0);
 			}
 			//
 			switch(getType()) {
@@ -1525,7 +1575,7 @@ public:
 		 */
 		inline void setValue(const Variable& variable) {
 			setType(TYPE_NULL);
-			copyVariable(*this, variable);
+			copyVariable(*this, variable, false);
 		}
 
 		/**
@@ -1895,12 +1945,16 @@ public:
 		 * Set entry in map with given key
 		 * @param key key
 		 * @param value value
+		 * @param _private private entry
+		 *
 		 */
-		inline void setMapEntry(const string& key, const Variable& value) {
+		inline void setMapEntry(const string& key, const Variable& value, bool _private = false) {
 			setType(TYPE_MAP);
 			auto mapValueIt = getMapValueReference().find(key);
 			if (mapValueIt != getMapValueReference().end()) mapValueIt->second->releaseReference();
-			getMapValueReference()[key] = new Variable(value);
+			auto variablePtr = new Variable(value);
+			if (_private == true) variablePtr->setPrivate();
+			getMapValueReference()[key] = variablePtr;
 		}
 
 		/**
@@ -2766,17 +2820,21 @@ public:
 			 * Constructor
 			 * @param name name
 			 * @param reference reference
+			 * @param privateScope private scope
 			 */
 			Argument(
 				const string& name,
-				bool reference
+				bool reference,
+				bool privateScope
 			):
 				name(name),
-				reference(reference)
+				reference(reference),
+				privateScope(privateScope)
 			{}
 			//
 			string name;
 			bool reference;
+			bool privateScope;
 		};
 		//
 		enum Type { TYPE_NONE, TYPE_FUNCTION, TYPE_STACKLET, TYPE_ON, TYPE_ONENABLED };
@@ -3906,6 +3964,20 @@ private:
 	 * @return if string is a valid map key name
 	 */
 	static bool viewIsKey(const string_view& candidate);
+
+	/**
+	 * Returns if a given key candidate is marked as private by head '-'
+	 * @param candidate candidate
+	 * @return if key candidate is marked as private
+	 */
+	static bool viewIsKeyPrivate(const string_view& candidate);
+
+	/**
+	 * Returns private key
+	 * @param candidate candidate
+	 * @return private key
+	 */
+	static const string_view viewGetPrivateKey(const string_view& candidate);
 
 	/**
 	 * Returns if a given string is a string literal

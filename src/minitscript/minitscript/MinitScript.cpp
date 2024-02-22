@@ -295,7 +295,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 	auto lc  = '\0';
 	//
 	auto viewIsStringMethodAccess = [](const string_view& candidate) -> bool {
-		if (candidate.size() == 0) return false;
+		if (candidate.empty() == true) return false;
 		//
 		auto i = 0;
 		// spaces
@@ -2013,6 +2013,12 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 							for (const auto& argumentName: argumentNamesTokenized) {
 								auto argumentNameTrimmed = _StringTools::trim(argumentName);
 								auto reference = false;
+								auto privateScope = false;
+								if (_StringTools::startsWith(argumentNameTrimmed, "&&") == true) {
+									reference = true;
+									privateScope = true;
+									argumentNameTrimmed = _StringTools::trim(_StringTools::substring(argumentNameTrimmed, 2));
+								} else
 								if (_StringTools::startsWith(argumentNameTrimmed, "&") == true) {
 									reference = true;
 									argumentNameTrimmed = _StringTools::trim(_StringTools::substring(argumentNameTrimmed, 1));
@@ -2021,7 +2027,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 									if (_StringTools::regexMatch(argumentNameTrimmed, "\\$[a-zA-Z0-9_]+") == true) {
 										arguments.emplace_back(
 											argumentNameTrimmed,
-											reference
+											reference,
+											privateScope
 										);
 									} else {
 										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid argument name: '" + argumentNameTrimmed + "'");
@@ -2035,7 +2042,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 									if (_StringTools::regexMatch(argumentNameTrimmed, "[a-zA-Z0-9_]+") == true) {
 										arguments.emplace_back(
 											argumentNameTrimmed,
-											reference
+											reference,
+											false
 										);
 									} else {
 										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
@@ -3011,7 +3019,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 	};
 	//
 	auto viewIsLamdaFunction = [](const string_view& candidate) -> bool {
-		if (candidate.size() == 0) return false;
+		if (candidate.empty() == true) return false;
 		//
 		auto i = 0;
 		// (
@@ -3463,6 +3471,13 @@ bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& retur
 			if (argumentIdx == arguments.size()) {
 				break;
 			}
+			// private scope
+			if (argument.privateScope == true) {
+				arguments[argumentIdx].setPrivateScope();
+			} else {
+				arguments[argumentIdx].unsetPrivateScope();
+			}
+			//
 			setVariable(argument.name, arguments[argumentIdx], nullptr, argument.reference);
 			argumentIdx++;
 		}
@@ -3601,6 +3616,7 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 			for (const auto& argument: script.arguments) {
 				if (argumentsString.empty() == false) argumentsString+= ", ";
 				if (argument.reference == true) argumentsString+= "&";
+				if (argument.privateScope == true) argumentsString+= "&";
 				argumentsString+= argument.name;
 			}
 			argumentsString = "(" + argumentsString + ")";
@@ -3978,7 +3994,7 @@ void MinitScript::createLamdaFunction(Variable& variable, const vector<string_vi
 	// function declaration
 	auto functionName = string() + "lamda_function_" + (nameHint.empty() == true?"":_StringTools::toLowerCase(nameHint) + "_") + to_string(inlineFunctionIdx++);
 	auto inlineFunctionScriptCode = "function: " + functionName + "(";
-	if (populateThis == true) inlineFunctionScriptCode+= "&$this";
+	if (populateThis == true) inlineFunctionScriptCode+= "&&$this";
 	auto argumentIdx = 0;
 	for (const auto& argument: arguments) {
 		if (argumentIdx > 0 || populateThis == true) inlineFunctionScriptCode+= ",";
@@ -4270,6 +4286,8 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 		if (viewIsKey(mapKey) == false) {
 			_Console::printLine(minitScript->getStatementInformation(statement) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 		} else {
+			auto _private = viewIsKeyPrivate(mapKey);
+			if (_private == true) mapKey = viewGetPrivateKey(mapKey);
 			// map value
 			if (mapValueStart != string::npos && mapValueEnd != string::npos) {
 				auto mapValueLength = mapValueEnd - mapValueStart + 1;
@@ -4281,14 +4299,14 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 						Variable mapValue;
 						mapValue.setImplicitTypedValueFromStringView(mapValueStringView, minitScript, scriptIdx, statement);
 						//
-						variable.setMapEntry(string(mapKey), mapValue);
+						variable.setMapEntry(string(mapKey), mapValue, _private);
 						//
 						hasValues = true;
 					}
 				}
 			} else {
 				//
-				variable.setMapEntry(string(mapKey), Variable());
+				variable.setMapEntry(string(mapKey), Variable(), _private);
 			}
 		}
 		//
@@ -4444,6 +4462,8 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
 						_Console::printLine(minitScript->getStatementInformation(statement) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
+						auto _private = viewIsKeyPrivate(mapKey);
+						if (_private == true) mapKey = viewGetPrivateKey(mapKey);
 						//
 						mapKeyStart = string::npos;
 						mapKeyEnd = string::npos;
@@ -4462,13 +4482,13 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 									if (viewIsLamdaFunction(mapValueStringView, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx) == true) {
 										Variable mapValue;
 										minitScript->createLamdaFunction(mapValue, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx, true, statement, string(mapKey));
-										variable.setMapEntry(string(mapKey), mapValue);
+										variable.setMapEntry(string(mapKey), mapValue, _private);
 										//
 										hasValues = true;
 									} else {
 										// map/set
 										auto mapValue = initializeMapSet(mapValueStringView, minitScript, scriptIdx, statement);
-										variable.setMapEntry(string(mapKey), mapValue);
+										variable.setMapEntry(string(mapKey), mapValue, _private);
 										//
 										hasValues = true;
 									}
@@ -4512,6 +4532,8 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
 						_Console::printLine(minitScript->getStatementInformation(statement) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
+						auto _private = viewIsKeyPrivate(mapKey);
+						if (_private == true) mapKey = viewGetPrivateKey(mapKey);
 						//
 						mapKeyStart = string::npos;
 						mapKeyEnd = string::npos;
@@ -4525,7 +4547,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 								auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 								if (mapValueStringView.empty() == false) {
 									auto mapValue = initializeArray(mapValueStringView, minitScript, scriptIdx, statement);
-									variable.setMapEntry(string(mapKey), mapValue);
+									variable.setMapEntry(string(mapKey), mapValue, _private);
 									//
 									hasValues = true;
 								}
@@ -4622,6 +4644,8 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 	} else {
 		// resolve first parsed access pattern and repeat until resolved
 		while (haveAccessOperator == true) {
+			//
+			bool privateParentScope = variablePtr->isPrivateScope();
 			// map key access
 			if (key.empty() == false) {
 				if (variablePtr->getType() == TYPE_MAP) {
@@ -4634,6 +4658,14 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 						parentVariable = variablePtr;
 						//
 						variablePtr = mapIt->second;
+						//
+						if (variablePtr->isPrivate() == true && privateParentScope == false) {
+							//
+							_Console::printLine(getStatementInformation(*statement) + ": Private variable: " + variableStatement + ": access not allowed from outside of object");
+							//
+							parentVariable = nullptr;
+							return nullptr;
+						}
 					} else {
 						if (expectVariable == true) {
 							_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": key not found: '" + key + "'");
@@ -4708,6 +4740,9 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 					return nullptr;
 				}
 			}
+
+			//
+			if (parentVariable != nullptr && parentVariable->isPrivateScope() == true) privateParentScope = true;
 		}
 		//
 		return variablePtr;
@@ -4895,12 +4930,24 @@ inline const MinitScript::Variable MinitScript::initializeVariable(const Variabl
 }
 
 inline bool MinitScript::viewIsKey(const string_view& candidate) {
-	if (candidate.size() == 0) return false;
-	for (auto i = 0; i < candidate.size(); i++) {
+	if (candidate.empty() == true) return false;
+	auto i = 0;
+	if (candidate[i] == '-') i++;
+	for (; i < candidate.size(); i++) {
 		auto c = candidate[i];
 		if (_Character::isAlphaNumeric(c) == false && c != '_') return false;
 	}
 	return true;
+}
+
+inline bool MinitScript::viewIsKeyPrivate(const string_view& candidate) {
+	if (candidate.empty() == true) return false;
+	if (candidate[0] == '-') return true;
+	return false;
+}
+
+inline const string_view MinitScript::viewGetPrivateKey(const string_view& candidate) {
+	return string_view(&candidate.data()[1], candidate.size() - 1);
 }
 
 inline bool MinitScript::getVariableAccessOperatorLeftRightIndices(const string& variableStatement, const string& callerMethod, string::size_type& accessOperatorLeftIdx, string::size_type& accessOperatorRightIdx, const Statement* statement, int startIdx) {

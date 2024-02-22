@@ -338,7 +338,8 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			for (const auto& argument: script.arguments) {
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "Script::Argument(" + "\n";
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + argument.name + "\"," + "\n";
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + (argument.reference == true?"true":"false") + "\n";
+				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + (argument.reference == true?"true":"false") + ",\n";
+				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + (argument.privateScope == true?"true":"false") + "\n";
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" ")" + (argumentIdx != script.arguments.size() - 1?",":"") + "\n";
 				argumentIdx++;
 			}
@@ -2886,7 +2887,8 @@ const string Transpiler::createSourceCode(MinitScript::Script::Type scriptType, 
 			result+= "(";
 			for (const auto& argument: functionArguments) {
 				if (argumentIdx > 0) result+= ", ";
-				if (argument.reference == true) result+= "=";
+				if (argument.reference == true) result+= "&";
+				if (argument.privateScope == true) result+= "&";
 				result+= argument.name;
 				argumentIdx++;
 			}

@@ -42,7 +42,6 @@ Also note the focus on easy integration into other products and easy customizabi
 
 - Whats left to do for 1.0 BETA release
   - some adjustments
-    - private script variable? 
     - $Math::EPSILON vs $math::EPSILON or use :: as namespace separator instead of .
   - make event system optional    
   - documentation
@@ -794,6 +793,8 @@ end
 	#...
 ```
 
+TODO: private properties, && argument prefix
+
 # 5. Program structure and flow
 
 ... TODO ...
@@ -1086,8 +1087,16 @@ end
 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Returns if variable is a constant variable                                                       |
+| <sub>isConstant($variable: Mixed): Boolean</sub>                                                 |
 | Set constant                                                                                     |
 | <sub>setConstant($constant: String, $value: Mixed): Mixed</sub>                                  |
+| Returns if variable is declared as private                                                       |
+| <sub>isPrivate($variable: Mixed): Boolean</sub>                                                  |
+| Returns if variable is populated as private scope                                                |
+| <sub>isPrivateScope($variable: Mixed): Boolean</sub>                                             |
+| =Returns if variable is a reference variable                                                     |
+| <sub>isReference($variable: Mixed): Boolean</sub>                                                |
 | Get variable type                                                                                |
 | <sub>getType($variable: Mixed): String</sub>                                                     |
 | Returns if variable exists                                                                       |

@@ -1291,6 +1291,118 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 		};
 		minitScript->registerMethod(new MethodGetType(minitScript));
 	}
+	// is constant
+	{
+		//
+		class MethodIsConstant: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodIsConstant(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "variable", .optional = false, .reference = false, .nullable = false }
+					},
+					MinitScript::TYPE_BOOLEAN
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "isConstant";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+				if (arguments.size() == 1) {
+					returnValue.setValue(arguments[0].isConstant());
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodIsConstant(minitScript));
+	}
+	// is reference
+	{
+		//
+		class MethodIsReference: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodIsReference(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "variable", .optional = false, .reference = false, .nullable = false }
+					},
+					MinitScript::TYPE_BOOLEAN
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "isReference";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+				if (arguments.size() == 1) {
+					returnValue.setValue(arguments[0].isReference());
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodIsReference(minitScript));
+	}
+	// is private
+	{
+		//
+		class MethodIsPrivate: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodIsPrivate(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "variable", .optional = false, .reference = false, .nullable = false }
+					},
+					MinitScript::TYPE_BOOLEAN
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "isPrivate";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+				if (arguments.size() == 1) {
+					returnValue.setValue(arguments[0].isPrivate());
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodIsPrivate(minitScript));
+	}
+	// is private scope
+	{
+		//
+		class MethodIsPrivateScope: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodIsPrivateScope(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "variable", .optional = false, .reference = false, .nullable = false }
+					},
+					MinitScript::TYPE_BOOLEAN
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "isPrivateScope";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+				if (arguments.size() == 1) {
+					returnValue.setValue(arguments[0].isPrivateScope());
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodIsPrivateScope(minitScript));
+	}
 	// has variable
 	{
 		//
@@ -1343,7 +1455,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 				string variable;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, variable) == true) {
-					returnValue.setValue(minitScript->getVariable(variable, &statement));
+					returnValue = minitScript->getVariable(variable, &statement);
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
