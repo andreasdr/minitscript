@@ -13,7 +13,7 @@ function: testScript($scriptURIs, $input)
 	forEach ($scriptURI in $scriptURIs)
 		$scripts[] = {
 			uri: $scriptURI,
-			className: "_" + filesystem.removeFileExtension(filesystem.getFileName($scriptURI))->regexReplace("[^0-9a-zA-Z]", "_")
+			className: "_" + $scriptURI->regexReplace("[^0-9a-zA-Z]", "_")
 		}
 	end
 	$commands = []
