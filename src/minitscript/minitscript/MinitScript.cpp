@@ -4764,11 +4764,33 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 inline MinitScript::Variable* MinitScript::getVariableIntern(const string& variableStatement, const string& callerMethod, string& variableName, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const Statement* statement, bool expectVariable, bool global) {
 	// determine variable name
 	{
-		auto dotIdx = _StringTools::indexOf(variableStatement, ".");
-		if (dotIdx == string::npos) dotIdx = variableStatement.size();
-		auto squareBracketIdx = _StringTools::indexOf(variableStatement, "[");
-		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
-		variableName = _StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
+		auto dotIdx = string::npos;
+		auto squareBracketIdx = string::npos;
+		auto lc = '\0';
+		for (auto i = 0; i < variableStatement.size(); i++) {
+			auto c = variableStatement[i];
+			if (c == '.') {
+				if (dotIdx == string::npos) dotIdx = i;
+			} else
+			if (c == '[') {
+				if (squareBracketIdx == string::npos) squareBracketIdx = i;
+			} else
+			if (lc == ':' && c == ':') {
+				dotIdx = string::npos;
+				squareBracketIdx = string::npos;
+			}
+			//
+			lc = c;
+		}
+		if (dotIdx == string::npos) dotIdx == variableStatement.size();
+		if (squareBracketIdx == string::npos) squareBracketIdx == variableStatement.size();
+		variableName = _StringTools::substring(
+			variableStatement,
+			0,
+			dotIdx < squareBracketIdx?
+				dotIdx:
+				squareBracketIdx
+		);
 	}
 	// retrieve variable from script state
 	Variable* variablePtr = nullptr;
@@ -4971,6 +4993,19 @@ inline bool MinitScript::getVariableAccessOperatorLeftRightIndices(const string&
 	if (startIdx > 0) {
 		haveKey = variableStatement[startIdx - 1] == '.';
 		if (haveKey == true) accessOperatorLeftIdx = startIdx - 1;
+	} else
+	if (startIdx == 0) {
+		//
+		auto lc = '\0';
+		for (auto i = 0; i < variableStatement.length(); i++) {
+			auto c = variableStatement[i];
+			if (lc == ':' && c == ':') {
+				startIdx = i + 1;
+				break;
+			}
+			//
+			lc = c;
+		}
 	}
 	for (auto i = startIdx; i < variableStatement.length(); i++) {
 		auto c = variableStatement[i];

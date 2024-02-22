@@ -150,9 +150,11 @@ private:
 	 * @return variable has statement
 	 */
 	inline static bool variableHasStatement(const string& variableStatement) {
-		auto dotIdx = StringTools::indexOf(variableStatement, ".");
+		auto doubleDotIdx = StringTools::indexOf(variableStatement, "::");
+		if (doubleDotIdx == string::npos) doubleDotIdx = 0;
+		auto dotIdx = StringTools::indexOf(variableStatement, ".", doubleDotIdx);
 		if (dotIdx != string::npos) return true;
-		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
+		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[", doubleDotIdx);
 		if (squareBracketIdx != string::npos) return true;
 		return false;
 	}
@@ -163,9 +165,11 @@ private:
 	 * @return variable name
 	 */
 	inline static const string createVariableName(const string& variableStatement) {
-		auto dotIdx = StringTools::indexOf(variableStatement, ".");
+		auto doubleDotIdx = StringTools::indexOf(variableStatement, "::");
+		if (doubleDotIdx == string::npos) doubleDotIdx = 0;
+		auto dotIdx = StringTools::indexOf(variableStatement, ".", doubleDotIdx);
 		if (dotIdx == string::npos) dotIdx = variableStatement.size();
-		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
+		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[", doubleDotIdx);
 		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
 		auto cppVariableName = StringTools::substring(variableStatement, 0, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		return cppVariableName;
@@ -177,13 +181,16 @@ private:
 	 * @return global CPP variable name
 	 */
 	inline static const string createGlobalVariableName(const string& variableStatement) {
-		auto dotIdx = StringTools::indexOf(variableStatement, ".");
+		auto doubleDotIdx = StringTools::indexOf(variableStatement, "::");
+		if (doubleDotIdx == string::npos) doubleDotIdx = 0;
+		auto dotIdx = StringTools::indexOf(variableStatement, ".", doubleDotIdx);
 		if (dotIdx == string::npos) dotIdx = variableStatement.size();
-		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
+		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[", doubleDotIdx);
 		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
 		auto cppVariableName = "_" + StringTools::substring(variableStatement, 1, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
 		cppVariableName = StringTools::replace(cppVariableName, ":", "_");
+		cppVariableName = StringTools::replace(cppVariableName, ".", "_");
 		return cppVariableName;
 	}
 
@@ -193,13 +200,16 @@ private:
 	 * @return local CPP variable name
 	 */
 	inline static const string createLocalVariableName(const string& variableStatement) {
-		auto dotIdx = StringTools::indexOf(variableStatement, ".");
+		auto doubleDotIdx = StringTools::indexOf(variableStatement, "::");
+		if (doubleDotIdx == string::npos) doubleDotIdx = 0;
+		auto dotIdx = StringTools::indexOf(variableStatement, ".", doubleDotIdx);
 		if (dotIdx == string::npos) dotIdx = variableStatement.size();
-		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[");
+		auto squareBracketIdx = StringTools::indexOf(variableStatement, "[", doubleDotIdx);
 		if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
 		auto cppVariableName = "_" + StringTools::substring(variableStatement, 1, dotIdx < squareBracketIdx?dotIdx:squareBracketIdx);
 		cppVariableName = StringTools::replace(cppVariableName, "$", "_");
 		cppVariableName = StringTools::replace(cppVariableName, ":", "_");
+		cppVariableName = StringTools::replace(cppVariableName, ".", "_");
 		return cppVariableName;
 	}
 

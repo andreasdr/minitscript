@@ -199,6 +199,10 @@ on: nothing
 	console.printLine("getType([1,2,3]) = " + getType([1,2,3]))
 	console.printLine("getType({a,b,c}) = " + getType({a,b,c}))
 	console.printLine("getType({a:1,b:1,c:1}) = " + getType({a:1,b:1,c:1}))
+	$XXX.YYY.ZZZ::A = {a:1,b:2,c:2}
+	console.printLine("$XXX.YYY.ZZZ::A = " + $XXX.YYY.ZZZ::A)
+	$XXX.YYY.ZZZ::A.a = 9
+	console.printLine("$XXX.YYY.ZZZ::A.a = 9: " + $XXX.YYY.ZZZ::A)
 	console.printLine("--------------------")
 	console.printLine("Lets check forTime")
 	console.printLine("--------------------")
