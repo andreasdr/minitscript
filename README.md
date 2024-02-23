@@ -42,12 +42,16 @@ Also note the focus on easy integration into other products and easy customizabi
 
 - Whats left to do for 1.0 BETA release
   - some adjustments
-    - $Math::EPSILON vs $math::EPSILON or use :: as namespace separator instead of .
-  - make event system optional    
+    - private members: transpilated/native: check output, it differs from interpreter mode
+    - multi line error messages are ugly as fuck???
+    - make event system optional???
+    - preprocessor definition for data files
+  - tests
+    - native tests for MSC/MINGW
+    - bubblesort benchmark vs java script or other script engines, just to get the idea of current state of performance
   - documentation
     - detailed docu for methods and section
     - ...
-  - preprocessor definition for data files
   - installer for Windows
   - installer for MacOSX
 
@@ -1450,82 +1454,80 @@ TODO: private properties, && argument prefix
 | Create XML tag                                                                                   |
 | <sub>xml.createTag($name: String[, $attributes: Map[, $innerXML: String]]): String</sub>         |
 
-# 8. Constants
-
 | Name                                                        | Value                              |
 |-------------------------------------------------------------|------------------------------------|
-| $Application::CPU                                           | e.g. X64                           |
-| $Application::EXITCODE_FAILURE                              | 1                                  |
-| $Application::EXITCODE_SUCCESS                              | 0                                  |
-| $Application::OS                                            | e.g. Windows-MSC                   |
-| $HTTPClient::HTTP_STATUS_ACCEPTED                           | 202                                |
-| $HTTPClient::HTTP_STATUS_ALREADYREPORTED                    | 208                                |
-| $HTTPClient::HTTP_STATUS_BADGATEWAY                         | 502                                |
-| $HTTPClient::HTTP_STATUS_BADREQUEST                         | 400                                |
-| $HTTPClient::HTTP_STATUS_CONFLICT                           | 409                                |
-| $HTTPClient::HTTP_STATUS_CONTENTTOOLARGE                    | 413                                |
-| $HTTPClient::HTTP_STATUS_CONTINUE                           | 100                                |
-| $HTTPClient::HTTP_STATUS_CREATED                            | 201                                |
-| $HTTPClient::HTTP_STATUS_EARLYHINTS                         | 103                                |
-| $HTTPClient::HTTP_STATUS_EXPECTATIONFAILED                  | 417                                |
-| $HTTPClient::HTTP_STATUS_FAILEDDEPENDENCY                   | 424                                |
-| $HTTPClient::HTTP_STATUS_FORBIDDEN                          | 403                                |
-| $HTTPClient::HTTP_STATUS_FOUND                              | 302                                |
-| $HTTPClient::HTTP_STATUS_GATEWAYTIMEOUT                     | 504                                |
-| $HTTPClient::HTTP_STATUS_GONE                               | 410                                |
-| $HTTPClient::HTTP_STATUS_HTTPVERSIONNOTSUPPORTED            | 505                                |
-| $HTTPClient::HTTP_STATUS_IMATEAPOT                          | 418                                |
-| $HTTPClient::HTTP_STATUS_IMUSED                             | 226                                |
-| $HTTPClient::HTTP_STATUS_INSUFFICIENTSTORAGE                | 507                                |
-| $HTTPClient::HTTP_STATUS_INTERNALSERVERERROR                | 500                                |
-| $HTTPClient::HTTP_STATUS_LENGTHREQUIRED                     | 411                                |
-| $HTTPClient::HTTP_STATUS_LOCKED                             | 423                                |
-| $HTTPClient::HTTP_STATUS_LOOPDETECTED                       | 508                                |
-| $HTTPClient::HTTP_STATUS_MAX                                | 1023                               |
-| $HTTPClient::HTTP_STATUS_METHODNOTALLOWED                   | 405                                |
-| $HTTPClient::HTTP_STATUS_MISDIRECTEDREQUEST                 | 421                                |
-| $HTTPClient::HTTP_STATUS_MOVEDPERMANENTLY                   | 301                                |
-| $HTTPClient::HTTP_STATUS_MULTIPLECHOICES                    | 300                                |
-| $HTTPClient::HTTP_STATUS_MULTISTATUS                        | 207                                |
-| $HTTPClient::HTTP_STATUS_NETWORKAUTHENTICATIONREQUIRED      | 511                                |
-| $HTTPClient::HTTP_STATUS_NOCONTENT                          | 204                                |
-| $HTTPClient::HTTP_STATUS_NONAUTHORITATIVEINFORMATION        | 203                                |
-| $HTTPClient::HTTP_STATUS_NOTACCEPTABLE                      | 406                                |
-| $HTTPClient::HTTP_STATUS_NOTEXTENDED                        | 510                                |
-| $HTTPClient::HTTP_STATUS_NOTFOUND                           | 404                                |
-| $HTTPClient::HTTP_STATUS_NOTIMPLEMENTED                     | 501                                |
-| $HTTPClient::HTTP_STATUS_NOTMODIFIED                        | 304                                |
-| $HTTPClient::HTTP_STATUS_OK                                 | 200                                |
-| $HTTPClient::HTTP_STATUS_PARTIALCONTENT                     | 206                                |
-| $HTTPClient::HTTP_STATUS_PAYLOADTOOLARGE                    | 413                                |
-| $HTTPClient::HTTP_STATUS_PAYMENTREQUIRED                    | 402                                |
-| $HTTPClient::HTTP_STATUS_PERMANENTREDIRECT                  | 308                                |
-| $HTTPClient::HTTP_STATUS_PRECONDITIONFAILED                 | 412                                |
-| $HTTPClient::HTTP_STATUS_PRECONDITIONREQUIRED               | 428                                |
-| $HTTPClient::HTTP_STATUS_PROCESSING                         | 102                                |
-| $HTTPClient::HTTP_STATUS_PROXYAUTHENTICATIONREQUIRED        | 407                                |
-| $HTTPClient::HTTP_STATUS_RANGENOTSATISFIABLE                | 416                                |
-| $HTTPClient::HTTP_STATUS_REQUESTHEADERFIELDSTOOLARGE        | 431                                |
-| $HTTPClient::HTTP_STATUS_REQUESTTIMEOUT                     | 408                                |
-| $HTTPClient::HTTP_STATUS_RESETCONTENT                       | 205                                |
-| $HTTPClient::HTTP_STATUS_SEEOTHER                           | 303                                |
-| $HTTPClient::HTTP_STATUS_SERVICEUNAVAILABLE                 | 503                                |
-| $HTTPClient::HTTP_STATUS_SWITCHINGPROTOCOLS                 | 101                                |
-| $HTTPClient::HTTP_STATUS_TEMPORARYREDIRECT                  | 307                                |
-| $HTTPClient::HTTP_STATUS_TOOEARLY                           | 425                                |
-| $HTTPClient::HTTP_STATUS_TOOMANYREQUESTS                    | 429                                |
-| $HTTPClient::HTTP_STATUS_UNAUTHORIZED                       | 401                                |
-| $HTTPClient::HTTP_STATUS_UNAVAILABLEFORLEGALREASONS         | 451                                |
-| $HTTPClient::HTTP_STATUS_UNPROCESSABLECONTENT               | 422                                |
-| $HTTPClient::HTTP_STATUS_UNPROCESSABLEENTITY                | 422                                |
-| $HTTPClient::HTTP_STATUS_UNSUPPORTEDMEDIATYPE               | 415                                |
-| $HTTPClient::HTTP_STATUS_UPGRADEREQUIRED                    | 426                                |
-| $HTTPClient::HTTP_STATUS_URITOOLONG                         | 414                                |
-| $HTTPClient::HTTP_STATUS_USEPROXY                           | 305                                |
-| $HTTPClient::HTTP_STATUS_VARIANTALSONEGOTIATES              | 506                                |
-| $Math::DEG2RAD                                              | 0.017453                           |
-| $Math::EPSILON                                              | 0.000000                           |
-| $Math::PI                                                   | 3.141593                           |
+| $application::CPU                                           | e.g. X64                           |
+| $application::EXITCODE_FAILURE                              | 1                                  |
+| $application::EXITCODE_SUCCESS                              | 0                                  |
+| $application::OS                                            | e.g. Linux                         |
+| $http::HTTP_STATUS_ACCEPTED                                 | 202                                |
+| $http::HTTP_STATUS_ALREADYREPORTED                          | 208                                |
+| $http::HTTP_STATUS_BADGATEWAY                               | 502                                |
+| $http::HTTP_STATUS_BADREQUEST                               | 400                                |
+| $http::HTTP_STATUS_CONFLICT                                 | 409                                |
+| $http::HTTP_STATUS_CONTENTTOOLARGE                          | 413                                |
+| $http::HTTP_STATUS_CONTINUE                                 | 100                                |
+| $http::HTTP_STATUS_CREATED                                  | 201                                |
+| $http::HTTP_STATUS_EARLYHINTS                               | 103                                |
+| $http::HTTP_STATUS_EXPECTATIONFAILED                        | 417                                |
+| $http::HTTP_STATUS_FAILEDDEPENDENCY                         | 424                                |
+| $http::HTTP_STATUS_FORBIDDEN                                | 403                                |
+| $http::HTTP_STATUS_FOUND                                    | 302                                |
+| $http::HTTP_STATUS_GATEWAYTIMEOUT                           | 504                                |
+| $http::HTTP_STATUS_GONE                                     | 410                                |
+| $http::HTTP_STATUS_HTTPVERSIONNOTSUPPORTED                  | 505                                |
+| $http::HTTP_STATUS_IMATEAPOT                                | 418                                |
+| $http::HTTP_STATUS_IMUSED                                   | 226                                |
+| $http::HTTP_STATUS_INSUFFICIENTSTORAGE                      | 507                                |
+| $http::HTTP_STATUS_INTERNALSERVERERROR                      | 500                                |
+| $http::HTTP_STATUS_LENGTHREQUIRED                           | 411                                |
+| $http::HTTP_STATUS_LOCKED                                   | 423                                |
+| $http::HTTP_STATUS_LOOPDETECTED                             | 508                                |
+| $http::HTTP_STATUS_MAX                                      | 1023                               |
+| $http::HTTP_STATUS_METHODNOTALLOWED                         | 405                                |
+| $http::HTTP_STATUS_MISDIRECTEDREQUEST                       | 421                                |
+| $http::HTTP_STATUS_MOVEDPERMANENTLY                         | 301                                |
+| $http::HTTP_STATUS_MULTIPLECHOICES                          | 300                                |
+| $http::HTTP_STATUS_MULTISTATUS                              | 207                                |
+| $http::HTTP_STATUS_NETWORKAUTHENTICATIONREQUIRED            | 511                                |
+| $http::HTTP_STATUS_NOCONTENT                                | 204                                |
+| $http::HTTP_STATUS_NONAUTHORITATIVEINFORMATION              | 203                                |
+| $http::HTTP_STATUS_NOTACCEPTABLE                            | 406                                |
+| $http::HTTP_STATUS_NOTEXTENDED                              | 510                                |
+| $http::HTTP_STATUS_NOTFOUND                                 | 404                                |
+| $http::HTTP_STATUS_NOTIMPLEMENTED                           | 501                                |
+| $http::HTTP_STATUS_NOTMODIFIED                              | 304                                |
+| $http::HTTP_STATUS_OK                                       | 200                                |
+| $http::HTTP_STATUS_PARTIALCONTENT                           | 206                                |
+| $http::HTTP_STATUS_PAYLOADTOOLARGE                          | 413                                |
+| $http::HTTP_STATUS_PAYMENTREQUIRED                          | 402                                |
+| $http::HTTP_STATUS_PERMANENTREDIRECT                        | 308                                |
+| $http::HTTP_STATUS_PRECONDITIONFAILED                       | 412                                |
+| $http::HTTP_STATUS_PRECONDITIONREQUIRED                     | 428                                |
+| $http::HTTP_STATUS_PROCESSING                               | 102                                |
+| $http::HTTP_STATUS_PROXYAUTHENTICATIONREQUIRED              | 407                                |
+| $http::HTTP_STATUS_RANGENOTSATISFIABLE                      | 416                                |
+| $http::HTTP_STATUS_REQUESTHEADERFIELDSTOOLARGE              | 431                                |
+| $http::HTTP_STATUS_REQUESTTIMEOUT                           | 408                                |
+| $http::HTTP_STATUS_RESETCONTENT                             | 205                                |
+| $http::HTTP_STATUS_SEEOTHER                                 | 303                                |
+| $http::HTTP_STATUS_SERVICEUNAVAILABLE                       | 503                                |
+| $http::HTTP_STATUS_SWITCHINGPROTOCOLS                       | 101                                |
+| $http::HTTP_STATUS_TEMPORARYREDIRECT                        | 307                                |
+| $http::HTTP_STATUS_TOOEARLY                                 | 425                                |
+| $http::HTTP_STATUS_TOOMANYREQUESTS                          | 429                                |
+| $http::HTTP_STATUS_UNAUTHORIZED                             | 401                                |
+| $http::HTTP_STATUS_UNAVAILABLEFORLEGALREASONS               | 451                                |
+| $http::HTTP_STATUS_UNPROCESSABLECONTENT                     | 422                                |
+| $http::HTTP_STATUS_UNPROCESSABLEENTITY                      | 422                                |
+| $http::HTTP_STATUS_UNSUPPORTEDMEDIATYPE                     | 415                                |
+| $http::HTTP_STATUS_UPGRADEREQUIRED                          | 426                                |
+| $http::HTTP_STATUS_URITOOLONG                               | 414                                |
+| $http::HTTP_STATUS_USEPROXY                                 | 305                                |
+| $http::HTTP_STATUS_VARIANTALSONEGOTIATES                    | 506                                |
+| $math::DEG2RAD                                              | 0.017453                           |
+| $math::EPSILON                                              | 0.000000                           |
+| $math::PI                                                   | 3.141593                           |
 
 Please note:
 - $Application::CPU can have the following values: FreeBSD, Haiku, Linux, MacOSX, NetBSD, OpenBSD, Windows-MSC, Windows-MINGW, Unknown

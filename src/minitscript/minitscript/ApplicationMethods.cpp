@@ -26,50 +26,50 @@ using _Console = minitscript::utilities::Console;
 using _StringTools = minitscript::utilities::StringTools;
 
 void ApplicationMethods::registerConstants(MinitScript* minitScript) {
-	minitScript->setConstant("$Application::EXITCODE_SUCCESS", MinitScript::Variable(static_cast<int64_t>(EXIT_SUCCESS)));
-	minitScript->setConstant("$Application::EXITCODE_FAILURE", MinitScript::Variable(static_cast<int64_t>(EXIT_FAILURE)));
+	minitScript->setConstant("$application::EXITCODE_SUCCESS", MinitScript::Variable(static_cast<int64_t>(EXIT_SUCCESS)));
+	minitScript->setConstant("$application::EXITCODE_FAILURE", MinitScript::Variable(static_cast<int64_t>(EXIT_FAILURE)));
 	//
 	#if defined(__FreeBSD__)
-		minitScript->setConstant("$Application::OS", string("FreeBSD"));
+		minitScript->setConstant("$application::OS", string("FreeBSD"));
 	#elif defined(__HAIKU__)
-		minitScript->setConstant("$Application::OS", string("Haiku"));
+		minitScript->setConstant("$application::OS", string("Haiku"));
 	#elif defined(__linux__)
-		minitScript->setConstant("$Application::OS", string("Linux"));
+		minitScript->setConstant("$application::OS", string("Linux"));
 	#elif defined(__APPLE__)
-		minitScript->setConstant("$Application::OS", string("MacOSX"));
+		minitScript->setConstant("$application::OS", string("MacOSX"));
 	#elif defined(__NetBSD__)
-		minitScript->setConstant("$Application::OS", string("NetBSD"));
+		minitScript->setConstant("$application::OS", string("NetBSD"));
 	#elif defined(__OpenBSD__)
-		minitScript->setConstant("$Application::OS", string("OpenBSD"));
+		minitScript->setConstant("$application::OS", string("OpenBSD"));
 	#elif defined(_MSC_VER)
-		minitScript->setConstant("$Application::OS", string("Windows-MSC"));
+		minitScript->setConstant("$application::OS", string("Windows-MSC"));
 	#elif defined(_WIN32)
-		minitScript->setConstant("$Application::OS", string("Windows-MINGW"));
+		minitScript->setConstant("$application::OS", string("Windows-MINGW"));
 	#else
-		minitScript->setConstant("$Application::OS", string("Unknown"));
+		minitScript->setConstant("$application::OS", string("Unknown"));
 	#endif
 	#if defined(__i386__) || defined(_M_IX86)
-		minitScript->setConstant("$Application::CPU", string("X86"));
+		minitScript->setConstant("$application::CPU", string("X86"));
 	#elif defined(__amd64__) || defined(_M_X64)
-		minitScript->setConstant("$Application::CPU", string("X64"));
+		minitScript->setConstant("$application::CPU", string("X64"));
 	#elif defined(__ia64__) || defined(_M_IA64)
-		minitScript->setConstant("$Application::CPU", string("IA64"));
+		minitScript->setConstant("$application::CPU", string("IA64"));
 	#elif defined(__aarch64__) || defined(_M_ARM64)
-		minitScript->setConstant("$Application::CPU", string("ARM64"));
+		minitScript->setConstant("$application::CPU", string("ARM64"));
 	#elif defined(__arm__) || defined(_M_ARM)
-		minitScript->setConstant("$Application::CPU", string("ARM"));
+		minitScript->setConstant("$application::CPU", string("ARM"));
 	#elif defined(__riscv)
 		#if __riscv_xlen == 64
-			minitScript->setConstant("$Application::CPU", string("RISCV64"));
+			minitScript->setConstant("$application::CPU", string("RISCV64"));
 		#else
-			minitScript->setConstant("$Application::CPU", string("RISCV"));
+			minitScript->setConstant("$application::CPU", string("RISCV"));
 		#endif
 	#elif defined(__powerpc64__)
-		minitScript->setConstant("$Application::CPU", string("PPC64"));
+		minitScript->setConstant("$application::CPU", string("PPC64"));
 	#elif defined(__powerpc__)
-		minitScript->setConstant("$Application::CPU", string("PPC"));
+		minitScript->setConstant("$application::CPU", string("PPC"));
 	#else
-		minitScript->setConstant("$Application::CPU", string("Unknown"));
+		minitScript->setConstant("$application::CPU", string("Unknown"));
 	#endif
 }
 

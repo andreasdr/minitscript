@@ -18,7 +18,7 @@ on: nothing
 	if ($result == null)
 		console.printLine("Failed to do HTTP GET request: http://drewke.net/tdme2/")
 	else
-		console.printLine("Success: " + ($result.status == $HTTPClient::HTTP_STATUS_OK))
+		console.printLine("Success: " + ($result.status == $http::HTTP_STATUS_OK))
 		console.printLine("HTTP response status: " + $result.status)
 		console.printLine("HTTP headers: " + $result.headers)
 		console.printLine("HTTP response: " + $result.response)
@@ -29,7 +29,7 @@ on: nothing
 	if ($result == null)
 		console.printLine("Failed to do HTTP GET request: https://drewke.net/tdme2/")
 	else
-		console.printLine("Success: " + ($result.status == $HTTPClient::HTTP_STATUS_OK))
+		console.printLine("Success: " + ($result.status == $http::HTTP_STATUS_OK))
 		console.printLine("HTTP response status: " + $result.status)
 		console.printLine("HTTP headers: " + $result.headers)
 		console.printLine("HTTP response: " + $result.response)

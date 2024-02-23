@@ -20,9 +20,9 @@ void MathMethods::registerDataType(MinitScript::DataType* dataType) {
 }
 
 void MathMethods::registerConstants() {
-	minitScript->setConstant("$Math::DEG2RAD", MinitScript::Variable(_Math::DEG2RAD));
-	minitScript->setConstant("$Math::EPSILON", MinitScript::Variable(_Math::EPSILON));
-	minitScript->setConstant("$Math::PI", MinitScript::Variable(_Math::PI));
+	minitScript->setConstant("$math::DEG2RAD", MinitScript::Variable(_Math::DEG2RAD));
+	minitScript->setConstant("$math::EPSILON", MinitScript::Variable(_Math::EPSILON));
+	minitScript->setConstant("$math::PI", MinitScript::Variable(_Math::PI));
 }
 
 void MathMethods::registerMethods() {

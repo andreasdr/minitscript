@@ -40,13 +40,13 @@ function: testScript($scriptURIs, $input)
 		$exitCode = null
 		$error = null
 		$result = application.execute($command, $exitCode, $error)
-		if ($exitCode == $$.Application::EXITCODE_SUCCESS)
+		if ($exitCode == $$.application::EXITCODE_SUCCESS)
 			console.printLine(", SUCCESS")
 		else
 			console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
 			console.printLine("**********************************************************************")
 			console.printLine($error)
-			application.exit($$.Application::EXITCODE_FAILURE)
+			application.exit($$.application::EXITCODE_FAILURE)
 		end
 	end
 	# execute binary
@@ -58,11 +58,11 @@ function: testScript($scriptURIs, $input)
 	$exitCode = null
 	$error = null
 	$nativeResult = application.execute($command, $exitCode, $error)
-	if ($exitCode != $$.Application::EXITCODE_SUCCESS)
+	if ($exitCode != $$.application::EXITCODE_SUCCESS)
 		console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
 		console.printLine("**********************************************************************")
 		console.printLine($error)
-		application.exit($$.Application::EXITCODE_FAILURE)
+		application.exit($$.application::EXITCODE_FAILURE)
 	end
 	console.printLine(", SUCCESS")
 	# execute minscript interpreteer
@@ -74,11 +74,11 @@ function: testScript($scriptURIs, $input)
 	$exitCode = null
 	$error = null
 	$interpreterResult = application.execute($command, $exitCode, $error)
-	if ($exitCode != $$.Application::EXITCODE_SUCCESS)
+	if ($exitCode != $$.application::EXITCODE_SUCCESS)
 		console.printLine(", FAILURE, exiting")
 		console.printLine("**********************************************************************")
 		console.printLine($error)
-		application.exit($$.Application::EXITCODE_FAILURE)
+		application.exit($$.application::EXITCODE_FAILURE)
 	end
 	if ($nativeResult != $interpreterResult)
 		filesystem.setContentFromString(".", "native-test-output-native.log", $nativeResult)
@@ -96,7 +96,7 @@ function: testScript($scriptURIs, $input)
 			console.printLine("**********************************************************************")
 			console.printLine($diffResult)
 			console.printLine($error)
-			application.exit($$.Application::EXITCODE_FAILURE)
+			application.exit($$.application::EXITCODE_FAILURE)
 		end
 		console.printLine($diffResult->replace("\n","\n\t"))
 		console.printLine("**********************************************************************")

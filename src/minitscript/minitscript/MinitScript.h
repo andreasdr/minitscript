@@ -3660,7 +3660,52 @@ private:
 	 * @param global use global context instead of current context
 	 * @return pointer to variable
 	 */
-	Variable* getVariableIntern(const string& variableStatement, const string& callerMethod, string& variableName, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const Statement* statement = nullptr, bool expectVariable = true, bool global = false);
+	inline Variable* getVariableIntern(const string& variableStatement, const string& callerMethod, string& variableName, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const Statement* statement = nullptr, bool expectVariable = true, bool global = false) {
+		// determine variable name
+		{
+			auto dotIdx = string::npos;
+			auto squareBracketIdx = string::npos;
+			auto lc = '\0';
+			for (auto i = 0; i < variableStatement.size(); i++) {
+				auto c = variableStatement[i];
+				if (c == '.') {
+					if (dotIdx == string::npos) dotIdx = i;
+				} else
+				if (c == '[') {
+					if (squareBracketIdx == string::npos) squareBracketIdx = i;
+				} else
+				if (lc == ':' && c == ':') {
+					dotIdx = string::npos;
+					squareBracketIdx = string::npos;
+				}
+				//
+				lc = c;
+			}
+			if (dotIdx == string::npos) dotIdx == variableStatement.size();
+			if (squareBracketIdx == string::npos) squareBracketIdx == variableStatement.size();
+			variableName = _StringTools::substring(
+				variableStatement,
+				0,
+				dotIdx < squareBracketIdx?
+					dotIdx:
+					squareBracketIdx
+			);
+		}
+		// retrieve variable from script state
+		Variable* variablePtr = nullptr;
+		const auto& scriptState = global == false?getScriptState():getRootScriptState();
+		auto variableIt = scriptState.variables.find(variableName);
+		if (variableIt == scriptState.variables.end()) {
+			if (expectVariable == true) {
+				_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + " does not exist");
+			}
+			return nullptr;
+		} else {
+			variablePtr = variableIt->second;
+		}
+		//
+		return evaluateVariableAccessIntern(variablePtr, variableStatement, callerMethod, parentVariable, arrayIdx, key, setAccessBool, statement, expectVariable);
+	}
 
 	/**
 	 * Set variable internal

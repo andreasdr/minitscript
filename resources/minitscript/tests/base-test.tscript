@@ -69,9 +69,9 @@ on: nothing
 	console.printLine("-------------------------")
 	console.printLine("Check additional math")
 	console.printLine("-------------------------")
-	console.printLine("$Math::PI: ", $Math::PI)
-	console.printLine("$Math::EPSILON: ", $Math::EPSILON)
-	console.printLine("$Math::DEG2RAD: ", $Math::DEG2RAD)
+	console.printLine("$math::PI: ", $math::PI)
+	console.printLine("$math::EPSILON: ", $math::EPSILON)
+	console.printLine("$math::DEG2RAD: ", $math::DEG2RAD)
 	console.printLine("math.acos(0.0): ", math.acos(0.0))
 	console.printLine("math.asin(1.0): ", math.asin(1.0))
 	console.printLine("math.atan(1.0): ", math.atan(1.0))
@@ -199,10 +199,10 @@ on: nothing
 	console.printLine("getType([1,2,3]) = " + getType([1,2,3]))
 	console.printLine("getType({a,b,c}) = " + getType({a,b,c}))
 	console.printLine("getType({a:1,b:1,c:1}) = " + getType({a:1,b:1,c:1}))
-	$XXX.YYY.ZZZ::A = {a:1,b:2,c:2}
-	console.printLine("$XXX.YYY.ZZZ::A = " + $XXX.YYY.ZZZ::A)
+	$xxx.yyy.zzz::A = {a:1,b:2,c:2}
+	console.printLine("$xxx.yyy.zzz::A = " + $xxx.yyy.zzz::A)
 	$XXX.YYY.ZZZ::A.a = 9
-	console.printLine("$XXX.YYY.ZZZ::A.a = 9: " + $XXX.YYY.ZZZ::A)
+	console.printLine("$xxx.yyy.zzz::A.a = 9: " + $xxx.yyy.zzz::A)
 	console.printLine("--------------------")
 	console.printLine("Lets check forTime")
 	console.printLine("--------------------")

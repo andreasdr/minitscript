@@ -4761,53 +4761,6 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 	}
 }
 
-inline MinitScript::Variable* MinitScript::getVariableIntern(const string& variableStatement, const string& callerMethod, string& variableName, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const Statement* statement, bool expectVariable, bool global) {
-	// determine variable name
-	{
-		auto dotIdx = string::npos;
-		auto squareBracketIdx = string::npos;
-		auto lc = '\0';
-		for (auto i = 0; i < variableStatement.size(); i++) {
-			auto c = variableStatement[i];
-			if (c == '.') {
-				if (dotIdx == string::npos) dotIdx = i;
-			} else
-			if (c == '[') {
-				if (squareBracketIdx == string::npos) squareBracketIdx = i;
-			} else
-			if (lc == ':' && c == ':') {
-				dotIdx = string::npos;
-				squareBracketIdx = string::npos;
-			}
-			//
-			lc = c;
-		}
-		if (dotIdx == string::npos) dotIdx == variableStatement.size();
-		if (squareBracketIdx == string::npos) squareBracketIdx == variableStatement.size();
-		variableName = _StringTools::substring(
-			variableStatement,
-			0,
-			dotIdx < squareBracketIdx?
-				dotIdx:
-				squareBracketIdx
-		);
-	}
-	// retrieve variable from script state
-	Variable* variablePtr = nullptr;
-	const auto& scriptState = global == false?getScriptState():getRootScriptState();
-	auto variableIt = scriptState.variables.find(variableName);
-	if (variableIt == scriptState.variables.end()) {
-		if (expectVariable == true) {
-			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + " does not exist");
-		}
-		return nullptr;
-	} else {
-		variablePtr = variableIt->second;
-	}
-	//
-	return evaluateVariableAccessIntern(variablePtr, variableStatement, callerMethod, parentVariable, arrayIdx, key, setAccessBool, statement, expectVariable);
-}
-
 inline void MinitScript::setVariableInternal(const string& variableStatement, Variable* parentVariable, Variable* variablePtr, int64_t arrayIdx, const string& key, const Variable& variable, const Statement* statement, bool createReference) {
 	// common case
 	if (variablePtr != nullptr) {
