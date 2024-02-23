@@ -46,6 +46,7 @@ Also note the focus on easy integration into other products and easy customizabi
     - multi line statement error messages are ugly as fuck???
     - make event system optional???
     - preprocessor definition for data files
+    - native scripts should also be executable without original scripts(optional) and with changed scripts(interpreted mode)
   - tests
     - native tests for MSC/MINGW
     - bubblesort benchmark vs java script or other script engines, just to get the idea of current state of performance
