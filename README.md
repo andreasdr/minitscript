@@ -503,7 +503,7 @@ Iterating arrays using Array::forEach() and a lamda function
 	$array->forEach(($value) -> { console.printLine($value) })
 ...
 ```
-TODO: $array->forEach() to compute sum
+TODO: $array->forEach() to compute sum\
 TODO: forEach
 
 ## 4.4. Maps
@@ -602,7 +602,7 @@ Iterating maps using Map::forEach() and a lamda function
 ...
 ```
 
-TODO: $map->forEach() to compute something / with cookie
+TODO: $map->forEach() to compute something / with cookie\
 TODO: forEach
 
 ## 4.5. Sets
@@ -685,7 +685,7 @@ Iterating sets using Set::forEach() and a lamda function
 	$set->forEach(($key) -> { console.printLine($key) })
 ...
 ```
-TODO: $set->forEach() to compute something / with cookie
+TODO: $set->forEach() to compute something / with cookie\
 TODO: forEach
 
 ## 4.6. Classes
