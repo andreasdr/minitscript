@@ -43,7 +43,7 @@ Also note the focus on easy integration into other products and easy customizabi
 - Whats left to do for 1.0 BETA release
   - some adjustments
     - private members: transpilated/native: check output, it differs from interpreter mode
-    - multi line error messages are ugly as fuck???
+    - multi line statement error messages are ugly as fuck???
     - make event system optional???
     - preprocessor definition for data files
   - tests
