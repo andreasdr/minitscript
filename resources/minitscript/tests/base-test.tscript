@@ -201,7 +201,7 @@ on: nothing
 	console.printLine("getType({a:1,b:1,c:1}) = " + getType({a:1,b:1,c:1}))
 	$xxx.yyy.zzz::A = {a:1,b:2,c:2}
 	console.printLine("$xxx.yyy.zzz::A = " + $xxx.yyy.zzz::A)
-	$XXX.YYY.ZZZ::A.a = 9
+	$xxx.yyy.zzz::A.a = 9
 	console.printLine("$xxx.yyy.zzz::A.a = 9: " + $xxx.yyy.zzz::A)
 	console.printLine("--------------------")
 	console.printLine("Lets check forTime")
