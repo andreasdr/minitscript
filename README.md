@@ -1530,8 +1530,8 @@ TODO: private properties, && argument prefix
 | $math::PI                                                   | 3.141593                           |
 
 Please note:
-- $Application::CPU can have the following values: FreeBSD, Haiku, Linux, MacOSX, NetBSD, OpenBSD, Windows-MSC, Windows-MINGW, Unknown
-- $Application::OS can have the following values: X86, X64, IA64, ARM64, ARM, RISCV64, RISCV, PPC64, PPC, Unknown
+- $application::CPU can have the following values: FreeBSD, Haiku, Linux, MacOSX, NetBSD, OpenBSD, Windows-MSC, Windows-MINGW, Unknown
+- $application::OS can have the following values: X86, X64, IA64, ARM64, ARM, RISCV64, RISCV, PPC64, PPC, Unknown
 
 # 9. Operators
 
