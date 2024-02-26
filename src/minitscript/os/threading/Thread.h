@@ -20,7 +20,7 @@ using std::unique_ptr;
 class minitscript::os::threading::Thread {
 public:
 	// forbid class copy
-	FORBID_CLASS_COPY(Thread)
+	_FORBID_CLASS_COPY(Thread)
 
 	/**
 	 * @brief Public constructor

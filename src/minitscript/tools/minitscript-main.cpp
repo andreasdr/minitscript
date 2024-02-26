@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 		try {
 			if (statementsOnly == true) {
 				scriptCode = StringTools::replace(
-					FileSystem::getContentAsString("resources/minitscript/templates/cli", "statements.tscript"),
+					FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/cli", "statements.tscript"),
 					"{$statements}",
 					scriptCode
 				);

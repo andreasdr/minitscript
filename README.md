@@ -45,7 +45,6 @@ Also note the focus on easy integration into other products and easy customizabi
     - private members: transpilated/native: check output, it differs from interpreter mode
     - multi line statement error messages are ugly as fuck???
     - make event system optional???
-    - preprocessor definition for data files
     - native scripts should also be executable without original scripts(optional) and with changed scripts(interpreted mode)
   - tests
     - native tests for MSC/MINGW

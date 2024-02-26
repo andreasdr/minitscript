@@ -62,7 +62,7 @@ public:
 	};
 
 	// forbid class copy
-	FORBID_CLASS_COPY(HTTPDownloadClientClass)
+	_FORBID_CLASS_COPY(HTTPDownloadClientClass)
 
 	/**
 	 * Initialize

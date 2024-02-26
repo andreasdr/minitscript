@@ -673,7 +673,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		vector<string> generatedMinitScriptCPP;
 		auto transpilationCPPFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".cpp";
 		if (FileSystem::exists(transpilationCPPFileName) == false) {
-			auto minitScriptCPPString = FileSystem::getContentAsString("./resources/minitscript/templates/transpilation", "Transpilation.cpp");
+			auto minitScriptCPPString = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/transpilation", "Transpilation.cpp");
 			minitScriptCPPString = StringTools::replace(minitScriptCPPString, "{$script}", scriptFileName);
 			minitScriptCPPString = StringTools::replace(minitScriptCPPString, "{$class-name}", minitScriptClassName);
 			minitScriptCPPString = StringTools::replace(minitScriptCPPString, "{$base-class}", minitScript->getBaseClass());
@@ -756,7 +756,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		vector<string> generatedMinitScriptClassHeader;
 		auto transpilationHeaderFileName = FileSystem::getPathName(transpilationFileName) + "/" + FileSystem::getFileName(transpilationFileName) + ".h";
 		if (FileSystem::exists(transpilationHeaderFileName) == false) {
-			auto minitScriptHeaderString = FileSystem::getContentAsString("./resources/minitscript/templates/transpilation", "Transpilation.h");
+			auto minitScriptHeaderString = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/transpilation", "Transpilation.h");
 			minitScriptHeaderString = StringTools::replace(minitScriptHeaderString, "{$script}", scriptFileName);
 			minitScriptHeaderString = StringTools::replace(minitScriptHeaderString, "{$class-name}", minitScriptClassName);
 			minitScriptHeaderString = StringTools::replace(minitScriptHeaderString, "{$base-class}", minitScript->getBaseClass());

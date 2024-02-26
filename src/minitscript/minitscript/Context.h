@@ -27,7 +27,7 @@ private:
 
 public:
 	// forbid class copy
-	FORBID_CLASS_COPY(Context)
+	_FORBID_CLASS_COPY(Context)
 
 	/**
 	 * Public constructor

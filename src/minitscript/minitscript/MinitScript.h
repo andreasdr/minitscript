@@ -366,7 +366,7 @@ public:
 
 	public:
 		// forbid class copy
-		FORBID_CLASS_COPY(DataType)
+		_FORBID_CLASS_COPY(DataType)
 
 		/**
 		 * Data type
@@ -2550,7 +2550,7 @@ public:
 	class StateMachineState {
 	public:
 		// forbid class copy
-		FORBID_CLASS_COPY(StateMachineState)
+		_FORBID_CLASS_COPY(StateMachineState)
 
 		/**
 		 * Constructor
@@ -2592,7 +2592,7 @@ public:
 		};
 
 		// forbid class copy
-		FORBID_CLASS_COPY(Method)
+		_FORBID_CLASS_COPY(Method)
 
 		/**
 		 * Constructor
@@ -4232,7 +4232,7 @@ public:
 	static void registerDataType(DataType* dataType);
 
 	// forbid class copy
-	FORBID_CLASS_COPY(MinitScript)
+	_FORBID_CLASS_COPY(MinitScript)
 
 	/**
 	 * Default constructor

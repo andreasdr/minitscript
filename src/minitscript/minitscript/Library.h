@@ -21,7 +21,7 @@ protected:
 
 public:
 	// forbid class copy
-	FORBID_CLASS_COPY(Library)
+	_FORBID_CLASS_COPY(Library)
 
 	/**
 	 * Public constructor

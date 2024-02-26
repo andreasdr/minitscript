@@ -21,7 +21,7 @@ class minitscript::os::threading::Mutex {
 
 public:
 	// forbid class copy
-	FORBID_CLASS_COPY(Mutex)
+	_FORBID_CLASS_COPY(Mutex)
 
 	/**
 	 * @brief Public constructor

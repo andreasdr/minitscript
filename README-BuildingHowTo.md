@@ -250,4 +250,5 @@ $ ./bin/minitscript/tools/minitscript resources/minitscript/tests/base-test.tscr
 
 ## 3.2. Additional notes
 
+- TODO: updated build + install documentation
 - Build instructions will follow for Haiku

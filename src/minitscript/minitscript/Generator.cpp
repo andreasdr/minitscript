@@ -40,7 +40,7 @@ void Generator::generateMain(
 	try {
 		Console::printLine("Generating main C++ file: " + mainURI);
 
-		auto mainSource = FileSystem::getContentAsString("./resources/minitscript/templates/transpilation", "script-main.cpp");
+		auto mainSource = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/transpilation", "script-main.cpp");
 		mainSource = StringTools::replace(mainSource, "{$script}", scriptURI);
 		mainSource = StringTools::replace(mainSource, "{$script-class}", className);
 		mainSource = StringTools::replace(mainSource, "{$library}", library);
@@ -69,7 +69,7 @@ void Generator::generateLibrary(
 	//
 	try {
 		Console::printLine("Generating library C++ file");
-		auto mainSource = FileSystem::getContentAsString("./resources/minitscript/templates/transpilation", "NativeLibrary.cpp");
+		auto mainSource = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/transpilation", "NativeLibrary.cpp");
 		mainSource = StringTools::replace(mainSource, "{$library-includes}", libraryIncludes);
 		mainSource = StringTools::replace(mainSource, "{$library-code}", libraryCode);
 		FileSystem::setContentFromString(FileSystem::getPathName(libraryURI), FileSystem::getFileName(libraryURI), mainSource);
@@ -122,7 +122,8 @@ void Generator::generateMakefile(const string& srcPath, const string& makefileUR
 		Console::printLine("Generating Makefile");
 
 		//
-		auto makefileSource = FileSystem::getContentAsString("./resources/minitscript/templates/makefiles", library == true?"Library-Makefile":"Makefile");
+		auto makefileSource = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/makefiles", library == true?"Library-Makefile":"Makefile");
+		makefileSource = StringTools::replace(makefileSource, "{$MINITSCRIPT_DATA}", MINITSCRIPT_DATA);
 		makefileSource = StringTools::replace(makefileSource, "{$source-path}", srcPath);
 		makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
 		if (library == false) makefileSource = StringTools::replace(makefileSource, "{$main-source-files}", mainSourceFilesVariable);
@@ -174,8 +175,9 @@ void Generator::generateNMakefile(const string& srcPath, const string& makefileU
 		if (library == true) {
 			Console::printLine("Generating Makefile");
 			//
-			makefileSource = FileSystem::getContentAsString("./resources/minitscript/templates/makefiles", "Library-Makefile.nmake");
-			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/minitscript/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/makefiles", "Library-Makefile.nmake");
+			auto makefileMainSourceTemplate = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = StringTools::replace(makefileSource, "{$MINITSCRIPT_DATA}", MINITSCRIPT_DATA);
 			makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
 			makefileSource+= "\n";
 		} else {
@@ -188,8 +190,9 @@ void Generator::generateNMakefile(const string& srcPath, const string& makefileU
 			//
 			Console::printLine("Generating Makefile");
 			//
-			makefileSource = FileSystem::getContentAsString("./resources/minitscript/templates/makefiles", "Makefile.nmake");
-			auto makefileMainSourceTemplate = FileSystem::getContentAsString("./resources/minitscript/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/makefiles", "Makefile.nmake");
+			auto makefileMainSourceTemplate = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/makefiles", "Makefile.nmake.main");
+			makefileSource = StringTools::replace(makefileSource, "{$MINITSCRIPT_DATA}", MINITSCRIPT_DATA);
 			makefileSource = StringTools::replace(makefileSource, "{$source-files}", sourceFilesVariable);
 			makefileSource = StringTools::replace(makefileSource, "{$main-targets}", mainTargets);
 			makefileSource+= "\n";

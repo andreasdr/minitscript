@@ -153,24 +153,24 @@ const string MinitScript::getBaseClass() {
 
 const vector<string> MinitScript::getTranspilationUnits() {
 	return {
-		"src/minitscript/minitscript/ApplicationMethods.cpp",
-		"src/minitscript/minitscript/ArrayMethods.cpp",
-		"src/minitscript/minitscript/BaseMethods.cpp",
-		"src/minitscript/minitscript/ByteArrayMethods.cpp",
-		"src/minitscript/minitscript/ConsoleMethods.cpp",
-		"src/minitscript/minitscript/ContextMethods.cpp",
-		"src/minitscript/minitscript/CryptographyMethods.cpp",
-		"src/minitscript/minitscript/FileSystemMethods.cpp",
-		"src/minitscript/minitscript/HTTPDownloadClientClass.cpp",
-		"src/minitscript/minitscript/JSONMethods.cpp",
-		"src/minitscript/minitscript/MapMethods.cpp",
-		"src/minitscript/minitscript/MathMethods.cpp",
-		"src/minitscript/minitscript/NetworkMethods.cpp",
-		"src/minitscript/minitscript/ScriptMethods.cpp",
-		"src/minitscript/minitscript/SetMethods.cpp",
-		"src/minitscript/minitscript/StringMethods.cpp",
-		"src/minitscript/minitscript/TimeMethods.cpp",
-		"src/minitscript/minitscript/XMLMethods.cpp"
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/ApplicationMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/ArrayMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/BaseMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/ByteArrayMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/ConsoleMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/ContextMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/CryptographyMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/FileSystemMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/HTTPDownloadClientClass.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/JSONMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/MapMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/MathMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/NetworkMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/ScriptMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/SetMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/StringMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/TimeMethods.cpp",
+		MINITSCRIPT_DATA + "/src/minitscript/minitscript/XMLMethods.cpp"
 	};
 }
 

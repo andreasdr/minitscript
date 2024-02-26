@@ -22,7 +22,7 @@ class minitscript::minitscript::NativeLibrary: public _Library
 
 public:
 	// forbid class copy
-	FORBID_CLASS_COPY(NativeLibrary)
+	_FORBID_CLASS_COPY(NativeLibrary)
 
 	/**
 	 * Public constructor

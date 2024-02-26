@@ -2,8 +2,11 @@
 
 #include <climits>
 #include <cstdint>
+#include <string>
 
-#define FORBID_CLASS_COPY(CLASS) \
+using std::string;
+
+#define _FORBID_CLASS_COPY(CLASS) \
 	CLASS(const CLASS&) = delete; \
 	CLASS& operator=(const CLASS&) = delete;
 
@@ -13,4 +16,8 @@
 	#define MINITSCRIPT_STATIC_DLL_IMPEXT __declspec(dllimport)
 #else
 	#define MINITSCRIPT_STATIC_DLL_IMPEXT
+#endif
+
+#if !defined(MINITSCRIPT_DATA)
+	#define MINITSCRIPT_DATA string(".")
 #endif

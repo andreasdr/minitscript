@@ -22,7 +22,7 @@ MAIN_LDFLAGS = -L $(LIB_DIR) -l $(NAME)
 #
 CPPVERSION = -std=c++2a
 OFLAGS = -O3
-EXTRAFLAGS = 
+EXTRAFLAGS = -DMINITSCRIPT_DATA=string\(\".\"\)
 INCLUDES = -Isrc -Iext -I.
 STACKFLAGS =
 PLATFORM = Unknown
@@ -183,12 +183,35 @@ ifeq ($(PLATFORM), Unknown)
 	exit 1;
 endif
 
-mains: platform-check $(MAINS)
+release-check:
+ifeq ($(RELEASE), YES)
+EXTRAFLAGS = -DMINITSCRIPT_DATA=string\(\"/usr/local/share/minitscript\"\)
+endif
+
+mains: platform-check release-check $(MAINS)
 
 all: mains
 
 clean:
 	rm -rf obj obj-debug $(LIB_DIR) $(BIN)
+
+install: platform-check $(MAINS)
+	# for now, this was only tested with Linux Mint 21.2
+	@echo "Installing resources to /usr/local/share/minitscript"
+	rm -rf /usr/local/share/minitscript
+	mkdir /usr/local/share/minitscript
+	cp -r ./resources /usr/local/share/minitscript
+	cp -r ./src /usr/local/share/minitscript
+	cp -r ./ext /usr/local/share/minitscript
+	@echo "Installing library to /usr/local/lib"
+	echo "/usr/local/lib" > /etc/ld.so.conf.d/libminitscript.conf
+	ldconfig
+	cp $(LIB_DIR)/$(LIB) /usr/local/lib
+	@echo "Installing binaries to /usr/local/bin"
+	cp ./bin/minitscript/tools/* /usr/local/bin
+	@echo "Installing man page to /usr/local/share/man/man7"
+	sudo mkdir -p /usr/local/share/man/man7
+	sudo cp ./resources/minitscript/man/minitscript.7 /usr/local/share/man/man7
 
 print-opts:
 	@echo Building with \"$(CXX) $(CPPFLAGS) $(CXXFLAGS)\"

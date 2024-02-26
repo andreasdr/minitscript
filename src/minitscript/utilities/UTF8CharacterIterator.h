@@ -80,7 +80,7 @@ public:
 	};
 
 	// forbid class copy
-	FORBID_CLASS_COPY(UTF8CharacterIterator)
+	_FORBID_CLASS_COPY(UTF8CharacterIterator)
 
 	/**
 	 * Public constructor

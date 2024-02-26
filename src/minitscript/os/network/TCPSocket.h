@@ -25,7 +25,7 @@ class minitscript::os::network::TCPSocket: public NetworkSocket {
 		static TCPSocket* createServerSocket(const string& ip, const unsigned int port, const int backlog);
 
 		// forbid class copy
-		FORBID_CLASS_COPY(TCPSocket)
+		_FORBID_CLASS_COPY(TCPSocket)
 
 		/**
 		 * @brief Constructor

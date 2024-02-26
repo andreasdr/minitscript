@@ -17,7 +17,7 @@ using _Console = minitscript::utilities::Console;
 class {$class-name}: public {$base-class} {
 public:
 	// forbid class copy
-	FORBID_CLASS_COPY({$class-name})
+	_FORBID_CLASS_COPY({$class-name})
 
 	/**
 	 * Public constructor

@@ -15,7 +15,7 @@ MAIN_LDFLAGS = -L lib -l minitscript
 CPPVERSION = -std=c++2a
 OFLAGS = -O3
 EXTRAFLAGS =
-INCLUDES = -Isrc -Iext -I.
+INCLUDES = -I{$MINITSCRIPT_DATA}/src -I{$MINITSCRIPT_DATA}/ext -I.
 
 #
 CPPFLAGS := $(CPPFLAGS) $(INCLUDES)

@@ -23,7 +23,7 @@ using minitscript::os::threading::Mutex;
 class minitscript::os::network::SecureTCPSocket : public TCPSocket {
 	public:
 		// forbid class copy
-		FORBID_CLASS_COPY(SecureTCPSocket)
+		_FORBID_CLASS_COPY(SecureTCPSocket)
 
 		/**
 		 * Public Constructor

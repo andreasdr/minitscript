@@ -28,7 +28,7 @@ public:
 	static IpVersion determineIpVersion(const string& ip);
 
 	// forbid class copy
-	FORBID_CLASS_COPY(NetworkSocket)
+	_FORBID_CLASS_COPY(NetworkSocket)
 
 	/**
 	 * Protected constructor

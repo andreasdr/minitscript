@@ -6,9 +6,9 @@ LIBNAME = lib$(NAME)
 
 INCLUDES = \
 	/I "." \
-	/I "src" \
-	/I "ext" \
-	/I "ext\windows-msc\openssl\include"
+	/I "{$MINITSCRIPT_DATA}\src" \
+	/I "{$MINITSCRIPT_DATA}\ext" \
+	/I "{$MINITSCRIPT_DATA}\ext\windows-msc\openssl\include"
 
 # For some reason this works only once LOL
 # WINDOWS_SDK_DIR = %WindowsSdkDir%Lib\%WindowsSDKLibVersion%
