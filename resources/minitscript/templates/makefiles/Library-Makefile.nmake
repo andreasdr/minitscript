@@ -15,7 +15,7 @@ INCLUDES = \
 WINDOWS_SDK_DIR = C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0
 
 LIBS_LDFLAGS = \
-	/LIBPATH "lib\libminitscript.lib"
+	/LIBPATH "{$MINITSCRIPT_DATA}\lib\libminitscript.lib"
 
 FLAGS = /MT /MP /EHsc /O2 /std:c++20 /Zi /F 10485760
 # /NODEFAULTLIB:msvcrt

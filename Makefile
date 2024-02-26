@@ -219,6 +219,7 @@ install: platform-check $(MAINS)
 	cp -r ./resources $(INSTALL_DATA_DIR)/minitscript/
 	cp -r ./src $(INSTALL_DATA_DIR)/minitscript/
 	cp -r ./ext $(INSTALL_DATA_DIR)/minitscript/
+	cp -r ./lib $(INSTALL_DATA_DIR)/minitscript/
 	@echo "Installing library to $(INSTALL_LIB_DIR)"
 	cp $(LIB_DIR)/$(LIB) $(INSTALL_LIB_DIR)/
 ifeq ($(INSTALL_LDCONFIG), YES)

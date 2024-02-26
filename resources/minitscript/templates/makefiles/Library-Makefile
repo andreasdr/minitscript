@@ -24,7 +24,7 @@ OFLAGS = -O3
 EXTRAFLAGS = 
 INCLUDES = -Isrc -Iext -I.
 
-LIBS_LDFLAGS := -Llib -lminitscript
+LIBS_LDFLAGS := -L{$MINITSCRIPT_DATA}/lib -lminitscript
 
 # set platform specific flags
 ifeq ($(OS), Darwin)
