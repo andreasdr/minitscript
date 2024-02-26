@@ -3,6 +3,13 @@ BIN = bin
 LIB_DIR = lib
 OBJ = obj
 
+#
+INSTALL_BIN_DIR = /usr/local/bin
+INSTALL_LIB_DIR = /usr/local/lib
+INSTALL_DATA_DIR = /usr/local/share
+INSTALL_MAN_DIR = /usr/local/share/man
+INSTALL_LDCONFIG = YES
+
 # determine platform
 OSSHORT = $(shell sh -c 'uname -o 2>/dev/null')
 OS = $(shell sh -c 'uname -s 2>/dev/null')
@@ -55,6 +62,11 @@ else ifeq ($(OS), Haiku)
 	INCLUDES := $(INCLUDES) -I/boot/system/develop/headers
 	LIBS_LDFLAGS = -lnetwork -lssl -lcrypto
 	PLATFORM = Haiku
+	INSTALL_BIN_DIR = /boot/home/config/non-packaged/bin
+	INSTALL_LIB_DIR = /boot/home/config/non-packaged/lib
+	INSTALL_DATA_DIR = /boot/home/config/non-packaged/data
+	INSTALL_MAN_DIR = /boot/home/config/non-packaged/man
+	INSTALL_LDCONFIG = NO
 else ifeq ($(OS), Linux)
 	# Linux
 	LIBS_LDFLAGS = -L/usr/lib64 -lssl -lcrypto
@@ -185,7 +197,11 @@ endif
 
 release-check:
 ifeq ($(RELEASE), YES)
+ifeq ($(OS), Haiku)
+EXTRAFLAGS = -DMINITSCRIPT_DATA=string\(\"/boot/home/config/non-packaged/data/minitscript\"\)
+else
 EXTRAFLAGS = -DMINITSCRIPT_DATA=string\(\"/usr/local/share/minitscript\"\)
+endif
 endif
 
 mains: platform-check release-check $(MAINS)
@@ -196,22 +212,24 @@ clean:
 	rm -rf obj obj-debug $(LIB_DIR) $(BIN)
 
 install: platform-check $(MAINS)
-	# for now, this was only tested with Linux Mint 21.2
-	@echo "Installing resources to /usr/local/share/minitscript"
-	rm -rf /usr/local/share/minitscript
-	mkdir /usr/local/share/minitscript
-	cp -r ./resources /usr/local/share/minitscript
-	cp -r ./src /usr/local/share/minitscript
-	cp -r ./ext /usr/local/share/minitscript
-	@echo "Installing library to /usr/local/lib"
-	echo "/usr/local/lib" > /etc/ld.so.conf.d/libminitscript.conf
+	# for now, this was only tested with Linux Mint 21.2, Haiku Nightly
+	@echo "Installing resources to $(INSTALL_DATA_DIR)/minitscript"
+	rm -rf $(INSTALL_DATA_DIR)/minitscript
+	mkdir $(INSTALL_DATA_DIR)/minitscript
+	cp -r ./resources $(INSTALL_DATA_DIR)/minitscript/
+	cp -r ./src $(INSTALL_DATA_DIR)/minitscript/
+	cp -r ./ext $(INSTALL_DATA_DIR)/minitscript/
+	@echo "Installing library to $(INSTALL_LIB_DIR)"
+	cp $(LIB_DIR)/$(LIB) $(INSTALL_LIB_DIR)/
+ifeq ($(INSTALL_LDCONFIG), YES)
+	echo "$(INSTALL_LIB_DIR)" > /etc/ld.so.conf.d/libminitscript.conf
 	ldconfig
-	cp $(LIB_DIR)/$(LIB) /usr/local/lib
-	@echo "Installing binaries to /usr/local/bin"
-	cp ./bin/minitscript/tools/* /usr/local/bin
-	@echo "Installing man page to /usr/local/share/man/man7"
-	sudo mkdir -p /usr/local/share/man/man7
-	sudo cp ./resources/minitscript/man/minitscript.7 /usr/local/share/man/man7
+endif
+	@echo "Installing binaries to $(INSTALL_BIN_DIR)"
+	cp ./bin/minitscript/tools/* $(INSTALL_BIN_DIR)/
+	@echo "Installing man page to $(INSTALL_MAN_DIR)/man7"
+	mkdir -p $(INSTALL_MAN_DIR)/man7
+	cp ./resources/minitscript/man/minitscript.7 $(INSTALL_MAN_DIR)/man7/
 
 print-opts:
 	@echo Building with \"$(CXX) $(CPPFLAGS) $(CXXFLAGS)\"
