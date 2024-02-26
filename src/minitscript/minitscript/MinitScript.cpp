@@ -2275,7 +2275,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 						}
 					} else
 					// array/set forEach
-					if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+					if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
 						auto iterationDepth = 0;
 						for (const auto& block: blockStack) {
 							if (block.type == Block::TYPE_FOREACH) iterationDepth++;
@@ -2376,7 +2376,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 							"})";
 					} else
 					// map forEach
-					if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*,[\\s]*(&?{0,1}\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+					if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*,[\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
 						auto iterationDepth = 0;
 						for (const auto& block: blockStack) {
 							if (block.type == Block::TYPE_FOREACH) iterationDepth++;

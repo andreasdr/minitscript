@@ -3681,8 +3681,8 @@ private:
 				//
 				lc = c;
 			}
-			if (dotIdx == string::npos) dotIdx == variableStatement.size();
-			if (squareBracketIdx == string::npos) squareBracketIdx == variableStatement.size();
+			if (dotIdx == string::npos) dotIdx = variableStatement.size();
+			if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
 			variableName = _StringTools::substring(
 				variableStatement,
 				0,

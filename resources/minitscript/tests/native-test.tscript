@@ -6,6 +6,7 @@ on: initialize
 	console.printLine()
 end
 
+# test script
 function: testScript($scriptURIs, $input)
 	$scripts = []
 	console.printLine("TESTING: " + $scriptURIs[0])
