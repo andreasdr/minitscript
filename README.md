@@ -50,7 +50,13 @@ Also note the focus on easy integration into other products and easy customizabi
   - tests
     - bubblesort benchmark vs java script or other script engines, just to get the idea of current state of performance
   - documentation
-    - detailed docu for methods and section
+    - detailed documentation for specific sections and maybe methods
+    - README.md: resolve TODOs
+    - README-BuildingHowTo.md: resolve TODOs
+    - README-Syntax.md: TODO
+    - README-Tools.md: TODO
+    - README-Extension.md: TODO
+    - README-Integration.md: TODO
     - ...
   - installer for Windows
   - installer for MacOSX
