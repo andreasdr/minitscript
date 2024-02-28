@@ -28,6 +28,7 @@
 
 using std::array;
 using std::exchange;
+using std::find;
 using std::make_unique;
 using std::move;
 using std::pair;
@@ -3075,7 +3076,7 @@ protected:
 		auto result = str;
 		const array<char, 11> escapeSequences = {'0', 'a', 'b', 'f', 'n', 'r', 't', 'v', 'U', '"'};
 		for (const auto c: escapeSequences) {
-			result = _StringTools::replace(result, "\\" + c, "\\\\" + c);
+			result = _StringTools::replace(result, string("\\") + c, string("\\\\") + c);
 		}
 		//
 		result =
