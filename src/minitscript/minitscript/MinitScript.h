@@ -57,8 +57,8 @@ using _UTF8CharacterIterator = minitscript::utilities::UTF8CharacterIterator;
 using _Context = minitscript::minitscript::Context;
 using _Library = minitscript::minitscript::Library;
 
-#define MINITSCRIPT_METHODUSAGE_COMPLAIN(methodName) minitScript->complain(methodName, statement); minitScript->startErrorScript();
-#define MINITSCRIPT_METHODUSAGE_COMPLAINM(methodName, message) minitScript->complain(methodName, statement, message); minitScript->startErrorScript();
+#define MINITSCRIPT_METHODUSAGE_COMPLAIN(methodName) { minitScript->complain(methodName, statement); minitScript->startErrorScript(); }
+#define MINITSCRIPT_METHODUSAGE_COMPLAINM(methodName, message) { minitScript->complain(methodName, statement, message); minitScript->startErrorScript(); }
 
 /**
  * MinitScript

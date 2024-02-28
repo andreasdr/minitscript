@@ -199,10 +199,14 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 								}
 							}
 						} else {
-							if (complain == true) MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Class/object member not found: " + member + "()");
+							if (complain == true) {
+								MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Class/object member not found: " + member + "()");
+							}
 						}
 					} else {
-						if (complain == true) MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+						if (complain == true) {
+							MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+						}
 					}
 				}
 			}
@@ -1355,62 +1359,6 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 		};
 		minitScript->registerMethod(new MethodIsReference(minitScript));
-	}
-	// is private
-	{
-		//
-		class MethodIsPrivate: public MinitScript::Method {
-		private:
-			MinitScript* minitScript { nullptr };
-		public:
-			MethodIsPrivate(MinitScript* minitScript):
-				MinitScript::Method(
-					{
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "variable", .optional = false, .reference = false, .nullable = false }
-					},
-					MinitScript::TYPE_BOOLEAN
-				),
-				minitScript(minitScript) {}
-			const string getMethodName() override {
-				return "isPrivate";
-			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
-				if (arguments.size() == 1) {
-					returnValue.setValue(arguments[0].isPrivate());
-				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
-				}
-			}
-		};
-		minitScript->registerMethod(new MethodIsPrivate(minitScript));
-	}
-	// is private scope
-	{
-		//
-		class MethodIsPrivateScope: public MinitScript::Method {
-		private:
-			MinitScript* minitScript { nullptr };
-		public:
-			MethodIsPrivateScope(MinitScript* minitScript):
-				MinitScript::Method(
-					{
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "variable", .optional = false, .reference = false, .nullable = false }
-					},
-					MinitScript::TYPE_BOOLEAN
-				),
-				minitScript(minitScript) {}
-			const string getMethodName() override {
-				return "isPrivateScope";
-			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
-				if (arguments.size() == 1) {
-					returnValue.setValue(arguments[0].isPrivateScope());
-				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
-				}
-			}
-		};
-		minitScript->registerMethod(new MethodIsPrivateScope(minitScript));
 	}
 	// has variable
 	{

@@ -93,6 +93,7 @@ using minitscript::minitscript::StringMethods;
 using minitscript::minitscript::TimeMethods;
 using minitscript::minitscript::XMLMethods;
 
+// TODO: we can remove the _ here again, as MinitScript.cpp is not a transpilation unit anymore
 using _Math = minitscript::math::Math;
 using _FileSystem = minitscript::os::filesystem::FileSystem;
 using _Character = minitscript::utilities::Character;
@@ -4825,8 +4826,7 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 	// array add operator
 	if (key.empty() == false) {
 		if (parentVariable == nullptr) {
-			string callerMethod = __FUNCTION__;
-			_Console::printLine("MinitScript::" + callerMethod + "(): " + (statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": map access operator without map: '" + key + "'");
+			// no op, we complain somewhere else, lol
 		} else
 		// all checks passed, push to map
 		if (parentVariable->getType() == MinitScript::TYPE_MAP) {

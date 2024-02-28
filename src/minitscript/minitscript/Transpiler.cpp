@@ -2643,7 +2643,21 @@ bool Transpiler::transpileStatement(
 			if (StringTools::regexMatch(codeLine, "[\\ \\t]*MINITSCRIPT_METHODUSAGE_COMPLAIN[\\ \\t]*\\([\\ \\t]*(.*)\\)[\\ \\t]*;[\\ \\t]*") == true ||
 				StringTools::regexMatch(codeLine, "[\\ \\t]*MINITSCRIPT_METHODUSAGE_COMPLAINM[\\ \\t]*\\([\\ \\t]*(.*)[\\ \\t]*,[\\ \\t]*(.*)[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true ||
 				StringTools::regexMatch(codeLine, "[\\ \\t]*minitScript[\\ \\t]*->emit[\\ \\t]*\\([\\ \\t]*[a-zA-Z0-9]*[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
-				generatedCode+= minIndentString + depthIndentString + "\t" + codeLine + (script.type == MinitScript::Script::TYPE_ON || script.type == MinitScript::Script::TYPE_ONENABLED?" MINITSCRIPT_METHOD_POPSTACK(); return" + (returnValue.empty() == false?" " + returnValue:"") + ";":"") + "\n";
+				 // find indent
+				int indent = 0;
+				for (auto i = 0; i < codeLine.size(); i++) {
+					auto c = codeLine[i];
+					if (c == '\t') {
+						indent++;
+					} else {
+						break;
+					}
+				}
+				string indentString;
+				for (auto i = 0; i < indent; i++) indentString+= "\t";
+				codeLine = StringTools::trim(codeLine);
+				//
+				generatedCode+= minIndentString + depthIndentString + indentString + "\t{ " + codeLine + (script.type == MinitScript::Script::TYPE_ON || script.type == MinitScript::Script::TYPE_ONENABLED?" MINITSCRIPT_METHOD_POPSTACK(); return" + (returnValue.empty() == false?" " + returnValue:"") + ";":"") + " }\n";
 			} else {
 				if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*minitScript[\\ \\t]*->[\\ \\t]*setScriptStateState[\\ \\t]*\\([\\ \\t]*.+[\\ \\t]*\\);.*") == true) {
 					scriptStateChanged = true;

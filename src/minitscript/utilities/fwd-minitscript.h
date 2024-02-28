@@ -12,6 +12,7 @@ namespace utilities {
 	class Hex;
 	class Integer;
 	class Properties;
+	class RTTI;
 	class SHA256;
 	class StringTokenizer;
 	class StringTools;

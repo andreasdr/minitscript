@@ -8,15 +8,11 @@ end
 
 function: checkPrivateScopeReference(&$var)
 	console.printLine("\tcheckPrivateScopeReference(&$var)")
-	console.printLine("\t\t" + "$var: private scope = " + isPrivateScope($var))
-	console.printLine("\t\t" + "$var.wheelCount = " + $var.wheelCount)
 	$var.wheelCount = 123
 end
 
-function: checkPrivateScopeNonReference(&$var)
-	console.printLine("\tcheckPrivateScopeNonReference(&$var)")
-	console.printLine("\t\t" + "$var: private scope = " + isPrivateScope($var))
-	console.printLine("\t\t" + "$var.wheelCount = " + $var.wheelCount)
+function: checkPrivateScopeNonReference($var)
+	console.printLine("\tcheckPrivateScopeNonReference($var)")
 	$var.wheelCount = 456
 end
 
@@ -30,8 +26,8 @@ on: nothing
 	$car = {
 		# member variables
 		-wheelCount: 4,
-		color: "blue",
-		horsePower: 75,
+		-color: "blue",
+		-horsePower: 75,
 		# member methods
 		setWheelCount: ($wheelCount) -> 
 			{
@@ -65,10 +61,10 @@ on: nothing
 			}
 		checkEngine: () -> {
 			$engine = {
-				start: () -> {
+				-start: () -> {
 					console.printLine("\tstarted engine")
 				},
-				stop: () -> {
+				-stop: () -> {
 					console.printLine("\tstopped engine")
 				}
 				check: () -> {
@@ -82,16 +78,7 @@ on: nothing
 		},
 		testPrivacy: () -> {
 			console.printLine("testPrivacy()")
-			console.printLine(
-				"\t" +
-				"$this" +
-				": private = " + isPrivate($this) + ", private scope = " + isPrivateScope($this)
-			)
-			console.printLine(
-				"\t" +
-				"$this.wheelCount = " + $this.wheelCount + 
-				": private = " + isPrivate($this.wheelCount) + ", private scope = " + isPrivateScope($this.wheelCount)
-			)
+			console.printLine("\t" + "$this.wheelCount = " + $this.wheelCount)
 			checkPrivateScopeNonReference($this)
 			checkPrivateScopeReference($this)
 			$this->testPrivateFunction()
@@ -124,20 +111,10 @@ on: nothing
 		", horse power: ", 
 		$horsePower
 	)
-	# show us your privacy
-	console.printLine(
-		"$car: ", 
-		"private = " + isPrivate($car) + ", private scope = " + isPrivateScope($car)
-	)
-	console.printLine(
-		"$car.wheelCount: " +
-		"private = " + isPrivate($car.wheelCount) + ", private scope = " + isPrivateScope($car.wheelCount) 
-	)
 	# let me access some member thats private
 	console.printLine(
-		"Wheels: ", 
-		$car.wheelCount,
-		"(private = " + isPrivate($car.wheelCount) + ", private scope = " + isPrivateScope($car.wheelCount) + ")" 
+		"Wheel count: ", 
+		$car.wheelCount
 	)
 	# check engine
 	$car->checkEngine()
@@ -152,6 +129,7 @@ on: error
 	console.printLine("------------------")
 	console.printLine("class-test: Error")
 	console.printLine("------------------")
-	console.printLine("An error occurred")
+	console.printLine("error message: " + script.error.getMessage())
+	console.printLine("error statement: " + script.error.getStatement())
 	script.stop()
 end

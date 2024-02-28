@@ -131,6 +131,7 @@ SRCS = \
 	src/minitscript/utilities/Hex.cpp \
 	src/minitscript/utilities/Integer.cpp \
 	src/minitscript/utilities/Properties.cpp \
+	src/minitscript/utilities/RTTI.cpp \
 	src/minitscript/utilities/SHA256.cpp \
 	src/minitscript/utilities/StringTools.cpp \
 	src/minitscript/utilities/StringTokenizer.cpp \
