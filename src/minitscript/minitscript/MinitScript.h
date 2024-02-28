@@ -3071,24 +3071,42 @@ protected:
 	 * @return escaped string
 	 */
 	inline static const string escapeString(const string& str) {
-		return
+		//
+		auto result = str;
+		const array<char, 11> escapeSequences = {'0', 'a', 'b', 'f', 'n', 'r', 't', 'v', 'U', '"'};
+		for (const auto c: escapeSequences) {
+			result = _StringTools::replace(result, "\\" + c, "\\\\" + c);
+		}
+		//
+		result =
 			_StringTools::replace(
 				_StringTools::replace(
-					_StringTools::replace(
-						_StringTools::replace(
-							str,
-							"\\",
-							"\\\\"
-						),
-						"\"",
-						"\\\""
-					),
+					result,
 					"\n",
 					"\\n"
 				),
-				"\r",
-				"\\r"
+				"\"",
+				"\\\""
 			);
+		//
+		string result2;
+		auto lc = '\0';
+		auto llc = '\0';
+		for (auto i = 0; i < result.size(); i++) {
+			//
+			auto c = result[i];
+			auto nc = i < result.size() - 1?result[i + 1]:'\0';
+			if (c == '\\' && lc != '\\' && nc != '\\' && find(escapeSequences.begin(), escapeSequences.end(), nc) == escapeSequences.end()) {
+				result2+= "\\\\";
+			} else {
+				result2+= c;
+			}
+			//
+			auto lc = c;
+			auto llc = lc;
+		}
+		//
+		return result2;
 	}
 
 	/**

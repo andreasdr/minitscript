@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <array>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -9,6 +11,8 @@
 #include <minitscript/minitscript/MinitScript.h>
 #include <minitscript/utilities/StringTools.h>
 
+using std::array;
+using std::find;
 using std::string;
 using std::unordered_map;
 using std::unordered_set;
@@ -124,24 +128,42 @@ private:
 	 * @return escaped string
 	 */
 	inline static const string escapeString(const string& str) {
-		return
+		//
+		auto result = str;
+		const array<char, 11> escapeSequences = {'0', 'a', 'b', 'f', 'n', 'r', 't', 'v', 'U', '"'};
+		for (const auto c: escapeSequences) {
+			result = _StringTools::replace(result, "\\" + c, "\\\\" + c);
+		}
+		//
+		result =
 			StringTools::replace(
 				StringTools::replace(
-					StringTools::replace(
-						StringTools::replace(
-							str,
-							"\\",
-							"\\\\"
-						),
-						"\"",
-						"\\\""
-					),
+					result,
 					"\n",
 					"\\n"
 				),
-				"\r",
-				"\\r"
+				"\"",
+				"\\\""
 			);
+		//
+		string result2;
+		auto lc = '\0';
+		auto llc = '\0';
+		for (auto i = 0; i < result.size(); i++) {
+			//
+			auto c = result[i];
+			auto nc = i < result.size() - 1?result[i + 1]:'\0';
+			if (c == '\\' && lc != '\\' && nc != '\\' && find(escapeSequences.begin(), escapeSequences.end(), nc) == escapeSequences.end()) {
+				result2+= "\\\\";
+			} else {
+				result2+= c;
+			}
+			//
+			auto lc = c;
+			auto llc = lc;
+		}
+		//
+		return result2;
 	}
 
 	/**

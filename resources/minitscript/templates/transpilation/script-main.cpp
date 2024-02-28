@@ -1,6 +1,11 @@
 #include <cstdlib>
 #include <memory>
 
+// Windows MSC: required for OpenSSL to work when having OpenSSL embedded in a DLL which is used here
+#if defined(_MSC_VER)
+	#include <openssl/applink.c>
+#endif
+
 using std::make_unique;
 
 #include <minitscript/minitscript.h>
@@ -8,6 +13,7 @@ using std::make_unique;
 #include <minitscript/minitscript/MinitScript.h>
 #include <minitscript/minitscript/NativeLibrary.h>
 #include <minitscript/os/filesystem/FileSystem.h>
+#include <minitscript/os/network/Network.h>
 #include <minitscript/utilities/Console.h>
 
 #include "{$script-class}.h"
@@ -16,9 +22,16 @@ using minitscript::minitscript::Context;
 using minitscript::minitscript::MinitScript;
 using minitscript::minitscript::NativeLibrary;
 using minitscript::os::filesystem::FileSystem;
+using minitscript::os::network::Network;
 using minitscript::utilities::Console;
 
 int main(int argc, char *argv[]) {
+	// Windows MSC: required for OpenSSL to work when having OpenSSL embedded in a DLL which is used here
+	#if defined(_MSC_VER)
+		OPENSSL_Applink();
+	#endif
+	// initialize network
+	Network::initialize();
 	// initialize MinitScript
 	MinitScript::initialize();
 	// create context and argument values

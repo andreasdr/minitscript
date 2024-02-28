@@ -487,7 +487,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 			}
 		}
 		//
-		lc = c;
+		lc = lc == '\\' && c == '\\'?'\0':c;
 	}
 
 	// extract method name
@@ -1650,7 +1650,9 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 	auto squareBracketCount = 0;
 	auto curlyBracketCount = 0;
 	auto hash = false;
+	auto expectRightArgument = false;
 	auto lc = '\0';
+	auto llc = '\0';
 	for (; i < scriptCode.size(); i++) {
 		auto c = scriptCode[i];
 		auto nc = i + 1 < scriptCode.size()?scriptCode[i + 1]:'\0';
@@ -1666,6 +1668,7 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 				quote = c;
 			} else
 			if (quote == c) {
+				expectRightArgument = false;
 				quote = '\0';
 			}
 			// add char to script line
@@ -1687,6 +1690,7 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 		// brackets
 		if (c == '(') {
 			inlineFunctionArguments = false;
+			expectRightArgument = false;
 			//
 			bracketCount++;
 			expectBracket = false;
@@ -1696,6 +1700,7 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 		if (c == ')') {
 			//
 			inlineFunctionArguments = false;
+			expectRightArgument = false;
 			//
 			bracketCount--;
 			// add char to script line
@@ -1707,6 +1712,7 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 		if (c == '[') {
 			//
 			inlineFunctionArguments = false;
+			expectRightArgument = false;
 			//
 			squareBracketCount++;
 			// add char to script line
@@ -1715,6 +1721,7 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 		if (c == ']') {
 			//
 			inlineFunctionArguments = false;
+			expectRightArgument = false;
 			//
 			squareBracketCount--;
 			// add char to script line
@@ -1724,6 +1731,7 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 		if (c == '{') {
 			//
 			inlineFunctionArguments = false;
+			expectRightArgument = false;
 			//
 			curlyBracketCount++;
 			// add char to script line
@@ -1732,6 +1740,7 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 		if (c == '}') {
 			//
 			inlineFunctionArguments = false;
+			expectRightArgument = false;
 			//
 			curlyBracketCount--;
 			// add char to script line
@@ -1746,15 +1755,49 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 		if (c == '\r') {
 			// ignore
 		} else
+		// assigment operator
+		if (// TODO: implement those prefix/postfix operators properly, for now they get ignored
+			//(lc == '+' && c == '+') ||
+			//(lc == '-' && c == '-') ||
+			//(lc == '+' && c == '+') ||
+			//(lc == '-' && c == '-') ||
+			(isOperatorChar(lc) == false && c == '!' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '~' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '*' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '/' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '%' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '+' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '-' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '<' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '>' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '&' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '^' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '|' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(lc) == false && c == '=' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(llc) == false && lc == '<' && c == '=' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(llc) == false && lc == '>' && c == '=' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(llc) == false && lc == '=' && c == '=' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(llc) == false && lc == '!' && c == '=' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(llc) == false && lc == '&' && c == '&' && isOperatorChar(nc) == false) ||
+			(isOperatorChar(llc) == false && lc == '|' && c == '|' && isOperatorChar(nc) == false)
+		) {
+			if (expectBracket == false && expectRightArgument == false && bracketCount == 0 && squareBracketCount == 0 && curlyBracketCount == 0) {
+				expectRightArgument = true;
+			}
+			// add char to script line
+			statementCodeLines.back() += c;
+		} else
 		if (lc == '-' && c == '>') {
 			// we expect a bracket now for object->xyz() member method call, if we have a possible identifier
 			if (inlineFunctionArguments == false && canExpectStacklet == false) expectBracket = true;
+			//
+			expectRightArgument = false;
 			// add char to script line
 			statementCodeLines.back() += c;
 		} else
 		if ((c == '\n' && ++line) || (hash == false && c == ';')) {
 			// break here and process script line
-			if (expectBracket == false && bracketCount == 0 && squareBracketCount == 0 && curlyBracketCount == 0) break;
+			if (expectBracket == false && expectRightArgument == false && bracketCount == 0 && squareBracketCount == 0 && curlyBracketCount == 0) break;
 			// unset hash after newline
 			if (c == '\n') {
 				//
@@ -1771,9 +1814,12 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 			if (_Character::isSpace(c) == false && c != '-' && nc != '>') inlineFunctionArguments = false;
 			// add char to script line
 			statementCodeLines.back() += c;
+			//
+			if (_Character::isSpace(c) == false) expectRightArgument = false;
 		}
 		//
-		lc = c;
+		lc = lc == '\\' && c == '\\'?'\0':c;
+		llc = lc;
 	}
 
 	//
@@ -1790,6 +1836,8 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 
 	// done
 	statement = statementCode;
+
+	//
 	return true;
 }
 
@@ -1906,7 +1954,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 									break;
 								}
 								//
-								lc = c;
+								lc = lc == '\\' && c == '\\'?'\0':c;
 							}
 							//
 							if (gotName == true) break;
@@ -2244,8 +2292,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 					Statement generatedStatement(
 						currentLineIdx + lineIdxOffset,
 						STATEMENTIDX_FIRST,
-						_StringTools::replace(_StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
-						_StringTools::replace(_StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
+						statementCode,
+						statementCode,
 						STATEMENTIDX_NONE
 					);
 					if (_StringTools::regexMatch(regexStatementCode, "^for[\\s]*\\(.*\\)$") == true) {
@@ -2866,6 +2914,8 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		for (int i = position; i >= 0; i--) {
 			auto c = statement[i];
 			auto lc = i > 0?statement[i - 1]:'\0';
+			if (lc == '\\' && c == '\\') lc = '\0';
+			//
 			if ((c == '"' || c == '\'') && lc != '\\') {
 				if (quote == '\0') {
 					quote = c;
@@ -3012,7 +3062,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			length++;
 			//
-			lc = c;
+			lc = lc == '\\' && c == '\\'?'\0':c;
 		}
 		//
 		return trimArgument(argument);
@@ -3192,14 +3242,11 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					}
 				}
 			}
-			lc = c;
+			lc = lc == '\\' && c == '\\'?'\0':c;
 		}
 
 		//
 		if (bracketCount > 0) {
-			_Console::printLine(getStatementInformation(statement) + ": Unbalanced bracket count: " + to_string(_Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
-			//
-			parseErrors.push_back(getStatementInformation(statement) + ": Unbalanced bracket count: " + to_string(_Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
 			//
 			return false;
 		}
@@ -3408,7 +3455,7 @@ bool MinitScript::getObjectMemberAccess(const string_view& executableStatement, 
 			}
 		}
 		//
-		lc = c;
+		lc = lc == '\\' && c == '\\'?'\0':c;
 	}
 	//
 	return objectMemberAccess;
@@ -4230,7 +4277,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string_view& init
 			}
 		}
 		//
-		lc = c;
+		lc = lc == '\\' && c == '\\'?'\0':c;
 	}
 	//
 	auto initalizer = make_unique<MinitScript::Variable::Initializer>(string(initializerString), statement, nullptr);
@@ -4586,7 +4633,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 			}
 		}
 		//
-		lc = c;
+		lc = lc == '\\' && c == '\\'?'\0':c;
 	}
 	// convert to set if no values given
 	if (hasValues == false) {

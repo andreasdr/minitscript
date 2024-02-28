@@ -6,6 +6,13 @@ on: initialize
 	console.printLine()
 end
 
+function: createNativePath($path)
+	if ($$.application::OS == "Windows-MSC")
+		$path = $path->replace("/", "\\")
+	end
+	return($path)
+end
+
 # test script
 function: testScript($scriptURIs, $input)
 	$scripts = []
@@ -18,24 +25,72 @@ function: testScript($scriptURIs, $input)
 		}
 	end
 	$commands = []
-	$commands[] = "rm -rf Tsrc"
+	if ($$.application::OS == "Windows-MSC")
+		$commands[] = "if exist Tsrc del /S /Q Tsrc\\*"
+		$commands[] = "if exist Tsrc rmdir /S /Q Tsrc"
+	else
+		$commands[] = "rm -rf Tsrc"
+	end
 	$commands[] = "mkdir Tsrc"
 	forEach($script in $scripts)
-		$commands[] = "./bin/minitscript/tools/minitscripttranspiler " + $script.uri + " Tsrc/" + $script.className
+		$commands[] =
+			createNativePath("./bin/minitscript/tools/minitscripttranspiler") + 
+			" " + 
+			$script.uri + 
+			" " + 
+			"Tsrc/" + $script.className
 	end
 	if ($scripts->getSize() > 1)
-		$command = "./bin/minitscript/tools/minitscriptlibrary"
+		$command = createNativePath("./bin/minitscript/tools/minitscriptlibrary")
 		forEach($script in $scripts)
-			$command = $command + " " + $script.uri + " " + $script.className
+			$command = 
+				$command + 
+				" " + 
+				$script.uri + 
+				" " + 
+				$script.className
 		end
-		$command = $command + " Tsrc/Library.cpp"
+		$command = 
+			$command + 
+			" " + 
+			"Tsrc/Library.cpp"
 		$commands[] = $command
-		$commands[] = "./bin/minitscript/tools/minitscriptmain " + $scripts[0].uri + " " + $scripts[0].className + " Tsrc/Main-main.cpp --use-library"
+		$commands[] = 
+			createNativePath("./bin/minitscript/tools/minitscriptmain") + 
+			" " + 
+			$scripts[0].uri + " " + 
+			$scripts[0].className + 
+			" " + 
+			"Tsrc/Main-main.cpp" +
+			" " +
+			"--use-library"
 	else
-		$commands[] = "./bin/minitscript/tools/minitscriptmain " + $scripts[0].uri + " " + $scripts[0].className + " Tsrc/Main-main.cpp"
+		$commands[] = 
+			createNativePath("./bin/minitscript/tools/minitscriptmain") + 
+			" " + 
+			$scripts[0].uri + 
+			" " + 
+			$scripts[0].className + 
+			" " + 
+			"Tsrc/Main-main.cpp"
 	end
-	$commands[] = "./bin/minitscript/tools/minitscriptmakefile Tsrc TMakefile"
-	$commands[] = "make -f TMakefile mains"
+	if ($$.application::OS == "Windows-MSC")
+		$commands[] = 
+			createNativePath("./bin/minitscript/tools/minitscriptnmakefile") +
+			" " +
+			"Tsrc" +
+			" " +
+			"TMakefile.nmake"
+		$commands[] = "nmake -f TMakefile.nmake"
+	else
+		$commands[] = 
+			createNativePath("./bin/minitscript/tools/minitscriptmakefile") +
+			" " +
+			"Tsrc" + 
+			" " + 
+			"TMakefile"
+		$commands[] = "make -f TMakefile mains"
+	end
 	forEach($command in $commands)
 		console.print("Executing: " + $command)
 		$exitCode = null
@@ -51,9 +106,14 @@ function: testScript($scriptURIs, $input)
 		end
 	end
 	# execute binary
-	$command = "./bin/Main"
+	if ($$.application::OS == "Windows-MSC")
+		# TODO: check make system, that mscbin and bin are somehow unified using nmake and make make system
+		$command = createNativePath("./mscbin/Main")
+	else
+		$command = createNativePath("./bin/Main")
+	end
 	if ($input != null)
-		$command = $command + " < " + $input
+		$command = $command + " < " + createNativePath($input)
 	end 
 	console.print("Executing: " + $command)
 	$exitCode = null
@@ -67,9 +127,12 @@ function: testScript($scriptURIs, $input)
 	end
 	console.printLine(", SUCCESS")
 	# execute minscript interpreteer
-	$command = "./bin/minitscript/tools/minitscript " + $scripts[0].uri
+	$command = 
+		createNativePath("./bin/minitscript/tools/minitscript") + 
+		" " + 
+		$scripts[0].uri
 	if ($input != null)
-		$command = $command + " < " + $input
+		$command = $command + " < " + createNativePath($input)
 	end 
 	console.print("Executing: " + $command)
 	$exitCode = null
@@ -86,13 +149,18 @@ function: testScript($scriptURIs, $input)
 		filesystem.setContentFromString(".", "native-test-output-interpreter.log", $interpreterResult)
 		console.printLine(", native result != interpreter result")
 		console.printLine("**********************************************************************")
-		$command = "diff native-test-output-interpreter.log native-test-output-native.log"
+		if ($$.application::OS == "Windows-MSC")
+			$command = "fc native-test-output-interpreter.log native-test-output-native.log"
+		else
+			$command = "diff native-test-output-interpreter.log native-test-output-native.log"
+		end
 		$exitCode = null
 		$error = null
 		$diffResult = application.execute($command, $exitCode, $error)
 		filesystem.removeFile(".", "native-test-output-native.log")
 		filesystem.removeFile(".", "native-test-output-interpreter.log")
-		if ($exitCode != 256)
+		if (($$.application::OS != "Windows-MSC" && $exitCode != 256) || 
+			($$.application::OS == "Windows-MSC" && $exitCode != 1))
 			console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
 			console.printLine("**********************************************************************")
 			console.printLine($diffResult)
@@ -109,7 +177,7 @@ end
 
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
-console.printLine("---------------------")
+	console.printLine("---------------------")
 	console.printLine("native-test: Nothing")
 	console.printLine("---------------------")
 	console.printLine()
