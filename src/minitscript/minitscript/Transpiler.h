@@ -135,16 +135,15 @@ private:
 			result = _StringTools::replace(result, string("\\") + c, string("\\\\") + c);
 		}
 		//
-		result =
-			StringTools::replace(
-				StringTools::replace(
-					result,
-					"\n",
-					"\\n"
-				),
-				"\"",
-				"\\\""
-			);
+		result = StringTools::replace(result, "\0", "\\0");
+		result = StringTools::replace(result, "\a", "\\a");
+		result = StringTools::replace(result, "\b", "\\b");
+		result = StringTools::replace(result, "\f", "\\f");
+		result = StringTools::replace(result, "\n", "\\n");
+		result = StringTools::replace(result, "\r", "\\r");
+		result = StringTools::replace(result, "\t", "\\t");
+		result = StringTools::replace(result, "\v", "\\v");
+		result = StringTools::replace(result, "\"", "\\\"");
 		//
 		string result2;
 		auto lc = '\0';

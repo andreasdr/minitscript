@@ -10,6 +10,7 @@
 
 #include <minitscript/minitscript.h>
 #include <minitscript/utilities/Console.h>
+#include <minitscript/utilities/StringTools.h>
 #include <minitscript/utilities/Time.h>
 
 using std::cin;
@@ -22,6 +23,8 @@ using std::unique_ptr;
 using std::vector;
 
 using minitscript::utilities::Console;
+using minitscript::utilities::StringTools;
+using minitscript::utilities::Time;
 
 unique_ptr<Console::Logger> Console::logger;
 
@@ -83,6 +86,7 @@ const string Console::readAll() {
 	string line;
 	string result;
 	while (cin.eof() == false && getline(cin, line)) {
+		if (StringTools::endsWith(line, "\r") == true) line = StringTools::substring(line, 0, line.size() - 1);
 		result+= line + "\n";
 	}
 	return line;
@@ -92,6 +96,7 @@ const vector<string> Console::readAllAsArray() {
 	vector<string> result;
 	string line;
 	while (cin.eof() == false && getline(cin, line)) {
+		if (StringTools::endsWith(line, "\r") == true) line = StringTools::substring(line, 0, line.size() - 1);
 		result.push_back(line);
 	}
 	return result;

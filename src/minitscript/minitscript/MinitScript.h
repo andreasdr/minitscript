@@ -2361,6 +2361,41 @@ public:
 		 * @return string representation of variable type
 		 */
 		inline const string getValueAsString(bool formatted = false, bool jsonCompatible = false, int depth = 0) const {
+			auto escapeString = [](const string& str) -> const string {
+				const array<char, 11> escapeSequences = {'0', 'a', 'b', 'f', 'n', 'r', 't', 'v', 'U', '"'};
+				//
+				auto result = str;
+				//
+				result = _StringTools::replace(result, "\0", "\\0");
+				result = _StringTools::replace(result, "\a", "\\a");
+				result = _StringTools::replace(result, "\b", "\\b");
+				result = _StringTools::replace(result, "\f", "\\f");
+				result = _StringTools::replace(result, "\n", "\\n");
+				result = _StringTools::replace(result, "\r", "\\r");
+				result = _StringTools::replace(result, "\t", "\\t");
+				result = _StringTools::replace(result, "\v", "\\v");
+				result = _StringTools::replace(result, "\"", "\\\"");
+				//
+				string result2;
+				auto lc = '\0';
+				auto llc = '\0';
+				for (auto i = 0; i < result.size(); i++) {
+					//
+					auto c = result[i];
+					auto nc = i < result.size() - 1?result[i + 1]:'\0';
+					if (c == '\\' && lc != '\\' && nc != '\\' && find(escapeSequences.begin(), escapeSequences.end(), nc) == escapeSequences.end()) {
+						result2+= "\\\\";
+					} else {
+						result2+= c;
+					}
+					//
+					auto lc = c;
+					auto llc = lc;
+				}
+				//
+				return result2;
+			};
+			//
 			string result;
 			switch (getType()) {
 				case TYPE_NULL:
@@ -2427,7 +2462,7 @@ public:
 						vector<string> values;
 						for (const auto arrayEntry: arrayValue) {
 							if (arrayEntry->getType() == TYPE_STRING) {
-								values.push_back("\"" + _StringTools::replace(_StringTools::replace(arrayEntry->getValueAsString(formatted, jsonCompatible, depth + 1), "\\", "\\\\"), "\"", "\\\"") + "\"" );
+								values.push_back("\"" + escapeString(arrayEntry->getValueAsString(formatted, jsonCompatible, depth + 1)) + "\"");
 							} else {
 								values.push_back(arrayEntry->getValueAsString(formatted, jsonCompatible, depth + 1));
 							}
@@ -2461,10 +2496,10 @@ public:
 						vector<string> values;
 						for (const auto& [mapEntryName, mapEntryValue]: mapValue) {
 							string value;
-							value+= "\"" + _StringTools::replace(_StringTools::replace(mapEntryName, "\\", "\\\\"), "\"", "\\\"") +  "\": ";
+							value+= "\"" + escapeString(mapEntryName) +  "\": ";
 							if (mapEntryValue->getType() == TYPE_STRING) {
 								value+= "\"";
-								value+= _StringTools::replace(_StringTools::replace(mapEntryValue->getValueAsString(formatted, jsonCompatible, depth + 1), "\\", "\\\\"), "\"", "\\\"");
+								value+= escapeString(mapEntryValue->getValueAsString(formatted, jsonCompatible, depth + 1));
 								value+= "\"";
 							} else {
 								value+= mapEntryValue->getValueAsString(formatted, jsonCompatible, depth + 1);
@@ -2501,7 +2536,7 @@ public:
 						vector<string> values;
 						for (const auto& key: setValue) {
 							values.push_back(
-								"\"" + _StringTools::replace(_StringTools::replace(key, "\\", "\\\\"), "\"", "\\\"") + "\""
+								"\"" + escapeString(key) + "\""
 							);
 							if (jsonCompatible == true) {
 								values.back() += ": true";
@@ -3079,16 +3114,15 @@ protected:
 			result = _StringTools::replace(result, string("\\") + c, string("\\\\") + c);
 		}
 		//
-		result =
-			_StringTools::replace(
-				_StringTools::replace(
-					result,
-					"\n",
-					"\\n"
-				),
-				"\"",
-				"\\\""
-			);
+		result = _StringTools::replace(result, "\0", "\\0");
+		result = _StringTools::replace(result, "\a", "\\a");
+		result = _StringTools::replace(result, "\b", "\\b");
+		result = _StringTools::replace(result, "\f", "\\f");
+		result = _StringTools::replace(result, "\n", "\\n");
+		result = _StringTools::replace(result, "\r", "\\r");
+		result = _StringTools::replace(result, "\t", "\\t");
+		result = _StringTools::replace(result, "\v", "\\v");
+		result = _StringTools::replace(result, "\"", "\\\"");
 		//
 		string result2;
 		auto lc = '\0';
