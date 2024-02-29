@@ -1553,7 +1553,7 @@ void Transpiler::generateArrayAccessMethods(
 									if (StringTools::startsWith(arrayAccessStatementString, "$") == true) arrayAccessStatementString = "getVariable(\"" + arrayAccessStatementString + "\")";
 									// parse array access statment at current index
 									string_view arrayAccessMethodName;
-									vector<string_view> arrayAccessArguments;
+									vector<MinitScript::ParserArgument> arrayAccessArguments;
 									string accessObjectMemberStatement;
 									// create a pseudo statement (information)
 									MinitScript::Statement arrayAccessStatement(
@@ -1564,7 +1564,7 @@ void Transpiler::generateArrayAccessMethods(
 										MinitScript::STATEMENTIDX_NONE
 									);
 									// parse script statement
-									if (minitScript->parseStatement(string_view(arrayAccessStatementString), arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, accessObjectMemberStatement) == false) {
+									if (minitScript->parseStatement(string_view(arrayAccessStatementString), arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, accessObjectMemberStatement, syntaxTree.arguments[argumentIdx].subLineIdx) == false) {
 										break;
 									}
 									// create syntax tree for this array access
@@ -2842,24 +2842,24 @@ const string Transpiler::createSourceCode(const MinitScript::SyntaxTreeNode& syn
 				switch(syntaxTreeNode.value.getType()) {
 					case MinitScript::TYPE_NULL:
 						{
-							result+= (result.empty() == false?", ":"") + string("<VOID>");
+							result+= (result.empty() == false?", ":"") + string("<VOID>") + "@" + to_string(syntaxTreeNode.subLineIdx);
 							break;
 						}
 					case MinitScript::TYPE_BOOLEAN:
 					case MinitScript::TYPE_INTEGER:
 					case MinitScript::TYPE_FLOAT:
 						{
-							result+= (result.empty() == false?", ":"") + syntaxTreeNode.value.getValueAsString();
+							result+= (result.empty() == false?", ":"") + syntaxTreeNode.value.getValueAsString() + "@" + to_string(syntaxTreeNode.subLineIdx);
 							break;
 						}
 					case MinitScript::TYPE_STRING:
 						{
-							result+= (result.empty() == false?", ":"") + string("\"") + syntaxTreeNode.value.getValueAsString() + string("\"");
+							result+= (result.empty() == false?", ":"") + string("\"") + syntaxTreeNode.value.getValueAsString() + string("\"") + "@" + to_string(syntaxTreeNode.subLineIdx);
 							break;
 						}
 					default:
 						{
-							result+= (result.empty() == false?", ":"") + string("<COMPLEX DATATYPE>");
+							result+= (result.empty() == false?", ":"") + string("<COMPLEX DATATYPE>") + "@" + to_string(syntaxTreeNode.subLineIdx);
 							break;
 						}
 				}
@@ -2871,6 +2871,7 @@ const string Transpiler::createSourceCode(const MinitScript::SyntaxTreeNode& syn
 			{
 				auto endElse = syntaxTreeNode.value.getValueAsString() == "end" || syntaxTreeNode.value.getValueAsString() == "else";
 				result+= syntaxTreeNode.value.getValueAsString();
+				result+= "@" + to_string(syntaxTreeNode.subLineIdx);
 				if (endElse == false) result+= string("(");
 				auto argumentIdx = 0;
 				for (const auto& argument: syntaxTreeNode.arguments) {
@@ -2970,6 +2971,7 @@ const string Transpiler::createSourceCode(MinitScript* minitScript) {
 	// create source code
 	for (const auto& script: minitScript->getScripts()) {
 		result+= createSourceCode(script.type, script.emitCondition == true?script.condition:string(), script.arguments, script.name, script.conditionSyntaxTree, script.syntaxTree);
+		result+= "\n";
 	}
 	//
 	return result;

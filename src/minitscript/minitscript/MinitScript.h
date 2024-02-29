@@ -154,6 +154,24 @@ public:
 		int gotoStatementIdx;
 	};
 
+	/**
+	 * Sub statement
+	 */
+	struct SubStatement {
+		/**
+		 * Sub statement
+		 * @param statement statement
+		 * @param subLineIdx sub line index
+		 */
+		SubStatement(const Statement& statement, int subLineIdx):
+			statement(statement),
+			subLineIdx(subLineIdx)
+		{}
+		//
+		const Statement& statement;
+		int subLineIdx = LINE_NONE;
+	};
+
 	enum VariableType {
 		// primitives
 		TYPE_NULL = 0,
@@ -2773,7 +2791,8 @@ public:
 			type(SCRIPTSYNTAXTREENODE_NONE),
 			value(Variable()),
 			pointer(0ll),
-			arguments({})
+			arguments({}),
+			subLineIdx(LINE_NONE)
 		{}
 		/**
 		 * Constructor
@@ -2781,17 +2800,20 @@ public:
 		 * @param value value
 		 * @param pointer pointer to method
 		 * @param arguments arguments
+		 * @param subLineIdx sub line index
 		 */
 		inline SyntaxTreeNode(
 			Type type,
 			const Variable& value,
 			Method* method,
-			const vector<SyntaxTreeNode>& arguments
+			const vector<SyntaxTreeNode>& arguments,
+			int subLineIdx
 		):
 			type(type),
 			value(value),
 			pointer((uint64_t)method),
-			arguments(arguments)
+			arguments(arguments),
+			subLineIdx(subLineIdx)
 		{}
 		/**
 		 * Constructor
@@ -2799,17 +2821,20 @@ public:
 		 * @param value value
 		 * @param scriptIdx script index
 		 * @param arguments arguments
+		 * @param subLineIdx sub line index
 		 */
 		inline SyntaxTreeNode(
 			Type type,
 			const Variable& value,
 			uint64_t scriptIdx,
-			const vector<SyntaxTreeNode>& arguments
+			const vector<SyntaxTreeNode>& arguments,
+			int subLineIdx
 		):
 			type(type),
 			value(value),
 			pointer(scriptIdx),
-			arguments(arguments)
+			arguments(arguments),
+			subLineIdx(subLineIdx)
 		{}
 		/**
 		 * @return method
@@ -2842,6 +2867,7 @@ public:
 		Variable value;
 		uint64_t pointer;
 		vector<SyntaxTreeNode> arguments;
+		int subLineIdx;
 	};
 
 	/**
@@ -2948,17 +2974,6 @@ public:
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALLSTACKLETBYINDEX;
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string METHOD_ENABLENAMEDCONDITION;
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string METHOD_DISABLENAMEDCONDITION;
-
-	/**
-	 * Returns arguments as string placed in a vector of string_views
-	 * @param arguments arguments
-	 * @return arguments as string
-	 */
-	inline const string getArgumentsAsString(const vector<string_view>& arguments) {
-		string argumentsString;
-		for (const auto& argument: arguments) argumentsString+= (argumentsString.empty() == false?", ":"") + string("'") + string(argument) + string("'");
-		return argumentsString;
-	}
 
 	/**
 	 * Returns arguments as string
@@ -3497,6 +3512,38 @@ private:
 	unordered_set<int> garbageCollectionDataTypesIndices;
 
 	/**
+	 * Parser argument
+	 */
+	struct ParserArgument {
+		/**
+		 * Constructor
+		 * @param argument argument
+		 * @param subLineIdx sub line index
+		 */
+		inline ParserArgument(
+			const string_view& argument,
+			int subLineIdx
+		):
+			argument(argument),
+			subLineIdx(subLineIdx)
+		{}
+		//
+		string_view argument;
+		int subLineIdx;
+	};
+
+	/**
+	 * Returns arguments as string placed in a vector of string_views
+	 * @param arguments arguments
+	 * @return arguments as string
+	 */
+	inline const string getArgumentsAsString(const vector<ParserArgument>& arguments) {
+		string argumentsString;
+		for (const auto& argument: arguments) argumentsString+= (argumentsString.empty() == false?", ":"") + string("'") + string(argument.argument) + string("'");
+		return argumentsString;
+	}
+
+	/**
 	 * Parse script code into this MinitScript instance
 	 * @param scriptCode script code
 	 * @param lineIdxOffset line index offset
@@ -3527,9 +3574,10 @@ private:
 	 * @param arguments arguments
 	 * @param statement statment
 	 * @param accessObjectMember generated access object member statement
+	 * @param subLineIdx sub line index
 	 * @return success
 	 */
-	bool parseStatement(const string_view& executableStatement, string_view& methodName, vector<string_view>& arguments, const Statement& statement, string& accessObjectMemberStatement);
+	bool parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement, string& accessObjectMemberStatement, int subLineIdx = 0);
 
 	/**
 	 * Execute a statement
@@ -3546,9 +3594,10 @@ private:
 	 * @param arguments arguments
 	 * @param statement statement
 	 * @param syntaxTree syntax tree
+	 * @param subLineIdx sub line index
 	 * @return success
 	 */
-	bool createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<string_view>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree);
+	bool createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<ParserArgument>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree, int subLineIdx = 0);
 
 	/**
 	 * Setup function and stacket script indices

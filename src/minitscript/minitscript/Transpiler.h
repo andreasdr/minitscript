@@ -42,6 +42,13 @@ public:
 	 */
 	static void untranspile(const string& scriptFileName, const string& transpilationFileName);
 
+	/**
+	 * Create source code for whole script
+	 * @param minitScript MinitScript instance
+	 * @return source code
+	 */
+	static const string createSourceCode(MinitScript* minitScript);
+
 private:
 	/**
 	 * Get script type name
@@ -537,12 +544,5 @@ private:
 		const MinitScript::SyntaxTreeNode& conditionSyntaxTree,
 		const vector<MinitScript::SyntaxTreeNode>& syntaxTree
 	);
-
-	/**
-	 * Create source code for whole script
-	 * @param minitScript MinitScript instance
-	 * @return source code
-	 */
-	static const string createSourceCode(MinitScript* minitScript);
 
 };

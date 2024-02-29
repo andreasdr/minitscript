@@ -28,7 +28,7 @@ on: nothing
 	console.printLine("String::charAt('äbcdüö', 6): " + String::charAt("äbcdüö", 6))
 	console.printLine("String::padLeft('äbcdüö', '_', 10): " + String::padLeft("äbcdüö", "_", 10))
 	console.printLine("String::padRight('äbcdüö', '_', 10): " + String::padRight("äbcdüö", "_", 10))
-	console.printLine("String::tokenize('äbcÄdüöÖäbcÜ123', 'ÄÖÜ'): " + String::tokenize('äbcÄdüöÖäbcÜ123', 'ÄÖÜ'))	
+	console.printLine("String::tokenize('äbcÄdüöÖäbcÜ123', 'ÄÖÜ'): " + String::tokenize('äbcÄdüöÖäbcÜ123', 'ÄÖÜ'))
 	script.stop()
 end
 
