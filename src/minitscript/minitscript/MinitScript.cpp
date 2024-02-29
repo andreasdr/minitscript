@@ -554,6 +554,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 
 	// complain about bracket count
 	if (bracketCount != 0) {
+		// TODO: sub line index
 		_Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced bracket count: " + to_string(_Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
 		//
 		parseErrors.push_back(string(executableStatement) + ": Unbalanced bracket count: " + to_string(_Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
@@ -562,6 +563,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 	}
 	// complain about square bracket count
 	if (squareBracketCount != 0) {
+		// TODO: sub line index
 		_Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced square bracket count: " + to_string(_Math::abs(squareBracketCount)) + " " + (squareBracketCount < 0?"too much closed":"still open"));
 		//
 		parseErrors.push_back(string(executableStatement) + ": Unbalanced square bracket count: " + to_string(_Math::abs(squareBracketCount)) + " " + (squareBracketCount < 0?"too much closed":"still open"));
@@ -570,6 +572,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 	}
 	// complain about curly bracket count
 	if (curlyBracketCount != 0) {
+		// TODO: sub line index
 		_Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced curly bracket count: " + to_string(_Math::abs(curlyBracketCount)) + " " + (curlyBracketCount < 0?"too much closed":"still open"));
 		//
 		parseErrors.push_back(string(executableStatement) + ": Unbalanced curly bracket count: " + to_string(_Math::abs(curlyBracketCount)) + " " + (curlyBracketCount < 0?"too much closed":"still open"));
@@ -2896,11 +2899,31 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 	};
 	//
 	auto trimArgument = [](const string& argument) -> const string {
+		auto leftNewLineCount = 0;
+		for (auto i = 0; i < argument.size(); i++) {
+			auto c = argument[i];
+			if (c == '\n') {
+				leftNewLineCount++;
+			} else
+			if (_Character::isSpace(c) == false) {
+				break;
+			}
+		}
+		auto rightNewLineCount = 0;
+		for (int i = argument.size() - 1; i >= 0; i--) {
+			auto c = argument[i];
+			if (c == '\n') {
+				rightNewLineCount++;
+			} else
+			if (_Character::isSpace(c) == false) {
+				break;
+			}
+		}
 		auto processedArgument = _StringTools::trim(argument);
 		if (_StringTools::startsWith(processedArgument, "(") == true && _StringTools::endsWith(processedArgument, ")") == true) {
 			processedArgument = _StringTools::substring(processedArgument, 1, processedArgument.size() - 1);
 		}
-		return processedArgument;
+		return processedArgument.empty() == true?string():_StringTools::generate("\n", leftNewLineCount) + processedArgument + _StringTools::generate("\n", rightNewLineCount);
 	};
 	//
 	auto findLeftArgument = [&](const string& statement, int position, int& length, string& brackets) -> const string {
@@ -3044,14 +3067,14 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				if (squareBracketCount == 0 && curlyBracketCount == 0 && c == ',') {
 					if (bracketCount == 0) return trimArgument(argument);
 					//
-					if (argument.empty() == true && (c == ' ' || c == '\t' || c == '\n')) {
+					if (argument.empty() == true && (c == ' ' || c == '\t')) {
 						// no op
 					} else {
 						argument+= c;
 					}
 				} else {
 					//
-					if (argument.empty() == true && (c == ' ' || c == '\t' || c == '\n')) {
+					if (argument.empty() == true && (c == ' ' || c == '\t')) {
 						// no op
 					} else {
 						argument+= c;
@@ -3258,7 +3281,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 	StatementOperator nextOperator;
 	while (getNextStatementOperator(preprocessedStatement, nextOperator, statement) == true) {
 		if (nextOperator.invalidOperator.empty() == false) {
-			_Console::printLine(getStatementInformation(statement) + ": Operator @" + to_string(nextOperator.idx) + ": invalid operator: " + nextOperator.invalidOperator);
+			_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": invalid operator: " + nextOperator.invalidOperator);
 			scriptValid = false;
 			return preprocessedStatement;
 		}
@@ -3271,7 +3294,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			// resolve method
 			method = getOperatorMethod(nextOperator.operator_);
 			if (method == nullptr) {
-				_Console::printLine(getStatementInformation(statement) + ": Operator @" + to_string(nextOperator.idx) + ": no operator method found");
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": no operator method found");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3297,13 +3320,13 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				method->getOperator() == OPERATOR_PREFIX_DECREMENT) {
 				//
 				if (prefixOperatorMethod == nullptr) {
-					_Console::printLine(getStatementInformation(statement) + ": Operator @" + to_string(nextOperator.idx) + ": no prefix operator method found");
+					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": no prefix operator method found");
 					scriptValid = false;
 					return preprocessedStatement;
 				}
 				//
 				if (postfixOperatorMethod == nullptr) {
-					_Console::printLine(getStatementInformation(statement) + ": Operator @" + to_string(nextOperator.idx) + ": no postfix operator method found");
+					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": no postfix operator method found");
 					scriptValid = false;
 					return preprocessedStatement;
 				}
@@ -3338,7 +3361,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					postfixOperatorMethod->getMethodName() + "(" + rightArgument + ")" +
 					_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size());
 			} else {
-				_Console::printLine(getStatementInformation(statement) + ": Operator @" + to_string(nextOperator.idx) + ": requires left or right argument");
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": requires left or right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3357,7 +3380,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			auto rightArgument = findRightArgument(preprocessedStatement, nextOperator.idx + operatorString.size(), rightArgumentLength, rightArgumentBrackets);
 			//
 			if (leftArgument.empty() == true || rightArgument.empty() == true) {
-				_Console::printLine(getStatementInformation(statement) + ": Operator @" + to_string(nextOperator.idx) + ": requires left and right argument");
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": requires left and right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3371,6 +3394,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				method->getMethodName() + "(" + leftArgument + ", " + rightArgument + ")" +
 				_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
 			);
+			//
 		}
 		//
 		nextOperator = StatementOperator();
@@ -4292,7 +4316,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 	Variable variable;
 	variable.setType(TYPE_MAP);
 	//
-	auto lineIdx = statement.line;
+	auto subLineIdx = 0;
 	auto bracketCount = 0;
 	auto curlyBracketCount = 0;
 	auto squareBracketCount = 0;
@@ -4306,6 +4330,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 	auto inlineFunctionSignatureStartCandidate = string::npos;
 	auto inlineFunctionLineIdxCandidate = LINE_NONE;
 	auto inlineFunctionLineIdx = LINE_NONE;
+	auto mapKeyLineIdx = LINE_NONE;
 	auto hasValues = false;
 	//
 	auto i = 0;
@@ -4336,7 +4361,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 			// no op
 		} else
 		if (viewIsKey(mapKey) == false) {
-			_Console::printLine(minitScript->getStatementInformation(statement) + ": Invalid key name, ignoring map entry: " + string(mapKey));
+			_Console::printLine(minitScript->getStatementInformation(statement, mapKeyLineIdx) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 		} else {
 			auto _private = dequotedMapKey == true?false:viewIsKeyPrivate(mapKey);
 			if (_private == true) mapKey = viewGetPrivateKey(mapKey);
@@ -4362,6 +4387,8 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 			}
 		}
 		//
+		mapKeyLineIdx = LINE_NONE;
+		//
 		mapValueStart = string::npos;
 		mapValueEnd = string::npos;
 		//
@@ -4379,7 +4406,8 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 		auto nc = i < initializerString.size() - 1?initializerString[i + 1]:'\0';
 		// newline/line index
 		if (c == '\n') {
-			lineIdx++;
+			//
+			subLineIdx++;
 			// check for comment line
 			auto comment = false;
 			for (auto j = i + 1; j < initializerString.size(); j++) {
@@ -4413,7 +4441,10 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 				quote = c;
 				// key?
 				if (parseMode == PARSEMODE_KEY) {
-					if (mapKeyStart == string::npos) mapKeyStart = i;
+					if (mapKeyStart == string::npos) {
+						mapKeyStart = i;
+						mapKeyLineIdx = subLineIdx;
+					}
 				} else
 				// value
 				if (parseMode == PARSEMODE_VALUE) {
@@ -4457,7 +4488,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 				//
 				if (bracketCount == 1) {
 					inlineFunctionSignatureStartCandidate = i;
-					inlineFunctionLineIdxCandidate = lineIdx;
+					inlineFunctionLineIdxCandidate = statement.line + subLineIdx;
 				}
 			} else
 			if (c == ')') {
@@ -4514,15 +4545,16 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 							dequotedMapKey = true;
 						}
 					}
+					//
+					mapKeyStart = string::npos;
+					mapKeyEnd = string::npos;
 					// validate map key
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
-						_Console::printLine(minitScript->getStatementInformation(statement) + ": Invalid key name, ignoring map entry: " + string(mapKey));
+						_Console::printLine(minitScript->getStatementInformation(statement, mapKeyLineIdx) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
 						auto _private = dequotedMapKey == true?false:viewIsKeyPrivate(mapKey);
 						if (_private == true) mapKey = viewGetPrivateKey(mapKey);
 						//
-						mapKeyStart = string::npos;
-						mapKeyEnd = string::npos;
 						inlineFunctionSignatureStartCandidate = string::npos;
 						inlineFunctionLineIdxCandidate = LINE_NONE;
 						// map value
@@ -4559,6 +4591,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 						inlineFunctionLineIdx = LINE_NONE;
 					}
 					//
+					mapKeyLineIdx = LINE_NONE;
 					parseMode = PARSEMODE_KEY;
 				}
 			} else
@@ -4588,15 +4621,16 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 							dequotedMapKey = true;
 						}
 					}
+					//
+					mapKeyStart = string::npos;
+					mapKeyEnd = string::npos;
 					// validate map key
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
-						_Console::printLine(minitScript->getStatementInformation(statement) + ": Invalid key name, ignoring map entry: " + string(mapKey));
+						_Console::printLine(minitScript->getStatementInformation(statement, mapKeyLineIdx) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
 						auto _private = dequotedMapKey == true?false:viewIsKeyPrivate(mapKey);
 						if (_private == true) mapKey = viewGetPrivateKey(mapKey);
 						//
-						mapKeyStart = string::npos;
-						mapKeyEnd = string::npos;
 						inlineFunctionSignatureStartCandidate = string::npos;
 						inlineFunctionLineIdxCandidate = LINE_NONE;
 						// array value
@@ -4621,12 +4655,14 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 					}
 					//
 					parseMode = PARSEMODE_KEY;
+					mapKeyLineIdx = LINE_NONE;
 				}
 			} else
 			// set up map key  start
 			if (curlyBracketCount == 1 && squareBracketCount == 0 && bracketCount == 0 && c != ' ' && c != '\t' && c != '\n') {
 				if (parseMode == PARSEMODE_KEY && mapKeyStart == string::npos) {
 					mapKeyStart = i;
+					mapKeyLineIdx = subLineIdx;
 				} else
 				if (parseMode == PARSEMODE_VALUE && mapValueStart == string::npos) {
 					mapValueStart = i;

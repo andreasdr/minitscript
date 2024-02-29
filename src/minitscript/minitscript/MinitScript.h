@@ -4423,12 +4423,39 @@ public:
 	virtual void registerVariables();
 
 	/**
+	 * Get statement sub line index
+	 * @param statement statement
+	 * @param idx index
+	 * @return sub line index
+	 */
+	inline int getStatementSubLineIdx(const string& statement, int idx) {
+		auto subLineIdx = 0;
+		for (auto i = 0; i < statement.size() && i <= idx; i++) {
+			if (statement[i] == '\n') subLineIdx++;
+		}
+		return subLineIdx;
+	}
+
+	/**
 	 * Return statement information
 	 * @param statement statement
+	 * @param subLineIdx sub line index
 	 * @return statement information
 	 */
-	inline const string getStatementInformation(const Statement& statement) {
-		return scriptFileName + ":" + to_string(statement.line) +  ": " + statement.statement;
+	inline const string getStatementInformation(const Statement& statement, int subLineIdx = -1) {
+		// _Console::printLine("getStatementInformation(): " + statement.statement + " @ " + to_string(subLineIdx));
+		//
+		auto statementCode = statement.statement;
+		auto statementLine = statement.line;
+		if (subLineIdx != -1) {
+			auto statementCodeLines = _StringTools::tokenize(statementCode, "\n", true);
+			if (subLineIdx >= 0 && subLineIdx < statementCodeLines.size()) {
+				statementCode = statementCodeLines[subLineIdx];
+				statementLine+= subLineIdx;
+			}
+		}
+		//
+		return scriptFileName + ":" + to_string(statementLine) +  ": " + statementCode;
 	}
 
 	/**
