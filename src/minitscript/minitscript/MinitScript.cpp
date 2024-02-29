@@ -3281,7 +3281,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 	StatementOperator nextOperator;
 	while (getNextStatementOperator(preprocessedStatement, nextOperator, statement) == true) {
 		if (nextOperator.invalidOperator.empty() == false) {
-			_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": invalid operator: " + nextOperator.invalidOperator);
+			_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": Invalid operator: " + nextOperator.invalidOperator);
 			scriptValid = false;
 			return preprocessedStatement;
 		}
@@ -3294,7 +3294,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			// resolve method
 			method = getOperatorMethod(nextOperator.operator_);
 			if (method == nullptr) {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": no operator method found");
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": No operator method found");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3320,13 +3320,13 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				method->getOperator() == OPERATOR_PREFIX_DECREMENT) {
 				//
 				if (prefixOperatorMethod == nullptr) {
-					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": no prefix operator method found");
+					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": No prefix operator method found");
 					scriptValid = false;
 					return preprocessedStatement;
 				}
 				//
 				if (postfixOperatorMethod == nullptr) {
-					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": no postfix operator method found");
+					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": No postfix operator method found");
 					scriptValid = false;
 					return preprocessedStatement;
 				}
@@ -3361,7 +3361,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					postfixOperatorMethod->getMethodName() + "(" + rightArgument + ")" +
 					_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size());
 			} else {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": requires left or right argument");
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": Requires left or right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3380,7 +3380,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			auto rightArgument = findRightArgument(preprocessedStatement, nextOperator.idx + operatorString.size(), rightArgumentLength, rightArgumentBrackets);
 			//
 			if (leftArgument.empty() == true || rightArgument.empty() == true) {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": requires left and right argument");
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": Requires left and right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -4591,8 +4591,8 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 						inlineFunctionLineIdx = LINE_NONE;
 					}
 					//
-					mapKeyLineIdx = LINE_NONE;
 					parseMode = PARSEMODE_KEY;
+					mapKeyLineIdx = LINE_NONE;
 				}
 			} else
 			// array initializer
