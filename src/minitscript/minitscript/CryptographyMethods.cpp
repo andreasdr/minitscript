@@ -41,7 +41,7 @@ void CryptographyMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "cryptography.base64.encode";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string value;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, value) == true) {
@@ -70,7 +70,7 @@ void CryptographyMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "cryptography.base64.decode";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string value;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, value) == true) {
@@ -100,7 +100,7 @@ void CryptographyMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "cryptography.sha256.encode";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string value;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, value) == true) {

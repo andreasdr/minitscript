@@ -110,7 +110,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "network.httpclient.head";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string url;
 				if (arguments.size() <= 3 &&
 					MinitScript::getStringValue(arguments, 0, url, false) == true &&
@@ -184,7 +184,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "network.httpclient.get";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string url;
 				if (arguments.size() <= 3 &&
 					MinitScript::getStringValue(arguments, 0, url, false) == true &&
@@ -267,7 +267,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "network.httpclient.post";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string url;
 				string dataString;
 				if (arguments.size() >= 2 && arguments.size() <= 4 &&
@@ -368,7 +368,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "network.httpclient.put";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string url;
 				string dataString;
 				if (arguments.size() >= 2 && arguments.size() <= 4 &&
@@ -468,7 +468,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "network.httpclient.delete";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string url;
 				if (arguments.size() <= 3 &&
 					MinitScript::getStringValue(arguments, 0, url, false) == true &&

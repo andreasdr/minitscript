@@ -175,14 +175,7 @@ const vector<string> MinitScript::getTranspilationUnits() {
 	};
 }
 
-MinitScript::MinitScript():
-	errorStatement(
-		LINE_NONE,
-		STATEMENTIDX_NONE,
-		string(),
-		string(),
-		STATEMENTIDX_NONE
-	) {
+MinitScript::MinitScript() {
 	//
 	for (auto dataType: dataTypes) {
 		if (dataType->isRequiringGarbageCollection() == false) continue;
@@ -218,20 +211,20 @@ void MinitScript::registerStateMachineState(StateMachineState* state) {
 void MinitScript::initializeNative() {
 }
 
-void MinitScript::complain(const string& methodName, const Statement& statement) {
+void MinitScript::complain(const string& methodName, const SubStatement& subStatement) {
 	auto argumentsInformation = getArgumentsInformation(methodName);
 	if (argumentsInformation.empty() == true) argumentsInformation = "None";
-	_Console::printLine(methodName + "(): " + getStatementInformation(statement) + ": Argument mismatch: expected arguments: " + argumentsInformation);
+	_Console::printLine(methodName + "(): " + getStatementInformation(*subStatement.statement, subStatement.subLineIdx) + ": Argument mismatch: expected arguments: " + argumentsInformation);
 	//
 	errorMessage = "An method usage complain has occurred";
-	errorStatement = statement;
+	errorSubStatement = subStatement;
 }
 
-void MinitScript::complain(const string& methodName, const Statement& statement, const string& message) {
-	_Console::printLine(methodName + "(): " + getStatementInformation(statement) + ": " + message);
+void MinitScript::complain(const string& methodName, const SubStatement& subStatement, const string& message) {
+	_Console::printLine(methodName + "(): " + getStatementInformation(*subStatement.statement, subStatement.subLineIdx) + ": " + message);
 	//
 	errorMessage = "An method usage complain with message has occurred: " + message;
-	errorStatement = statement;
+	errorSubStatement = subStatement;
 }
 
 void MinitScript::registerMethod(Method* method) {
@@ -751,7 +744,7 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 				}
 				if (argumentOk == false) {
 					_Console::printLine(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, syntaxTree.subLineIdx) +
 						": Method '" + string(syntaxTree.value.getValueAsString()) + "'" +
 						": argument value @ " + to_string(argumentIdx) + ": expected " + Variable::getTypeAsString(argumentType.type) + ", but got: " + (argumentIdx < arguments.size()?arguments[argumentIdx].getAsString():"nothing"));
 				}
@@ -759,21 +752,21 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 			}
 			if (method->isVariadic() == false && arguments.size() > method->getArgumentTypes().size()) {
 				_Console::printLine(
-					getStatementInformation(statement) +
+					getStatementInformation(statement, syntaxTree.subLineIdx) +
 					": Method '" + string(syntaxTree.value.getValueAsString()) + "'" +
 					": too many arguments: expected: " + to_string(method->getArgumentTypes().size()) + ", got " + to_string(arguments.size()));
 			}
 		}
 		// execute method
 		span argumentsSpan(arguments);
-		method->executeMethod(argumentsSpan, returnValue, statement);
+		method->executeMethod(argumentsSpan, returnValue, SubStatement(statement, syntaxTree.subLineIdx));
 		// check return type
 		if (method->isReturnValueNullable() == true && returnValue.getType() == TYPE_NULL) {
 			// no op, this is a valid return value
 		} else
 		if (MinitScript::Variable::isExpectedType(returnValue.getType(), method->getReturnValueType()) == false) {
 			_Console::printLine(
-				getStatementInformation(statement) +
+				getStatementInformation(statement, syntaxTree.subLineIdx) +
 				": Method '" + string(syntaxTree.value.getValueAsString()) + "'" +
 				": return value: expected " + Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable()) + ", but got: " + Variable::getReturnTypeAsString(returnValue.getType(), false));
 		}
@@ -903,9 +896,9 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 				if (methodsIt != methods.end()) {
 					method = methodsIt->second;
 				} else {
-					_Console::printLine(getStatementInformation(statement) + ": Unknown method: " + methodName);
+					_Console::printLine(getStatementInformation(statement, subLineIdx + argument.subLineIdx) + ": Unknown method: " + methodName);
 					//
-					parseErrors.push_back(getStatementInformation(statement) + ": Unknown method: " + methodName);
+					parseErrors.push_back(getStatementInformation(statement, subLineIdx + argument.subLineIdx) + ": Unknown method: " + methodName);
 					//
 					return false;
 				}
@@ -981,9 +974,9 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 		//
 		return true;
 	} else {
-		_Console::printLine(getStatementInformation(statement) + ": Unknown function/method: " + string(methodName) + "()");
+		_Console::printLine(getStatementInformation(statement, subLineIdx) + ": Unknown function/method: " + string(methodName) + "()");
 		//
-		parseErrors.push_back(getStatementInformation(statement) + ": Unknown function/method: " + string(methodName) + "()");
+		parseErrors.push_back(getStatementInformation(statement, subLineIdx) + ": Unknown function/method: " + string(methodName) + "()");
 		//
 		return false;
 	}
@@ -1017,7 +1010,7 @@ bool MinitScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTr
 					case(MinitScript::TYPE_ARRAY):
 					case(MinitScript::TYPE_MAP):
 						{
-							if (setupFunctionAndStackletScriptIndices(syntaxTreeNode.value, statement) == false) return false;
+							if (setupFunctionAndStackletScriptIndices(syntaxTreeNode.value, statement, syntaxTreeNode.subLineIdx) == false) return false;
 							//
 							break;
 						}
@@ -1029,13 +1022,13 @@ bool MinitScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTr
 								(functionScriptIdx = getFunctionScriptIdx(function)) == SCRIPTIDX_NONE) {
 								//
 								_Console::printLine(
-									getStatementInformation(statement) +
+									getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 									": Function not found: " +
 									syntaxTreeNode.value.getValueAsString()
 								);
 								//
 								parseErrors.push_back(
-									getStatementInformation(statement) +
+									getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 									": Function not found: " +
 									syntaxTreeNode.value.getValueAsString()
 								);
@@ -1055,13 +1048,13 @@ bool MinitScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTr
 								(stackletScriptIdx = getFunctionScriptIdx(stacklet)) == SCRIPTIDX_NONE) {
 								//
 								_Console::printLine(
-									getStatementInformation(statement) +
+									getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 									": Stacklet not found" +
 									syntaxTreeNode.value.getValueAsString()
 								);
 								//
 								parseErrors.push_back(
-									getStatementInformation(statement) +
+									getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 									": Stacklet not found: " +
 									syntaxTreeNode.value.getValueAsString()
 								);
@@ -1095,14 +1088,14 @@ bool MinitScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTr
 	return true;
 }
 
-bool MinitScript::setupFunctionAndStackletScriptIndices(Variable& variable, const Statement& statement) {
+bool MinitScript::setupFunctionAndStackletScriptIndices(Variable& variable, const Statement& statement, int subLineIdx) {
 	switch (variable.getType()) {
 		case TYPE_ARRAY:
 			{
 				auto arrayPointer = variable.getArrayPointer();
 				if (arrayPointer == nullptr) break;
 				for (auto arrayEntry: *arrayPointer) {
-					if (setupFunctionAndStackletScriptIndices(*arrayEntry, statement) == false) return false;
+					if (setupFunctionAndStackletScriptIndices(*arrayEntry, statement, subLineIdx) == false) return false;
 				}
 				//
 				break;
@@ -1113,7 +1106,7 @@ bool MinitScript::setupFunctionAndStackletScriptIndices(Variable& variable, cons
 				auto mapPointer = variable.getMapPointer();
 				if (mapPointer == nullptr) break;
 				for (auto& [mapKey, mapValue]: *mapPointer) {
-					if (setupFunctionAndStackletScriptIndices(*mapValue, statement) == false) return false;
+					if (setupFunctionAndStackletScriptIndices(*mapValue, statement, subLineIdx) == false) return false;
 				}
 				//
 				break;
@@ -1126,13 +1119,13 @@ bool MinitScript::setupFunctionAndStackletScriptIndices(Variable& variable, cons
 					(functionScriptIdx = getFunctionScriptIdx(function)) == SCRIPTIDX_NONE) {
 					//
 					_Console::printLine(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, subLineIdx) +
 						": Function not found: " +
 						variable.getValueAsString()
 					);
 					//
 					parseErrors.push_back(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, subLineIdx) +
 						": Function not found: " +
 						variable.getValueAsString()
 					);
@@ -1152,13 +1145,13 @@ bool MinitScript::setupFunctionAndStackletScriptIndices(Variable& variable, cons
 					(stackletScriptIdx = getFunctionScriptIdx(stacklet)) == SCRIPTIDX_NONE) {
 					//
 					_Console::printLine(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, subLineIdx) +
 						": Stacklet not found" +
 						variable.getValueAsString()
 					);
 					//
 					parseErrors.push_back(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, subLineIdx) +
 						": Stacklet not found: " +
 						variable.getValueAsString()
 					);
@@ -1253,14 +1246,14 @@ bool MinitScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& sy
 						(stackletScriptIdx = getFunctionScriptIdx(stackletName)) == SCRIPTIDX_NONE) {
 						//
 						_Console::printLine(
-							getStatementInformation(statement) +
+							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 							": " +
 							syntaxTreeNode.value.getValueAsString() +
 							": Stacklet not found"
 						);
 						//
 						parseErrors.push_back(
-							getStatementInformation(statement) +
+							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 							": " +
 							syntaxTreeNode.value.getValueAsString() +
 							": Stacklet not found"
@@ -1286,7 +1279,7 @@ bool MinitScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& sy
 						}
 						//
 						_Console::printLine(
-							getStatementInformation(statement) +
+							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 							": " +
 							syntaxTreeNode.value.getValueAsString() +
 							": Stacklet scope invalid: " +
@@ -1294,7 +1287,7 @@ bool MinitScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& sy
 						);
 						//
 						parseErrors.push_back(
-							getStatementInformation(statement) +
+							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 							": " +
 							syntaxTreeNode.value.getValueAsString() +
 							": Stacklet scope invalid" +
@@ -1339,14 +1332,14 @@ bool MinitScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& sy
 				if (stackletName.empty() == true || stackletScriptIdx == SCRIPTIDX_NONE) {
 					//
 					_Console::printLine(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 						": " +
 						syntaxTreeNode.value.getValueAsString() +
 						": Stacklet not found"
 					);
 					//
 					parseErrors.push_back(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 						": " +
 						syntaxTreeNode.value.getValueAsString() +
 						": Stacklet not found"
@@ -1372,7 +1365,7 @@ bool MinitScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& sy
 					}
 					//
 					_Console::printLine(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 						": " +
 						syntaxTreeNode.value.getValueAsString() +
 						": Stacklet scope invalid: " +
@@ -1380,7 +1373,7 @@ bool MinitScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& sy
 					);
 					//
 					parseErrors.push_back(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 						": " +
 						syntaxTreeNode.value.getValueAsString() +
 						": Stacklet scope invalid" +
@@ -1436,13 +1429,13 @@ bool MinitScript::validateCallable(const SyntaxTreeNode& syntaxTreeNode, const S
 				if (contextFunctions.empty() == false) {
 					//
 					_Console::printLine(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 						": Method " +
 						syntaxTreeNode.getMethod()->getMethodName() + "() can not be called within a callable function"
 					);
 					//
 					parseErrors.push_back(
-						getStatementInformation(statement) +
+						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 						": Method " +
 						syntaxTreeNode.getMethod()->getMethodName() + "() can not be called within a callable function"
 					);
@@ -1528,7 +1521,7 @@ bool MinitScript::validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode,
 						}
 						//
 						_Console::printLine(
-							getStatementInformation(statement) +
+							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 							": Method " +
 							syntaxTreeNode.getMethod()->getMethodName() + "() can only be called within the following functions: " +
 							contextFunctionsString +
@@ -1537,7 +1530,7 @@ bool MinitScript::validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode,
 						);
 						//
 						parseErrors.push_back(
-							getStatementInformation(statement) +
+							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 							": Method " +
 							syntaxTreeNode.getMethod()->getMethodName() + "() can only be called within the following functions: " +
 							contextFunctionsString +
@@ -4773,7 +4766,7 @@ void MinitScript::Variable::setFunctionCallStatement(const string& initializerSt
 	}
 }
 
-inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScript::Variable* variablePtr, const string& variableStatement, const string& callerMethod, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const Statement* statement, bool expectVariable) {
+inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScript::Variable* variablePtr, const string& variableStatement, const string& callerMethod, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const SubStatement* subStatement, bool expectVariable) {
 	// get root variable
 	key.clear();
 	// no array idx by default
@@ -4781,13 +4774,13 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 	// determine left and right access operator position if there are any
 	auto accessOperatorLeftIdx = string::npos;
 	auto accessOperatorRightIdx = string::npos;
-	if (getVariableAccessOperatorLeftRightIndices(variableStatement, callerMethod, accessOperatorLeftIdx, accessOperatorRightIdx, statement) == false) {
+	if (getVariableAccessOperatorLeftRightIndices(variableStatement, callerMethod, accessOperatorLeftIdx, accessOperatorRightIdx, subStatement) == false) {
 		return nullptr;
 	}
 	// access operator, if we have any, evaluate the array index
 	auto haveAccessOperator = accessOperatorLeftIdx != string::npos && accessOperatorRightIdx != string::npos;
 	if (haveAccessOperator == true &&
-		evaluateAccess(variableStatement, callerMethod, accessOperatorLeftIdx, accessOperatorRightIdx, arrayIdx, key, statement) == false) {
+		evaluateAccess(variableStatement, callerMethod, accessOperatorLeftIdx, accessOperatorRightIdx, arrayIdx, key, subStatement) == false) {
 		return nullptr;
 	}
 	//
@@ -4815,14 +4808,14 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 						//
 						if (variablePtr->isPrivate() == true && privateParentScope == false) {
 							//
-							_Console::printLine(getStatementInformation(*statement) + ": Private variable: " + variableStatement + ": access not allowed from outside of object");
+							_Console::printLine(getSubStatementInformation(*subStatement) + ": Private variable: " + variableStatement + ": access not allowed from outside of object");
 							//
 							parentVariable = nullptr;
 							return nullptr;
 						}
 					} else {
 						if (expectVariable == true) {
-							_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": key not found: '" + key + "'");
+							_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": key not found: '" + key + "'");
 						}
 						// we have our parent
 						parentVariable = variablePtr;
@@ -4849,7 +4842,7 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 						return nullptr;
 					}
 				} else {
-					_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": map/set access operator, but variable is not of type map/set");
+					_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": map/set access operator, but variable is not of type map/set");
 					return nullptr;
 				}
 			} else
@@ -4867,11 +4860,11 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 					//
 					variablePtr = variablePtr->getArrayValueReference()[arrayIdx];
 				} else {
-					_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": index out of bounds: 0 <= " + to_string(arrayIdx) + " < " + to_string(variablePtr->getArrayValueReference().size()));
+					_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": index out of bounds: 0 <= " + to_string(arrayIdx) + " < " + to_string(variablePtr->getArrayValueReference().size()));
 					return nullptr;
 				}
 			} else {
-				_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": access operator, expected array, but got: " + variablePtr->getValueAsString());
+				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": access operator, expected array, but got: " + variablePtr->getValueAsString());
 				return nullptr;
 			}
 
@@ -4879,7 +4872,7 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 			auto accessOperatorStartIdx = accessOperatorRightIdx;
 			accessOperatorLeftIdx = string::npos;
 			accessOperatorRightIdx = string::npos;
-			if (getVariableAccessOperatorLeftRightIndices(variableStatement, callerMethod, accessOperatorLeftIdx, accessOperatorRightIdx, statement, accessOperatorStartIdx) == false) {
+			if (getVariableAccessOperatorLeftRightIndices(variableStatement, callerMethod, accessOperatorLeftIdx, accessOperatorRightIdx, subStatement, accessOperatorStartIdx) == false) {
 				// fail
 				return nullptr;
 			}
@@ -4890,7 +4883,7 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 				return variablePtr;
 			} else {
 				// yep, evaluate it
-				if (evaluateAccess(variableStatement, callerMethod, accessOperatorLeftIdx, accessOperatorRightIdx, arrayIdx, key, statement) == false) {
+				if (evaluateAccess(variableStatement, callerMethod, accessOperatorLeftIdx, accessOperatorRightIdx, arrayIdx, key, subStatement) == false) {
 					return nullptr;
 				}
 			}
@@ -4903,7 +4896,7 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 	}
 }
 
-inline void MinitScript::setVariableInternal(const string& variableStatement, Variable* parentVariable, Variable* variablePtr, int64_t arrayIdx, const string& key, const Variable& variable, const Statement* statement, bool createReference) {
+inline void MinitScript::setVariableInternal(const string& variableStatement, Variable* parentVariable, Variable* variablePtr, int64_t arrayIdx, const string& key, const Variable& variable, const SubStatement* subStatement, bool createReference) {
 	// common case
 	if (variablePtr != nullptr) {
 		if (variablePtr->isConstant() == false) {
@@ -4913,7 +4906,7 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 				variablePtr->setValue(variable);
 			}
 		} else {
-			_Console::printLine(getStatementInformation(*statement) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 		}
 		return;
 	} else
@@ -4928,7 +4921,7 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 			if (parentVariable->isConstant() == false) {
 				parentVariable->setMapEntry(key, createReference == false?Variable::createNonReferenceVariable(&variable):Variable::createReferenceVariable(&variable));
 			} else {
-				_Console::printLine(getStatementInformation(*statement) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 			}
 		} else
 		if (parentVariable->getType() == MinitScript::TYPE_SET) {
@@ -4942,23 +4935,20 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 						parentVariable->removeSetKey(key);
 					}
 				} else {
-					string callerMethod = __FUNCTION__;
-					_Console::printLine("MinitScript::" + callerMethod + "(): '" + scriptFileName + "': Variable: " + variableStatement + ": set access operator: expected boolean variable to remove/insert key in set, but got " + variable.getTypeAsString());
+					_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": set access operator: expected boolean variable to remove/insert key in set, but got " + variable.getTypeAsString());
 				}
 			} else {
-				_Console::printLine(getStatementInformation(*statement) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 			}
 		} else {
-			string callerMethod = __FUNCTION__;
-			_Console::printLine("MinitScript::" + callerMethod + "(): " + (statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
+			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
 		}
 		//
 		return;
 	} else
 	if (arrayIdx == ARRAYIDX_ADD) {
 		if (parentVariable == nullptr) {
-			string callerMethod = __FUNCTION__;
-			_Console::printLine("MinitScript::" + callerMethod + "(): " + (statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": [] array push operator without array");
+			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": [] array push operator without array");
 		} else
 		if (parentVariable->getType() == MinitScript::TYPE_ARRAY) {
 			// check if our parent is not a const variable
@@ -4966,11 +4956,10 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 				// all checks passed, push variable to array
 				parentVariable->pushArrayEntry(createReference == false?Variable::createNonReferenceVariable(&variable):Variable::createReferenceVariable(&variable));
 			} else {
-				_Console::printLine(getStatementInformation(*statement) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 			}
 		} else {
-			string callerMethod = __FUNCTION__;
-			_Console::printLine("MinitScript::" + callerMethod + "(): " + (statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": [] array push operator: expected array, but got " + parentVariable->getTypeAsString());
+			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": [] array push operator: expected array, but got " + parentVariable->getTypeAsString());
 		}
 		//
 		return;
@@ -5078,7 +5067,7 @@ inline const string_view MinitScript::viewGetPrivateKey(const string_view& candi
 	return string_view(&candidate.data()[1], candidate.size() - 1);
 }
 
-inline bool MinitScript::getVariableAccessOperatorLeftRightIndices(const string& variableStatement, const string& callerMethod, string::size_type& accessOperatorLeftIdx, string::size_type& accessOperatorRightIdx, const Statement* statement, int startIdx) {
+inline bool MinitScript::getVariableAccessOperatorLeftRightIndices(const string& variableStatement, const string& callerMethod, string::size_type& accessOperatorLeftIdx, string::size_type& accessOperatorRightIdx, const SubStatement* subStatement, int startIdx) {
 	accessOperatorLeftIdx = string::npos;
 	accessOperatorRightIdx = string::npos;
 	auto haveKey = false;
@@ -5117,7 +5106,7 @@ inline bool MinitScript::getVariableAccessOperatorLeftRightIndices(const string&
 				return true;
 			}
 			if (c == ']') {
-				_Console::printLine("MinitScript::" + callerMethod + "(): " + (statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": unexpected char: ']'");
+				_Console::printLine("MinitScript::" + callerMethod + "(): " + (subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": unexpected char: ']'");
 				return false;
 			}
 		} else
@@ -5138,7 +5127,7 @@ inline bool MinitScript::getVariableAccessOperatorLeftRightIndices(const string&
 				return true;
 			} else
 			if (squareBracketsCount < 0) {
-				_Console::printLine("MinitScript::" + callerMethod + "(): " + (statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": unexpected char: ']'");
+				_Console::printLine("MinitScript::" + callerMethod + "(): " + (subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": unexpected char: ']'");
 				return false;
 			}
 		}
@@ -5149,7 +5138,7 @@ inline bool MinitScript::getVariableAccessOperatorLeftRightIndices(const string&
 	return true;
 }
 
-inline bool MinitScript::evaluateAccess(const string& variableStatement, const string& callerMethod, string::size_type& arrayAccessOperatorLeftIdx, string::size_type& arrayAccessOperatorRightIdx, int64_t& arrayIdx, string& key, const Statement* statement) {
+inline bool MinitScript::evaluateAccess(const string& variableStatement, const string& callerMethod, string::size_type& arrayAccessOperatorLeftIdx, string::size_type& arrayAccessOperatorRightIdx, int64_t& arrayIdx, string& key, const SubStatement* subStatement) {
 	key.clear();
 	arrayIdx = ARRAYIDX_NONE;
 	// check for dot access
@@ -5168,7 +5157,7 @@ inline bool MinitScript::evaluateAccess(const string& variableStatement, const s
 			Variable statementReturnValue;
 			auto evaluateStatement = string(arrayIdxExpressionStringView);
 			if (evaluateInternal(evaluateStatement, evaluateStatement, statementReturnValue, false) == false || statementReturnValue.getIntegerValue(arrayIdx, false) == false) {
-				_Console::printLine("MinitScript::" + callerMethod + "(): " + (statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + ": failed to evaluate expression: '" + string(arrayIdxExpressionStringView) + "'");
+				_Console::printLine("MinitScript::" + callerMethod + "(): " + (subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": failed to evaluate expression: '" + string(arrayIdxExpressionStringView) + "'");
 				return false;
 			}
 		}

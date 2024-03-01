@@ -57,8 +57,8 @@ using _UTF8CharacterIterator = minitscript::utilities::UTF8CharacterIterator;
 using _Context = minitscript::minitscript::Context;
 using _Library = minitscript::minitscript::Library;
 
-#define MINITSCRIPT_METHODUSAGE_COMPLAIN(methodName) { minitScript->complain(methodName, statement); minitScript->startErrorScript(); }
-#define MINITSCRIPT_METHODUSAGE_COMPLAINM(methodName, message) { minitScript->complain(methodName, statement, message); minitScript->startErrorScript(); }
+#define MINITSCRIPT_METHODUSAGE_COMPLAIN(methodName) { minitScript->complain(methodName, subStatement); minitScript->startErrorScript(); }
+#define MINITSCRIPT_METHODUSAGE_COMPLAINM(methodName, message) { minitScript->complain(methodName, subStatement, message); minitScript->startErrorScript(); }
 
 /**
  * MinitScript
@@ -160,16 +160,23 @@ public:
 	struct SubStatement {
 		/**
 		 * Sub statement
+		 */
+		SubStatement():
+			statement(nullptr),
+			subLineIdx(-1)
+		{}
+		/**
+		 * Sub statement
 		 * @param statement statement
 		 * @param subLineIdx sub line index
 		 */
 		SubStatement(const Statement& statement, int subLineIdx):
-			statement(statement),
+			statement(&statement),
 			subLineIdx(subLineIdx)
 		{}
 		//
-		const Statement& statement;
-		int subLineIdx = LINE_NONE;
+		const Statement* statement;
+		int subLineIdx;
 	};
 
 	enum VariableType {
@@ -330,40 +337,40 @@ public:
 		 * @param minitScript MinitScript instance
 		 * @param arguments argument values
 		 * @param returnValue return value
-		 * @param statement statement
+		 * @param subStatement sub statement
 		 * @return mul was executed
 		 */
-		virtual bool mul(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) const = 0;
+		virtual bool mul(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) const = 0;
 
 		/**
 		 * Division
 		 * @param minitScript MinitScript instance
 		 * @param arguments argument values
 		 * @param returnValue return value
-		 * @param statement statement
+		 * @param subStatement sub statement
 		 * @return div was executed
 		 */
-		virtual bool div(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) const = 0;
+		virtual bool div(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) const = 0;
 
 		/**
 		 * Addition
 		 * @param minitScript MinitScript instance
 		 * @param arguments argument values
 		 * @param returnValue return value
-		 * @param statement statement
+		 * @param subStatement sub statement
 		 * @return add was executed
 		 */
-		virtual bool add(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) const = 0;
+		virtual bool add(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) const = 0;
 
 		/**
 		 * Subtraction
 		 * @param minitScript MinitScript instance
 		 * @param arguments argument values
 		 * @param returnValue return value
-		 * @param statement statement
+		 * @param subStatement sub statement
 		 * @return sub was executed
 		 */
-		virtual bool sub(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) const = 0;
+		virtual bool sub(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) const = 0;
 
 		/**
 		 * Create script context
@@ -2679,9 +2686,9 @@ public:
 		 * Execute method
 		 * @param arguments argument values
 		 * @param returnValue return value
-		 * @param statement statement
+		 * @param subStatement sub statement
 		 */
-		virtual void executeMethod(span<Variable>& arguments, Variable& returnValue, const Statement& statement) = 0;
+		virtual void executeMethod(span<Variable>& arguments, Variable& returnValue, const SubStatement& subStatement) = 0;
 
 		/**
 		 * @return arguments
@@ -3110,7 +3117,7 @@ protected:
 
 	unique_ptr<MathMethods> minitScriptMath;
 
-	Statement errorStatement;
+	SubStatement errorSubStatement;
 	string errorMessage;
 
 	string deferredEmit;
@@ -3253,7 +3260,12 @@ protected:
 	inline void popScriptState() {
 		if (scriptStateStack.empty() == true) return;
 		auto& scriptState = getScriptState();
-		for (const auto& [variableName, variable]: scriptState.variables) delete variable;
+		_Console::printLine("Variables");
+		for (const auto& [variableName, variable]: scriptState.variables) {
+			_Console::print("\t" + variableName);
+			delete variable;
+			_Console::printLine(" OK");
+		}
 		scriptState.variables.clear();
 		scriptStateStack.erase(scriptStateStack.begin() + scriptStateStack.size() - 1);
 	}
@@ -3604,9 +3616,10 @@ private:
 	  * Setup function and stacket script indices
 	  * @param variable variable
 	  * @param statement statement
+	  * @param subLineIdx sub line index
 	  * @return success
 	  */
-	bool setupFunctionAndStackletScriptIndices(Variable& variable, const Statement& statement);
+	bool setupFunctionAndStackletScriptIndices(Variable& variable, const Statement& statement, int subLineIdx);
 
 	/**
 	 * Return stacklet scope script index
@@ -3704,10 +3717,10 @@ private:
 	 * @param callerMethod caller method
 	 * @param accessOperatorLeftIdx access operator left idx
 	 * @param accessOperatorRightIdx access operator right idx
-	 * @param statement statement
+	 * @param subStatement sub statement
 	 * @param startIdx startIdx
 	 */
-	bool getVariableAccessOperatorLeftRightIndices(const string& variableStatement, const string& callerMethod, string::size_type& accessOperatorLeftIdx, string::size_type& accessOperatorRightIdx, const Statement* statement = nullptr, int startIdx = 0);
+	bool getVariableAccessOperatorLeftRightIndices(const string& variableStatement, const string& callerMethod, string::size_type& accessOperatorLeftIdx, string::size_type& accessOperatorRightIdx, const SubStatement* subStatement = nullptr, int startIdx = 0);
 
 	/**
 	 * Evaluate access
@@ -3717,9 +3730,9 @@ private:
 	 * @param arrayAccessOperatorRightIdx array access operator right idx
 	 * @param arrayIdx array index
 	 * @param key map key
-	 * @param statement statement
+	 * @param subStatement sub statement
 	 */
-	bool evaluateAccess(const string& variableStatement, const string& callerMethod, string::size_type& arrayAccessOperatorLeftIdx, string::size_type& arrayAccessOperatorRightIdx, int64_t& arrayIdx, string& key, const Statement* statement = nullptr);
+	bool evaluateAccess(const string& variableStatement, const string& callerMethod, string::size_type& arrayAccessOperatorLeftIdx, string::size_type& arrayAccessOperatorRightIdx, int64_t& arrayIdx, string& key, const SubStatement* subStatement = nullptr);
 
 	/**
 	 * Returns pointer of variable with given name or nullptr
@@ -3730,11 +3743,11 @@ private:
 	 * @param arrayIdx array index whereas there is ARRAYIDX_ADD for [] or ARRAYIDX_NONE for no array access
 	 * @param key key
 	 * @param setAccessBool set access bool which returns one of SETACCESSBOOL_NONE, *_TRUE, *_FALSE
-	 * @param statement optional statement the variable is read in
+	 * @param subStatement optional sub statement the variable is read in
 	 * @param expectVariable expect variable which controls verbosity
 	 * @return pointer to variable
 	 */
-	Variable* evaluateVariableAccessIntern(Variable* variablePtr, const string& variableStatement, const string& callerMethod, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const Statement* statement = nullptr, bool expectVariable = true);
+	Variable* evaluateVariableAccessIntern(Variable* variablePtr, const string& variableStatement, const string& callerMethod, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const SubStatement* subStatement = nullptr, bool expectVariable = true);
 
 	/**
 	 * Returns pointer of variable with given name or nullptr
@@ -3745,12 +3758,12 @@ private:
 	 * @param arrayIdx array index whereas there is ARRAYIDX_ADD for [] or ARRAYIDX_NONE for no array access
 	 * @param key key
 	 * @param setAccessBool set access bool which returns one of SETACCESSBOOL_NONE, *_TRUE, *_FALSE
-	 * @param statement optional statement the variable is read in
+	 * @param subStatement optional sub statement the variable is read in
 	 * @param expectVariable expect variable which controls verbosity
 	 * @param global use global context instead of current context
 	 * @return pointer to variable
 	 */
-	inline Variable* getVariableIntern(const string& variableStatement, const string& callerMethod, string& variableName, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const Statement* statement = nullptr, bool expectVariable = true, bool global = false) {
+	inline Variable* getVariableIntern(const string& variableStatement, const string& callerMethod, string& variableName, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const SubStatement* subStatement = nullptr, bool expectVariable = true, bool global = false) {
 		// determine variable name
 		{
 			auto dotIdx = string::npos;
@@ -3787,14 +3800,14 @@ private:
 		auto variableIt = scriptState.variables.find(variableName);
 		if (variableIt == scriptState.variables.end()) {
 			if (expectVariable == true) {
-				_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + variableStatement + " does not exist");
+				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + " does not exist");
 			}
 			return nullptr;
 		} else {
 			variablePtr = variableIt->second;
 		}
 		//
-		return evaluateVariableAccessIntern(variablePtr, variableStatement, callerMethod, parentVariable, arrayIdx, key, setAccessBool, statement, expectVariable);
+		return evaluateVariableAccessIntern(variablePtr, variableStatement, callerMethod, parentVariable, arrayIdx, key, setAccessBool, subStatement, expectVariable);
 	}
 
 	/**
@@ -3805,10 +3818,10 @@ private:
 	 * @param arrayIdx array index
 	 * @param key key
 	 * @param variable variable
-	 * @param statement optional statement the variable is written in
+	 * @param subStatement optional sub statement the variable is written in
 	 * @param createReference optional flag for creating variable references
 	 */
-	void setVariableInternal(const string& variableStatement, Variable* parentVariable, Variable* variablePtr, int64_t arrayIdx, const string& key, const Variable& variable, const Statement* statement = nullptr, bool createReference = false);
+	void setVariableInternal(const string& variableStatement, Variable* parentVariable, Variable* variablePtr, int64_t arrayIdx, const string& key, const Variable& variable, const SubStatement* subStatement = nullptr, bool createReference = false);
 
 	/**
 	 * Evaluate given statement without executing preprocessor run
@@ -4275,26 +4288,26 @@ public:
 	}
 
 	/**
-	 * @return error statement
+	 * @return error sub statement
 	 */
-	const Statement& getErrorStatement() {
-		return errorStatement;
+	const SubStatement& getErrorSubStatement() {
+		return errorSubStatement;
 	}
 
 	/**
 	 * Complain about method usage
 	 * @param methodName method mame
-	 * @param statement statement
+	 * @param subStatement sub statement
 	 */
-	void complain(const string& methodName, const Statement& statement);
+	void complain(const string& methodName, const SubStatement& subStatement);
 
 	/**
 	 * Complain about method usage
 	 * @param methodName method mame
-	 * @param statement statement
+	 * @param subStatement sub statement
 	 * @param message message
 	 */
-	void complain(const string& methodName, const Statement& statement, const string& message);
+	void complain(const string& methodName, const SubStatement& subStatement, const string& message);
 
 	/**
 	 * @return data types
@@ -4495,6 +4508,15 @@ public:
 	}
 
 	/**
+	 * Return sub statement information
+	 * @param subStatement sub statement
+	 * @return sub statement information
+	 */
+	inline const string getSubStatementInformation(const SubStatement& subStatement) {
+		return getStatementInformation(*subStatement.statement, subStatement.subLineIdx);
+	}
+
+	/**
 	 * Get arguments information
 	 * @param methodName method name
 	 * @return arguments information
@@ -4671,14 +4693,14 @@ public:
 	 * @param statement statement
 	 * @return if string is a variable name
 	 */
-	inline bool isVariableAccess(const string& candidate, const Statement* statement = nullptr) {
+	inline bool isVariableAccess(const string& candidate, const SubStatement* subStatement = nullptr) {
 		if (candidate.size() < 2) {
-			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": empty variable statement");
+			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": empty variable statement");
 			return false;
 		}
 		auto i = 0;
 		if (candidate[i++] != '$') {
-			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": variable statement must begin with an $");
+			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": variable statement must begin with an $");
 			return false;
 		}
 		if (candidate[i] == '$') i++;
@@ -4693,16 +4715,16 @@ public:
 				squareBracketCount--;
 			} else
 			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
-				_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": invalid character in variable statement: '" + c + "'");
+				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": invalid character in variable statement: '" + c + "'");
 				return false;
 			}
 		}
 		if (candidate.size() == 2 && string_view(candidate) == string_view("$$", 2)) {
-			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $$");
+			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $$");
 			return false;
 		}
 		if (candidate.size() == 7 && string_view(candidate) == string_view("$GLOBAL", 7)) {
-			_Console::printLine((statement != nullptr?getStatementInformation(*statement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $GLOBAL");
+			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $GLOBAL");
 			return false;
 		}
 		return true;
@@ -4711,10 +4733,10 @@ public:
 	/**
 	 * Returns if variable determined by given variable statement exists
 	 * @param variableStatement variable statement
-	 * @param statement optional statement the variable is read in
+	 * @param subStatement optional sub statement the variable is read in
 	 * @return variable exists
 	 */
-	inline bool hasVariable(const string& variableStatement, const Statement* statement = nullptr) {
+	inline bool hasVariable(const string& variableStatement, const SubStatement* subStatement = nullptr) {
 		//
 		string variableName;
 		// global accessor
@@ -4730,7 +4752,7 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, false, globalVariableStatement.empty() == false);
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, subStatement, false, globalVariableStatement.empty() == false);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return true;
@@ -4746,12 +4768,12 @@ public:
 	/**
 	 * Returns variable determined by given variable statement optimized for method argument usage
 	 * @param variableStatement variable statement
-	 * @param statement optional statement the variable is read in
+	 * @param subStatement optional sub statement the variable is read in
 	 * @return variable
 	 */
-	inline const Variable getMethodArgumentVariable(const string& variableStatement, const Statement* statement = nullptr) {
+	inline const Variable getMethodArgumentVariable(const string& variableStatement, const SubStatement* subStatement = nullptr) {
 		//
-		if (isVariableAccess(variableStatement, statement) == false) return Variable();
+		if (isVariableAccess(variableStatement, subStatement) == false) return Variable();
 		//
 		string variableName;
 		// global accessor
@@ -4768,7 +4790,7 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, true, globalVariableStatement.empty() == false);
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, subStatement, true, globalVariableStatement.empty() == false);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return Variable(setAccessBool == SETACCESSBOOL_TRUE);
@@ -4789,18 +4811,18 @@ public:
 	 * Returns variable determined by given variable statement and variable pointer optimized for method argument usage
 	 * @param variablePtr variable pointer
 	 * @param variableStatement variable statement
-	 * @param statement optional statement the variable is read in
+	 * @param subStatement optional sub statement the variable is read in
 	 * @return variable
 	 */
-	inline const Variable getMethodArgumentVariable(Variable* variablePtr, const string& variableStatement, const Statement* statement = nullptr) {
+	inline const Variable getMethodArgumentVariable(Variable* variablePtr, const string& variableStatement, const SubStatement* subStatement = nullptr) {
 		//
-		if (isVariableAccess(variableStatement, statement) == false) return Variable();
+		if (isVariableAccess(variableStatement, subStatement) == false) return Variable();
 		//
 		Variable* parentVariable = nullptr;
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		variablePtr = evaluateVariableAccessIntern(variablePtr, variableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, true);
+		variablePtr = evaluateVariableAccessIntern(variablePtr, variableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, subStatement, true);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return Variable(setAccessBool == SETACCESSBOOL_TRUE);
@@ -4820,13 +4842,13 @@ public:
 	/**
 	 * Returns variable determined by given variable statement
 	 * @param variableStatement variable statement
-	 * @param statement optional statement the variable is read in
+	 * @param subStatement optional sub statement the variable is read in
 	 * @param createReference optional flag for creating variable references
 	 * @return variable
 	 */
-	inline const Variable getVariable(const string& variableStatement, const Statement* statement = nullptr, bool createReference = false) {
+	inline const Variable getVariable(const string& variableStatement, const SubStatement* subStatement = nullptr, bool createReference = false) {
 		//
-		if (isVariableAccess(variableStatement, statement) == false) return Variable();
+		if (isVariableAccess(variableStatement, subStatement) == false) return Variable();
 		//
 		string variableName;
 		// global accessor
@@ -4843,7 +4865,7 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, true, globalVariableStatement.empty() == false);
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, subStatement, true, globalVariableStatement.empty() == false);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return Variable(setAccessBool == SETACCESSBOOL_TRUE);
@@ -4864,19 +4886,19 @@ public:
 	 * Returns variable determined by given variable statement and variable pointer
 	 * @param variablePtr variable pointer
 	 * @param variableStatement variable statement
-	 * @param statement optional statement the variable is read in
+	 * @param subStatement optional sub statement the variable is read in
 	 * @param createReference optional flag for creating variable references
 	 * @return variable
 	 */
-	inline const Variable getVariable(Variable* variablePtr, const string& variableStatement, const Statement* statement = nullptr, bool createReference = false) {
+	inline const Variable getVariable(Variable* variablePtr, const string& variableStatement, const SubStatement* subStatement = nullptr, bool createReference = false) {
 		//
-		if (isVariableAccess(variableStatement, statement) == false) return Variable();
+		if (isVariableAccess(variableStatement, subStatement) == false) return Variable();
 		//
 		Variable* parentVariable = nullptr;
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		variablePtr = evaluateVariableAccessIntern(variablePtr, variableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, true);
+		variablePtr = evaluateVariableAccessIntern(variablePtr, variableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, subStatement, true);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return Variable(setAccessBool == SETACCESSBOOL_TRUE);
@@ -4897,19 +4919,19 @@ public:
 	 * Unsets variable determined by given variable statement and variable pointer
 	 * @param variablePtr variable pointer
 	 * @param variableStatement variable statement
-	 * @param statement optional statement the variable is read in
+	 * @param subStatement optional sub statement the variable is read in
 	 * @param createReference optional flag for creating variable references
 	 * @return variable
 	 */
-	inline void unsetVariable(Variable* variablePtr, const string& variableStatement, const Statement* statement = nullptr) {
+	inline void unsetVariable(Variable* variablePtr, const string& variableStatement, const SubStatement* subStatement = nullptr) {
 		//
-		if (isVariableAccess(variableStatement, statement) == false) return;
+		if (isVariableAccess(variableStatement, subStatement) == false) return;
 		//
 		Variable* parentVariable = nullptr;
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		variablePtr = evaluateVariableAccessIntern(variablePtr, variableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, true);
+		variablePtr = evaluateVariableAccessIntern(variablePtr, variableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, subStatement, true);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			return;
@@ -4924,11 +4946,11 @@ public:
 	/**
 	 * Unsets variable determined by given variable statement
 	 * @param variableStatement variable statement
-	 * @param statement optional statement the variable is read in
+	 * @param subStatement optional sub statement the variable is read in
 	 */
-	inline void unsetVariable(const string& variableStatement, const Statement* statement = nullptr) {
+	inline void unsetVariable(const string& variableStatement, const SubStatement* subStatement = nullptr) {
 		//
-		if (isVariableAccess(variableStatement, statement) == false) return;
+		if (isVariableAccess(variableStatement, subStatement) == false) return;
 		//
 		string variableName;
 		// global accessor
@@ -4945,7 +4967,7 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, true, globalVariableStatement.empty() == false);
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, subStatement, true, globalVariableStatement.empty() == false);
 		// set '.' operator
 		if (setAccessBool != SETACCESSBOOL_NONE) {
 			// no op
@@ -4971,12 +4993,12 @@ public:
 	 * Set variable by given variable statement and variable
 	 * @param variableStatement variable statement
 	 * @param variable variable
-	 * @param statement optional statement the variable is written in
+	 * @param subStatement optional sub statement the variable is written in
 	 * @param createReference optional flag for creating variable references
 	 */
-	inline void setVariable(const string& variableStatement, const Variable& variable, const Statement* statement = nullptr, bool createReference = false) {
+	inline void setVariable(const string& variableStatement, const Variable& variable, const SubStatement* subStatement = nullptr, bool createReference = false) {
 		//
-		if (isVariableAccess(variableStatement, statement) == false) return;
+		if (isVariableAccess(variableStatement, subStatement) == false) return;
 		//
 		string variableName;
 		// global accessor
@@ -4993,7 +5015,7 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, statement, false, globalVariableStatement.empty() == false);
+		auto variablePtr = getVariableIntern(globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, variableName, parentVariable, arrayIdx, key, setAccessBool, subStatement, false, globalVariableStatement.empty() == false);
 
 		// set variable if not yet done
 		if (variablePtr == nullptr && parentVariable == nullptr) {
@@ -5010,7 +5032,7 @@ public:
 						existingVariable->setValue(variable);
 					}
 				} else {
-					_Console::printLine(getStatementInformation(*statement) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+					_Console::printLine(getSubStatementInformation(*subStatement) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 				}
 				return;
 			} else {
@@ -5019,7 +5041,7 @@ public:
 					createReference == false?Variable::createNonReferenceVariablePointer(&variable):Variable::createReferenceVariablePointer(&variable);
 			}
 		} else {
-			setVariableInternal(variableStatement, parentVariable, variablePtr, arrayIdx, key, variable, statement, createReference);
+			setVariableInternal(variableStatement, parentVariable, variablePtr, arrayIdx, key, variable, subStatement, createReference);
 		}
 	}
 
@@ -5028,12 +5050,12 @@ public:
 	 * @param variablePtr variable pointer
 	 * @param variableStatement variable statement
 	 * @param variable variable
-	 * @param statement optional statement the variable is written in
+	 * @param subStatement optional sub statement the variable is written in
 	 * @param createReference optional flag for creating variable references
 	 */
-	inline void setVariable(Variable* variablePtr, const string& variableStatement, const Variable& variable, const Statement* statement = nullptr, bool createReference = false) {
+	inline void setVariable(Variable* variablePtr, const string& variableStatement, const Variable& variable, const SubStatement* subStatement = nullptr, bool createReference = false) {
 		//
-		if (isVariableAccess(variableStatement, statement) == false) return;
+		if (isVariableAccess(variableStatement, subStatement) == false) return;
 		//
 		string variableName;
 		// global accessor
@@ -5050,10 +5072,10 @@ public:
 		string key;
 		int64_t arrayIdx = ARRAYIDX_NONE;
 		int setAccessBool = SETACCESSBOOL_NONE;
-		variablePtr = evaluateVariableAccessIntern(variablePtr, globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, statement, false);
+		variablePtr = evaluateVariableAccessIntern(variablePtr, globalVariableStatement.empty() == true?variableStatement:globalVariableStatement, __FUNCTION__, parentVariable, arrayIdx, key, setAccessBool, subStatement, false);
 
 		// set variable if not yet done
-		setVariableInternal(variableStatement, parentVariable, variablePtr, arrayIdx, key, variable, statement, createReference);
+		setVariableInternal(variableStatement, parentVariable, variablePtr, arrayIdx, key, variable, subStatement, createReference);
 	}
 
 	/**

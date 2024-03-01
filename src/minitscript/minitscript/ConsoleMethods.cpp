@@ -39,7 +39,7 @@ void ConsoleMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "console.dump";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1) {
 					_Console::printLine(arguments[0].getValueAsString(true));
 				} else {
@@ -59,7 +59,7 @@ void ConsoleMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "console.print";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				for (const auto& argument: arguments) {
 					_Console::print(argument.getValueAsString());
 				}
@@ -80,7 +80,7 @@ void ConsoleMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "console.printLine";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				for (const auto& argument: arguments) {
 					_Console::print(argument.getValueAsString());
 				}
@@ -106,7 +106,7 @@ void ConsoleMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "console.readLine";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					returnValue.setValue(_Console::readLine());
 				} else {
@@ -130,7 +130,7 @@ void ConsoleMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "console.readAll";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					returnValue.setValue(_Console::readAll());
 				} else {
@@ -154,7 +154,7 @@ void ConsoleMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "console.readAllAsArray";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					returnValue.setType(MinitScript::TYPE_ARRAY);
 					const auto input = _Console::readAllAsArray();
@@ -176,7 +176,7 @@ void ConsoleMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "console.error.print";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				for (const auto& argument: arguments) {
 					_ErrorConsole::print(argument.getValueAsString());
 				}
@@ -197,7 +197,7 @@ void ConsoleMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "console.error.printLine";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				for (const auto& argument: arguments) {
 					_ErrorConsole::print(argument.getValueAsString());
 				}

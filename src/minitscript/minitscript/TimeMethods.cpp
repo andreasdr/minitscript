@@ -32,7 +32,7 @@ void TimeMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "time.getCurrentMillis";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					returnValue.setValue(_Time::getCurrentMillis());
 				} else {
@@ -59,7 +59,7 @@ void TimeMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "time.getAsString";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string format = "%Y-%m-%d %H:%M:%S";
 				if ((arguments.size() == 0 || arguments.size() == 1) &&
 					MinitScript::getStringValue(arguments, 0, format, true) == true) {

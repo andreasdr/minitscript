@@ -43,7 +43,7 @@ public:
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void mul(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement);
+	void mul(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement);
 
 	/**
 	 * Division
@@ -51,7 +51,7 @@ public:
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void div(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement);
+	void div(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement);
 
 	/**
 	 * Addition
@@ -59,7 +59,7 @@ public:
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void add(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement);
+	void add(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement);
 
 	/**
 	 * Subtraction
@@ -67,7 +67,7 @@ public:
 	 * @param returnValue return value
 	 * @param statement statement
 	 */
-	void sub(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement);
+	void sub(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement);
 
 private:
 	MinitScript* minitScript;

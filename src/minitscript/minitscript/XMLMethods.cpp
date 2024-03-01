@@ -39,7 +39,7 @@ void XMLMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "xml.createTag";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string name;
 				string innerXML;
 				if ((arguments.size() == 1 || arguments.size() == 2 || arguments.size() == 3) &&

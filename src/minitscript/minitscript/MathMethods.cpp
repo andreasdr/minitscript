@@ -45,8 +45,8 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "add";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
-				minitScript->getMathMethods()->add(arguments, returnValue, statement);
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				minitScript->getMathMethods()->add(arguments, returnValue, subStatement);
 			}
 			MinitScript::Operator getOperator() const override {
 				return MinitScript::OPERATOR_ADDITION;
@@ -72,8 +72,8 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "sub";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
-				minitScript->getMathMethods()->sub(arguments, returnValue, statement);
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				minitScript->getMathMethods()->sub(arguments, returnValue, subStatement);
 			}
 			MinitScript::Operator getOperator() const override {
 				return MinitScript::OPERATOR_SUBTRACTION;
@@ -99,8 +99,8 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "mul";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
-				minitScript->getMathMethods()->mul(arguments, returnValue, statement);
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				minitScript->getMathMethods()->mul(arguments, returnValue, subStatement);
 			}
 			MinitScript::Operator getOperator() const override {
 				return MinitScript::OPERATOR_MULTIPLICATION;
@@ -126,8 +126,8 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "div";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
-				minitScript->getMathMethods()->div(arguments, returnValue, statement);
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				minitScript->getMathMethods()->div(arguments, returnValue, subStatement);
 			}
 			MinitScript::Operator getOperator() const override {
 				return MinitScript::OPERATOR_DIVISION;
@@ -151,7 +151,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "mod";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2) {
 					if (MinitScript::hasType(arguments, MinitScript::TYPE_INTEGER) == true) {
 						int64_t value;
@@ -196,7 +196,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.acos";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float x;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, x) == true) {
@@ -222,7 +222,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.asin";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float x;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, x) == true) {
@@ -248,7 +248,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.atan";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float x;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, x) == true) {
@@ -275,7 +275,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.atan2";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float y;
 				float x;
 				if (arguments.size() == 2 &&
@@ -303,7 +303,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.tan";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float x;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, x) == true) {
@@ -329,7 +329,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.cos";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float x;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, x) == true) {
@@ -355,7 +355,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.sin";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float x;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, x) == true) {
@@ -381,7 +381,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.floor";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float value;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, value) == true) {
@@ -407,7 +407,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.ceil";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float value;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, value) == true) {
@@ -433,7 +433,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.round";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float value;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, value) == true) {
@@ -459,7 +459,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.sqrt";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float value;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, value) == true) {
@@ -481,7 +481,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.random";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					returnValue.setValue(_Math::random());
 				} else {
@@ -505,7 +505,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.exp";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float power;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, power) == true) {
@@ -531,7 +531,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.log";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				float value;
 				if (arguments.size() == 1 &&
 					MinitScript::getFloatValue(arguments, 0, value) == true) {
@@ -558,7 +558,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.sign";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1) {
 					int64_t intValue;
 					float floatValue;
@@ -592,7 +592,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.square";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1) {
 					int64_t intValue;
 					float floatValue;
@@ -627,7 +627,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.min";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2) {
 					int64_t intValue1;
 					int64_t intValue2;
@@ -667,7 +667,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.max";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2) {
 					int64_t intValue1;
 					int64_t intValue2;
@@ -706,7 +706,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.abs";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1) {
 					int64_t intValue;
 					float floatValue;
@@ -742,7 +742,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.clamp";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 3) {
 					int64_t intValueA;
 					int64_t intValueB;
@@ -786,7 +786,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.pow";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2) {
 					int64_t intValueBase;
 					int64_t intValuePower;
@@ -826,7 +826,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.mod";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2) {
 					if (MinitScript::hasType(arguments, MinitScript::TYPE_INTEGER) == true) {
 						int64_t value;
@@ -870,7 +870,7 @@ void MathMethods::registerMethods() {
 			const string getMethodName() override {
 				return "math.absmod";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2) {
 					if (MinitScript::hasType(arguments, MinitScript::TYPE_INTEGER) == true) {
 						int64_t value;
@@ -879,7 +879,7 @@ void MathMethods::registerMethods() {
 							MinitScript::getIntegerValue(arguments, 1, range) == true) {
 							returnValue.setValue(_Math::absmod(value, range));
 						} else {
-							minitScript->complain(getMethodName(), statement);
+							minitScript->complain(getMethodName(), subStatement);
 							minitScript->startErrorScript();
 						}
 					} else {
@@ -901,14 +901,14 @@ void MathMethods::registerMethods() {
 	}
 }
 
-void MathMethods::mul(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) {
+void MathMethods::mul(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) {
 	if (arguments.size() != 2) {
-		minitScript->complain("mul", statement); minitScript->startErrorScript();
+		minitScript->complain("mul", subStatement); minitScript->startErrorScript();
 		return;
 	}
 	// custom data types
 	for (const auto dataType: dataTypes) {
-		if (dataType->mul(minitScript, arguments, returnValue, statement) == true) return;
+		if (dataType->mul(minitScript, arguments, returnValue, subStatement) == true) return;
 	}
 	// float
 	if (MinitScript::hasType(arguments, MinitScript::TYPE_FLOAT) == true) {
@@ -919,7 +919,7 @@ void MathMethods::mul(const span<MinitScript::Variable>& arguments, MinitScript:
 			returnValue.setValue(a * b);
 			return;
 		} else  {
-			minitScript->complain("mul", statement); minitScript->startErrorScript();
+			minitScript->complain("mul", subStatement); minitScript->startErrorScript();
 			return;
 		}
 	} else {
@@ -931,20 +931,20 @@ void MathMethods::mul(const span<MinitScript::Variable>& arguments, MinitScript:
 			returnValue.setValue(a * b);
 			return;
 		} else  {
-			minitScript->complain("mul", statement); minitScript->startErrorScript();
+			minitScript->complain("mul", subStatement); minitScript->startErrorScript();
 			return;
 		}
 	}
 }
 
-void MathMethods::div(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) {
+void MathMethods::div(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) {
 	if (arguments.size() != 2) {
-		minitScript->complain("div", statement); minitScript->startErrorScript();
+		minitScript->complain("div", subStatement); minitScript->startErrorScript();
 		return;
 	}
 	// custom data types
 	for (const auto dataType: dataTypes) {
-		if (dataType->div(minitScript, arguments, returnValue, statement) == true) return;
+		if (dataType->div(minitScript, arguments, returnValue, subStatement) == true) return;
 	}
 	// float
 	if (MinitScript::hasType(arguments, MinitScript::TYPE_FLOAT) == true) {
@@ -955,7 +955,7 @@ void MathMethods::div(const span<MinitScript::Variable>& arguments, MinitScript:
 			returnValue.setValue(a / b);
 			return;
 		} else  {
-			minitScript->complain("div", statement); minitScript->startErrorScript();
+			minitScript->complain("div", subStatement); minitScript->startErrorScript();
 			return;
 		}
 	} else {
@@ -967,15 +967,15 @@ void MathMethods::div(const span<MinitScript::Variable>& arguments, MinitScript:
 			returnValue.setValue(a / b);
 			return;
 		} else  {
-			minitScript->complain("div", statement); minitScript->startErrorScript();
+			minitScript->complain("div", subStatement); minitScript->startErrorScript();
 			return;
 		}
 	}
 }
 
-void MathMethods::add(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) {
+void MathMethods::add(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) {
 	if (arguments.size() != 2) {
-		minitScript->complain("add", statement); minitScript->startErrorScript();
+		minitScript->complain("add", subStatement); minitScript->startErrorScript();
 		return;
 	}
 	// string concatenation
@@ -989,7 +989,7 @@ void MathMethods::add(const span<MinitScript::Variable>& arguments, MinitScript:
 	}
 	// custom data types
 	for (const auto dataType: dataTypes) {
-		if (dataType->add(minitScript, arguments, returnValue, statement) == true) return;
+		if (dataType->add(minitScript, arguments, returnValue, subStatement) == true) return;
 	}
 	// float
 	if (MinitScript::hasType(arguments, MinitScript::TYPE_FLOAT) == true) {
@@ -1000,7 +1000,7 @@ void MathMethods::add(const span<MinitScript::Variable>& arguments, MinitScript:
 			returnValue.setValue(a + b);
 			return;
 		} else  {
-			minitScript->complain("add", statement); minitScript->startErrorScript();
+			minitScript->complain("add", subStatement); minitScript->startErrorScript();
 			return;
 		}
 	} else {
@@ -1012,20 +1012,20 @@ void MathMethods::add(const span<MinitScript::Variable>& arguments, MinitScript:
 			returnValue.setValue(a + b);
 			return;
 		} else  {
-			minitScript->complain("add", statement); minitScript->startErrorScript();
+			minitScript->complain("add", subStatement); minitScript->startErrorScript();
 			return;
 		}
 	}
 }
 
-void MathMethods::sub(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) {
+void MathMethods::sub(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) {
 	if (arguments.size() != 2) {
-		minitScript->complain("sub", statement); minitScript->startErrorScript();
+		minitScript->complain("sub", subStatement); minitScript->startErrorScript();
 		return;
 	}
 	// custom data types
 	for (const auto dataType: dataTypes) {
-		if (dataType->sub(minitScript, arguments, returnValue, statement) == true) return;
+		if (dataType->sub(minitScript, arguments, returnValue, subStatement) == true) return;
 	}
 	// float
 	if (MinitScript::hasType(arguments, MinitScript::TYPE_FLOAT) == true) {
@@ -1036,7 +1036,7 @@ void MathMethods::sub(const span<MinitScript::Variable>& arguments, MinitScript:
 			returnValue.setValue(a - b);
 			return;
 		} else  {
-			minitScript->complain("sub", statement); minitScript->startErrorScript();
+			minitScript->complain("sub", subStatement); minitScript->startErrorScript();
 			return;
 		}
 	} else {
@@ -1048,7 +1048,7 @@ void MathMethods::sub(const span<MinitScript::Variable>& arguments, MinitScript:
 			returnValue.setValue(a - b);
 			return;
 		} else  {
-			minitScript->complain("sub", statement); minitScript->startErrorScript();
+			minitScript->complain("sub", subStatement); minitScript->startErrorScript();
 			return;
 		}
 	}

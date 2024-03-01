@@ -37,7 +37,7 @@ void JSONMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "json.serialize";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1) {
 					returnValue.setValue(arguments[0].getValueAsString(false, true));
 				} else {
@@ -64,18 +64,18 @@ void JSONMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "json.deserialize";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string json;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, json) == true) {
 					json = _StringTools::trim(json);
 					if (_StringTools::startsWith(json, "{") == true) {
-						returnValue.setValue(MinitScript::initializeMapSet(json, minitScript, MinitScript::SCRIPTIDX_NONE, statement));
+						returnValue.setValue(MinitScript::initializeMapSet(json, minitScript, MinitScript::SCRIPTIDX_NONE, *subStatement.statement));
 					} else
 					if (_StringTools::startsWith(json, "[") == true) {
-						returnValue.setValue(MinitScript::initializeArray(json, minitScript, MinitScript::SCRIPTIDX_NONE, statement));
+						returnValue.setValue(MinitScript::initializeArray(json, minitScript, MinitScript::SCRIPTIDX_NONE, *subStatement.statement));
 					} else {
-						minitScript->complain(getMethodName(), statement, "JSON string not valid");
+						minitScript->complain(getMethodName(), subStatement, "JSON string not valid");
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());

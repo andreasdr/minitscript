@@ -33,7 +33,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.waitForCondition";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					minitScript->getScriptState().timeWaitStarted = _Time::getCurrentMillis();
 					minitScript->getScriptState().timeWaitTime = 100LL;
@@ -59,7 +59,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.wait";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				int64_t time;
 				if (arguments.size() == 1 &&
 					minitScript->getIntegerValue(arguments, 0, time) == true) {
@@ -89,7 +89,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.emit";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string condition;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, condition) == true) {
@@ -117,7 +117,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.enableNamedCondition"; // METHOD_ENABLENAMEDCONDITION;
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string name;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, name) == true) {
@@ -153,7 +153,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.disableNamedCondition"; // METHOD_DISABLENAMEDCONDITION;
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string name;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, name) == true) {
@@ -184,7 +184,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.getNamedConditions";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					string result;
 					for (const auto& namedCondition: minitScript->enabledNamedConditions) {
@@ -215,12 +215,12 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.evaluate";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string statementString;
 				if (arguments.size() == 1 &&
 					minitScript->getStringValue(arguments, 0, statementString) == true) {
 					if (minitScript->evaluate(statementString, returnValue) == false) {
-						_Console::printLine(getMethodName() + "(): " + minitScript->getStatementInformation(statement) + ": '" + statementString + "': An error occurred");
+						_Console::printLine(getMethodName() + "(): " + minitScript->getSubStatementInformation(subStatement) + ": '" + statementString + "': An error occurred");
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -246,7 +246,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.call"; // METHOD_SCRIPTCALL;
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string function;
 				if (arguments.size() >= 1 &&
 					minitScript->getStringValue(arguments, 0, function) == true) {
@@ -295,7 +295,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.callByIndex"; // METHOD_SCRIPTCALLBYINDEX;
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				int64_t functionScriptIdx;
 				if (arguments.size() >= 1 &&
 					minitScript->getIntegerValue(arguments, 0, functionScriptIdx) == true) {
@@ -349,7 +349,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.callFunction";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string function;
 				auto functionScriptIdx = MinitScript::SCRIPTIDX_NONE;
 				if (arguments.size() >= 1 &&
@@ -401,7 +401,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.callStacklet"; // METHOD_SCRIPTCALLSTACKLET;
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string stacklet;
 				if (arguments.size() >= 1 &&
 					minitScript->getStringValue(arguments, 0, stacklet) == true) {
@@ -437,7 +437,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.callStackletByIndex"; // METHOD_SCRIPTCALLSTACKLETBYINDEX;
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				int64_t stackletScriptIdx;
 				if (arguments.size() == 1 &&
 					minitScript->getIntegerValue(arguments, 0, stackletScriptIdx) == true) {
@@ -471,7 +471,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.stop";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					minitScript->stopScriptExecution();
 					minitScript->stopRunning();
@@ -492,7 +492,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.getVariables";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					returnValue.setType(MinitScript::TYPE_MAP);
 					for (const auto& [variableName, variableValue]: minitScript->getScriptState().variables) {
@@ -517,7 +517,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.isNative";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					returnValue.setValue(minitScript->isNative());
 				} else {
@@ -539,10 +539,10 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.error.getMessage";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
-					const auto& errorStatement = minitScript->getErrorStatement();
-					if (errorStatement.line != MinitScript::LINE_NONE) {
+					const auto& errorSubStatement = minitScript->getErrorSubStatement();
+					if (errorSubStatement.statement != nullptr) {
 						returnValue.setValue(minitScript->getErrorMessage());
 					}
 				} else {
@@ -564,16 +564,17 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "script.error.getStatement";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
-					const auto& errorStatement = minitScript->getErrorStatement();
-					if (errorStatement.line != MinitScript::LINE_NONE) {
+					const auto& errorSubStatement = minitScript->getErrorSubStatement();
+					if (errorSubStatement.statement != nullptr) {
 						returnValue.setType(MinitScript::TYPE_MAP);
 						returnValue.setMapEntry("script", MinitScript::Variable(minitScript->getScriptPathName() + "/" + minitScript->getScriptFileName()));
-						returnValue.setMapEntry("line", MinitScript::Variable(static_cast<int64_t>(errorStatement.line)));
-						returnValue.setMapEntry("statementIndex", MinitScript::Variable(static_cast<int64_t>(errorStatement.statementIdx)));
-						returnValue.setMapEntry("statement", MinitScript::Variable(errorStatement.statement));
-						returnValue.setMapEntry("executableStatement", MinitScript::Variable(errorStatement.executableStatement));
+						returnValue.setMapEntry("subLineIndex", MinitScript::Variable(static_cast<int64_t>(errorSubStatement.subLineIdx)));
+						returnValue.setMapEntry("line", MinitScript::Variable(static_cast<int64_t>(errorSubStatement.statement->line)));
+						returnValue.setMapEntry("statementIndex", MinitScript::Variable(static_cast<int64_t>(errorSubStatement.statement->statementIdx)));
+						returnValue.setMapEntry("statement", MinitScript::Variable(errorSubStatement.statement->statement));
+						returnValue.setMapEntry("executableStatement", MinitScript::Variable(errorSubStatement.statement->executableStatement));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());

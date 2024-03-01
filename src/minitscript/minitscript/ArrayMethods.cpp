@@ -36,7 +36,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			bool isVariadic() const override {
 				return true;
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				returnValue.setType(MinitScript::TYPE_ARRAY);
 				for (const auto& argument: arguments) {
 					returnValue.pushArrayEntry(argument);
@@ -62,7 +62,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::getSize";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_ARRAY) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getArraySize()));
@@ -90,7 +90,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::isEmpty";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_ARRAY) {
 					returnValue.setValue(arguments[0].getArraySize() == 0);
@@ -121,7 +121,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			bool isVariadic() const override {
 				return true;
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				//
 				if (arguments.size() > 1 &&
 					arguments[0].getType() == MinitScript::TYPE_ARRAY) {
@@ -153,7 +153,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::get";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				int64_t index;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MinitScript::TYPE_ARRAY &&
@@ -185,7 +185,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::set";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				int64_t index;
 				if (arguments.size() == 3 &&
 					arguments[0].getType() == MinitScript::TYPE_ARRAY &&
@@ -216,7 +216,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::remove";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				int64_t index;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MinitScript::TYPE_ARRAY &&
@@ -248,7 +248,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::removeOf";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string stringValue;
 				int64_t beginIndex = 0;
 				if ((arguments.size() == 2 || arguments.size() == 3) &&
@@ -289,7 +289,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::indexOf";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string stringValue;
 				int64_t beginIndex = 0;
 				if ((arguments.size() == 2 || arguments.size() == 3) &&
@@ -330,7 +330,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::sort";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string sortFunction;
 				int sortFunctionScriptIdx;
 				if (arguments.size() == 2 &&
@@ -388,7 +388,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::reverse";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_ARRAY) {
 					auto arrayPtr = arguments[0].getArrayPointer();
@@ -419,7 +419,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::clear";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_ARRAY) {
 					arguments[0].clearArray();
@@ -449,7 +449,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::forEach";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string callbackFunction;
 				int callbackFunctionScriptIdx;
 				if ((arguments.size() == 2 || arguments.size() == 3) &&
@@ -505,7 +505,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Array::forRange";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string callbackFunction;
 				int callbackFunctionScriptIdx;
 				int64_t beginIndex;

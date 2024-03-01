@@ -39,7 +39,7 @@ void ContextMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "context.script.hasCallable";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string scriptId;
 				string callable;
 				if (arguments.size() == 2 &&
@@ -81,7 +81,7 @@ void ContextMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "context.script.call";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string scriptId;
 				string callable;
 				if (arguments.size() >= 2 &&
@@ -142,7 +142,7 @@ void ContextMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "context.script.loadScript";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string scriptId;
 				string pathName;
 				string fileName;
@@ -206,7 +206,7 @@ void ContextMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "context.script.removeScript";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string scriptId;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, scriptId) == true) {
@@ -230,7 +230,7 @@ void ContextMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "context.script.getScriptIds";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					auto scriptIds = minitScript->getContext()->getScriptIds();
 					returnValue.setType(MinitScript::TYPE_ARRAY);

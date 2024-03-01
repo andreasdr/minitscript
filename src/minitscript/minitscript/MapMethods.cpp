@@ -33,7 +33,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					returnValue.setType(MinitScript::TYPE_MAP);
 				} else {
@@ -60,7 +60,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::getSize";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_MAP) {
@@ -89,7 +89,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::isEmpty";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_MAP) {
@@ -120,7 +120,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::set";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				//
 				string key;
 				if (arguments.size() == 3 &&
@@ -152,7 +152,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::has";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MinitScript::TYPE_MAP &&
@@ -183,7 +183,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::get";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MinitScript::TYPE_MAP &&
@@ -214,7 +214,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::getReference";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MinitScript::TYPE_MAP &&
@@ -249,7 +249,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::remove";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MinitScript::TYPE_MAP &&
@@ -279,7 +279,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::getKeys";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_MAP) {
 					auto keys = arguments[0].getMapKeys();
@@ -311,7 +311,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::getValues";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_MAP) {
 					auto values = arguments[0].getMapValues();
@@ -343,7 +343,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::clear";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_MAP) {
 					arguments[0].clearMap();
@@ -373,7 +373,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Map::forEach";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string callbackFunction;
 				int callbackFunctionScriptIdx;
 				if ((arguments.size() == 2 || arguments.size() == 3) &&

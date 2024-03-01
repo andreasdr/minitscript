@@ -42,7 +42,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					auto& scriptContext = *static_cast<HTTPDownloadClientClass::HTTPDownloadClientClassScriptContext*>(minitScript->getDataTypeScriptContext(MinitScript::TYPE_HTTPDOWNLOADCLIENT));
 					//
@@ -76,7 +76,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::getUserName";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -106,7 +106,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::setUserName";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				string userName;
 				if (arguments.size() == 2 &&
@@ -137,7 +137,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::getPassword";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -167,7 +167,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::setPassword";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				string password;
 				if (arguments.size() == 2 &&
@@ -198,7 +198,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::getURL";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -228,7 +228,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::setURL";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				string url;
 				if (arguments.size() == 2 &&
@@ -259,7 +259,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::getFile";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -289,7 +289,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::setFile";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				string file;
 				if (arguments.size() == 2 &&
@@ -320,7 +320,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::reset";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -349,7 +349,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::start";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -378,7 +378,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::cancel";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -407,7 +407,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::join";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -436,7 +436,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::getProgress";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -465,7 +465,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::isFinished";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -494,7 +494,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::getStatusCode";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -523,7 +523,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::getResponseHeaders";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -555,7 +555,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::getGETParameters";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -588,7 +588,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::setGETParameters";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 2 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true &&
@@ -623,7 +623,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::getHeaders";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 1 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true) {
@@ -656,7 +656,7 @@ void HTTPDownloadClientClass::registerMethods(MinitScript* minitScript) const {
 			const string getMethodName() override {
 				return "HTTPDownloadClient::setHeaders";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				shared_ptr<_HTTPDownloadClient> httpDownloadClient;
 				if (arguments.size() == 2 &&
 					HTTPDownloadClientClass::getHTTPDownloadClientValue(arguments, 0, httpDownloadClient) == true &&
@@ -693,19 +693,19 @@ void HTTPDownloadClientClass::copyVariable(MinitScript::Variable& to, const Mini
 	*static_cast<shared_ptr<_HTTPDownloadClient>*>(to.getValuePtr()) = *static_cast<shared_ptr<_HTTPDownloadClient>*>(from.getValuePtr());
 }
 
-bool HTTPDownloadClientClass::mul(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) const {
+bool HTTPDownloadClientClass::mul(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) const {
 	return false;
 }
 
-bool HTTPDownloadClientClass::div(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) const {
+bool HTTPDownloadClientClass::div(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) const {
 	return false;
 }
 
-bool HTTPDownloadClientClass::add(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) const {
+bool HTTPDownloadClientClass::add(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) const {
 	return false;
 }
 
-bool HTTPDownloadClientClass::sub(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) const {
+bool HTTPDownloadClientClass::sub(MinitScript* minitScript, const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) const {
 	return false;
 }
 

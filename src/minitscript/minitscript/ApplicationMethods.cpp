@@ -149,7 +149,7 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "application.execute";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string command;
 				if ((arguments.size() == 1 || arguments.size() == 2 || arguments.size() == 3) &&
 					MinitScript::getStringValue(arguments, 0, command) == true) {
@@ -182,7 +182,7 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 				const string getMethodName() override {
 					return "application.getArguments";
 				}
-				void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+				void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 					if (arguments.size() == 0) {
 						returnValue.setType(MinitScript::TYPE_ARRAY);
 						for (const auto& argumentValue: minitScript->getContext()->getArgumentValues()) {
@@ -211,7 +211,7 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 				const string getMethodName() override {
 					return "application.exit";
 				}
-				void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+				void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 					int64_t exitCode = 0ll;
 					if ((arguments.size() == 0 || arguments.size() == 1) &&
 						MinitScript::getIntegerValue(arguments, 0, exitCode, true) == true) {

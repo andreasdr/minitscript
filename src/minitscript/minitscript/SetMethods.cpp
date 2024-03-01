@@ -34,7 +34,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Set";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					returnValue.setType(MinitScript::TYPE_SET);
 				} else {
@@ -61,7 +61,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Set::getSize";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_SET) {
 					returnValue.setValue(static_cast<int64_t>(arguments[0].getSetSize()));
@@ -89,7 +89,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Set::isEmpty";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() != MinitScript::TYPE_SET) {
 					returnValue.setValue(arguments[0].getSetSize() == 0);
@@ -118,7 +118,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Set::insert";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MinitScript::TYPE_SET &&
@@ -149,7 +149,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Set::has";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MinitScript::TYPE_SET &&
@@ -180,7 +180,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Set::remove";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
 				if (arguments.size() == 2 &&
 					arguments[0].getType() == MinitScript::TYPE_SET &&
@@ -210,7 +210,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Set::getKeys";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				//
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_SET) {
@@ -243,7 +243,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Set::clear";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1 &&
 					arguments[0].getType() == MinitScript::TYPE_SET) {
 					arguments[0].clearSet();
@@ -273,7 +273,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 			const string getMethodName() override {
 				return "Set::forEach";
 			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::Statement& statement) override {
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string callbackFunction;
 				int callbackFunctionScriptIdx;
 				if ((arguments.size() == 2 || arguments.size() == 3) &&
