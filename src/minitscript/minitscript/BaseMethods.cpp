@@ -342,7 +342,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							for (auto i: blockStacksToRemove) blockStack.erase(blockStack.begin() + i);
 							minitScript->gotoStatement(*breakStatement);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No break subStatement");
+							MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No break statement");
 						}
 					}
 				} else {
@@ -404,7 +404,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							for (auto i: blockStacksToRemove) blockStack.erase(blockStack.begin() + i);
 							minitScript->gotoStatement(*continueStatement);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No continue subStatement");
+							MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No continue statement");
 						}
 					}
 				} else {
