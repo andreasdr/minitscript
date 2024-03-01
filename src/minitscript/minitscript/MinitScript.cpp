@@ -214,14 +214,14 @@ void MinitScript::initializeNative() {
 void MinitScript::complain(const string& methodName, const SubStatement& subStatement) {
 	auto argumentsInformation = getArgumentsInformation(methodName);
 	if (argumentsInformation.empty() == true) argumentsInformation = "None";
-	_Console::printLine(methodName + "(): " + getStatementInformation(*subStatement.statement, subStatement.subLineIdx) + ": Argument mismatch: expected arguments: " + argumentsInformation);
+	_Console::printLine(methodName + "(): " + getSubStatementInformation(subStatement) + ": Argument mismatch: expected arguments: " + argumentsInformation);
 	//
 	errorMessage = "An method usage complain has occurred";
 	errorSubStatement = subStatement;
 }
 
 void MinitScript::complain(const string& methodName, const SubStatement& subStatement, const string& message) {
-	_Console::printLine(methodName + "(): " + getStatementInformation(*subStatement.statement, subStatement.subLineIdx) + ": " + message);
+	_Console::printLine(methodName + "(): " + getSubStatementInformation(subStatement) + ": " + message);
 	//
 	errorMessage = "An method usage complain with message has occurred: " + message;
 	errorSubStatement = subStatement;
@@ -4808,7 +4808,7 @@ inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScr
 						//
 						if (variablePtr->isPrivate() == true && privateParentScope == false) {
 							//
-							_Console::printLine(getSubStatementInformation(*subStatement) + ": Private variable: " + variableStatement + ": access not allowed from outside of object");
+							_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Private variable: " + variableStatement + ": access not allowed from outside of object");
 							//
 							parentVariable = nullptr;
 							return nullptr;

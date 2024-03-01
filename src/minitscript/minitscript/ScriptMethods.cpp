@@ -570,8 +570,7 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 					if (errorSubStatement.statement != nullptr) {
 						returnValue.setType(MinitScript::TYPE_MAP);
 						returnValue.setMapEntry("script", MinitScript::Variable(minitScript->getScriptPathName() + "/" + minitScript->getScriptFileName()));
-						returnValue.setMapEntry("subLineIndex", MinitScript::Variable(static_cast<int64_t>(errorSubStatement.subLineIdx)));
-						returnValue.setMapEntry("line", MinitScript::Variable(static_cast<int64_t>(errorSubStatement.statement->line)));
+						returnValue.setMapEntry("line", MinitScript::Variable(static_cast<int64_t>(errorSubStatement.statement->line + errorSubStatement.subLineIdx)));
 						returnValue.setMapEntry("statementIndex", MinitScript::Variable(static_cast<int64_t>(errorSubStatement.statement->statementIdx)));
 						returnValue.setMapEntry("statement", MinitScript::Variable(errorSubStatement.statement->statement));
 						returnValue.setMapEntry("executableStatement", MinitScript::Variable(errorSubStatement.statement->executableStatement));
