@@ -38,7 +38,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			MethodInternalScriptEvaluate(MinitScript* minitScript):
 				MinitScript::Method(
 					{
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "subStatement", .optional = false, .reference = false, .nullable = false }
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "statement", .optional = false, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_PSEUDO_MIXED
 				),
