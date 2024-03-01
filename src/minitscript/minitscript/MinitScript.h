@@ -3260,11 +3260,17 @@ protected:
 	inline void popScriptState() {
 		if (scriptStateStack.empty() == true) return;
 		auto& scriptState = getScriptState();
-		_Console::printLine("Variables");
+		// we need to delete references first
+		unordered_set<string> deletedVariables;
 		for (const auto& [variableName, variable]: scriptState.variables) {
-			_Console::print("\t" + variableName);
+			if (variable->isReference() == false) continue;
+			deletedVariables.insert(variableName);
 			delete variable;
-			_Console::printLine(" OK");
+		}
+		// next ordinary variables
+		for (const auto& [variableName, variable]: scriptState.variables) {
+			if (deletedVariables.contains(variableName) == true) continue;
+			delete variable;
 		}
 		scriptState.variables.clear();
 		scriptStateStack.erase(scriptStateStack.begin() + scriptStateStack.size() - 1);

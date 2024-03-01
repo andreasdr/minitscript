@@ -1267,21 +1267,21 @@ void Transpiler::generateVariableAccess(
 			auto haveVariableStatement = variableHasStatement(globalVariable);
 			if (getMethodArgumentVariable == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + returnValueStatement + "getMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &statement)" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "getMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &subStatement)" + statementEnd;
 				} else {
 					generatedCode+= indent + returnValueStatement + "Variable::createMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ")" + statementEnd;
 				}
 			} else
 			if (getVariable == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &statement, false)" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &subStatement, false)" + statementEnd;
 				} else {
 					generatedCode+= indent + returnValueStatement + "Variable::createNonReferenceVariable(&" + createGlobalVariableName(globalVariable) + ")" + statementEnd;
 				}
 			} else
 			if (getVariableReference == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &statement, true)" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), &subStatement, true)" + statementEnd;
 				} else {
 					generatedCode+= indent + returnValueStatement + "Variable::createReferenceVariable(&" + createGlobalVariableName(globalVariable) + ")" + statementEnd;
 				}
@@ -1289,9 +1289,9 @@ void Transpiler::generateVariableAccess(
 			if (setVariable == true || setConstant == true) {
 				if (haveVariableStatement == true) {
 					if (setConstant == true) {
-						generatedCode+= indent + "setConstant(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+						generatedCode+= indent + "setConstant(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[" + to_string(setArgumentIdx) + "], &subStatement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 					} else {
-						generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MinitScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+						generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MinitScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "], &subStatement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 					}
 				} else {
 					generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + globalVariable + ": assignment of constant is not allowed\"); else ";
@@ -1308,7 +1308,7 @@ void Transpiler::generateVariableAccess(
 			} else
 			if (setVariableReference == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[" + to_string(setArgumentIdx) + "], &statement, true); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+					generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", \"$\" + StringTools::substring(arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), " + to_string(globalVariableIdx) + "), arguments[" + to_string(setArgumentIdx) + "], &subStatement, true); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				} else {
 					generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + globalVariable + ": assignment of constant is not allowed\"); else ";
 					generatedCode+= createGlobalVariableName(globalVariable) + ".setReference(&arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
@@ -1319,21 +1319,21 @@ void Transpiler::generateVariableAccess(
 			auto haveVariableStatement = variableHasStatement(localVariable);
 			if (getMethodArgumentVariable == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + returnValueStatement + "getMethodArgumentVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement)" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "getMethodArgumentVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &subStatement)" + statementEnd;
 				} else {
 					generatedCode+= indent + returnValueStatement + "Variable::createMethodArgumentVariable(&_lv." + createLocalVariableName(localVariable) + ")" + statementEnd;
 				}
 			} else
 			if (getVariable == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + returnValueStatement + "getVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, false)" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "getVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &subStatement, false)" + statementEnd;
 				} else {
 					generatedCode+= indent + returnValueStatement + "Variable::createNonReferenceVariable(&_lv." + createLocalVariableName(localVariable) + ")" + statementEnd;
 				}
 			} else
 			if (getVariableReference == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + returnValueStatement + "getVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, true)" + statementEnd;
+					generatedCode+= indent + returnValueStatement + "getVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &subStatement, true)" + statementEnd;
 				} else {
 					generatedCode+= indent + returnValueStatement + "Variable::createReferenceVariable(&_lv." + createLocalVariableName(localVariable) + ")" + statementEnd;
 				}
@@ -1341,9 +1341,9 @@ void Transpiler::generateVariableAccess(
 			if (setVariable == true || setConstant == true) {
 				if (haveVariableStatement == true) {
 					if (setConstant == true) {
-						generatedCode+= indent + "setConstant(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+						generatedCode+= indent + "setConstant(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &subStatement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 					} else {
-						generatedCode+= indent + "setVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MinitScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "], &statement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+						generatedCode+= indent + "setVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MinitScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "], &subStatement); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 					}
 				} else {
 					generatedCode+= indent + "if (_lv." + createLocalVariableName(localVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + localVariable + ": assignment of constant is not allowed\"); else ";
@@ -1360,7 +1360,7 @@ void Transpiler::generateVariableAccess(
 			} else
 			if (setVariableReference == true) {
 				if (haveVariableStatement == true) {
-					generatedCode+= indent + "setVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement, true); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
+					generatedCode+= indent + "setVariable(&_lv." + createLocalVariableName(localVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &subStatement, true); returnValue = arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
 				} else {
 					generatedCode+= indent + "if (_lv." + createLocalVariableName(localVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + localVariable + ": assignment of constant is not allowed\"); else ";
 					generatedCode+= "_lv." + createLocalVariableName(localVariable) + ".setReference(&arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
@@ -1373,21 +1373,21 @@ void Transpiler::generateVariableAccess(
 		auto haveVariableStatement = variableHasStatement(globalVariable);
 		if (getMethodArgumentVariable == true) {
 			if (haveVariableStatement == true) {
-				generatedCode+= indent + returnValueStatement + "getMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement)" + statementEnd;
+				generatedCode+= indent + returnValueStatement + "getMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &subStatement)" + statementEnd;
 			} else {
 				generatedCode+= indent + returnValueStatement + "Variable::createMethodArgumentVariable(&" + createGlobalVariableName(globalVariable) + ")" + statementEnd;
 			}
 		} else
 		if (getVariable == true) {
 			if (haveVariableStatement == true) {
-				generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, false)" + statementEnd;
+				generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &subStatement, false)" + statementEnd;
 			} else {
 				generatedCode+= indent + returnValueStatement + "Variable::createNonReferenceVariable(&" + createGlobalVariableName(globalVariable) + ")" + statementEnd;
 			}
 		} else
 		if (getVariableReference == true) {
 			if (haveVariableStatement == true) {
-				generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &statement, true)" + statementEnd;
+				generatedCode+= indent + returnValueStatement + "getVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), &subStatement, true)" + statementEnd;
 			} else {
 				generatedCode+= indent + returnValueStatement + "Variable::createReferenceVariable(&" + createGlobalVariableName(globalVariable) + ")" + statementEnd;
 			}
@@ -1395,9 +1395,9 @@ void Transpiler::generateVariableAccess(
 		if (setVariable == true || setConstant == true) {
 			if (haveVariableStatement == true) {
 				if (setConstant == true) {
-					generatedCode+= indent + "setConstant(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement); " + returnValueStatement + "arguments[" + to_string(getArgumentIdx) + "]" + statementEnd;
+					generatedCode+= indent + "setConstant(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &subStatement); " + returnValueStatement + "arguments[" + to_string(getArgumentIdx) + "]" + statementEnd;
 				} else {
-					generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MinitScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "], &statement); " + returnValueStatement + "arguments[" + to_string(getArgumentIdx) + "]" + statementEnd;
+					generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "].isConstant() == true?MinitScript::Variable::createNonConstVariable(&arguments[" + to_string(setArgumentIdx) + "]):arguments[" + to_string(setArgumentIdx) + "], &subStatement); " + returnValueStatement + "arguments[" + to_string(getArgumentIdx) + "]" + statementEnd;
 				}
 			} else {
 				generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + globalVariable + ": assignment of constant is not allowed\"); else ";
@@ -1414,7 +1414,7 @@ void Transpiler::generateVariableAccess(
 		} else
 		if (setVariableReference == true) {
 			if (haveVariableStatement == true) {
-				generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &statement, true); " + returnValueStatement + "arguments[" + to_string(getArgumentIdx) + "]" + statementEnd;
+				generatedCode+= indent + "setVariable(&" + createGlobalVariableName(globalVariable) + ", arguments[" + to_string(getArgumentIdx) + "].getValueAsString(), arguments[" + to_string(setArgumentIdx) + "], &subStatement, true); " + returnValueStatement + "arguments[" + to_string(getArgumentIdx) + "]" + statementEnd;
 			} else {
 				generatedCode+= indent + "if (" + createGlobalVariableName(globalVariable) + ".isConstant() == true) _Console::printLine(getStatementInformation(statement) + \": Constant: " + globalVariable + ": assignment of constant is not allowed\"); else ";
 				generatedCode+= createGlobalVariableName(globalVariable) + ".setReference(&arguments[" + to_string(setArgumentIdx) + "]); " + returnValueStatement + "arguments[" + to_string(setArgumentIdx) + "]" + statementEnd;
@@ -1509,7 +1509,7 @@ void Transpiler::generateArrayAccessMethods(
 												bool booleanValue;
 												if (arrayAccessStatementAsScriptVariable.getBooleanValue(booleanValue) == true) {
 													generatedDefinitions+= lamdaIndent + "// MinitScript transpilation for a " + (condition == true?"condition":"statement") + " array access statement, statement index " + to_string(statement.statementIdx) + ", argument indices " + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, ", ") + ", array access statement index " + to_string(arrayAccessStatementIdx) + "\n";
-													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
+													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const SubStatement& subStatement) -> Variable {" + "\n";
 													generatedDefinitions+= lamdaIndent + "	return Variable(" + (booleanValue == true?"true":"false") + ");" + "\n";
 													generatedDefinitions+= lamdaIndent + "};" + "\n";
 												}
@@ -1523,7 +1523,7 @@ void Transpiler::generateArrayAccessMethods(
 												int64_t integerValue;
 												if (arrayAccessStatementAsScriptVariable.getIntegerValue(integerValue) == true) {
 													generatedDefinitions+= lamdaIndent + "// MinitScript transpilation for a " + (condition == true?"condition":"statement") + " array access statement, statement index " + to_string(statement.statementIdx) + ", argument indices " + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, ", ") + ", array access statement index " + to_string(arrayAccessStatementIdx) + "\n";
-													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
+													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const SubStatement& subStatement) -> Variable {" + "\n";
 													generatedDefinitions+= lamdaIndent + "	return Variable(static_cast<int64_t>(" + to_string(integerValue) + "ll));" + "\n";
 													generatedDefinitions+= lamdaIndent + "};" + "\n";
 												}
@@ -1537,7 +1537,7 @@ void Transpiler::generateArrayAccessMethods(
 												float floatValue;
 												if (arrayAccessStatementAsScriptVariable.getFloatValue(floatValue) == true) {
 													generatedDefinitions+= lamdaIndent + "// MinitScript transpilation for a " + (condition == true?"condition":"statement") + " array access statement, statement index " + to_string(statement.statementIdx) + ", argument indices " + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, ", ") + ", array access statement index " + to_string(arrayAccessStatementIdx) + "\n";
-													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
+													generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const SubStatement& subStatement) -> Variable {" + "\n";
 													generatedDefinitions+= lamdaIndent + "	return Variable(static_cast<int64_t>(" + to_string(static_cast<int64_t>(floatValue)) + "ll));" + "\n";
 													generatedDefinitions+= lamdaIndent + "};" + "\n";
 												}
@@ -1599,7 +1599,7 @@ void Transpiler::generateArrayAccessMethods(
 										1
 									);
 									generatedDefinitions+= lamdaIndent + "// MinitScript transpilation for array access statement, statement index " + to_string(statement.statementIdx) + ", argument indices " + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, ", ") + ", array access statement index " + to_string(arrayAccessStatementIdx) + "\n";
-									generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const Statement& statement) -> Variable {" + "\n";
+									generatedDefinitions+= lamdaIndent + "auto array_access_statement_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(nextArgumentIndices, "_") + "_" + to_string(arrayAccessStatementIdx) + " = [&](const SubStatement& subStatement) -> Variable {" + "\n";
 									generatedDefinitions+= lamdaIndent + "\t" + "// MinitScript setup" + "\n";
 									generatedDefinitions+= lamdaIndent + "\t" + "auto minitScript = this;" + "\n";
 									generatedDefinitions+= transpiledCode;
@@ -1984,7 +1984,7 @@ void Transpiler::generateArrayMapSetInitializer(
 							);
 							//
 							generatedDefinitions+= indent + "// MinitScript transpilation for array/map/set initializer, statement index " + to_string(statement.statementIdx) + ", argument indices " + MinitScript::getArgumentIndicesAsString(argumentIndices, ", ") + "\n";
-							generatedDefinitions+= indent + "auto initializer_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(argumentIndices, "_") + " = [&](const Statement& statement) -> Variable ";
+							generatedDefinitions+= indent + "auto initializer_" + to_string(statement.statementIdx) + "_" + MinitScript::getArgumentIndicesAsString(argumentIndices, "_") + " = [&](const SubStatement& subStatement) -> Variable ";
 							generatedDefinitions+= generatedInitializerDefinitions;
 							//
 							break;
@@ -2288,11 +2288,22 @@ bool Transpiler::transpileStatement(
 		generatedCode+= minIndentString + depthIndentString + "\t" + "// statement setup" + "\n";
 		if (scriptConditionIdx != MinitScript::SCRIPTIDX_NONE) {
 			generatedCode+= minIndentString + depthIndentString + "\t" + "const auto& statement = scripts[" + to_string(scriptConditionIdx) + "].conditionStatement;" + "\n";
+			generatedCode+= minIndentString + depthIndentString + "\t" + "const SubStatement subStatement(statement, " + to_string(syntaxTree.subLineIdx) + ");" + "\n";
 		} else
 		if (scriptIdx != MinitScript::SCRIPTIDX_NONE) {
 			generatedCode+= minIndentString + depthIndentString + "\t" + "const auto& statement = scripts[" + to_string(scriptIdx) + "].statements[" + to_string(statement.statementIdx) + "];" + "\n";
+			generatedCode+= minIndentString + depthIndentString + "\t" + "const SubStatement subStatement(statement, " + to_string(syntaxTree.subLineIdx) + ");" + "\n";
 		}
-		generatedCode+= minIndentString + depthIndentString + "\t" + "getScriptState().statementIdx = statement.statementIdx;" + "\n";
+		generatedCode+= minIndentString + depthIndentString + "\t" + "getScriptState().statementIdx = subStatement.statement->statementIdx;" + "\n";
+		generatedCode+= minIndentString + depthIndentString + "\t" + "//" + "\n";
+	} else {
+		generatedCode+= minIndentString + depthIndentString + "\t" + "// sub statement setup" + "\n";
+		if (scriptConditionIdx != MinitScript::SCRIPTIDX_NONE) {
+			generatedCode+= minIndentString + depthIndentString + "\t" + "const SubStatement subStatement(statement, " + to_string(syntaxTree.subLineIdx) + ");" + "\n";
+		} else
+		if (scriptIdx != MinitScript::SCRIPTIDX_NONE) {
+			generatedCode+= minIndentString + depthIndentString + "\t" + "const SubStatement subStatement(statement, " + to_string(syntaxTree.subLineIdx) + ");" + "\n";
+		}
 	}
 
 	// construct argument values
@@ -2364,7 +2375,7 @@ bool Transpiler::transpileStatement(
 										auto arrayAccessStatementOffset = 0;
 										for (auto& arrayAccessStatement: arrayAccessStatements) {
 											if (arrayAccessStatement.argumentIdx != argumentIdx) continue;
-											string arrayAccessStatementMethodCall = "\" + " + arrayAccessStatement.statementMethod + "(statement).getValueAsString() + \"";
+											string arrayAccessStatementMethodCall = "\" + " + arrayAccessStatement.statementMethod + "(subStatement).getValueAsString() + \"";
 											value =
 												StringTools::substring(value, 0, arrayAccessStatement.leftIdx + 1 + arrayAccessStatementOffset) +
 												arrayAccessStatementMethodCall +
@@ -2383,7 +2394,7 @@ bool Transpiler::transpileStatement(
 										const auto& script = minitScript->getScripts()[scriptConditionIdx != MinitScript::SCRIPTIDX_NONE?scriptConditionIdx:scriptIdx];
 										auto methodName = createMethodName(minitScript, scriptIdx);										//
 										auto initializerMethod = string() + "initializer_" + to_string(statement.statementIdx) + "_" + minitScript->getArgumentIndicesAsString(nextArgumentIndices, "_");
-										argumentsCode.push_back(indent + initializerMethod + "(statement)" + (lastArgument == false?",":""));
+										argumentsCode.push_back(indent + initializerMethod + "(subStatement)" + (lastArgument == false?",":""));
 									}
 									break;
 								default:
@@ -2613,7 +2624,7 @@ bool Transpiler::transpileStatement(
 				Console::printLine("Transpiler::transpileStatement(): method '" + string(method) + "': return statement not supported!");
 				return false;
 			} else
-			if (StringTools::regexMatch(codeLine, "[\\ \\t]*minitScript[\\ \\t]*->gotoStatementGoto[\\ \\t]*\\([\\ \\t]*statement[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
+			if (StringTools::regexMatch(codeLine, "[\\ \\t]*minitScript[\\ \\t]*->gotoStatementGoto[\\ \\t]*\\([\\ \\t]*\\*subStatement\\.statement[\\ \\t]*\\)[\\ \\t]*;[\\ \\t]*") == true) {
 				if (statement.gotoStatementIdx != MinitScript::STATEMENTIDX_NONE) {
 					 // find indent
 					int indent = 0;
