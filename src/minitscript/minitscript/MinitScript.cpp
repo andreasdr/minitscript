@@ -37,7 +37,6 @@
 #include <minitscript/minitscript/SetMethods.h>
 #include <minitscript/minitscript/StringMethods.h>
 #include <minitscript/minitscript/TimeMethods.h>
-#include <minitscript/minitscript/Transpiler.h>
 #include <minitscript/minitscript/XMLMethods.h>
 
 #include <minitscript/math/Math.h>
@@ -104,7 +103,6 @@ using _StringTokenizer = minitscript::utilities::StringTokenizer;
 using _StringTools = minitscript::utilities::StringTools;
 using _SHA256 = minitscript::utilities::SHA256;
 using _Time = minitscript::utilities::Time;
-using _Transpiler = minitscript::minitscript::Transpiler;
 using _Thread = minitscript::os::threading::Thread;
 
 const string MinitScript::OPERATOR_CHARS = "+-!~/%<>=&^|";
@@ -279,7 +277,7 @@ void MinitScript::executeNextStatement() {
 	}
 }
 
-bool MinitScript::parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement, string& accessObjectMemberStatement, int subLineIdx) {
+bool MinitScript::parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement, string& accessObjectMemberStatement) {
 	if (VERBOSE == true) _Console::printLine("MinitScript::parseStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
 	string_view objectMemberAccessObject;
 	string_view objectMemberAccessMethod;
@@ -314,6 +312,8 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		//
 		return true;
 	};
+	//
+	auto subLineIdx = 0;
 	//
 	for (auto i = executableStatementStartIdx; i < executableStatement.size(); i++) {
 		auto c = executableStatement[i];
@@ -562,16 +562,17 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 	}
 
 	//
-	//if (VERBOSE == true) {
-		_Console::print("MinitScript::parseStatement(): " + getStatementInformation(statement) + ": Method: '" + string(methodName) + "', arguments: ");
+	if (VERBOSE == true) {
+		_Console::printLine("MinitScript::parseStatement(): " + _StringTools::replace(getStatementInformation(statement), "\n", "\\n"));
+		_Console::printLine(string("\t") + ": Method: '" + string(methodName) + "'");
+		_Console::printLine(string("\t") + ": Arguments");
 		int variableIdx = 0;
 		for (const auto& argument: arguments) {
-			if (variableIdx > 0) _Console::print(", ");
-			_Console::print("'" + string(argument.argument) + "'@" + to_string(argument.subLineIdx));
+			_Console::printLine(string("\t\t") + "@" + to_string(argument.subLineIdx) + "'" + _StringTools::replace(string(argument.argument), "\n", "\\n") + "'");
 			variableIdx++;
 		}
 		_Console::printLine();
-	//}
+	}
 
 	// complain about bracket count
 	if (bracketCount != 0) {
@@ -784,7 +785,17 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 }
 
 bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<ParserArgument>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree, int subLineIdx) {
-	if (VERBOSE == true) _Console::printLine("MinitScript::createScriptStatementSyntaxTree(): " + getStatementInformation(statement) + ": " + string(methodName) + "(" + getArgumentsAsString(arguments) + ")");
+	//
+	if (VERBOSE == true) {
+		//
+		auto getArgumentsAsString = [](const vector<ParserArgument>& arguments) -> const string {
+			string argumentsString;
+			for (const auto& argument: arguments) argumentsString+= (argumentsString.empty() == false?", ":"") + string("@") + to_string(argument.subLineIdx) + string("'") + string(argument.argument) + string("'");
+			return argumentsString;
+		};
+		//
+		_Console::printLine("MinitScript::createScriptStatementSyntaxTree(): " + getStatementInformation(statement) + ": " + string(methodName) + "(" + getArgumentsAsString(arguments) + ")");
+	}
 	// method/function
 	auto functionScriptIdx = SCRIPTIDX_NONE;
 	Method* method = nullptr;
@@ -865,7 +876,7 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 			string_view subMethodName;
 			vector<ParserArgument> subArguments;
 			string accessObjectMemberStatement;
-			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement, subLineIdx + argument.subLineIdx) == true) {
+			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
 				if (createStatementSyntaxTree(scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
 					return false;
@@ -926,7 +937,7 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 			string_view subMethodName;
 			vector<ParserArgument> subArguments;
 			string accessObjectMemberStatement;
-			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement, subLineIdx + argument.subLineIdx) == true) {
+			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
 				if (createStatementSyntaxTree(scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
 					return false;
@@ -3373,10 +3384,17 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			auto rightArgument = findRightArgument(preprocessedStatement, nextOperator.idx + operatorString.size(), rightArgumentLength, rightArgumentBrackets);
 			//
 			if (leftArgument.empty() == false) {
+				//
+				auto leftArgumentNewLines = 0;
+				for (auto i = 0; i < leftArgument.size(); i++) {
+					auto c = leftArgument[i];
+					if (c == '\n') leftArgumentNewLines++; else break;
+				}
 				// substitute with method call
 				preprocessedStatement =
 					_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
-					prefixOperatorMethod->getMethodName() + "(" + leftArgument + ")" +
+					_StringTools::generate("\n", leftArgumentNewLines) +
+					prefixOperatorMethod->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ")" +
 					_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size(), preprocessedStatement.size()
 				);
 			} else
@@ -3414,10 +3432,17 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			if (nextOperator.operator_ == OPERATOR_SET) {
 				leftArgument = "\"" + doStatementPreProcessing(leftArgument, statement) + "\"";
 			}
+			//
+			auto leftArgumentNewLines = 0;
+			for (auto i = 0; i < leftArgument.size(); i++) {
+				auto c = leftArgument[i];
+				if (c == '\n') leftArgumentNewLines++; else break;
+			}
 			// substitute with method call
 			preprocessedStatement =
 				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
-				method->getMethodName() + "(" + leftArgument + ", " + rightArgument + ")" +
+				_StringTools::generate("\n", leftArgumentNewLines) +
+				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + rightArgument + ")" +
 				_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
 			);
 			//
@@ -3864,10 +3889,6 @@ const string MinitScript::getInformation() {
 			scriptIdx++;
 		}
 	}
-
-	//
-	result+="Script Syntax Tree:\n";
-	result+= _Transpiler::createSourceCode(this);
 
 	//
 	return result;

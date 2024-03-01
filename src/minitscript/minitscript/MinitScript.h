@@ -3533,17 +3533,6 @@ private:
 	};
 
 	/**
-	 * Returns arguments as string placed in a vector of string_views
-	 * @param arguments arguments
-	 * @return arguments as string
-	 */
-	inline const string getArgumentsAsString(const vector<ParserArgument>& arguments) {
-		string argumentsString;
-		for (const auto& argument: arguments) argumentsString+= (argumentsString.empty() == false?", ":"") + string("'") + string(argument.argument) + string("'");
-		return argumentsString;
-	}
-
-	/**
 	 * Parse script code into this MinitScript instance
 	 * @param scriptCode script code
 	 * @param lineIdxOffset line index offset
@@ -3574,10 +3563,9 @@ private:
 	 * @param arguments arguments
 	 * @param statement statment
 	 * @param accessObjectMember generated access object member statement
-	 * @param subLineIdx sub line index
 	 * @return success
 	 */
-	bool parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement, string& accessObjectMemberStatement, int subLineIdx = 0);
+	bool parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement, string& accessObjectMemberStatement);
 
 	/**
 	 * Execute a statement
@@ -4492,7 +4480,6 @@ public:
 	 * @return statement information
 	 */
 	inline const string getStatementInformation(const Statement& statement, int subLineIdx = -1) {
-		// _Console::printLine("getStatementInformation(): " + statement.statement + " @ " + to_string(subLineIdx));
 		//
 		auto statementCode = statement.statement;
 		auto statementLine = statement.line;
