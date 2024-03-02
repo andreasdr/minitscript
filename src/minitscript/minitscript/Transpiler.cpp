@@ -178,8 +178,9 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	generatedDeclarations+= declarationIndent + " * Public destructor" + "\n";
 	generatedDeclarations+= declarationIndent + " */" + "\n";
 	generatedDeclarations+= declarationIndent + "inline ~" + minitScriptClassName + "() {" + "\n";
+	generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
 	for (const auto& variable: globalVariables) {
-		generatedDeclarations+= declarationIndent + "\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
+		generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
 	}
 	{
 		auto scriptIdx = 0;
@@ -192,10 +193,11 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			}
 			auto methodName = createMethodName(minitScript, scriptIdx);
 			auto shortMethodName = createShortMethodName(minitScript, scriptIdx);
-			generatedDeclarations+= declarationIndent + "\t" + "if (" + shortMethodName + "_Stack.empty() == false) _Console::printLine(\"~" + minitScriptClassName + "(): Warning: " + methodName + ": stack not empty, size = \" + to_string(" + shortMethodName + "_Stack.size()));" + "\n";
+			generatedDeclarations+= declarationIndent + "\t\t" + "if (" + shortMethodName + "_Stack.empty() == false) _Console::printLine(\"~" + minitScriptClassName + "(): Warning: " + methodName + ": stack not empty, size = \" + to_string(" + shortMethodName + "_Stack.size()));" + "\n";
 			scriptIdx++;
 		}
 	}
+	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
 
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	generatedDeclarations+= "\n";
@@ -203,17 +205,21 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	generatedDeclarations+= declarationIndent + "void registerMethods() override;" + "\n";
 	generatedDeclarations+= declarationIndent + "inline void registerVariables() override {" + "\n";
 	if (globalVariables.empty() == false) {
+		generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
 		for (const auto& variable: globalVariables) {
-			generatedDeclarations+= declarationIndent + "\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
+			generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
 		}
+		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "//" + "\n";
 	}
 	generatedDeclarations+= declarationIndent + "\t" + minitScript->getBaseClass() + "::registerVariables();" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "// global script variables" + "\n";
+	generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
+	generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
 	for (const auto& variable: globalVariables) {
-		generatedDeclarations+= declarationIndent + "\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + ";" + "\n";
-		generatedDeclarations+= declarationIndent + "\t" + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
+		generatedDeclarations+= declarationIndent + "\t\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + ";" + "\n";
+		generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
 	}
+	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	generatedDeclarations+= declarationIndent + "void emit(const string& condition) override;" + "\n";
 	generatedDeclarations+= declarationIndent + "inline void startScript() override {" + "\n";

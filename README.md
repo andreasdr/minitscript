@@ -43,7 +43,7 @@ Also note the focus on easy integration into other products and easy customizabi
 - Whats left to do for 1.0 BETA release
   - some adjustments
     - make event system optional???
-    - native scripts should also be executable without original scripts(optional) and with changed scripts(interpreted mode)
+    - native scripts should also be executable without original scripts(optional)
     - build system: check executable output directories
   - tests
     - bubblesort benchmark vs java script or other script engines, just to get the idea of current state of performance
