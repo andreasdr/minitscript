@@ -24,22 +24,26 @@ public:
 	 * @param className script class name
 	 * @param mainURI main C++ file URI
 	 * @param useLibrary use library
+	 * @param nativeOnly native only
 	 */
 	static void generateMain(
 		const string& scriptURI,
 		const string& className,
 		const string& mainURI,
-		bool useLibrary
+		bool useLibrary,
+		bool nativeOnly
 	);
 
 	/**
 	 * Generate library CPP file
 	 * @param scriptClassPairs script class pairs
 	 * @param libraryURI library URI
+	 * @param nativeOnly native only
 	 */
 	static void generateLibrary(
 		const vector<pair<string, string>>& scriptClassPairs,
-		const string& libraryURI
+		const string& libraryURI,
+		bool nativeOnly
 	);
 
 	/**

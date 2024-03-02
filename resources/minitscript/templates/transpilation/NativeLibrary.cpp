@@ -34,7 +34,7 @@ MinitScript* NativeLibrary::loadScript(const string& pathName, const string& fil
 	//
 	script->setContext(context);
 	script->setLibrary(this);
-	script->parseScript((basePathName.empty() == false?basePathName + "/":"") + pathName, fileName);
+	script->parseScript((basePathName.empty() == false?basePathName + "/":"") + pathName, fileName, {$native-only});
 	return script.release();
 }
 

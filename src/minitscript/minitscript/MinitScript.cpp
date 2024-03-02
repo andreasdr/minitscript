@@ -2657,7 +2657,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 	return scriptValid;
 }
 
-void MinitScript::parseScript(const string& pathName, const string& fileName) {
+void MinitScript::parseScript(const string& pathName, const string& fileName, bool nativeOnly) {
 	//
 	scriptValid = true;
 	scriptPathName = pathName;
@@ -2676,23 +2676,25 @@ void MinitScript::parseScript(const string& pathName, const string& fileName) {
 
 	//
 	string scriptCode;
-	try {
-		scriptCode = _FileSystem::getContentAsString(scriptPathName, scriptFileName);
-	} catch (_FileSystem::FileSystemException& fse)	{
-		_Console::printLine(scriptPathName + "/" + scriptFileName + ": An error occurred: " + fse.what());
-		//
-		scriptValid = true;
-		//
-		parseErrors.push_back("An error occurred: " + string(fse.what()));
-		//
-		return;
+	if (native == false || nativeOnly == false) {
+		try {
+			scriptCode = _FileSystem::getContentAsString(scriptPathName, scriptFileName);
+		} catch (_FileSystem::FileSystemException& fse)	{
+			_Console::printLine(scriptPathName + "/" + scriptFileName + ": An error occurred: " + fse.what());
+			//
+			scriptValid = true;
+			//
+			parseErrors.push_back("An error occurred: " + string(fse.what()));
+			//
+			return;
+		}
 	}
 
 	//
 	{
 		auto scriptHash = _SHA256::encode(scriptCode);
 		if (native == true) {
-			if (scriptHash == nativeHash) {
+			if (nativeOnly == true || scriptHash == nativeHash) {
 				scripts = nativeScripts;
 				registerStateMachineStates();
 				registerMethods();

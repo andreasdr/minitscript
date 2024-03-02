@@ -5088,8 +5088,9 @@ public:
 	 * Parse script
 	 * @param pathName path name
 	 * @param fileName file name
+	 * @param nativeOnly native only
 	 */
-	void parseScript(const string& pathName, const string& fileName);
+	void parseScript(const string& pathName, const string& fileName, bool nativeOnly = false);
 
 	/**
 	 * Start script

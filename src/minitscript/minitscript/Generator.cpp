@@ -27,7 +27,8 @@ void Generator::generateMain(
 	const string& scriptURI,
 	const string& className,
 	const string& mainURI,
-	bool useLibrary
+	bool useLibrary,
+	bool nativeOnly
 ) {
 	string library;
 	if (useLibrary == true) {
@@ -44,6 +45,7 @@ void Generator::generateMain(
 		mainSource = StringTools::replace(mainSource, "{$script}", scriptURI);
 		mainSource = StringTools::replace(mainSource, "{$script-class}", className);
 		mainSource = StringTools::replace(mainSource, "{$library}", library);
+		mainSource = StringTools::replace(mainSource, "{$native-only}", nativeOnly == true?"true":"false");
 		FileSystem::setContentFromString(FileSystem::getPathName(mainURI), FileSystem::getFileName(mainURI), mainSource);
 	} catch (Exception& exception) {
 		Console::printLine("An error occurred: " + string(exception.what()));
@@ -52,7 +54,8 @@ void Generator::generateMain(
 
 void Generator::generateLibrary(
 	const vector<pair<string, string>>& scriptClassPairs,
-	const string& libraryURI
+	const string& libraryURI,
+	bool nativeOnly
 ) {
 	string libraryCode;
 	libraryCode+= string() + "auto scriptURI = pathName + \"/\" + fileName;" + "\n";
@@ -72,6 +75,7 @@ void Generator::generateLibrary(
 		auto mainSource = FileSystem::getContentAsString(MINITSCRIPT_DATA + "/resources/minitscript/templates/transpilation", "NativeLibrary.cpp");
 		mainSource = StringTools::replace(mainSource, "{$library-includes}", libraryIncludes);
 		mainSource = StringTools::replace(mainSource, "{$library-code}", libraryCode);
+		mainSource = StringTools::replace(mainSource, "{$native-only}", nativeOnly == true?"true":"false");
 		FileSystem::setContentFromString(FileSystem::getPathName(libraryURI), FileSystem::getFileName(libraryURI), mainSource);
 	} catch (Exception& exception) {
 		Console::printLine("An error occurred: " + string(exception.what()));

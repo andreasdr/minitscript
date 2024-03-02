@@ -25,25 +25,51 @@ int main(int argc, char** argv)
 	Console::printLine();
 
 	//
-	if ((argc != 4 && argc != 5) || (argc == 5 && string(argv[4]) != "--use-library")) {
-		Console::printLine("Usage: minitscriptmain script_filename script_class_name main_filename [--use-library]");
+	auto printUsage = []() -> void {
+		Console::printLine("Usage: minitscriptmain [--use-library] [--native-only] script_filename script_class_name main_filename");
+	};
+
+	//
+	if (argc == 1) {
+		printUsage();
 		return EXIT_FAILURE;
 	}
 
 	//
-	auto scriptURI = string(argv[1]);
-	auto className = string(argv[2]);
-	auto mainURI = string(argv[3]);
-	auto useLibrary = argc == 5?string(argv[4]) == "--use-library":false;
+	auto useLibrary = false;
+	auto nativeOnly = false;
+	auto optionsCount = 0;
+	auto i = 1;
+	for (; i < argc; i++) {
+		string argument = argv[i];
+		if (StringTools::startsWith(argument, "--") == false) break;
+		if (argument == "--use-library") {
+			optionsCount++;
+			useLibrary = true;
+		} else
+		if (argument == "--native-only") {
+			optionsCount++;
+			nativeOnly = true;
+		}
+	}
+	auto scriptURI = i < argc?string(argv[i++]):string();
+	auto className = i < argc?string(argv[i++]):string();
+	auto mainURI = i < argc?string(argv[i++]):string();
+
+	//
+	if (i != argc) {
+		printUsage();
+		return EXIT_FAILURE;
+	}
 
 	//
 	if (StringTools::endsWith(mainURI, "-main.cpp") == false) {
-		Console::printLine("Error: main_filename must end with '-main.cpp'");
+		Console::printLine("An error occurred: main_filename must end with '-main.cpp'");
 		return EXIT_FAILURE;
 	}
 
 	// generate
-	Generator::generateMain(scriptURI, className, mainURI, useLibrary);
+	Generator::generateMain(scriptURI, className, mainURI, useLibrary, nativeOnly);
 
 	//
 	return EXIT_SUCCESS;

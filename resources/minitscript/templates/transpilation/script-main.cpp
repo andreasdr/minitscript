@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 	script->setContext(context.get());
 	{$library}
 	string scriptFile = "{$script}";
-	script->parseScript(FileSystem::getPathName(scriptFile), FileSystem::getFileName(scriptFile));
+	script->parseScript(FileSystem::getPathName(scriptFile), FileSystem::getFileName(scriptFile), {$native-only});
 	// script valid?
 	if (script->isValid() == false) {
 		// nope, exit here
