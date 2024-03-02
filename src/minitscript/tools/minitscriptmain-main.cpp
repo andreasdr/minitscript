@@ -38,17 +38,14 @@ int main(int argc, char** argv)
 	//
 	auto useLibrary = false;
 	auto nativeOnly = false;
-	auto optionsCount = 0;
 	auto i = 1;
 	for (; i < argc; i++) {
 		string argument = argv[i];
 		if (StringTools::startsWith(argument, "--") == false) break;
 		if (argument == "--use-library") {
-			optionsCount++;
 			useLibrary = true;
 		} else
 		if (argument == "--native-only") {
-			optionsCount++;
 			nativeOnly = true;
 		}
 	}
