@@ -55,15 +55,16 @@ function: testScript($scriptURIs, $input)
 			" " + 
 			"Tsrc/Library.cpp"
 		$commands[] = $command
-		$commands[] = 
+		$commands[] =
 			createNativePath("./bin/minitscript/tools/minitscriptmain") + 
 			" " + 
-			$scripts[0].uri + " " + 
+			"--use-library" +
+			" " +
+			$scripts[0].uri + 
+			" " + 
 			$scripts[0].className + 
 			" " + 
-			"Tsrc/Main-main.cpp" +
-			" " +
-			"--use-library"
+			"Tsrc/Main-main.cpp"
 	else
 		$commands[] = 
 			createNativePath("./bin/minitscript/tools/minitscriptmain") + 
