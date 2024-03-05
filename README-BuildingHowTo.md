@@ -245,8 +245,8 @@ $ ./bin/minitscript/tools/minitscript resources/minitscript/tests/base-test.tscr
 ## 3.1. Links
 
 - MinitScript, see [README.md](./README.md)
-- MinitScript How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
-- MinitScript How to use, see [README-Tools.md](./README-Tools.md)
+- MinitScript - How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
+- MinitScript - How to use, see [README-Tools.md](./README-Tools.md)
 - The Mindty Kollektiv [Discord Server](https://discord.gg/Na4ACaFD)
 
 ## 3.2. Additional notes
