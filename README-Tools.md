@@ -5,19 +5,19 @@
 minitscript is the MinitScript interpreter tool, which means scripts are translated to a syntax tree, which then gets executed. This can be called script interpretion.
 The minitscript tool can take the following arguments:
 
-## 1.1.1. Show usage help
+### 1.1.1. Show usage help
 
 ```
 minitscript --help
 ```  
 
-## 1.1.2. Show version
+### 1.1.2. Show version
 
 ```
 minitscript --version
 ```  
 
-## 1.1.3. Interpret a script 
+### 1.1.3. Interpret a script 
 
 Interpret a script and show additional script information, which can be handy if debugging a script
 
@@ -25,7 +25,7 @@ Interpret a script and show additional script information, which can be handy if
 minitscript --verbose test.tscript
 ```  
 
-## 1.1.4. Interpret a script and pass arguments to it 
+### 1.1.4. Interpret a script and pass arguments to it 
 
 Interpret a script and pass arguments to it, which can be read by application.getArguments() script method call
 
@@ -33,13 +33,13 @@ Interpret a script and pass arguments to it, which can be read by application.ge
 minitscript test.tscript --arguments --help
 ```  
 
-## 1.1.5. Just interpret a script
+### 1.1.5. Just interpret a script
 
 ```
 minitscript test.tscript
 ```  
 
-## 1.1.6. Without arguments 
+### 1.1.6. Without arguments 
 
 minitscript can also be ran without arguments at all. This way you can feed minitscript tool with pipe input using '<'
 
@@ -47,7 +47,7 @@ minitscript can also be ran without arguments at all. This way you can feed mini
 minitscript < test.tscript
 ```  
 
-## 1.1.7. Prompt 
+### 1.1.7. Prompt 
 
 You dont need to pipe a file into minitscript tool. So if you start minitscript tool without arguments you can enter a (partial) script and exit with 
 control-z(Windows) and control-d(unixes and others) 
