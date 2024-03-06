@@ -1972,10 +1972,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2) {
-					// TODO: improve me!!!
-					auto tmp = MinitScript::Variable::createNonReferenceVariable(&arguments[0]);
-					arguments[0].setValue(arguments[1]);
-					arguments[1].setValue(tmp);
+					MinitScript::Variable::swap(arguments[0], arguments[1]);
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}

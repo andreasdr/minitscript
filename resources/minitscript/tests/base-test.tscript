@@ -54,7 +54,6 @@ on: nothing
 	swap($a, $b)
 	console.printLine("swap($a, $b): $a = " + $a + ", $b = " + $b)
 	console.printLine("-------------------------")
-	console.printLine("-------------------------")
 	console.printLine("Additional float methods")
 	console.printLine("-------------------------")
 	$floatToInteger = float.toIntegerValue(1234.5678)

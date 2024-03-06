@@ -38,7 +38,6 @@ using std::span;
 using std::stack;
 using std::string;
 using std::string_view;
-using std::swap;
 using std::to_string;
 using std::unique_ptr;
 using std::unordered_map;
@@ -1080,6 +1079,20 @@ public:
 		}
 
 		/**
+		 * Swap variables
+		 * @param a a
+		 * @param b b
+		 */
+		inline static void swap(Variable& a, Variable& b) {
+			auto& _a = a.isReference() == true?*a.initializerReferenceUnion.reference:a;
+			auto& _b = b.isReference() == true?*b.initializerReferenceUnion.reference:b;
+			std::swap(_a.typeBits, _b.typeBits);
+			std::swap(_a.valuePtr, _b.valuePtr);
+			std::swap(_a.initializerReferenceUnion, _b.initializerReferenceUnion);
+			std::swap(_a.referenceCounter, _b.referenceCounter);
+		}
+
+		/**
 		 * Copy constructor
 		 * @param variable variable to copy
 		 */
@@ -1128,10 +1141,10 @@ public:
 		 * @return this variable
 		 */
 		inline Variable& operator=(Variable&& variable) {
-			swap(typeBits, variable.typeBits);
-			swap(valuePtr, variable.valuePtr);
-			swap(initializerReferenceUnion, variable.initializerReferenceUnion);
-			swap(referenceCounter, variable.referenceCounter);
+			std::swap(typeBits, variable.typeBits);
+			std::swap(valuePtr, variable.valuePtr);
+			std::swap(initializerReferenceUnion, variable.initializerReferenceUnion);
+			std::swap(referenceCounter, variable.referenceCounter);
 			//
 			return *this;
 		}
