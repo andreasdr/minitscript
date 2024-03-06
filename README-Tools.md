@@ -89,7 +89,7 @@ The basic usage looks like the following:
 minitscriptuntranspiler test.tscript tsrc/test
 ```
 
-This will keep the C++ header and definition file, in this case src/test.h and src/test.cpp, but remove the
+This will keep the C++ header and definition file, in this case tsrc/test.h and tsrc/test.cpp, but remove the
 transpilation part.
 
 ## 1.4. minitscriptmain
@@ -112,6 +112,30 @@ Please note that main file name, needs to end with an "-test.cpp".
  
 ## 1.5. minitscriptlibrary
 ## 1.6. minitscriptmakefile
+
+To be able to compile transpiled MinitScript scripts, main and library files, you can use the "minitscriptmakefile" tool.
+It generates a Makefile, which can be used for the GNU make tool(Linux, ...) or gmake tool(BSD, ...), which is used on Unix like Operating Systems. 
+
+The basic usage looks like the following:
+
+```
+minitscriptmakefile tsrc TMakefile
+```
+
+The first argument is the path name, where we transpiled our scripts to, and where we added optional MinitScript main files and a MinitScript library C++ file.
+The second argument is just the Makefile file name.
+
+To create a build of your MinitScript application you can just run "make -f TMakefile" on Linux or "gmake -f TMakefile" on BSD. 
+
+You can also generate a .so(shared object file for Linux/BSD/MacOSX) file or a .dll(dynamic link library for Windows) file, to be embedded in other C++ applications.
+In this case the first argument needs to be "--library". 
+
+Please see an example below:
+
+```
+minitscriptmakefile --library tsrc Makefile
+```
+
 ## 1.7. minitscriptnmakefile
 ## 1.8. minitscriptdocumentation
 
