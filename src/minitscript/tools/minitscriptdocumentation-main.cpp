@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <map>
 #include <memory>
@@ -14,10 +15,12 @@
 #include <minitscript/minitscript/MinitScript.h>
 #include <minitscript/minitscript/Version.h>
 #include <minitscript/utilities/Console.h>
+#include <minitscript/utilities/Integer.h>
 #include <minitscript/utilities/Properties.h>
 #include <minitscript/utilities/StringTools.h>
 
 using std::exit;
+using std::find;
 using std::make_pair;
 using std::make_unique;
 using std::map;
@@ -33,69 +36,96 @@ using minitscript::minitscript::Documentation;
 using minitscript::minitscript::MinitScript;
 using minitscript::minitscript::Version;
 using minitscript::utilities::Console;
+using minitscript::utilities::Integer;
 using minitscript::utilities::Properties;
 using minitscript::utilities::StringTools;
 
 int main(int argc, char** argv)
 {
-	Console::printLine(string("minitscriptdocumentation ") + Version::getVersion());
-	Console::printLine(Version::getCopyright());
-	Console::printLine();
-
+	//
+	auto printInformation = []() -> void {
+		Console::printLine(string("minitscriptdocumentation ") + Version::getVersion());
+		Console::printLine(Version::getCopyright());
+		Console::printLine();
+		Console::printLine("Usage: minitscriptdocumentation [--heading=n] classes|methods|variables|operators|keys|keywords");
+		Console::printLine();
+	};
+	//
+	if (argc != 2 && argc != 3) {
+		printInformation();
+		return EXIT_SUCCESS;
+	}
+	//
+	auto heading = 1;
+	auto argIdx = 1;
+	if (StringTools::startsWith(argv[argIdx], "--heading=") == true) {
+		auto sectionVector = StringTools::tokenize(argv[1], "=");
+		if (sectionVector.size() != 2) {
+			printInformation();
+			return EXIT_SUCCESS;
+		} else {
+			heading = Integer::parse(sectionVector[1]);
+		}
+		argIdx++;
+	}
+	//
+	if (argIdx >= argc) {
+		printInformation();
+		return EXIT_SUCCESS;
+	}
+	//
+	auto documentationType = string(argv[argIdx]);
+	array<string, 6> documentationTypes = {
+		"classes",
+		"methods",
+		"variables",
+		"operators",
+		"keys",
+		"keywords"
+	};
+	if (find(documentationTypes.begin(), documentationTypes.end(), documentationType) == documentationTypes.end()) {
+		printInformation();
+		return EXIT_SUCCESS;
+	}
 	//
 	Properties descriptions;
 	descriptions.load("resources/minitscript/documentation", "method-descriptions.properties");
-
 	//
 	MinitScript::initialize();
-
 	//
 	auto context = make_unique<Context>();
 	auto minitScript = make_unique<MinitScript>();
 	minitScript->setContext(context.get());
 	minitScript->registerMethods();
 	minitScript->registerVariables();
-
 	//
 	auto allClassMethods = Documentation::getAllClassMethods(minitScript.get());
 	//
-	auto baseMethodCategories = Documentation::getMethodsCategories(minitScript.get(), allClassMethods);
-	// classes
-	auto classesDocumentation = Documentation::generateClassesDocumentation("Classes", 6, minitScript.get(), descriptions, "minitscript.basemethod.", allClassMethods);
-	// base methods
-	auto methodsDocumentation = Documentation::generateMethodsDocumentation("Methods", 7, minitScript.get(), descriptions, "minitscript.basemethod.", allClassMethods);
-	// variables
-	auto variablesDocumentation = Documentation::generateVariablesDocumentation("Constants", 8, minitScript.get());
-	// operators
-	auto operatorsDocumentation = Documentation::generateOperatorsDocumentation("Operators", 9, minitScript.get());
-
-	//
-	Console::printLine("Classes");
-	Console::printLine("---------");
-	Console::printLine(classesDocumentation);
-
-	//
-	Console::printLine("Methods");
-	Console::printLine("---------");
-	Console::printLine(methodsDocumentation);
-
-	//
-	Console::printLine("Variables");
-	Console::printLine("-----------");
-	Console::printLine(variablesDocumentation);
-
-	//
-	Console::printLine("Operators");
-	Console::printLine("-----------");
-	Console::printLine(operatorsDocumentation);
-
-	//
-	Console::printLine();
-	Console::printLine("# properties methodname=human readable string");
-	//
-	{
+	if (documentationType == "classes") {
+		// classes
+		auto classesDocumentation = Documentation::generateClassesDocumentation("Classes", heading, minitScript.get(), descriptions, "minitscript.basemethod.", allClassMethods);
+		Console::printLine(classesDocumentation);
+	} else
+	if (documentationType == "methods") {
+		// base methods
+		auto methodsDocumentation = Documentation::generateMethodsDocumentation("Methods", heading, minitScript.get(), descriptions, "minitscript.basemethod.", allClassMethods);
+		Console::printLine(methodsDocumentation);
+	} else
+	if (documentationType == "variables") {
+		// variables
+		auto variablesDocumentation = Documentation::generateVariablesDocumentation("Constants", heading, minitScript.get());
+		Console::printLine(variablesDocumentation);
+	} else
+	if (documentationType == "operators") {
+		// operators
+		auto operatorsDocumentation = Documentation::generateOperatorsDocumentation("Operators", heading, minitScript.get());
+		Console::printLine(operatorsDocumentation);
+	} else
+	if (documentationType == "keys") {
+		Console::printLine("# properties methodname=human readable string");
 		Console::printLine("# base methods");
 		//
+		auto baseMethodCategories = Documentation::getMethodsCategories(minitScript.get(), allClassMethods);
 		for (const auto& baseMethodCategory: baseMethodCategories) {
 			Console::printLine("minitscript.basemethod.group." + (baseMethodCategory.empty() == true?"uncategorized":baseMethodCategory) + "=");
 		}
@@ -104,25 +134,21 @@ int main(int argc, char** argv)
 		for (auto scriptMethod: scriptMethods) {
 			Console::printLine("minitscript.basemethod." + scriptMethod->getMethodName() + "=");
 		}
-	}
-
-	//
-	Console::printLine();
-	Console::printLine("Keywords: ");
-	set<string> allMethods;
-	{
+	} else
+	if (documentationType == "keywords") {
+		set<string> allMethods;
+		{
+			//
+			auto scriptMethods = minitScript->getMethods();
+			for (auto scriptMethod: scriptMethods) {
+				allMethods.insert(scriptMethod->getMethodName());
+			}
+		}
 		//
-		auto scriptMethods = minitScript->getMethods();
-		for (auto scriptMethod: scriptMethods) {
-			allMethods.insert(scriptMethod->getMethodName());
+		for (const auto& method: allMethods) {
+			Console::print(method + " ");
 		}
 	}
-	//
-	for (const auto& method: allMethods) {
-		Console::print(method + " ");
-	}
-	Console::printLine();
-
 	//
 	return EXIT_SUCCESS;
 }
