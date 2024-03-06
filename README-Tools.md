@@ -206,10 +206,15 @@ minitscriptnmakefile --library tsrc TMakefile
 
 ## 1.8. minitscriptdocumentation
 
-The "minitscriptdocumentation" tool is experimental. 
+"minitscriptdocumentation" is the MinitScript documentation tool. It requires to pass the type of documentation to be generated, 
+which can be one of the following: classes, methods, variables, operators, keys or keywords.
 
-Basically it shows MinitScript classes, methods, constants and operators.
-Optionally it can show documentation keys also, that can be used to help with documenting MinitScript methods.
+Optionally you can pass the main heading index as first argument by adding "--heading=X", whereas X is the main heading index, which needs to be a integer value.
+
+See an example below:
+```
+minitscriptdocumentation --heading=6 classes
+```
 
 # 2. How to use MinitScript build script?
 
