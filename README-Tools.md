@@ -111,8 +111,8 @@ The third argument ist the main C++ file, that we want to create for our MinitSc
 Please note that main file name, needs to end with an "-test.cpp".
  
 Optional flags are:
-- --use-libray: Issues to use a MinitScript library C++ file, if you have multiple script files tranpiled into C++ (see 1.5.) 
-- --native-only: By default, scripts gets interpreted also in native mode, if they have changed, if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument  
+- --use-libray: Issues to use a MinitScript library C++ file, if you have multiple script files tranpiled into C++ (see 1.5.)
+- --native-only: By default, scripts gets interpreted also in native mode, if they have changed, if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument
 
 ## 1.5. minitscriptlibrary
 
@@ -126,7 +126,7 @@ minitscriptlibrary ...
 ```
 
 Optional flags are:
-- --native-only: By default, scripts gets interpreted also in native mode, if they have changed, if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument  
+- --native-only: By default, scripts gets interpreted also in native mode, if they have changed, if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument
 
 ## 1.6. minitscriptmakefile(Linux/BSD/MacOSX,...)
 
