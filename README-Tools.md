@@ -163,6 +163,11 @@ minitscriptnmakefile --library tsrc TMakefile
 
 ## 1.8. minitscriptdocumentation
 
+The "minitscriptdocumentation" tool is experimental. 
+
+Basically it shows MinitScript classes, methods, constants and operators.
+Optionally it can show documentation keys also, that can be used to help with documenting MinitScript methods.
+
 # 2. How to use MinitScript build script?
 
 # 3. Other information
