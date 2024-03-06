@@ -518,7 +518,7 @@ public:
 		static constexpr uint32_t PRIVATESCOPE_BIT_VALUE { 2147483648 }; // 2 ^ 31
 
 		//
-		union ir {
+		union InitializerReferenceUnion {
 			Initializer* initializer;
 			Variable* reference;
 		};
@@ -601,52 +601,52 @@ public:
 		};
 
 		// 24 bytes
-		uint32_t typeReferenceConstantBits { TYPE_NULL };	// 4 bytes
-		int32_t referenceCounter { 1 };				// 4 bytes
-		uint64_t valuePtr { 0LL };					// 8 bytes
-		ir ir {};									// 8 bytes
+		uint32_t typeBits { TYPE_NULL };							// 4 bytes
+		int32_t referenceCounter { 1 };								// 4 bytes
+		uint64_t valuePtr { 0LL };									// 8 bytes
+		InitializerReferenceUnion initializerReferenceUnion {};		// 8 bytes
 
 		/**
 		 * Set constant
 		 */
 		inline void setConstant() {
-			typeReferenceConstantBits|= CONSTANT_BIT_VALUE;
+			typeBits|= CONSTANT_BIT_VALUE;
 		}
 
 		/**
 		 * Unset constant
 		 */
 		inline void unsetConstant() {
-			typeReferenceConstantBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
+			typeBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
 		}
 
 		/**
 		 * @return unset reference
 		 */
 		inline void unsetReference() {
-			typeReferenceConstantBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
-			ir.reference = nullptr;
+			typeBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
+			initializerReferenceUnion.reference = nullptr;
 		}
 
 		/**
 		 * Set private
 		 */
 		inline void setPrivate() {
-			typeReferenceConstantBits|= PRIVATE_BIT_VALUE;
+			typeBits|= PRIVATE_BIT_VALUE;
 		}
 
 		/**
 		 * Set private scope
 		 */
 		inline void setPrivateScope() {
-			typeReferenceConstantBits|= PRIVATESCOPE_BIT_VALUE;
+			typeBits|= PRIVATESCOPE_BIT_VALUE;
 		}
 
 		/**
 		 * Unset private scope
 		 */
 		inline void unsetPrivateScope() {
-			typeReferenceConstantBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE | CONSTANT_BIT_VALUE | PRIVATE_BIT_VALUE;
+			typeBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE | CONSTANT_BIT_VALUE | PRIVATE_BIT_VALUE;
 		}
 
 		/**
@@ -662,7 +662,7 @@ public:
 		inline void releaseReference() {
 			if (--referenceCounter == 0) {
 				if (isReference() == true) {
-					ir.reference->releaseReference();
+					initializerReferenceUnion.reference->releaseReference();
 					unsetReference();
 				}
 				setType(TYPE_NULL);
@@ -675,7 +675,7 @@ public:
 		 * @return initializer
 		 */
 		inline Initializer*& getInitializerReference() {
-			return isReference() == false?ir.initializer:ir.reference->ir.initializer;
+			return isReference() == false?initializerReferenceUnion.initializer:initializerReferenceUnion.reference->initializerReferenceUnion.initializer;
 		}
 
 		/**
@@ -683,7 +683,7 @@ public:
 		 * @return value ptr
 		 */
 		inline const uint64_t& getValuePtrReference() const {
-			return isReference() == false?valuePtr:ir.reference->valuePtr;
+			return isReference() == false?valuePtr:initializerReferenceUnion.reference->valuePtr;
 		}
 
 		/**
@@ -691,7 +691,7 @@ public:
 		 * @return value ptr
 		 */
 		inline uint64_t& getValuePtrReference() {
-			return isReference() == false?valuePtr:ir.reference->valuePtr;
+			return isReference() == false?valuePtr:initializerReferenceUnion.reference->valuePtr;
 		}
 
 		/**
@@ -842,15 +842,15 @@ public:
 		 */
 		inline bool isConstant() const {
 			return
-				(typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE ||
-				(isReference() == true && (ir.reference->typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE);
+				(typeBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE ||
+				(isReference() == true && (initializerReferenceUnion.reference->typeBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE);
 		}
 
 		/**
 		 * @return is reference
 		 */
 		inline bool isReference() const {
-			return (typeReferenceConstantBits & REFERENCE_BIT_VALUE) == REFERENCE_BIT_VALUE;
+			return (typeBits & REFERENCE_BIT_VALUE) == REFERENCE_BIT_VALUE;
 		}
 
 		/**
@@ -858,8 +858,8 @@ public:
 		 */
 		inline bool isPrivate() const {
 			return
-				(typeReferenceConstantBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE ||
-				(isReference() == true && (ir.reference->typeReferenceConstantBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE);
+				(typeBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE ||
+				(isReference() == true && (initializerReferenceUnion.reference->typeBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE);
 		}
 
 		/**
@@ -867,8 +867,8 @@ public:
 		 */
 		inline bool isPrivateScope() const {
 			return
-				(typeReferenceConstantBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE ||
-				(isReference() == true && (ir.reference->typeReferenceConstantBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE);
+				(typeBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE ||
+				(isReference() == true && (initializerReferenceUnion.reference->typeBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE);
 		}
 
 		/**
@@ -876,7 +876,7 @@ public:
 		 */
 		inline void unset() {
 			if (isReference() == true) {
-				ir.reference->releaseReference();
+				initializerReferenceUnion.reference->releaseReference();
 				unsetReference();
 			}
 			setType(TYPE_NULL);
@@ -888,13 +888,13 @@ public:
 		 */
 		inline void setReference(const Variable* variable) {
 			unset();
-			typeReferenceConstantBits|= REFERENCE_BIT_VALUE;
+			typeBits|= REFERENCE_BIT_VALUE;
 			if (variable->isReference() == true) {
-				ir.reference = variable->ir.reference;
-				ir.reference->acquireReference();
+				initializerReferenceUnion.reference = variable->initializerReferenceUnion.reference;
+				initializerReferenceUnion.reference->acquireReference();
 			} else {
-				ir.reference = (Variable*)variable;
-				ir.reference->acquireReference();
+				initializerReferenceUnion.reference = (Variable*)variable;
+				initializerReferenceUnion.reference->acquireReference();
 			}
 			// we need to copy those properties
 			//	as we can tag a reference variable instance (which points to the original)
@@ -1096,12 +1096,12 @@ public:
 		 * @param variable variable to move from
 		 */
 		inline Variable(Variable&& variable):
-			typeReferenceConstantBits(exchange(variable.typeReferenceConstantBits, static_cast<int>(MinitScript::TYPE_NULL))),
+			typeBits(exchange(variable.typeBits, static_cast<int>(MinitScript::TYPE_NULL))),
 			valuePtr(exchange(variable.valuePtr, 0ll)),
 			referenceCounter(exchange(variable.referenceCounter, 1)) {
 			// TODO: improve me
-			ir.initializer = variable.ir.initializer;
-			variable.ir.initializer = nullptr;
+			initializerReferenceUnion.initializer = variable.initializerReferenceUnion.initializer;
+			variable.initializerReferenceUnion.initializer = nullptr;
 		}
 
 		/**
@@ -1128,9 +1128,9 @@ public:
 		 * @return this variable
 		 */
 		inline Variable& operator=(Variable&& variable) {
-			swap(typeReferenceConstantBits, variable.typeReferenceConstantBits);
+			swap(typeBits, variable.typeBits);
 			swap(valuePtr, variable.valuePtr);
-			swap(ir, variable.ir);
+			swap(initializerReferenceUnion, variable.initializerReferenceUnion);
 			swap(referenceCounter, variable.referenceCounter);
 			//
 			return *this;
@@ -1147,7 +1147,7 @@ public:
 		 */
 		inline ~Variable() {
 			if (isReference() == true) {
-				ir.reference->releaseReference();
+				initializerReferenceUnion.reference->releaseReference();
 				unsetReference();
 			}
 			setType(TYPE_NULL);
@@ -1227,7 +1227,7 @@ public:
 		 * @return type
 		 */
 		inline VariableType getType() const {
-			return static_cast<VariableType>((isReference() == false?typeReferenceConstantBits:ir.reference->typeReferenceConstantBits) & TYPE_BITS_VALUE);
+			return static_cast<VariableType>((isReference() == false?typeBits:initializerReferenceUnion.reference->typeBits) & TYPE_BITS_VALUE);
 		}
 
 		/**
@@ -1292,17 +1292,17 @@ public:
 			this->getValuePtrReference() = 0LL;
 			//
 			if (isReference() == true) {
-				ir.reference->typeReferenceConstantBits =
+				initializerReferenceUnion.reference->typeBits =
 					static_cast<uint32_t>(newType) |
-					((ir.reference->typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0) |
-					((ir.reference->typeReferenceConstantBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE?PRIVATE_BIT_VALUE:0) |
-					((ir.reference->typeReferenceConstantBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE?PRIVATESCOPE_BIT_VALUE:0);
+					((initializerReferenceUnion.reference->typeBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0) |
+					((initializerReferenceUnion.reference->typeBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE?PRIVATE_BIT_VALUE:0) |
+					((initializerReferenceUnion.reference->typeBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE?PRIVATESCOPE_BIT_VALUE:0);
 			} else {
-				typeReferenceConstantBits =
+				typeBits =
 					static_cast<uint32_t>(newType) |
-					((typeReferenceConstantBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0) |
-					((typeReferenceConstantBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE?PRIVATE_BIT_VALUE:0) |
-					((typeReferenceConstantBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE?PRIVATESCOPE_BIT_VALUE:0);
+					((typeBits & CONSTANT_BIT_VALUE) == CONSTANT_BIT_VALUE?CONSTANT_BIT_VALUE:0) |
+					((typeBits & PRIVATE_BIT_VALUE) == PRIVATE_BIT_VALUE?PRIVATE_BIT_VALUE:0) |
+					((typeBits & PRIVATESCOPE_BIT_VALUE) == PRIVATESCOPE_BIT_VALUE?PRIVATESCOPE_BIT_VALUE:0);
 			}
 			//
 			switch(getType()) {
@@ -1358,14 +1358,14 @@ public:
 		 * @return initializer
 		 */
 		inline Initializer* getInitializer() const {
-			return isReference() == true?ir.reference->ir.initializer:ir.initializer;
+			return isReference() == true?initializerReferenceUnion.reference->initializerReferenceUnion.initializer:initializerReferenceUnion.initializer;
 		}
 
 		/**
 		 * @return value pointer
 		 */
 		inline void* getValuePtr() const {
-			return (void*)(isReference() == true?ir.reference->valuePtr:valuePtr);
+			return (void*)(isReference() == true?initializerReferenceUnion.reference->valuePtr:valuePtr);
 		}
 
 		/**
@@ -1374,7 +1374,7 @@ public:
 		 */
 		inline void setValuePtr(void* valuePtr) {
 			if (isReference() == true) {
-				ir.reference->valuePtr = (uint64_t)valuePtr;
+				initializerReferenceUnion.reference->valuePtr = (uint64_t)valuePtr;
 			} else {
 				this->valuePtr = (uint64_t)valuePtr;
 			}

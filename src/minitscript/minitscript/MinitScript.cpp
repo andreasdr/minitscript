@@ -4359,7 +4359,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string_view& init
 	}
 	//
 	auto initalizer = make_unique<MinitScript::Variable::Initializer>(string(initializerString), statement, nullptr);
-	variable.ir.initializer->copy(initalizer.get());
+	variable.initializerReferenceUnion.initializer->copy(initalizer.get());
 	//
 	return variable;
 }
@@ -4737,7 +4737,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 	}
 	//
 	auto initalizer = make_unique<MinitScript::Variable::Initializer>(string(initializerString), statement, nullptr);
-	variable.ir.initializer->copy(initalizer.get());
+	variable.initializerReferenceUnion.initializer->copy(initalizer.get());
 	//
 	return variable;
 }
