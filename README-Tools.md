@@ -112,7 +112,7 @@ Please note that main file name, needs to end with an "-test.cpp".
  
 Optional flags are:
 - --use-libray - Issues to use a MinitScript library C++ file, if you have multiple script files tranpiled into C++ (see 1.5.)
-- --native-only - By default, scripts gets interpreted also in native mode, if they have changed, if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument
+- --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument
 
 ## 1.5. minitscriptlibrary
 
@@ -122,11 +122,37 @@ Internally it is used to resolve script path and file names to C++ transpilation
 The usage looks like the following:
 
 ```
-minitscriptlibrary ...
+minitscriptlibrary test1.tscript test1 test2.tscript test2 [testN.tscript testN] tsrc/library.cpp
 ```
 
+The first argument is the first script file name, the second argument the corresponding class name.
+The third argument is the second script file name, the fourth argument the corresponding class name.
+You can add more script file name and corresponding class names pairs. 
+The last argument is the Library C++ file.
+
 Optional flags are:
-- --native-only - By default, scripts gets interpreted also in native mode, if they have changed, if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument
+- --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument
+
+Please see a complete example here:
+
+```
+# create target C++ transpilation source folder
+mkdir tsrc 
+# transpile test1.tscript in tsrc/test1.h/.cpp, with class name test1
+miniscripttranspiler test1.tscript tsrc/test1
+# transpile test2.tscript in tsrc/test2.h/.cpp, with class name test2
+miniscripttranspiler test2.tscript tsrc/test2
+# create a MinitScript C++ library file for test1.tscript and test2.tscript into tsrc/library.cpp
+miniscriptlibrary test1.tscript test1 test2.tscript test2 tsrc/library.cpp
+# generate a MinitScript C++ main file from test1.tscript and class name test1 into tsrc/Main-main.cpp
+miniscriptmain --use-library test1.tscript test1 tsrc/Main-main.cpp
+# generate Linux/BSD/MacOSX makefile from folder tsrc into TMakefile
+miniscriptmakefile tsrc TMakefile
+# compile
+make -f TMakefile
+```
+
+Note: Things are a lot easier if using the MinitScript build script, see 2. 
 
 ## 1.6. minitscriptmakefile(Linux/BSD/MacOSX,...)
 
