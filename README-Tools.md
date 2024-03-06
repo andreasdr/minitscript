@@ -49,7 +49,7 @@ minitscript < test.tscript
 
 ### 1.1.7. Prompt 
 
-You dont need to pipe a file into minitscript tool. So if you start minitscript tool without arguments you can enter a (partial) script and exit with 
+You do not need to pipe a file into minitscript tool. So if you start minitscript tool without arguments you can enter a (partial) script and exit with 
 control-z(Windows) and control-d(unixes and others) 
 
 ```
@@ -112,7 +112,7 @@ Please note that main file name, needs to end with an "-test.cpp".
  
 Optional flags are:
 - --use-libray - Issues to use a MinitScript library C++ file, if you have multiple script files tranpiled into C++ (see 1.5.)
-- --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument
+- --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and do not want to use optional interpretion you can use the "--native-only" argument
 
 ## 1.5. minitscriptlibrary
 
@@ -131,7 +131,7 @@ You can add more script file name and corresponding class names pairs.
 The last argument is the Library C++ file.
 
 Optional flags are:
-- --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument
+- --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and do not want to use optional interpretion you can use the "--native-only" argument
 
 Please see a complete example here:
 
