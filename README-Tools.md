@@ -71,7 +71,8 @@ The basic usage looks like the following:
 minitscripttranspiler test.tscript tsrc/test
 ```
 
-This will create a C++ header and definition file, in this case src/test.h and src/test.cpp, from test.tscript.
+This will create a C++ header and definition file, in this case tsrc/test.h and tsrc/test.cpp, from test.tscript.
+Note that the C++ class name of the transpilation unit is derived from tsrc/test, in this case "test".
 
 If you have extended MinitScript, you can also add the corresponding C++ MinitScript extension files like this:
 
@@ -92,6 +93,23 @@ This will keep the C++ header and definition file, in this case src/test.h and s
 transpilation part.
 
 ## 1.4. minitscriptmain
+
+There are 3 types of MinitScript C++ files. Ordinary script files, main files and library files.
+Main files are application entry points, and result in a executable binary file.
+To have a application with multiple translated MinitScript scripts, you need to create a library C++ file.
+
+To create a main file, you can use the "minitscriptmain" tool.
+The basic usage looks like the following:
+
+```
+minitscriptmain test.tscript test tsrc\Main-main.cpp
+```
+
+The first argument is our main MinitScript script file, the second argument is the class name of our C++ transpilation unit, 
+which gets derived from our transpilation file name, which we used in 1.2. 
+The third argument ist the main C++ file, that we want to create for our MinitScript application.
+Please note that main file name, needs to end with an "-test.cpp".
+ 
 ## 1.5. minitscriptlibrary
 ## 1.6. minitscriptmakefile
 ## 1.7. minitscriptnmakefile
