@@ -67,7 +67,33 @@ and press control-z(Windows) and control-d(unixes and others) to exit the prompt
 ## 1.4. minitscriptmain
 ## 1.5. minitscriptmakefile
 ## 1.6. minitscripttranspiler
+
+To transpile or translate a MinitScript script code to C++ code you can use the "minitscripttranspiler" tool.
+The basic usage looks like the following:
+
+```
+minitscripttranspiler test.tscript tsrc/test
+```
+
+This will create a C++ header and definition file, in this case src/test.h and src/test.cpp, from test.tscript.
+
+If you have extended MinitScript, you can also add the corresponding C++ MinitScript extension files like this:
+
+```
+minitscripttranspiler test.tscript tsrc/test src/MinitScriptExtension.cpp
+```
+
 ## 1.7. minitscriptuntranspiler
+
+To "untranspile" a MinitScript C++ code you can use the "minitscriptuntranspiler" tool.
+The basic usage looks like the following:
+
+```
+minitscriptuntranspiler test.tscript tsrc/test
+```
+
+This will keep the C++ header and definition file, in this case src/test.h and src/test.cpp, but remove the
+transpilation part.
 
 # 2. How to use MinitScript build script?
 
