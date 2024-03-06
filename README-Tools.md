@@ -110,7 +110,21 @@ which gets derived from our transpilation file name, which we used in 1.2.
 The third argument ist the main C++ file, that we want to create for our MinitScript application.
 Please note that main file name, needs to end with an "-test.cpp".
  
+Optional flags are:
+- --use-libray: Issues to use a MinitScript library C++ file, if you have multiple script files tranpiled into C++ (see 1.5.) 
+- --native-only: By default, scripts gets interpreted also in native mode, if they have changed, if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument  
+
 ## 1.5. minitscriptlibrary
+
+If you have multiple transpiled MinitScript scripts in your MinitScript application, you need to create a MinitScript library C++ file.
+Internally it is used to resolve script path and file names to C++ transpilation unit class names.
+
+The usage looks like the following:
+
+```
+minitscriptlibrary ...
+```
+
 ## 1.6. minitscriptmakefile(Linux/BSD/MacOSX,...)
 
 To be able to compile transpiled MinitScript scripts, main and library files, you can use the "minitscriptmakefile" tool.
