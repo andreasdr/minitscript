@@ -111,7 +111,7 @@ The third argument ist the main C++ file, that we want to create for our MinitSc
 Please note that main file name, needs to end with an "-test.cpp".
  
 ## 1.5. minitscriptlibrary
-## 1.6. minitscriptmakefile
+## 1.6. minitscriptmakefile(Linux/BSD/MacOSX,...)
 
 To be able to compile transpiled MinitScript scripts, main and library files, you can use the "minitscriptmakefile" tool.
 It generates a Makefile, which can be used for the GNU make tool(Linux, ...) or gmake tool(BSD, ...), which is used on Unix like Operating Systems. 
@@ -127,16 +127,40 @@ The second argument is just the Makefile file name.
 
 To create a build of your MinitScript application you can just run "make -f TMakefile" on Linux or "gmake -f TMakefile" on BSD. 
 
-You can also generate a .so(shared object file for Linux/BSD/MacOSX) file or a .dll(dynamic link library for Windows) file, to be embedded in other C++ applications.
+You can also generate a .so(shared object file for Linux/BSD/MacOSX) file or a .dll(dynamic link library for Windows/MINGW) file, to be embedded in other C++ applications.
 In this case the first argument needs to be "--library". 
 
 Please see an example below:
 
 ```
-minitscriptmakefile --library tsrc Makefile
+minitscriptmakefile --library tsrc TMakefile
 ```
 
-## 1.7. minitscriptnmakefile
+## 1.7. minitscriptnmakefile(Windows)
+
+To be able to compile transpiled MinitScript scripts, main and library files on Windows, you can use the "minitscriptnmakefile" tool.
+It generates a Makefile, which can be used with the Microsoft Compiler(MSC) nmake tool. 
+
+The basic usage looks like the following:
+
+```
+minitscriptnmakefile tsrc TMakefile
+```
+
+The first argument is the path name, where we transpiled our scripts to, and where we added optional MinitScript main files and a MinitScript library C++ file.
+The second argument is just the Makefile file name.
+
+To create a build of your MinitScript application you can just run "nmake -f TMakefile". 
+
+You can also generate a .dll(dynamic link library for Windows) file, to be embedded in other C++ applications.
+In this case the first argument needs to be "--library". 
+
+Please see an example below:
+
+```
+minitscriptnmakefile --library tsrc TMakefile
+```
+
 ## 1.8. minitscriptdocumentation
 
 # 2. How to use MinitScript build script?
