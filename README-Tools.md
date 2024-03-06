@@ -125,6 +125,9 @@ The usage looks like the following:
 minitscriptlibrary ...
 ```
 
+Optional flags are:
+- --native-only: By default, scripts gets interpreted also in native mode, if they have changed, if you only want to compile and dont want to use optional interpretion you can use the "--native-only" argument  
+
 ## 1.6. minitscriptmakefile(Linux/BSD/MacOSX,...)
 
 To be able to compile transpiled MinitScript scripts, main and library files, you can use the "minitscriptmakefile" tool.
