@@ -642,14 +642,14 @@ Removing keys from set using Set::remove():
 ...
 ```
 
-Checking if keys exist in set using Set::has() and given keys:
+Checking if keys exist in set using Set::contains() and given keys:
 ```
 ...
-	console.printLine("set does have test1 key using set.has(): ", $set->has("test1"))
-	console.printLine("set does have test2 key using set.has(): ", $set->has("test2"))
-	console.printLine("set does have test3 key using set.has(): ", $set->has("test3"))
-	console.printLine("set does have test4 key using set.has(): ", $set->has("test4"))
-	console.printLine("set does have test5 key using set.has(): ", $set->has("test5"))
+	console.printLine("set does have test1 key using set.contains(): ", $set->contains("test1"))
+	console.printLine("set does have test2 key using set.contains(): ", $set->contains("test2"))
+	console.printLine("set does have test3 key using set.contains(): ", $set->contains("test3"))
+	console.printLine("set does have test4 key using set.contains(): ", $set->contains("test4"))
+	console.printLine("set does have test5 key using set.contains(): ", $set->contains("test5"))
 ...
 ```
 
@@ -999,6 +999,8 @@ TODO: private properties, && argument prefix
 | <b>NON STATIC METHODS</b>                 |
 | Clear map                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
+| Returns if map contains specific key                                                             |
+| <sub>contains($key: String): Boolean</sub>                                                       |
 | Iterate map key and value pairs, by using a (Lamda) function                                     |
 | <sub>forEach($callbackFunction: Function[, &$cookie: Mixed]): Null</sub>                         |
 | Get map value by key                                                                             |
@@ -1009,8 +1011,6 @@ TODO: private properties, && argument prefix
 | <sub>getSize(): Integer</sub>                                                                    |
 | Get map values                                                                                   |
 | <sub>getValues(): Array</sub>                                                                    |
-| Has entry by key                                                                                 |
-| <sub>has($key: String): Boolean</sub>                                                            |
 | Returns if map is empty                                                                          |
 | <sub>isEmpty(): Boolean</sub>                                                                    |
 | Remove map entry                                                                                 |
@@ -1030,14 +1030,14 @@ TODO: private properties, && argument prefix
 | <b>NON STATIC METHODS</b>                 |
 | Clear set                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
+| Returns if set contains specific key                                                             |
+| <sub>contains($key: String): Boolean</sub>                                                       |
 | Iterate set keys, by using a (Lamda) function                                                    |
 | <sub>forEach($callbackFunction: Function[, &$cookie: Mixed]): Null</sub>                         |
 | Get set keys                                                                                     |
 | <sub>getKeys(): Array</sub>                                                                      |
 | Returns number of elements in set                                                                |
 | <sub>getSize(): Integer</sub>                                                                    |
-| Has key in set                                                                                   |
-| <sub>has($key: String): Boolean</sub>                                                            |
 | Insert key into set                                                                              |
 | <sub>insert($key: String): Null</sub>                                                            |
 | Returns if set is empty                                                                          |

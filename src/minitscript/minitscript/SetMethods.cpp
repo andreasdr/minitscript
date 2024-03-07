@@ -133,11 +133,11 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 	}
 	{
 		//
-		class MethodSetHas: public MinitScript::Method {
+		class MethodSetContains: public MinitScript::Method {
 		private:
 			MinitScript* minitScript { nullptr };
 		public:
-			MethodSetHas(MinitScript* minitScript):
+			MethodSetContains(MinitScript* minitScript):
 				MinitScript::Method(
 					{
 						{ .type = MinitScript::TYPE_SET, .name = "set", .optional = false, .reference = false, .nullable = false },
@@ -147,7 +147,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 				),
 				minitScript(minitScript) {}
 			const string getMethodName() override {
-				return "Set::has";
+				return "Set::contains";
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
@@ -160,7 +160,7 @@ void SetMethods::registerMethods(MinitScript* minitScript) {
 				}
 			}
 		};
-		minitScript->registerMethod(new MethodSetHas(minitScript));
+		minitScript->registerMethod(new MethodSetContains(minitScript));
 	}
 	{
 		//

@@ -136,11 +136,11 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 	}
 	{
 		//
-		class MethodMapHas: public MinitScript::Method {
+		class MethodMapContains: public MinitScript::Method {
 		private:
 			MinitScript* minitScript { nullptr };
 		public:
-			MethodMapHas(MinitScript* minitScript):
+			MethodMapContains(MinitScript* minitScript):
 				MinitScript::Method(
 					{
 						{ .type = MinitScript::TYPE_MAP, .name = "map", .optional = false, .reference = false, .nullable = false },
@@ -150,7 +150,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 				),
 				minitScript(minitScript) {}
 			const string getMethodName() override {
-				return "Map::has";
+				return "Map::contains";
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
@@ -163,7 +163,7 @@ void MapMethods::registerMethods(MinitScript* minitScript) {
 				}
 			}
 		};
-		minitScript->registerMethod(new MethodMapHas(minitScript));
+		minitScript->registerMethod(new MethodMapContains(minitScript));
 	}
 	{
 		//
