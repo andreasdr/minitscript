@@ -960,6 +960,8 @@ TODO: private properties, && argument prefix
 | <b>NON STATIC METHODS</b>                 |
 | Clear array                                                                                      |
 | <sub>clear(): Null</sub>                                                                         |
+| Returns if array contains a specific value                                                       |
+| <sub>contains($value: Mixed): Boolean</sub>                                                      |
 | Iterate array values, by using a (Lamda) function                                                |
 | <sub>forEach($callbackFunction: Function[, &$cookie: Mixed]): Null</sub>                         |
 | Iterate range of array values, by using a (Lamda) function                                       |

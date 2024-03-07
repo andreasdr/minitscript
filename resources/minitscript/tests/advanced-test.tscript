@@ -124,6 +124,8 @@ on: nothing
 	#
 	console.printLine("array now looks like: ", $array)
 	console.printLine("array indexOf 10: ", $array->indexOf(10))
+	console.printLine("array contains 10: ", $array->contains(10))
+	console.printLine("array contains -1: ", $array->contains(-1))
 	console.printLine("array indexOf 10 beginning to search from 6: ", $array->indexOf(10, 6))
 	console.printLine("sorting of array('abc', 'def', 'ghi', 'jkl', 'mno'): ", $array = Array("abc", "def", "ghi", "jkl", "mno"))
 	$array->sort(() -> sortFunctionDesc)

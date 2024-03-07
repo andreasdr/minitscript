@@ -549,4 +549,43 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 		};
 		minitScript->registerMethod(new MethodArrayForRange(minitScript));
 	}
+	{
+		//
+		class MethodArrayContains: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodArrayContains(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "value", .optional = false, .reference = false, .nullable = false },
+					},
+					MinitScript::TYPE_BOOLEAN
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "Array::contains";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				string stringValue;
+				if ((arguments.size() == 2) &&
+					arguments[0].getType() == MinitScript::TYPE_ARRAY &&
+					MinitScript::getStringValue(arguments, 1, stringValue) == true) {
+					const auto& array = arguments[0];
+					returnValue.setValue(false);
+					for (auto i = 0; i < array.getArraySize(); i++) {
+						auto arrayValue = array.getArrayEntry(i);
+						if (arrayValue.getValueAsString() == stringValue) {
+							returnValue.setValue(true);
+							break;
+						}
+					}
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodArrayContains(minitScript));
+	}
 }
