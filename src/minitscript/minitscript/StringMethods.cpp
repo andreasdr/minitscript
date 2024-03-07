@@ -154,6 +154,38 @@ void StringMethods::registerMethods(MinitScript* minitScript) {
 	}
 	{
 		//
+		class MethodStringCodePointAt: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodStringCodePointAt(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false }
+					},
+					MinitScript::TYPE_INTEGER
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "String::codePointAt";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				string stringValue;
+				int64_t index;
+				if (arguments.size() == 2 &&
+					MinitScript::getStringValue(arguments, 0, stringValue) == true &&
+					MinitScript::getIntegerValue(arguments, 1, index) == true) {
+					returnValue.setValue(static_cast<int64_t>(_UTF8StringTools::getCodePointAt(stringValue, index, arguments[0].getStringValueCache())));
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodStringCodePointAt(minitScript));
+	}
+	{
+		//
 		class MethodStringStartsWith: public MinitScript::Method {
 		private:
 			MinitScript* minitScript { nullptr };

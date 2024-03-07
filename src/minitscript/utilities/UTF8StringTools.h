@@ -315,8 +315,18 @@ public:
 	 * @param str string
 	 * @param index index
 	 * @param cache UTF8 position cache
+	 * @return character as string
 	 */
 	static const string getCharAt(const string& str, int64_t index, ::minitscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+
+	/**
+	 * Get UTF8 code point at given index
+	 * @param str string
+	 * @param index index
+	 * @param cache UTF8 position cache
+	 * @return character as codepoint
+	 */
+	static const uint32_t getCodePointAt(const string& str, int64_t index, ::minitscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
 	 * Get UTF8 binary buffer index

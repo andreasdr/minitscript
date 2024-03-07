@@ -16,6 +16,7 @@ on: nothing
 	console.printLine("Some Umlauts love: äöü >>> ÄÖÜ")
 	console.printLine("Some more Umlauts love: \U000000fc")
 	console.printLine("Some even more Umlauts love: " + String::fromCodePoint(252))
+	console.printLine("Some code point Umlauts love: äöü = " + String("äöü")->codePointAt(0) + " / " + String("äöü")->codePointAt(1) + " / " + String("äöü")->codePointAt(2))
 	console.printLine("Beep\a")
 	#
 	$matches = null
