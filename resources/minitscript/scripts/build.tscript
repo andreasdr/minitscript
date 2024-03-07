@@ -1,0 +1,136 @@
+# initialize
+on: initialize
+end
+
+function: createNativePath($path)
+	if ($$.application::OS == "Windows-MSC")
+		$path = $path->replace("/", "\\")
+	end
+	return($path)
+end
+
+# build application script
+function: buildApplication($scriptURIs)
+	$scripts = []
+	console.printLine("Building: " + $scriptURIs[0])
+	console.printLine()
+	forEach ($scriptURI in $scriptURIs)
+		$scripts[] = {
+			uri: $scriptURI,
+			className: "_" + $scriptURI->regexReplace("[^0-9a-zA-Z]", "_")
+		}
+	end
+	$commands = []
+	if ($$.application::OS == "Windows-MSC")
+		$commands[] = "if exist Tsrc del /S /Q Tsrc\\*"
+		$commands[] = "if exist Tsrc rmdir /S /Q Tsrc"
+	else
+		$commands[] = "rm -rf Tsrc"
+	end
+	$commands[] = "mkdir Tsrc"
+	forEach($script in $scripts)
+		$commands[] =
+			createNativePath("./bin/minitscript/tools/minitscripttranspiler") + 
+			" " + 
+			$script.uri + 
+			" " + 
+			"Tsrc/" + $script.className
+	end
+	if ($scripts->getSize() > 1)
+		$command = createNativePath("./bin/minitscript/tools/minitscriptlibrary")
+		forEach($script in $scripts)
+			$command = 
+				$command + 
+				" " + 
+				$script.uri + 
+				" " + 
+				$script.className
+		end
+		$command = 
+			$command + 
+			" " + 
+			"Tsrc/Library.cpp"
+		$commands[] = $command
+		$commands[] =
+			createNativePath("./bin/minitscript/tools/minitscriptmain") + 
+			" " + 
+			"--use-library" +
+			" " +
+			$scripts[0].uri + 
+			" " + 
+			$scripts[0].className + 
+			" " + 
+			"Tsrc/Main-main.cpp"
+	else
+		$commands[] = 
+			createNativePath("./bin/minitscript/tools/minitscriptmain") + 
+			" " + 
+			$scripts[0].uri + 
+			" " + 
+			$scripts[0].className + 
+			" " + 
+			"Tsrc/Main-main.cpp"
+	end
+	if ($$.application::OS == "Windows-MSC")
+		$commands[] = 
+			createNativePath("./bin/minitscript/tools/minitscriptnmakefile") +
+			" " +
+			"Tsrc" +
+			" " +
+			"TMakefile.nmake"
+		$commands[] = "nmake -f TMakefile.nmake"
+	else
+		$commands[] = 
+			createNativePath("./bin/minitscript/tools/minitscriptmakefile") +
+			" " +
+			"Tsrc" + 
+			" " + 
+			"TMakefile"
+		$commands[] = "make -f TMakefile mains"
+	end
+	forEach($command in $commands)
+		console.print("Executing: " + $command)
+		$exitCode = null
+		$error = null
+		$result = application.execute($command, $exitCode, $error)
+		if ($exitCode == $$.application::EXITCODE_SUCCESS)
+			console.printLine(", SUCCESS")
+		else
+			console.printLine(", FAILURE, exiting, with exit code: " + $exitCode)
+			console.printLine("**********************************************************************")
+			console.printLine($error)
+			application.exit($$.application::EXITCODE_FAILURE)
+		end
+	end
+	console.printLine()	
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	# TODO: deleting tsrc has a bug, if Tsrc does not exist
+	# TODO: test build system more and improve
+	# TODO: script URIs need / instead of \ as path separator
+	# TODO: build library, native only 
+	console.printLine("-------------------------------------------")
+	console.printLine("MinitScript build script for applications")
+	console.printLine("-------------------------------------------")
+	console.printLine()
+	if (application.getArguments()->isEmpty() == true)
+		console.printLine("Usage: minitscriptbuildapp main-script.tscript [additional-script1.tscript] [additional-script2.tscript] [additional-scriptN.tscript]")
+	else
+		$scriptURIs = application.getArguments()
+		$scriptURIs->remove(0)
+		buildApplication($scriptURIs)
+	end
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.printLine("--------------------------------------------------")
+	console.printLine("MinitScript build script for applications: Error")
+	console.printLine("--------------------------------------------------")
+	console.printLine()
+	console.printLine("An error occurred")
+	script.stop()
+end
