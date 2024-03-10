@@ -1117,7 +1117,7 @@ void MathMethods::sub(const span<MinitScript::Variable>& arguments, MinitScript:
 		auto isBInteger = MinitScript::getIntegerValue(arguments, 1, b, false) == true;
 		if (isAInteger == true &&
 			isBInteger == true) {
-			returnValue.setValue(a + b);
+			returnValue.setValue(a - b);
 			return;
 		} else  {
 			minitScript->complainOperator(

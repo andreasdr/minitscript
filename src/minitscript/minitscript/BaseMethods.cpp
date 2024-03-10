@@ -782,7 +782,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2 || arguments.size() == 3) {
 					returnValue.setValue(true);
-					for (auto i = 1; i < arguments.size(); i++) {
+					for (auto i = 1; i < 2; i++) {
 						if (arguments[0].getValueAsString() != arguments[i].getValueAsString()) {
 							returnValue.setValue(false);
 							break;
@@ -820,7 +820,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2 || arguments.size() == 3) {
 					returnValue.setValue(true);
-					for (auto i = 1; i < arguments.size(); i++) {
+					for (auto i = 1; i < 2; i++) {
 						if (arguments[0].getValueAsString() == arguments[i].getValueAsString()) {
 							returnValue.setValue(false);
 							break;
@@ -976,7 +976,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2 || arguments.size() == 3) {
-					if (MinitScript::hasType(arguments, MinitScript::TYPE_STRING) == true) {
+					if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_STRING) == true) {
 						string stringValueA;
 						string stringValueB;
 						if (MinitScript::getStringValue(arguments, 0, stringValueA, false) == true &&
@@ -1025,7 +1025,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2 || arguments.size() == 3) {
-					if (MinitScript::hasType(arguments, MinitScript::TYPE_STRING) == true) {
+					if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_STRING) == true) {
 						string stringValueA;
 						string stringValueB;
 						if (MinitScript::getStringValue(arguments, 0, stringValueA, false) == true &&
@@ -1074,7 +1074,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2 || arguments.size() == 3) {
-					if (MinitScript::hasType(arguments, MinitScript::TYPE_STRING) == true) {
+					if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_STRING) == true) {
 						string stringValueA;
 						string stringValueB;
 						if (MinitScript::getStringValue(arguments, 0, stringValueA, false) == true &&
@@ -1123,7 +1123,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 2 || arguments.size() == 3) {
-					if (MinitScript::hasType(arguments, MinitScript::TYPE_STRING) == true) {
+					if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_STRING) == true) {
 						string stringValueA;
 						string stringValueB;
 						if (MinitScript::getStringValue(arguments, 0, stringValueA, false) == true &&
