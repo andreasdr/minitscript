@@ -915,7 +915,7 @@ void MathMethods::mul(const span<MinitScript::Variable>& arguments, MinitScript:
 	}
 	// custom data types
 	for (const auto dataType: dataTypes) {
-		if (dataType->div(minitScript, arguments, returnValue, subStatement) == true) return;
+		if (dataType->mul(minitScript, arguments, returnValue, subStatement) == true) return;
 	}
 	// float
 	if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_FLOAT) == true) {
