@@ -36,8 +36,9 @@ void MathMethods::registerMethods() {
 			MethodAdd(MinitScript* minitScript):
 				MinitScript::Method(
 					{
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false },
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false }
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_PSEUDO_MIXED
 				),
@@ -63,8 +64,9 @@ void MathMethods::registerMethods() {
 			MethodSub(MinitScript* minitScript):
 				MinitScript::Method(
 					{
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false },
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false }
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_PSEUDO_MIXED
 				),
@@ -90,8 +92,9 @@ void MathMethods::registerMethods() {
 			MethodMul(MinitScript* minitScript):
 				MinitScript::Method(
 					{
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false },
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false }
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_PSEUDO_MIXED
 				),
@@ -117,8 +120,9 @@ void MathMethods::registerMethods() {
 			MethodDiv(MinitScript* minitScript):
 				MinitScript::Method(
 					{
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false },
-						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false }
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_PSEUDO_MIXED
 				),
@@ -143,8 +147,9 @@ void MathMethods::registerMethods() {
 		public:
 			MethodMod(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "range", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "range", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false }
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER
 			), minitScript(minitScript) {}
@@ -152,10 +157,11 @@ void MathMethods::registerMethods() {
 				return "mod";
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
-				if (arguments.size() == 2) {
+				if (arguments.size() == 2 || arguments.size() == 3) {
 					if (MinitScript::hasType(arguments, MinitScript::TYPE_INTEGER) == true) {
 						int64_t value;
 						int64_t range;
+						// TODO: correct complains
 						if (MinitScript::getIntegerValue(arguments, 0, value, false) == true &&
 							MinitScript::getIntegerValue(arguments, 1, range, false) == true) {
 							returnValue.setValue(_Math::mod(value, range));
@@ -165,6 +171,7 @@ void MathMethods::registerMethods() {
 					} else {
 						float value;
 						float range;
+						// TODO: correct complains
 						if (MinitScript::getFloatValue(arguments, 0, value, false) == true &&
 							MinitScript::getFloatValue(arguments, 1, range, false) == true) {
 							returnValue.setValue(_Math::mod(value, range));
@@ -190,7 +197,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodAcos(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -216,7 +223,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodAsin(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -242,7 +249,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodAtan(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -268,8 +275,8 @@ void MathMethods::registerMethods() {
 		public:
 			MethodAtan2(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "y", .optional = false, .reference = false },
-					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "y", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -297,7 +304,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodTan(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -323,7 +330,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodCos(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -349,7 +356,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodSin(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "x", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -375,7 +382,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodFloor(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -401,7 +408,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodCeil(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -427,7 +434,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodRound(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -453,7 +460,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodSqrt(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -499,7 +506,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodExp(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "power", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "power", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -525,7 +532,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodLog(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_FLOAT, .name = "value", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_FLOAT), minitScript(minitScript) {}
 			const string getMethodName() override {
@@ -551,7 +558,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodSign(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER),
 				minitScript(minitScript) {}
@@ -585,7 +592,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodSquare(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER),
 				minitScript(minitScript) {}
@@ -619,8 +626,8 @@ void MathMethods::registerMethods() {
 		public:
 			MethodMin(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value1", .optional = false, .reference = false },
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value2", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value1", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value2", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER),
 				minitScript(minitScript) {}
@@ -659,8 +666,8 @@ void MathMethods::registerMethods() {
 		public:
 			MethodMax(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value1", .optional = false, .reference = false },
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value2", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value1", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value2", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER),
 				minitScript(minitScript) {}
@@ -699,7 +706,7 @@ void MathMethods::registerMethods() {
 		public:
 			MethodAbs(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER),
 				minitScript(minitScript) {}
@@ -733,9 +740,9 @@ void MathMethods::registerMethods() {
 		public:
 			MethodClamp(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "min", .optional = false, .reference = false },
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "max", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "min", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "max", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER),
 				minitScript(minitScript) {}
@@ -778,8 +785,8 @@ void MathMethods::registerMethods() {
 		public:
 			MethodPow(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "base", .optional = false, .reference = false },
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "power", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "base", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "power", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER),
 				minitScript(minitScript) {}
@@ -818,8 +825,8 @@ void MathMethods::registerMethods() {
 		public:
 			MethodMod(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "range", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "range", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER
 			), minitScript(minitScript) {}
@@ -862,8 +869,8 @@ void MathMethods::registerMethods() {
 		public:
 			MethodAbsMod(MinitScript* minitScript): MinitScript::Method(
 				{
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false },
-					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "range", .optional = false, .reference = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "value", .optional = false, .reference = false, .nullable = false },
+					{ .type = MinitScript::TYPE_PSEUDO_NUMBER, .name = "range", .optional = false, .reference = false, .nullable = false },
 				},
 				MinitScript::TYPE_PSEUDO_NUMBER
 			), minitScript(minitScript) {}
@@ -902,43 +909,61 @@ void MathMethods::registerMethods() {
 }
 
 void MathMethods::mul(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) {
-	if (arguments.size() != 2) {
+	if (arguments.size() != 2 && arguments.size() != 3) {
 		minitScript->complain("mul", subStatement); minitScript->startErrorScript();
 		return;
 	}
 	// custom data types
 	for (const auto dataType: dataTypes) {
-		if (dataType->mul(minitScript, arguments, returnValue, subStatement) == true) return;
+		if (dataType->div(minitScript, arguments, returnValue, subStatement) == true) return;
 	}
 	// float
-	if (MinitScript::hasType(arguments, MinitScript::TYPE_FLOAT) == true) {
+	if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_FLOAT) == true) {
 		float a;
 		float b;
-		if (MinitScript::getFloatValue(arguments, 0, a, false) == true &&
-			MinitScript::getFloatValue(arguments, 1, b, false) == true) {
+		auto isAFloat = MinitScript::getFloatValue(arguments, 0, a, false);
+		auto isBFloat = MinitScript::getFloatValue(arguments, 1, b, false);
+		if (isAFloat == true &&
+			isBFloat == true) {
 			returnValue.setValue(a * b);
 			return;
 		} else  {
-			minitScript->complain("mul", subStatement); minitScript->startErrorScript();
+			minitScript->complainOperator(
+				"mul",
+				arguments.size() == 3?arguments[2].getValueAsString():"mul",
+				subStatement,
+				string(isAFloat == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a float value":"") +
+				string(isBFloat == false?string(isAFloat == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a float value":"")
+			);
+			minitScript->startErrorScript();
 			return;
 		}
 	} else {
 		// int
 		int64_t a;
 		int64_t b;
-		if (MinitScript::getIntegerValue(arguments, 0, a, false) == true &&
-			MinitScript::getIntegerValue(arguments, 1, b, false) == true) {
+		auto isAInteger = MinitScript::getIntegerValue(arguments, 0, a, false) == true;
+		auto isBInteger = MinitScript::getIntegerValue(arguments, 1, b, false) == true;
+		if (isAInteger == true &&
+			isBInteger == true) {
 			returnValue.setValue(a * b);
 			return;
 		} else  {
-			minitScript->complain("mul", subStatement); minitScript->startErrorScript();
+			minitScript->complainOperator(
+				"mul",
+				arguments.size() == 3?arguments[2].getValueAsString():"mul",
+				subStatement,
+				string(isAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") +
+				string(isBInteger == false?string(isAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":"")
+			);
+			minitScript->startErrorScript();
 			return;
 		}
 	}
 }
 
 void MathMethods::div(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) {
-	if (arguments.size() != 2) {
+	if (arguments.size() != 2 && arguments.size() != 3) {
 		minitScript->complain("div", subStatement); minitScript->startErrorScript();
 		return;
 	}
@@ -947,41 +972,59 @@ void MathMethods::div(const span<MinitScript::Variable>& arguments, MinitScript:
 		if (dataType->div(minitScript, arguments, returnValue, subStatement) == true) return;
 	}
 	// float
-	if (MinitScript::hasType(arguments, MinitScript::TYPE_FLOAT) == true) {
+	if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_FLOAT) == true) {
 		float a;
 		float b;
-		if (MinitScript::getFloatValue(arguments, 0, a, false) == true &&
-			MinitScript::getFloatValue(arguments, 1, b, false) == true) {
+		auto isAFloat = MinitScript::getFloatValue(arguments, 0, a, false);
+		auto isBFloat = MinitScript::getFloatValue(arguments, 1, b, false);
+		if (isAFloat == true &&
+			isBFloat == true) {
 			returnValue.setValue(a / b);
 			return;
 		} else  {
-			minitScript->complain("div", subStatement); minitScript->startErrorScript();
+			minitScript->complainOperator(
+				"div",
+				arguments.size() == 3?arguments[2].getValueAsString():"div",
+				subStatement,
+				string(isAFloat == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a float value":"") +
+				string(isBFloat == false?string(isAFloat == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a float value":"")
+			);
+			minitScript->startErrorScript();
 			return;
 		}
 	} else {
 		// int
 		int64_t a;
 		int64_t b;
-		if (MinitScript::getIntegerValue(arguments, 0, a, false) == true &&
-			MinitScript::getIntegerValue(arguments, 1, b, false) == true) {
-			returnValue.setValue(a / b);
+		auto isAInteger = MinitScript::getIntegerValue(arguments, 0, a, false) == true;
+		auto isBInteger = MinitScript::getIntegerValue(arguments, 1, b, false) == true;
+		if (isAInteger == true &&
+			isBInteger == true) {
+			returnValue.setValue(a + b);
 			return;
 		} else  {
-			minitScript->complain("div", subStatement); minitScript->startErrorScript();
+			minitScript->complainOperator(
+				"div",
+				arguments.size() == 3?arguments[2].getValueAsString():"div",
+				subStatement,
+				string(isAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") +
+				string(isBInteger == false?string(isAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":"")
+			);
+			minitScript->startErrorScript();
 			return;
 		}
 	}
 }
 
 void MathMethods::add(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) {
-	if (arguments.size() != 2) {
+	if (arguments.size() != 2 && arguments.size() != 3) {
 		minitScript->complain("add", subStatement); minitScript->startErrorScript();
 		return;
 	}
 	// string concatenation
-	if (MinitScript::hasType(arguments, MinitScript::TYPE_STRING) == true) {
+	if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_STRING) == true) {
 		string result;
-		for (auto i = 0; i < arguments.size(); i++) {
+		for (auto i = 0; i < arguments.size() - 1; i++) {
 			result+= arguments[i].getValueAsString();
 		}
 		returnValue.setValue(result);
@@ -992,34 +1035,52 @@ void MathMethods::add(const span<MinitScript::Variable>& arguments, MinitScript:
 		if (dataType->add(minitScript, arguments, returnValue, subStatement) == true) return;
 	}
 	// float
-	if (MinitScript::hasType(arguments, MinitScript::TYPE_FLOAT) == true) {
+	if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_FLOAT) == true) {
 		float a;
 		float b;
-		if (MinitScript::getFloatValue(arguments, 0, a, false) == true &&
-			MinitScript::getFloatValue(arguments, 1, b, false) == true) {
+		auto isAFloat = MinitScript::getFloatValue(arguments, 0, a, false);
+		auto isBFloat = MinitScript::getFloatValue(arguments, 1, b, false);
+		if (isAFloat == true &&
+			isBFloat == true) {
 			returnValue.setValue(a + b);
 			return;
 		} else  {
-			minitScript->complain("add", subStatement); minitScript->startErrorScript();
+			minitScript->complainOperator(
+				"add",
+				arguments.size() == 3?arguments[2].getValueAsString():"add",
+				subStatement,
+				string(isAFloat == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a float value":"") +
+				string(isBFloat == false?string(isAFloat == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a float value":"")
+			);
+			minitScript->startErrorScript();
 			return;
 		}
 	} else {
 		// int
 		int64_t a;
 		int64_t b;
-		if (MinitScript::getIntegerValue(arguments, 0, a, false) == true &&
-			MinitScript::getIntegerValue(arguments, 1, b, false) == true) {
+		auto isAInteger = MinitScript::getIntegerValue(arguments, 0, a, false) == true;
+		auto isBInteger = MinitScript::getIntegerValue(arguments, 1, b, false) == true;
+		if (isAInteger == true &&
+			isBInteger == true) {
 			returnValue.setValue(a + b);
 			return;
 		} else  {
-			minitScript->complain("add", subStatement); minitScript->startErrorScript();
+			minitScript->complainOperator(
+				"add",
+				arguments.size() == 3?arguments[2].getValueAsString():"add",
+				subStatement,
+				string(isAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") +
+				string(isBInteger == false?string(isAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":"")
+			);
+			minitScript->startErrorScript();
 			return;
 		}
 	}
 }
 
 void MathMethods::sub(const span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) {
-	if (arguments.size() != 2) {
+	if (arguments.size() != 2 && arguments.size() != 3) {
 		minitScript->complain("sub", subStatement); minitScript->startErrorScript();
 		return;
 	}
@@ -1028,27 +1089,45 @@ void MathMethods::sub(const span<MinitScript::Variable>& arguments, MinitScript:
 		if (dataType->sub(minitScript, arguments, returnValue, subStatement) == true) return;
 	}
 	// float
-	if (MinitScript::hasType(arguments, MinitScript::TYPE_FLOAT) == true) {
+	if (MinitScript::hasTypeForOperatorArguments(arguments, MinitScript::TYPE_FLOAT) == true) {
 		float a;
 		float b;
-		if (MinitScript::getFloatValue(arguments, 0, a, false) == true &&
-			MinitScript::getFloatValue(arguments, 1, b, false) == true) {
+		auto isAFloat = MinitScript::getFloatValue(arguments, 0, a, false);
+		auto isBFloat = MinitScript::getFloatValue(arguments, 1, b, false);
+		if (isAFloat == true &&
+			isBFloat == true) {
 			returnValue.setValue(a - b);
 			return;
 		} else  {
-			minitScript->complain("sub", subStatement); minitScript->startErrorScript();
+			minitScript->complainOperator(
+				"sub",
+				arguments.size() == 3?arguments[2].getValueAsString():"sub",
+				subStatement,
+				string(isAFloat == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a float value":"") +
+				string(isBFloat == false?string(isAFloat == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a float value":"")
+			);
+			minitScript->startErrorScript();
 			return;
 		}
 	} else {
 		// int
 		int64_t a;
 		int64_t b;
-		if (MinitScript::getIntegerValue(arguments, 0, a, false) == true &&
-			MinitScript::getIntegerValue(arguments, 1, b, false) == true) {
-			returnValue.setValue(a - b);
+		auto isAInteger = MinitScript::getIntegerValue(arguments, 0, a, false) == true;
+		auto isBInteger = MinitScript::getIntegerValue(arguments, 1, b, false) == true;
+		if (isAInteger == true &&
+			isBInteger == true) {
+			returnValue.setValue(a + b);
 			return;
 		} else  {
-			minitScript->complain("sub", subStatement); minitScript->startErrorScript();
+			minitScript->complainOperator(
+				"sub",
+				arguments.size() == 3?arguments[2].getValueAsString():"sub",
+				subStatement,
+				string(isAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") +
+				string(isBInteger == false?string(isAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":"")
+			);
+			minitScript->startErrorScript();
 			return;
 		}
 	}

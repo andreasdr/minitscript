@@ -58,6 +58,8 @@ using _Library = minitscript::minitscript::Library;
 
 #define MINITSCRIPT_METHODUSAGE_COMPLAIN(methodName) { minitScript->complain(methodName, subStatement); minitScript->startErrorScript(); }
 #define MINITSCRIPT_METHODUSAGE_COMPLAINM(methodName, message) { minitScript->complain(methodName, subStatement, message); minitScript->startErrorScript(); }
+#define MINITSCRIPT_METHODUSAGE_COMPLAINO(methodName, operatorString) { minitScript->complainOperator(methodName, operatorString, subStatement); minitScript->startErrorScript(); }
+#define MINITSCRIPT_METHODUSAGE_COMPLAINOM(methodName, operatorString, message) { minitScript->complainOperator(methodName, operatorString, subStatement, message); minitScript->startErrorScript(); }
 
 /**
  * MinitScript
@@ -3469,6 +3471,7 @@ protected:
 
 private:
 	static constexpr bool VERBOSE { false };
+	static constexpr bool VALIDATION { false };
 	static constexpr int64_t GARBAGE_COLLECTION_INTERVAL { 1000ll };
 
 	/**
@@ -4329,6 +4332,23 @@ public:
 	void complain(const string& methodName, const SubStatement& subStatement, const string& message);
 
 	/**
+	 * Complain about operator usage
+	 * @param methodName method mame
+	 * @param operatorString operator string
+	 * @param subStatement sub statement
+	 */
+	void complainOperator(const string& methodName, const string& operatorString, const SubStatement& subStatement);
+
+	/**
+	 * Complain about operator usage
+	 * @param methodName method mame
+	 * @param operatorString operator string
+	 * @param subStatement sub statement
+	 * @param message message
+	 */
+	void complainOperator(const string& methodName, const string& operatorString, const SubStatement& subStatement, const string& message);
+
+	/**
 	 * @return data types
 	 */
 	inline static const vector<DataType*>& getDataTypes() {
@@ -4605,6 +4625,20 @@ public:
 	 */
 	inline static bool hasType(const span<Variable>& arguments, VariableType type) {
 		for (const auto& argument: arguments) if (argument.getType() == type) return true;
+		return false;
+	}
+
+	/**
+	 * Check if operator arguments contain argument with given type
+	 * This version ignores the last argument as its the operator string
+	 * @param arguments arguments
+	 * @param type type
+	 * @return has type
+	 */
+	inline static bool hasTypeForOperatorArguments(const span<Variable>& arguments, VariableType type) {
+		for (auto i = 0; i < arguments.size() - 1; i++) {
+			if (arguments[i].getType() == type) return true;
+		}
 		return false;
 	}
 

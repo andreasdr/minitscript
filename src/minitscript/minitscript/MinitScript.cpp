@@ -214,16 +214,32 @@ void MinitScript::initializeNative() {
 void MinitScript::complain(const string& methodName, const SubStatement& subStatement) {
 	auto argumentsInformation = getArgumentsInformation(methodName);
 	if (argumentsInformation.empty() == true) argumentsInformation = "None";
-	_Console::printLine(methodName + "(): " + getSubStatementInformation(subStatement) + ": Argument mismatch: expected arguments: " + argumentsInformation);
+	_Console::printLine(getSubStatementInformation(subStatement) + ": " + methodName + "(...): Argument mismatch: expected arguments: " + argumentsInformation);
 	//
 	errorMessage = "An method usage complain has occurred";
 	errorSubStatement = subStatement;
 }
 
 void MinitScript::complain(const string& methodName, const SubStatement& subStatement, const string& message) {
-	_Console::printLine(methodName + "(): " + getSubStatementInformation(subStatement) + ": " + message);
+	_Console::printLine(getSubStatementInformation(subStatement) + ": " + methodName + "(...): " + message);
 	//
 	errorMessage = "An method usage complain with message has occurred: " + message;
+	errorSubStatement = subStatement;
+}
+
+void MinitScript::complainOperator(const string& methodName, const string& operatorString, const SubStatement& subStatement) {
+	auto argumentsInformation = getArgumentsInformation(methodName);
+	if (argumentsInformation.empty() == true) argumentsInformation = "None";
+	_Console::printLine(getSubStatementInformation(subStatement) + ": '" + operatorString + "': Argument mismatch: expected arguments: " + argumentsInformation);
+	//
+	errorMessage = "An operator usage complain has occurred";
+	errorSubStatement = subStatement;
+}
+
+void MinitScript::complainOperator(const string& methodName, const string& operatorString, const SubStatement& subStatement, const string& message) {
+	_Console::printLine(getSubStatementInformation(subStatement) + ": '" + operatorString + "': " + message);
+	//
+	errorMessage = "An operator usage complain with message has occurred: " + message;
 	errorSubStatement = subStatement;
 }
 
@@ -649,7 +665,7 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 		// try methods next
 		auto method = syntaxTree.getMethod();
 		// validate arguments
-		{
+		if (VALIDATION == true) {
 			auto argumentIdx = 0;
 			for (const auto& argumentType: method->getArgumentTypes()) {
 				auto argumentOk = true;
@@ -761,14 +777,16 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 		span argumentsSpan(arguments);
 		method->executeMethod(argumentsSpan, returnValue, SubStatement(statement, syntaxTree.subLineIdx));
 		// check return type
-		if (method->isReturnValueNullable() == true && returnValue.getType() == TYPE_NULL) {
-			// no op, this is a valid return value
-		} else
-		if (MinitScript::Variable::isExpectedType(returnValue.getType(), method->getReturnValueType()) == false) {
-			_Console::printLine(
-				getStatementInformation(statement, syntaxTree.subLineIdx) +
-				": Method '" + string(syntaxTree.value.getValueAsString()) + "'" +
-				": return value: expected " + Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable()) + ", but got: " + Variable::getReturnTypeAsString(returnValue.getType(), false));
+		if (VALIDATION == true) {
+			if (method->isReturnValueNullable() == true && returnValue.getType() == TYPE_NULL) {
+				// no op, this is a valid return value
+			} else
+			if (MinitScript::Variable::isExpectedType(returnValue.getType(), method->getReturnValueType()) == false) {
+				_Console::printLine(
+					getStatementInformation(statement, syntaxTree.subLineIdx) +
+					": Method '" + string(syntaxTree.value.getValueAsString()) + "'" +
+					": return value: expected " + Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable()) + ", but got: " + Variable::getReturnTypeAsString(returnValue.getType(), false));
+			}
 		}
 		//
 		return returnValue;
@@ -3312,6 +3330,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 	//
 	StatementOperator nextOperator;
 	while (getNextStatementOperator(preprocessedStatement, nextOperator, statement) == true) {
+		//
 		if (nextOperator.invalidOperator.empty() == false) {
 			_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": Invalid operator: " + nextOperator.invalidOperator);
 			scriptValid = false;
@@ -3366,7 +3385,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		}
 		//
 		if (method->isVariadic() == false &&
-			method->getArgumentTypes().size() == 1) {
+			method->getArgumentTypes().size() == 2) {
 			// find the single argument right
 			auto operatorString = getOperatorAsString(nextOperator.operator_);
 			// find left argument
@@ -3389,7 +3408,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				preprocessedStatement =
 					_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
 					_StringTools::generate("\n", leftArgumentNewLines) +
-					prefixOperatorMethod->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ")" +
+					prefixOperatorMethod->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", \"" + operatorString + "\")" +
 					_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size(), preprocessedStatement.size()
 				);
 			} else
@@ -3397,7 +3416,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				// substitute with method call
 				preprocessedStatement =
 					_StringTools::substring(preprocessedStatement, 0, nextOperator.idx) +
-					postfixOperatorMethod->getMethodName() + "(" + rightArgument + ")" +
+					postfixOperatorMethod->getMethodName() + "(" + rightArgument + ", \"" + operatorString + "\")" +
 					_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size());
 			} else {
 				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": Requires left or right argument");
@@ -3406,7 +3425,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 		} else
 		if (method->isVariadic() == true ||
-			method->getArgumentTypes().size() == 2) {
+			method->getArgumentTypes().size() == 3) {
 			//
 			auto operatorString = getOperatorAsString(nextOperator.operator_);
 			// find left argument
@@ -3437,7 +3456,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			preprocessedStatement =
 				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
 				_StringTools::generate("\n", leftArgumentNewLines) +
-				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + rightArgument + ")" +
+				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + rightArgument + ", \"" + operatorString + "\")" +
 				_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
 			);
 			//
