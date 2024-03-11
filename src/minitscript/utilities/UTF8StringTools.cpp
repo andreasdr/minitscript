@@ -275,7 +275,7 @@ const string UTF8StringTools::getCharAt(const string& str, int64_t index, UTF8Ch
 	return u8It.hasNext() == true?Character::toString(u8It.next()):string();
 }
 
-const uint32_t UTF8StringTools::getCodePointAt(const string& str, int64_t index, ::minitscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
+uint32_t UTF8StringTools::getCodePointAt(const string& str, int64_t index, ::minitscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache) {
 	// utf8 character iterator
 	UTF8CharacterIterator u8It(str, cache);
 	u8It.seekCharacterPosition(index);
