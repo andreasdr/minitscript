@@ -326,7 +326,7 @@ public:
 	 * @param cache UTF8 position cache
 	 * @return character as codepoint
 	 */
-	static const uint32_t getCodePointAt(const string& str, int64_t index, ::minitscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
+	static uint32_t getCodePointAt(const string& str, int64_t index, ::minitscript::utilities::UTF8CharacterIterator::UTF8PositionCache* cache = nullptr);
 
 	/**
 	 * Get UTF8 binary buffer index
