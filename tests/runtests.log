@@ -1,5 +1,3 @@
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\advanced-test.tscript 
 ---------------------------
 advanced-test: Initialize
 --------------------------
@@ -15,13 +13,13 @@ byte array initialized with: $byteArray = ByteArray(): ByteArray([], size: 0, ca
 pushed bool value 'true': ByteArray([1], size: 1, capacity: 1, read position: 0, write position: 1)
 pushed int8 value '1': ByteArray([1, 1], size: 2, capacity: 2, read position: 0, write position: 2)
 pushed int16 value '2': ByteArray([1, 1, 2, 0], size: 4, capacity: 4, read position: 0, write position: 4)
-pushed int32 value '3': ByteArray([1, 1, 2, 0, 3, 0, 0, 0], size: 8, capacity: 9, read position: 0, write position: 8)
-pushed int64 value '4': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0], size: 16, capacity: 19, read position: 0, write position: 16)
-pushed float value '1234.4567': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68], size: 20, capacity: 28, read position: 0, write position: 20)
-pushed small string value 'Hi there!': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33], size: 30, capacity: 42, read position: 0, write position: 30)
-pushed medium string value 'Hi there!!': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33], size: 42, capacity: 42, read position: 0, write position: 42)
-pushed large string value 'Hi there!!!': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 11, 0, 0, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 33], size: 57, capacity: 63, read position: 0, write position: 57)
-change int8 value '1' to '5': ByteArray([1, 5, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 11, 0, 0, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 33], size: 57, capacity: 63, read position: 0, write position: 57)
+pushed int32 value '3': ByteArray([1, 1, 2, 0, 3, 0, 0, 0], size: 8, capacity: 8, read position: 0, write position: 8)
+pushed int64 value '4': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0], size: 16, capacity: 16, read position: 0, write position: 16)
+pushed float value '1234.4567': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68], size: 20, capacity: 32, read position: 0, write position: 20)
+pushed small string value 'Hi there!': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33], size: 30, capacity: 32, read position: 0, write position: 30)
+pushed medium string value 'Hi there!!': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33], size: 42, capacity: 64, read position: 0, write position: 42)
+pushed large string value 'Hi there!!!': ByteArray([1, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 11, 0, 0, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 33], size: 57, capacity: 64, read position: 0, write position: 57)
+change int8 value '1' to '5': ByteArray([1, 5, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 11, 0, 0, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 33], size: 57, capacity: 64, read position: 0, write position: 57)
 byte array iteration with $byteArray->readInt8(): 
 read position: 0
 0: 1
@@ -91,8 +89,8 @@ read float value '1234.4567': 1234.567749
 read small string value 'Hi there!': Hi there!
 read medium string value 'Hi there!!': Hi there!!
 read large string value 'Hi there!!!': Hi there!!!
-removed byte 5 until byte 15: ByteArray([1, 5, 2, 0, 3, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 11, 0, 0, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 33], size: 47, capacity: 63, read position: 57, write position: 57)
-cleared byte array: ByteArray([], size: 0, capacity: 63, read position: 57, write position: 57)
+removed byte 5 until byte 15: ByteArray([1, 5, 2, 0, 3, 0, 43, 82, 154, 68, 9, 72, 105, 32, 116, 104, 101, 114, 101, 33, 10, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 11, 0, 0, 0, 72, 105, 32, 116, 104, 101, 114, 101, 33, 33, 33], size: 47, capacity: 64, read position: 57, write position: 57)
+cleared byte array: ByteArray([], size: 0, capacity: 64, read position: 57, write position: 57)
 ---------
 Arrays
 ---------
@@ -180,17 +178,17 @@ map value for test3 using map dot operator: 789
 map value for test4 using map dot operator: [1, 2, 3]
 map value for test5 using map dot operator: Yaaaa
 adding map values using map dot operator: 
-map keys: ["test1", "test3", "test4", "test5", "test2", "test6", "test7", "test8"]
-map values: [123, 789, [1, 2, 3], "Yaaaa", 456, 666, 770, 890]
+map keys: ["test8", "test7", "test6", "test5", "test4", "test3", "test2", "test1"]
+map values: [890, 770, 666, "Yaaaa", [1, 2, 3], 789, 456, 123]
 iterating keys and values using $map->getKeys(): 
-test1 = 123
-test3 = 789
-test4 = [1, 2, 3]
-test5 = Yaaaa
-test2 = 456
-test6 = 666
-test7 = 770
 test8 = 890
+test7 = 770
+test6 = 666
+test5 = Yaaaa
+test4 = [1, 2, 3]
+test3 = 789
+test2 = 456
+test1 = 123
 ---------
 Sets
 ----------
@@ -200,20 +198,18 @@ put some keys into set: $set->insert()
 set now looks like: {"test1", "test2", "test3", "test4", "test5"}
 remove test2 via $set->remove: 
 set now looks like: {"test1", "test3", "test4", "test5"}
-set does have test1 key using $set->has(): true
-set does have test2 key using $set->has(): false
-set does have test3 key using $set->has(): true
-set does have test4 key using $set->has(): true
-set does have test5 key using $set->has(): true
+set does have test1 key using $set->contains(): true
+set does have test2 key using $set->contains(): false
+set does have test3 key using $set->contains(): true
+set does have test4 key using $set->contains(): true
+set does have test5 key using $set->contains(): true
 set key for test1 using set dot operator: true
 set key for test2 using set dot operator: false
 set key for test3 using set dot operator: true
 set key for test4 using set dot operator: true
 set key for test5 using set dot operator: true
 inserting set values using set dot operator: 
-set keys: ["test9", "test1", "test3", "test4", "test5", "test6", "test7"]
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\application-test.tscript 
+set keys: ["test9", "test7", "test6", "test5", "test4", "test3", "test1"]
 ------------------------------
 application-test: Initialize
 ------------------------------
@@ -222,14 +218,11 @@ application-test: Initialize
 application-test: Nothing
 ---------------------------
 
-$application::OS = Windows-MSC
+$application::OS = Linux
 $application::CPU = X64
-application.getArguments(): [".\bin\\minitscript\tools\\minitscript"]
-application.execute('ver'): 
-Microsoft Windows [Version 10.0.22000.2538]
+application.getArguments(): ["./bin/minitscript/tools/minitscript"]
+application.execute('uname -a'): Linux andreas-mint 5.15.0-97-generic #107-Ubuntu SMP Wed Feb 7 13:26:48 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
 
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\base-test.tscript 
 -----------------------
 base-test: Initialize
 -----------------------
@@ -302,9 +295,9 @@ math.cos(0.0): 1.000000
 math.sin(0.0): 0.000000
 math.tan(1.0): 1.557408
 math.sqrt(9.0): 3.000000
-math.random(): 0.001251
-math.random(): 0.563585
-math.random(): 0.193304
+math.random(): 0.840188
+math.random(): 0.394383
+math.random(): 0.783099
 math.exp(1.0): 2.718282
 math.log(2.0): 0.693147
 math.sign(-2): -1
@@ -445,8 +438,6 @@ else: 4
 Test: string concatenation with brackets in string literals: 1(2)
 -------------------------------------------------------------------------------------
 (4.0 + 2.0) / 2.0 + (20.0 / 10.0 * (2.0 + 5)): 17.000000 = 17
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\class-test.tscript 
 ------------------------
 class-test: Initialize
 ------------------------
@@ -487,8 +478,6 @@ class-test.tscript:16: $var.wheelCount = 456: Private variable: $var.wheelCount:
 class-test.tscript:11: $var.wheelCount = 123: Private variable: $var.wheelCount: access not allowed from outside of object
 	testPrivateFunction(): Hello World
 class-test.tscript:122: $car->testPrivateFunction(): Private variable: $car: access not allowed from outside of object
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\console-test.tscript  0<tests\console-test.input 
 --------------------------
 console-test: Initialize
 --------------------------
@@ -498,8 +487,6 @@ console-test: Nothing
 -----------------------
 
 Whats your name: You have the mighty name: Andreas Drewke
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\constants-test.tscript 
 ----------------------------
 constants-test: Initialize
 ----------------------------
@@ -513,9 +500,7 @@ constants-test.tscript:22: $ARRAY = [1,2,3,4]: Constant: $ARRAY: assignment of c
 constants-test.tscript:23: $ARRAY[0] = 5: Constant: $ARRAY[0]: assignment of constant is not allowed
 constants-test.tscript:24: $MAP = {a: 1, b: 2, c: 3, d: 4}: Constant: $MAP: assignment of constant is not allowed
 constants-test.tscript:25: $MAP.a = 5: Constant: $MAP.a: assignment of constant is not allowed
-{"$ARRAY": [1, 2, 3, 4], "$MAP": {"a": 1, "b": 2, "c": 3, "d": 4}, "$PRIMITIVE": 1234, "$___ARRAY": [], "$___MAP": {}, "$___NULL": <Null>, "$application::CPU": "X64", "$application::EXITCODE_FAILURE": 1, "$application::EXITCODE_SUCCESS": 0, "$application::OS": "Windows-MSC", "$http::HTTP_STATUS_ACCEPTED": 202, "$http::HTTP_STATUS_ALREADYREPORTED": 208, "$http::HTTP_STATUS_BADGATEWAY": 502, "$http::HTTP_STATUS_BADREQUEST": 400, "$http::HTTP_STATUS_CONFLICT": 409, "$http::HTTP_STATUS_CONTENTTOOLARGE": 413, "$http::HTTP_STATUS_CONTINUE": 100, "$http::HTTP_STATUS_CREATED": 201, "$http::HTTP_STATUS_EARLYHINTS": 103, "$http::HTTP_STATUS_EXPECTATIONFAILED": 417, "$http::HTTP_STATUS_FAILEDDEPENDENCY": 424, "$http::HTTP_STATUS_FORBIDDEN": 403, "$http::HTTP_STATUS_FOUND": 302, "$http::HTTP_STATUS_GATEWAYTIMEOUT": 504, "$http::HTTP_STATUS_GONE": 410, "$http::HTTP_STATUS_HTTPVERSIONNOTSUPPORTED": 505, "$http::HTTP_STATUS_IMATEAPOT": 418, "$http::HTTP_STATUS_IMUSED": 226, "$http::HTTP_STATUS_INSUFFICIENTSTORAGE": 507, "$http::HTTP_STATUS_INTERNALSERVERERROR": 500, "$http::HTTP_STATUS_LENGTHREQUIRED": 411, "$http::HTTP_STATUS_LOCKED": 423, "$http::HTTP_STATUS_LOOPDETECTED": 508, "$http::HTTP_STATUS_MAX": 1023, "$http::HTTP_STATUS_METHODNOTALLOWED": 405, "$http::HTTP_STATUS_MISDIRECTEDREQUEST": 421, "$http::HTTP_STATUS_MOVEDPERMANENTLY": 301, "$http::HTTP_STATUS_MULTIPLECHOICES": 300, "$http::HTTP_STATUS_MULTISTATUS": 207, "$http::HTTP_STATUS_NETWORKAUTHENTICATIONREQUIRED": 511, "$http::HTTP_STATUS_NOCONTENT": 204, "$http::HTTP_STATUS_NONAUTHORITATIVEINFORMATION": 203, "$http::HTTP_STATUS_NOTACCEPTABLE": 406, "$http::HTTP_STATUS_NOTEXTENDED": 510, "$http::HTTP_STATUS_NOTFOUND": 404, "$http::HTTP_STATUS_NOTIMPLEMENTED": 501, "$http::HTTP_STATUS_NOTMODIFIED": 304, "$http::HTTP_STATUS_OK": 200, "$http::HTTP_STATUS_PARTIALCONTENT": 206, "$http::HTTP_STATUS_PAYLOADTOOLARGE": 413, "$http::HTTP_STATUS_PAYMENTREQUIRED": 402, "$http::HTTP_STATUS_PERMANENTREDIRECT": 308, "$http::HTTP_STATUS_PRECONDITIONFAILED": 412, "$http::HTTP_STATUS_PRECONDITIONREQUIRED": 428, "$http::HTTP_STATUS_PROCESSING": 102, "$http::HTTP_STATUS_PROXYAUTHENTICATIONREQUIRED": 407, "$http::HTTP_STATUS_RANGENOTSATISFIABLE": 416, "$http::HTTP_STATUS_REQUESTHEADERFIELDSTOOLARGE": 431, "$http::HTTP_STATUS_REQUESTTIMEOUT": 408, "$http::HTTP_STATUS_RESETCONTENT": 205, "$http::HTTP_STATUS_SEEOTHER": 303, "$http::HTTP_STATUS_SERVICEUNAVAILABLE": 503, "$http::HTTP_STATUS_SWITCHINGPROTOCOLS": 101, "$http::HTTP_STATUS_TEMPORARYREDIRECT": 307, "$http::HTTP_STATUS_TOOEARLY": 425, "$http::HTTP_STATUS_TOOMANYREQUESTS": 429, "$http::HTTP_STATUS_UNAUTHORIZED": 401, "$http::HTTP_STATUS_UNAVAILABLEFORLEGALREASONS": 451, "$http::HTTP_STATUS_UNPROCESSABLECONTENT": 422, "$http::HTTP_STATUS_UNPROCESSABLEENTITY": 422, "$http::HTTP_STATUS_UNSUPPORTEDMEDIATYPE": 415, "$http::HTTP_STATUS_UPGRADEREQUIRED": 426, "$http::HTTP_STATUS_URITOOLONG": 414, "$http::HTTP_STATUS_USEPROXY": 305, "$http::HTTP_STATUS_VARIANTALSONEGOTIATES": 506, "$math::DEG2RAD": 0.017453, "$math::EPSILON": 0.000000, "$math::PI": 3.141593}
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\context-test.tscript 
+{"$ARRAY": [1, 2, 3, 4], "$MAP": {"a": 1, "b": 2, "c": 3, "d": 4}, "$PRIMITIVE": 1234, "$___ARRAY": [], "$___MAP": {}, "$___NULL": <Null>, "$application::CPU": "X64", "$application::EXITCODE_FAILURE": 1, "$application::EXITCODE_SUCCESS": 0, "$application::OS": "Linux", "$http::HTTP_STATUS_ACCEPTED": 202, "$http::HTTP_STATUS_ALREADYREPORTED": 208, "$http::HTTP_STATUS_BADGATEWAY": 502, "$http::HTTP_STATUS_BADREQUEST": 400, "$http::HTTP_STATUS_CONFLICT": 409, "$http::HTTP_STATUS_CONTENTTOOLARGE": 413, "$http::HTTP_STATUS_CONTINUE": 100, "$http::HTTP_STATUS_CREATED": 201, "$http::HTTP_STATUS_EARLYHINTS": 103, "$http::HTTP_STATUS_EXPECTATIONFAILED": 417, "$http::HTTP_STATUS_FAILEDDEPENDENCY": 424, "$http::HTTP_STATUS_FORBIDDEN": 403, "$http::HTTP_STATUS_FOUND": 302, "$http::HTTP_STATUS_GATEWAYTIMEOUT": 504, "$http::HTTP_STATUS_GONE": 410, "$http::HTTP_STATUS_HTTPVERSIONNOTSUPPORTED": 505, "$http::HTTP_STATUS_IMATEAPOT": 418, "$http::HTTP_STATUS_IMUSED": 226, "$http::HTTP_STATUS_INSUFFICIENTSTORAGE": 507, "$http::HTTP_STATUS_INTERNALSERVERERROR": 500, "$http::HTTP_STATUS_LENGTHREQUIRED": 411, "$http::HTTP_STATUS_LOCKED": 423, "$http::HTTP_STATUS_LOOPDETECTED": 508, "$http::HTTP_STATUS_MAX": 1023, "$http::HTTP_STATUS_METHODNOTALLOWED": 405, "$http::HTTP_STATUS_MISDIRECTEDREQUEST": 421, "$http::HTTP_STATUS_MOVEDPERMANENTLY": 301, "$http::HTTP_STATUS_MULTIPLECHOICES": 300, "$http::HTTP_STATUS_MULTISTATUS": 207, "$http::HTTP_STATUS_NETWORKAUTHENTICATIONREQUIRED": 511, "$http::HTTP_STATUS_NOCONTENT": 204, "$http::HTTP_STATUS_NONAUTHORITATIVEINFORMATION": 203, "$http::HTTP_STATUS_NOTACCEPTABLE": 406, "$http::HTTP_STATUS_NOTEXTENDED": 510, "$http::HTTP_STATUS_NOTFOUND": 404, "$http::HTTP_STATUS_NOTIMPLEMENTED": 501, "$http::HTTP_STATUS_NOTMODIFIED": 304, "$http::HTTP_STATUS_OK": 200, "$http::HTTP_STATUS_PARTIALCONTENT": 206, "$http::HTTP_STATUS_PAYLOADTOOLARGE": 413, "$http::HTTP_STATUS_PAYMENTREQUIRED": 402, "$http::HTTP_STATUS_PERMANENTREDIRECT": 308, "$http::HTTP_STATUS_PRECONDITIONFAILED": 412, "$http::HTTP_STATUS_PRECONDITIONREQUIRED": 428, "$http::HTTP_STATUS_PROCESSING": 102, "$http::HTTP_STATUS_PROXYAUTHENTICATIONREQUIRED": 407, "$http::HTTP_STATUS_RANGENOTSATISFIABLE": 416, "$http::HTTP_STATUS_REQUESTHEADERFIELDSTOOLARGE": 431, "$http::HTTP_STATUS_REQUESTTIMEOUT": 408, "$http::HTTP_STATUS_RESETCONTENT": 205, "$http::HTTP_STATUS_SEEOTHER": 303, "$http::HTTP_STATUS_SERVICEUNAVAILABLE": 503, "$http::HTTP_STATUS_SWITCHINGPROTOCOLS": 101, "$http::HTTP_STATUS_TEMPORARYREDIRECT": 307, "$http::HTTP_STATUS_TOOEARLY": 425, "$http::HTTP_STATUS_TOOMANYREQUESTS": 429, "$http::HTTP_STATUS_UNAUTHORIZED": 401, "$http::HTTP_STATUS_UNAVAILABLEFORLEGALREASONS": 451, "$http::HTTP_STATUS_UNPROCESSABLECONTENT": 422, "$http::HTTP_STATUS_UNPROCESSABLEENTITY": 422, "$http::HTTP_STATUS_UNSUPPORTEDMEDIATYPE": 415, "$http::HTTP_STATUS_UPGRADEREQUIRED": 426, "$http::HTTP_STATUS_URITOOLONG": 414, "$http::HTTP_STATUS_USEPROXY": 305, "$http::HTTP_STATUS_VARIANTALSONEGOTIATES": 506, "$math::DEG2RAD": 0.017453, "$math::EPSILON": 0.000000, "$math::PI": 3.141593}
 --------------------------
 context-test: Initialize
 --------------------------
@@ -527,7 +512,7 @@ context-test: Nothing
 context-test runs natively: false
 Context script ids: ["application"]
 Loading script: context-test-2.tscript
-Context script ids: ["application", "context-test-2"]
+Context script ids: ["context-test-2", "application"]
 Checking if callable hello2() does exist in context-test-2
 Calling hello2 from context-test-2
 context-test-2 runs natively: false
@@ -538,8 +523,6 @@ context-test-2: Trying to remove script 'application'
 An error occurred: script with id application is currently in use
 Removing script context-test-2
 Context script ids: ["application"]
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\cryptography-test.tscript 
 -------------------------------
 cryptography-test: Initialize
 -------------------------------
@@ -551,8 +534,6 @@ cryptography-test: Nothing
 cryptography.base64.encode('Andreas is a very good boy'): QW5kcmVhcyBpcyBhIHZlcnkgZ29vZCBib3k=
 cryptography.base64.decode($base64String): Andreas is a very good boy
 cryptography.sha256.encode('Andreas is a very good boy'): 71e3379e675b7005686c6a586b6cd255e68f270a9dac45c26fa3fcdd1a52353e
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\emit-test.tscript 
 -----------------------
 emit-test: Initialize
 -----------------------
@@ -579,9 +560,7 @@ SCRIPT JUST EMITTED A CONDITION
 ----------
 Benchmark 
 ----------
-Finished. Time: 5622
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\filesystem-test.tscript 
+Finished. Time: 2509
 -----------------------------
 filesystem-test: Initialize
 -----------------------------
@@ -601,10 +580,10 @@ filesystem.isDrive('filesystem-test'): false
 filesystem.isDrive('C:'): true
 filesystem.isDrive('C:/'): true
 Creating path: filesystem-test
-filesystem.getCurrentWorkingPathName(): C:\Users\andre\Development\drewke.net\minitscript
+filesystem.getCurrentWorkingPathName(): /home/andreas/Development/drewke.net/minitscript
 Changing path: filesystem-test
-filesystem.getCurrentWorkingPathName(): C:\Users\andre\Development\drewke.net\minitscript\filesystem-test
-Changing path: C:\Users\andre\Development\drewke.net\minitscript
+filesystem.getCurrentWorkingPathName(): /home/andreas/Development/drewke.net/minitscript/filesystem-test
+Changing path: /home/andreas/Development/drewke.net/minitscript
 filesystem.exists('filesystem-test'): true
 filesystem.exists('filesystem-test-123'): false
 Listing path: filesystem-test
@@ -628,8 +607,6 @@ File@0: ..
 File@1: test-renamed.txt
 Removing file: filesystem-test/test-renamed.txt
 Removing path: filesystem-test
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\functions-test.tscript 
 ----------------------------
 functions-test: Initialize
 ----------------------------
@@ -645,8 +622,6 @@ globalVariableTest(): pre: $globalTest = Global Test Variable
 globalVariableTest(): $GLOBAL.globalTest = Global Test Variable
 globalVariableTest(): post: $globalTest = Been there, done that, got the t-shirt
 stackletTest(): $a = 0, $b = b, $c = c, $GLOBAL.globalTest = Been there, done that, got the t-shirt
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\lamdafunctions-test.tscript 
 ---------------------------------
 lamdafunctions-test: Initialize
 ---------------------------------
@@ -681,16 +656,14 @@ bbb
 ccc
 set.forEach() log test: {aaa, bbb, ccc}
 set.forEach() concatenate test: {aaa, bbb, ccc}: aaa,bbb,ccc
-a = 1
-b = 2
 c = 3
+b = 2
+a = 1
 map.forEach() sum test: {a: 1, b: 2, c: 3}: 6
 testing inline functions in arrays
 a: 1
 b: 2
 c: 3
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\loop-test.tscript 
 -----------------------
 loop-test: Initialize
 -----------------------
@@ -835,11 +808,11 @@ $var3 = a
 $var3 = b
 $var3 = c
 test forEach with map
-$key = a, $value = 1
-$key = b, $value = 2
 $key = c, $value = 3
+$key = b, $value = 2
+$key = a, $value = 1
 test forEach with map with references to the values
-$map = {"a": 100, "b": 101, "c": 102}
+$map = {"a": 102, "b": 101, "c": 100}
 test forEach with map initializer
 $key = x, $value = 24
 $key = y, $value = 25
@@ -861,8 +834,6 @@ test forEach with empty array
 test forEach with empty set
 test forEach with empty map
 done
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\network-test.tscript 
 --------------------------
 network-test: Initialize
 --------------------------
@@ -874,7 +845,7 @@ network-test: Nothing
 Fetch drewke.net/tdme2/ via HTTP
 Success: true
 HTTP response status: 200
-HTTP headers: {"Accept-Ranges": "bytes", "Age": "1828", "Connection": "close", "Content-Length": "593", "Content-Type": "text/html;charset=ISO-8859-1", "Date": "Mon, 11 Mar 2024 10:34:44 GMT", "Server": "Apache", "Vary": "Accept-Encoding", "Via": "1.1 webcache2 (Varnish/trunk)", "X-Varnish": "8870661538 8865744305"}
+HTTP headers: {"Accept-Ranges": "bytes", "Age": "0", "Connection": "close", "Content-Length": "593", "Content-Type": "text/html;charset=ISO-8859-1", "Date": "Mon, 11 Mar 2024 15:26:58 GMT", "Server": "Apache", "Vary": "Accept-Encoding", "Via": "1.1 webcache2 (Varnish/trunk)", "X-Varnish": "8990961902"}
 HTTP response: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
  <head>
@@ -891,7 +862,7 @@ HTTP response: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 Fetch drewke.net/tdme2/ via HTTPS
 Success: true
 HTTP response status: 200
-HTTP headers: {"Accept-Ranges": "bytes", "Age": "1828", "Connection": "close", "Content-Length": "593", "Content-Type": "text/html;charset=ISO-8859-1", "Date": "Mon, 11 Mar 2024 10:34:44 GMT", "Server": "Apache", "Vary": "Accept-Encoding", "Via": "1.1 webcache2 (Varnish/trunk)", "X-Varnish": "8872496233 8834061714"}
+HTTP headers: {"Accept-Ranges": "bytes", "Age": "0", "Connection": "close", "Content-Length": "593", "Content-Type": "text/html;charset=ISO-8859-1", "Date": "Mon, 11 Mar 2024 15:26:59 GMT", "Server": "Apache", "Vary": "Accept-Encoding", "Via": "1.1 webcache2 (Varnish/trunk)", "X-Varnish": "9042825560"}
 HTTP response: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
  <head>
@@ -906,11 +877,9 @@ HTTP response: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 
 
 HTTP download client: HTTPDownloadClientClass(url: https://download.freebsd.org/releases/ISO-IMAGES/14.0/FreeBSD-14.0-RELEASE-amd64-bootonly.iso, file: FreeBSD-14.0-RELEASE-amd64-bootonly.iso)
-[                                                                    ] 0%[                                                                    ] 0%[                                                                    ] 0%[                                                                    ] 1%[-                                                                   ] 1%[-                                                                   ] 2%[-                                                                   ] 2%[--                                                                  ] 3%[--                                                                  ] 3%[---                                                                 ] 4%[---                                                                 ] 5%[---                                                                 ] 5%[----                                                                ] 6%[----                                                                ] 6%[----                                                                ] 7%[-----                                                               ] 7%[-----                                                               ] 8%[------                                                              ] 8%[------                                                              ] 9%[------                                                              ] 9%[-------                                                             ] 10%[-------                                                             ] 10%[-------                                                             ] 11%[--------                                                            ] 12%[--------                                                            ] 12%[--------                                                            ] 13%[---------                                                           ] 13%[---------                                                           ] 14%[----------                                                          ] 14%[----------                                                          ] 15%[----------                                                          ] 15%[-----------                                                         ] 16%[-----------                                                         ] 16%[-----------                                                         ] 17%[------------                                                        ] 17%[------------                                                        ] 18%[------------                                                        ] 18%[-------------                                                       ] 19%[-------------                                                       ] 20%[-------------                                                       ] 20%[--------------                                                      ] 21%[--------------                                                      ] 21%[---------------                                                     ] 22%[---------------                                                     ] 22%[---------------                                                     ] 23%[----------------                                                    ] 23%[----------------                                                    ] 24%[----------------                                                    ] 24%[-----------------                                                   ] 25%[-----------------                                                   ] 25%[------------------                                                  ] 26%[------------------                                                  ] 26%[------------------                                                  ] 27%[-------------------                                                 ] 28%[-------------------                                                 ] 28%[-------------------                                                 ] 29%[--------------------                                                ] 29%[--------------------                                                ] 30%[--------------------                                                ] 30%[---------------------                                               ] 31%[---------------------                                               ] 31%[----------------------                                              ] 32%[----------------------                                              ] 32%[----------------------                                              ] 33%[-----------------------                                             ] 34%[-----------------------                                             ] 34%[-----------------------                                             ] 35%[------------------------                                            ] 35%[------------------------                                            ] 36%[------------------------                                            ] 36%[-------------------------                                           ] 37%[-------------------------                                           ] 37%[--------------------------                                          ] 38%[--------------------------                                          ] 38%[--------------------------                                          ] 39%[--------------------------                                          ] 39%[---------------------------                                         ] 40%[---------------------------                                         ] 40%[----------------------------                                        ] 41%[----------------------------                                        ] 41%[----------------------------                                        ] 42%[-----------------------------                                       ] 42%[-----------------------------                                       ] 43%[-----------------------------                                       ] 43%[------------------------------                                      ] 44%[------------------------------                                      ] 44%[------------------------------                                      ] 45%[-------------------------------                                     ] 45%[-------------------------------                                     ] 46%[-------------------------------                                     ] 46%[--------------------------------                                    ] 47%[--------------------------------                                    ] 47%[--------------------------------                                    ] 47%[--------------------------------                                    ] 48%[---------------------------------                                   ] 48%[---------------------------------                                   ] 49%[---------------------------------                                   ] 49%[----------------------------------                                  ] 50%[----------------------------------                                  ] 50%[-----------------------------------                                 ] 51%[-----------------------------------                                 ] 52%[-----------------------------------                                 ] 52%[------------------------------------                                ] 52%[------------------------------------                                ] 53%[------------------------------------                                ] 53%[-------------------------------------                               ] 54%[-------------------------------------                               ] 55%[-------------------------------------                               ] 55%[--------------------------------------                              ] 56%[--------------------------------------                              ] 56%[--------------------------------------                              ] 57%[---------------------------------------                             ] 57%[---------------------------------------                             ] 58%[---------------------------------------                             ] 58%[----------------------------------------                            ] 59%[----------------------------------------                            ] 59%[----------------------------------------                            ] 60%[-----------------------------------------                           ] 60%[-----------------------------------------                           ] 61%[-----------------------------------------                           ] 61%[------------------------------------------                          ] 62%[------------------------------------------                          ] 62%[------------------------------------------                          ] 63%[-------------------------------------------                         ] 63%[-------------------------------------------                         ] 64%[--------------------------------------------                        ] 64%[--------------------------------------------                        ] 65%[--------------------------------------------                        ] 65%[---------------------------------------------                       ] 66%[---------------------------------------------                       ] 66%[---------------------------------------------                       ] 67%[----------------------------------------------                      ] 67%[----------------------------------------------                      ] 68%[----------------------------------------------                      ] 68%[-----------------------------------------------                     ] 69%[-----------------------------------------------                     ] 70%[-----------------------------------------------                     ] 70%[------------------------------------------------                    ] 71%[------------------------------------------------                    ] 71%[-------------------------------------------------                   ] 72%[-------------------------------------------------                   ] 72%[-------------------------------------------------                   ] 73%[--------------------------------------------------                  ] 73%[--------------------------------------------------                  ] 74%[--------------------------------------------------                  ] 74%[---------------------------------------------------                 ] 75%[---------------------------------------------------                 ] 75%[---------------------------------------------------                 ] 76%[----------------------------------------------------                ] 76%[----------------------------------------------------                ] 77%[----------------------------------------------------                ] 77%[-----------------------------------------------------               ] 78%[-----------------------------------------------------               ] 78%[-----------------------------------------------------               ] 79%[------------------------------------------------------              ] 79%[------------------------------------------------------              ] 80%[------------------------------------------------------              ] 80%[-------------------------------------------------------             ] 81%[-------------------------------------------------------             ] 81%[--------------------------------------------------------            ] 82%[--------------------------------------------------------            ] 82%[--------------------------------------------------------            ] 83%[---------------------------------------------------------           ] 84%[---------------------------------------------------------           ] 84%[---------------------------------------------------------           ] 85%[----------------------------------------------------------          ] 85%[----------------------------------------------------------          ] 86%[----------------------------------------------------------          ] 86%[-----------------------------------------------------------         ] 87%[-----------------------------------------------------------         ] 87%[-----------------------------------------------------------         ] 88%[------------------------------------------------------------        ] 88%[------------------------------------------------------------        ] 89%[-------------------------------------------------------------       ] 89%[-------------------------------------------------------------       ] 90%[-------------------------------------------------------------       ] 90%[--------------------------------------------------------------      ] 91%[--------------------------------------------------------------      ] 91%[--------------------------------------------------------------      ] 92%[---------------------------------------------------------------     ] 92%[---------------------------------------------------------------     ] 93%[---------------------------------------------------------------     ] 93%[----------------------------------------------------------------    ] 94%[----------------------------------------------------------------    ] 94%[----------------------------------------------------------------    ] 95%[-----------------------------------------------------------------   ] 96%[-----------------------------------------------------------------   ] 96%[-----------------------------------------------------------------   ] 96%[------------------------------------------------------------------  ] 97%[------------------------------------------------------------------  ] 97%[------------------------------------------------------------------  ] 98%[------------------------------------------------------------------- ] 99%[------------------------------------------------------------------- ] 99%[--------------------------------------------------------------------] 100%Downloaded complete: https://download.freebsd.org/releases/ISO-IMAGES/14.0/FreeBSD-14.0-RELEASE-amd64-bootonly.iso --> FreeBSD-14.0-RELEASE-amd64-bootonly.iso
+[                                                                    ] 0%[                                                                    ] 0%[                                                                    ] 0%[-                                                                   ] 1%[-                                                                   ] 2%[-                                                                   ] 2%[--                                                                  ] 3%[--                                                                  ] 3%[---                                                                 ] 4%[---                                                                 ] 5%[---                                                                 ] 5%[----                                                                ] 6%[----                                                                ] 7%[-----                                                               ] 7%[-----                                                               ] 8%[------                                                              ] 8%[------                                                              ] 9%[------                                                              ] 10%[-------                                                             ] 10%[-------                                                             ] 11%[--------                                                            ] 11%[--------                                                            ] 12%[--------                                                            ] 13%[---------                                                           ] 13%[---------                                                           ] 14%[----------                                                          ] 14%[----------                                                          ] 15%[----------                                                          ] 16%[-----------                                                         ] 16%[-----------                                                         ] 17%[------------                                                        ] 17%[------------                                                        ] 18%[-------------                                                       ] 19%[-------------                                                       ] 19%[-------------                                                       ] 20%[--------------                                                      ] 20%[--------------                                                      ] 21%[---------------                                                     ] 22%[---------------                                                     ] 22%[---------------                                                     ] 23%[----------------                                                    ] 23%[----------------                                                    ] 24%[-----------------                                                   ] 25%[-----------------                                                   ] 25%[-----------------                                                   ] 26%[------------------                                                  ] 27%[------------------                                                  ] 27%[-------------------                                                 ] 28%[-------------------                                                 ] 28%[--------------------                                                ] 29%[--------------------                                                ] 30%[--------------------                                                ] 30%[---------------------                                               ] 31%[---------------------                                               ] 31%[----------------------                                              ] 32%[----------------------                                              ] 33%[----------------------                                              ] 33%[-----------------------                                             ] 34%[-----------------------                                             ] 34%[------------------------                                            ] 35%[------------------------                                            ] 36%[------------------------                                            ] 36%[-------------------------                                           ] 37%[-------------------------                                           ] 37%[--------------------------                                          ] 38%[--------------------------                                          ] 39%[--------------------------                                          ] 39%[---------------------------                                         ] 40%[---------------------------                                         ] 40%[----------------------------                                        ] 41%[----------------------------                                        ] 41%[----------------------------                                        ] 42%[-----------------------------                                       ] 42%[-----------------------------                                       ] 43%[-----------------------------                                       ] 43%[------------------------------                                      ] 44%[------------------------------                                      ] 44%[------------------------------                                      ] 45%[------------------------------                                      ] 45%[-------------------------------                                     ] 45%[-------------------------------                                     ] 46%[--------------------------------                                    ] 47%[--------------------------------                                    ] 47%[--------------------------------                                    ] 48%[---------------------------------                                   ] 48%[---------------------------------                                   ] 49%[----------------------------------                                  ] 50%[----------------------------------                                  ] 50%[----------------------------------                                  ] 50%[-----------------------------------                                 ] 51%[-----------------------------------                                 ] 52%[-----------------------------------                                 ] 52%[------------------------------------                                ] 53%[------------------------------------                                ] 53%[-------------------------------------                               ] 54%[-------------------------------------                               ] 55%[-------------------------------------                               ] 55%[--------------------------------------                              ] 56%[--------------------------------------                              ] 56%[--------------------------------------                              ] 57%[---------------------------------------                             ] 57%[---------------------------------------                             ] 58%[----------------------------------------                            ] 58%[----------------------------------------                            ] 59%[----------------------------------------                            ] 60%[-----------------------------------------                           ] 60%[-----------------------------------------                           ] 61%[-----------------------------------------                           ] 61%[------------------------------------------                          ] 62%[------------------------------------------                          ] 62%[-------------------------------------------                         ] 63%[-------------------------------------------                         ] 63%[-------------------------------------------                         ] 64%[--------------------------------------------                        ] 64%[--------------------------------------------                        ] 65%[--------------------------------------------                        ] 65%[---------------------------------------------                       ] 66%[---------------------------------------------                       ] 67%[----------------------------------------------                      ] 67%[----------------------------------------------                      ] 68%[----------------------------------------------                      ] 68%[-----------------------------------------------                     ] 69%[-----------------------------------------------                     ] 69%[-----------------------------------------------                     ] 70%[------------------------------------------------                    ] 70%[------------------------------------------------                    ] 71%[------------------------------------------------                    ] 72%[-------------------------------------------------                   ] 72%[-------------------------------------------------                   ] 73%[--------------------------------------------------                  ] 73%[--------------------------------------------------                  ] 74%[---------------------------------------------------                 ] 75%[---------------------------------------------------                 ] 75%[---------------------------------------------------                 ] 75%[---------------------------------------------------                 ] 76%[----------------------------------------------------                ] 76%[----------------------------------------------------                ] 77%[-----------------------------------------------------               ] 78%[-----------------------------------------------------               ] 78%[-----------------------------------------------------               ] 79%[------------------------------------------------------              ] 79%[------------------------------------------------------              ] 80%[-------------------------------------------------------             ] 80%[-------------------------------------------------------             ] 81%[-------------------------------------------------------             ] 81%[--------------------------------------------------------            ] 82%[--------------------------------------------------------            ] 83%[--------------------------------------------------------            ] 83%[---------------------------------------------------------           ] 84%[---------------------------------------------------------           ] 85%[----------------------------------------------------------          ] 85%[----------------------------------------------------------          ] 86%[----------------------------------------------------------          ] 86%[-----------------------------------------------------------         ] 87%[-----------------------------------------------------------         ] 87%[------------------------------------------------------------        ] 88%[------------------------------------------------------------        ] 89%[-------------------------------------------------------------       ] 89%[-------------------------------------------------------------       ] 90%[-------------------------------------------------------------       ] 90%[--------------------------------------------------------------      ] 91%[--------------------------------------------------------------      ] 92%[---------------------------------------------------------------     ] 92%[---------------------------------------------------------------     ] 93%[---------------------------------------------------------------     ] 93%[----------------------------------------------------------------    ] 94%[----------------------------------------------------------------    ] 95%[-----------------------------------------------------------------   ] 95%[-----------------------------------------------------------------   ] 96%[-----------------------------------------------------------------   ] 97%[------------------------------------------------------------------  ] 97%[------------------------------------------------------------------  ] 98%[------------------------------------------------------------------- ] 98%[------------------------------------------------------------------- ] 99%[--------------------------------------------------------------------] 100%Downloaded complete: https://download.freebsd.org/releases/ISO-IMAGES/14.0/FreeBSD-14.0-RELEASE-amd64-bootonly.iso --> FreeBSD-14.0-RELEASE-amd64-bootonly.iso
 HTTP Download status code: 200
-HTTP Download response headers: {"Accept-Ranges": "bytes", "Connection": "close", "Content-Length": "447180800", "Content-Security-Policy": "default-src 'self' 'unsafe-inline'", "Content-Type": "application/octet-stream", "Date": "Mon, 11 Mar 2024 11:05:13 GMT", "ETag": "\"654df767-1aa77000\"", "Last-Modified": "Fri, 10 Nov 2023 09:27:03 GMT", "Server": "WeAreTheCloud/v0.01", "Strict-Transport-Security": "max-age=31536000", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "X-XSS-Protection": "1; mode=block"}
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\pipe-test.tscript  0<tests\pipe-test.input 
+HTTP Download response headers: {"Accept-Ranges": "bytes", "Connection": "close", "Content-Length": "447180800", "Content-Security-Policy": "default-src 'self' 'unsafe-inline'", "Content-Type": "application/octet-stream", "Date": "Mon, 11 Mar 2024 15:26:59 GMT", "ETag": "\"654df767-1aa77000\"", "Last-Modified": "Fri, 10 Nov 2023 09:27:03 GMT", "Server": "WeAreTheCloud/v0.01", "Strict-Transport-Security": "max-age=31536000", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "X-XSS-Protection": "1; mode=block"}
 -----------------------
 pipe-test: Initialize
 -----------------------
@@ -922,8 +891,6 @@ pipe-test: Nothing
 Reading from pipe or console input stream: 
 Input was: 
 ["Hi there!", "", "Have fun with our mighty Mindty MinitScript!!!", "", "Best regards", "Yours truly"]
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\preprocessor-test.tscript 
 -------------------------------
 preprocessor-test: Initialize
 ------------------------------
@@ -937,8 +904,6 @@ $i: 0
 $i++: 1
 $i: 2
 10 * 10: 100
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\string-test.tscript 
 -------------------------
 string-test: Initialize
 -------------------------
@@ -957,8 +922,6 @@ Some code point Umlauts love: äöü = 228 / 246 / 252
 Beep
 String::regexMatch("Andreas0815", "([A-Za-z]*)([0-9]*)", $matches): ["Andreas0815", "Andreas", "0815"]
 String::regexSearch("Who is this Andreas0815?", "Andreas([0-9]*)", $matches): ["Andreas0815", "0815"]
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\switch-test.tscript 
 -------------------------
 switch-test: Initialize
 -------------------------
@@ -969,8 +932,6 @@ switch-test: Nothing
 
 $i = 1
 $j = b
-
-C:\Users\andre\Development\drewke.net\minitscript>.\bin\minitscript\tools\minitscript resources\minitscript\tests\utf8-test.tscript 
 -----------------------
 utf8-test: Initialize
 -----------------------
