@@ -3444,7 +3444,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			//
 			if (nextOperator.operator_ == OPERATOR_SET) {
-				leftArgument = "\"" + doStatementPreProcessing(leftArgument, statement) + "\"";
+				leftArgument = "\"" + _StringTools::replace(doStatementPreProcessing(leftArgument, statement), "\"", "\\\"") + "\"";
 			}
 			//
 			auto leftArgumentNewLines = 0;
