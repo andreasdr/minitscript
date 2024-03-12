@@ -187,13 +187,13 @@ It generates a Makefile, which can be used with the Microsoft Compiler(MSC) nmak
 The basic usage looks like the following:
 
 ```
-minitscriptnmakefile tsrc TMakefile
+minitscriptnmakefile tsrc TMakefile.nmake
 ```
 
 The first argument is the path name, where we transpiled our scripts to, and where we added optional MinitScript main files and a MinitScript library C++ file.
 The second argument is just the Makefile file name.
 
-To create a build of your MinitScript application you can just run "nmake -f TMakefile". 
+To create a build of your MinitScript application you can just run "nmake -f TMakefile.nmake". 
 
 You can also generate a .dll(dynamic link library for Windows) file, to be embedded in other C++ applications.
 In this case the first argument needs to be "--library". 

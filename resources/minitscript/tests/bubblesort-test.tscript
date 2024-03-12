@@ -1,0 +1,47 @@
+# initialize
+on: initialize
+	console.printLine("-----------------------------")
+	console.printLine("bubblesort-test: Initialize")
+	console.printLine("-----------------------------")
+	console.printLine()
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.printLine("--------------------------")
+	console.printLine("bubblesort-test: Nothing")
+	console.printLine("--------------------------")
+	console.printLine()
+	#
+	$count = 1000
+	console.print("Creating array of integers with " + $count + " entries") 
+	$startTime = time.getCurrentMillis()
+	$array = [];
+	for ($i = 0, $i < $count, $i++)
+		$array[] = $count - $i
+	end
+	$endTime = time.getCurrentMillis()
+	console.printLine(", time: " + ($endTime - $startTime))
+	#
+	console.print("Sorting array of integers with " + $count + " entries")
+	$startTime = time.getCurrentMillis()
+	for ($i = 1, $i < $array->getSize(), $i++)
+        for ($j = 0, $j < $array->getSize() - $i, $j++)
+        	swap($array[$j], $array[$j + 1])
+        end
+    end
+	$endTime = time.getCurrentMillis()
+	console.printLine(", time: " + ($endTime - $startTime))
+	#
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.printLine("------------------------")
+	console.printLine("bubblesort-test: Error")
+	console.printLine("------------------------")
+	console.printLine("error message: " + script.error.getMessage())
+	console.printLine("error statement: " + script.error.getStatement())
+	script.stop()
+end
