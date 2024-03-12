@@ -16,22 +16,26 @@ on: nothing
 	$count = 1000
 	console.print("Creating array of integers with " + $count + " entries") 
 	$startTime = time.getCurrentMillis()
+	#
 	$array = [];
 	for ($i = 0, $i < $count, $i++)
 		$array[] = $count - $i
 	end
 	$endTime = time.getCurrentMillis()
-	console.printLine(", time: " + ($endTime - $startTime))
+	console.printLine(", time: " + ($endTime - $startTime) + ": " + $array)
 	#
 	console.print("Sorting array of integers with " + $count + " entries")
 	$startTime = time.getCurrentMillis()
+	#
 	for ($i = 1, $i < $array->getSize(), $i++)
         for ($j = 0, $j < $array->getSize() - $i, $j++)
-        	swap($array[$j], $array[$j + 1])
+        	if ($array[$j] > $array[$j + 1]) 
+        		swap($array[$j], $array[$j + 1])
+        	end
         end
     end
 	$endTime = time.getCurrentMillis()
-	console.printLine(", time: " + ($endTime - $startTime))
+	console.printLine(", time: " + ($endTime - $startTime) + ": " + $array)
 	#
 	script.stop()
 end
