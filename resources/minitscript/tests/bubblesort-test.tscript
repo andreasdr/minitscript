@@ -26,14 +26,26 @@ on: nothing
 	#
 	console.print("Sorting array of integers with " + $count + " entries")
 	$startTime = time.getCurrentMillis()
-	#
-	for ($i = 1, $i < $array->getSize(), $i++)
-        for ($j = 0, $j < $array->getSize() - $i, $j++)
-        	if ($array[$j] > $array[$j + 1]) 
-        		swap($array[$j], $array[$j + 1])
-        	end
-        end
-    end
+	# best code quality, but less performance
+	#for ($i = 1, $i < $array->getSize(), $i++)
+	#	for ($j = 0, $j < $array->getSize() - $i, $j++)
+	#		if ($array[$j] > $array[$j + 1]) 
+	#			swap($array[$j], $array[$j + 1])
+	#		end
+	#	end
+	#end
+	# this way is multiple times faster, without stacklets, which are generated if using "for" instead of "forCondition"
+	$i = 1
+	forCondition ($i < $array->getSize())
+		$j = 0
+		forCondition ($j < $array->getSize() - $i)
+			if ($array[$j] > $array[$j + 1]) 
+				swap($array[$j], $array[$j + 1])
+			end
+			$j++
+		end
+		$i++
+	end
 	$endTime = time.getCurrentMillis()
 	console.printLine(", time: " + ($endTime - $startTime) + ": " + $array)
 	#
