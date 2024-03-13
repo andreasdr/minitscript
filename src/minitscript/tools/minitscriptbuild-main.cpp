@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 	{
 		// create main argument values
 		vector<string> argumentValues;
-		for (auto i = 0; i < argc; i++) {
+		for (auto i = 1; i < argc; i++) {
 			string argumentValue(argv[i]);
 			//
 			if (argumentValue == "--help") continue;
