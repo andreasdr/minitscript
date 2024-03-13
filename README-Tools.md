@@ -230,9 +230,39 @@ See an example below:
 minitscriptdocumentation --heading=6 classes
 ```
 
-# 2. How to use MinitScript build script?
+# 2. How to use the minitscriptbuild tool
 
+If you want to have your script(s) executed in native mode, 
+which requires transpilation of MinitScript scripts to C++ and generation of main, library C++ files and make files, you can use the minitscriptbuild tool.
 
+Optional flags are:
+- --application - Build a application that can be executed from your Operating System
+- --library - Builds a .so(shared object file for Linux/BSD/MacOSX) file or a .dll(dynamic link library for Windows/MINGW) file, that can be embedded in other C++ applications
+- --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and do not want to use optional interpretion you can use the "--native-only" argument
+
+The basic usage looks like:
+ 
+```
+minitscriptbuild main.tscript [script1.tscript] [script2.tscript]
+```
+
+This example command compiles all the enlisted scripts and builds them into an executable application. 
+In this particular case, main.tscript is the main script which can be executed, script1.tscript and script2.tscript are examples for optional additional scripts that can be used e.g. from the main script.
+
+If there is no --application or --library command line argument, building applications is the default behaviour of minitscriptbuild tool. 
+
+If you want to have your scripts executed native only or do not want to ship the script files in your application installation package, you can e.g. use the following command: 
+
+```
+minitscriptbuild --native-only main.tscript [script1.tscript] [script2.tscript]
+```
+
+If you want to build a .so(shared object file for Linux/BSD/MacOSX) file or a .dll(dynamic link library for Windows/MINGW) file, that can be embedded in other C++ applications, 
+see an example below:  
+
+```
+minitscriptbuild --library [script1.tscript] [script2.tscript]
+```
 
 # 3. Other information
 
