@@ -140,6 +140,7 @@ SRCS = \
 
 MAIN_SRCS = \
 	src/minitscript/tools/minitscript-main.cpp \
+	src/minitscript/tools/minitscriptbuild-main.cpp \
 	src/minitscript/tools/minitscriptdocumentation-main.cpp \
 	src/minitscript/tools/minitscriptlibrary-main.cpp \
 	src/minitscript/tools/minitscriptmain-main.cpp \

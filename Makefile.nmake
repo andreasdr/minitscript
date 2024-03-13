@@ -89,6 +89,7 @@ all: \
 	minitscript \
 	minitscriptlibrary \
 	minitscriptmain \
+	minitscriptbuild \
 	minitscriptdocumentation \
 	minitscriptmakefile \
 	minitscriptnmakefile \
@@ -143,6 +144,11 @@ minitscriptmain:
 	rc $(MSCBIN)\minitscriptmain.exe.rc
 	cl /D MINITSCRIPT_DLL_IMPORT /Fe$(MSCBIN)\minitscriptmain /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/minitscript/tools/minitscriptmain-main.cpp $(MSCBIN)\minitscriptmain.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
 
+minitscriptbuild:
+	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc minitscriptbuild.exe $(MSCBIN)\minitscriptbuild.exe.rc
+	rc $(MSCBIN)\minitscriptbuild.exe.rc
+	cl /D MINITSCRIPT_DLL_IMPORT /Fe$(MSCBIN)\minitscriptbuild /Fo$(MSCOBJMAIN)/ $(FLAGS) $(INCLUDES) src/minitscript/tools/minitscriptbuild-main.cpp $(MSCBIN)\minitscriptbuild.exe.res /link $(LD_FLAGS) $(MAIN_LDFLAGS)
+
 minitscriptdocumentation:
 	.\ext\windows-msc\tools\createrc.exe resources/platforms/win32/app.rc minitscriptdocumentation.exe $(MSCBIN)\minitscriptdocumentation.exe.rc
 	rc $(MSCBIN)\minitscriptdocumentation.exe.rc
@@ -189,6 +195,7 @@ copy-executables:
 	mkdir bin\minitscript\tools
 
 	copy $(MSCBIN)\minitscript.exe bin\minitscript\tools\.
+	copy $(MSCBIN)\minitscriptbuild.exe bin\minitscript\tools\.
 	copy $(MSCBIN)\minitscriptdocumentation.exe bin\minitscript\tools\.
 	copy $(MSCBIN)\minitscriptlibrary.exe bin\minitscript\tools\.
 	copy $(MSCBIN)\minitscriptmain.exe bin\minitscript\tools\.
