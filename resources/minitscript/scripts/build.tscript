@@ -164,7 +164,7 @@ on: nothing
 	console.printLine("--------------------------")
 	console.printLine()
 	if (application.getArguments()->isEmpty() == true)
-		console.printLine("Usage: minitscriptbuildapp [--application|--library] [--native-only] main-script.tscript [additional-script1.tscript] [additional-script2.tscript] [additional-scriptN.tscript]")
+		console.printLine("Usage: minitscriptbuild [--application|--library] [--native-only] main-script.tscript [additional-script1.tscript] [additional-script2.tscript] [additional-scriptN.tscript]")
 	else
 		$scriptURIs = application.getArguments()
 		# remove the executable CLI argument at index 0
@@ -181,7 +181,7 @@ on: nothing
 		if ($application == true && $library == true)
 			console.printLine("Invalid command line arguments!")
 			console.printLine()
-			console.printLine("Usage: minitscriptbuildapp [--application|--library] [--native-only] main-script.tscript [additional-script1.tscript] [additional-script2.tscript] [additional-scriptN.tscript]")
+			console.printLine("Usage: minitscriptbuild [--application|--library] [--native-only] main-script.tscript [additional-script1.tscript] [additional-script2.tscript] [additional-scriptN.tscript]")
 			script.stop()
 		elseif ($application == false && $library == false)
 			$application = true
