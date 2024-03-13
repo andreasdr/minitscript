@@ -1,4 +1,18 @@
-# 1. How to use MinitScript tools?
+# 1. Introduction to MinitScript tools
+
+The MinitScript tool that you might use most is the MinitScript interpreter. 
+
+MinitScript tools also help with transpiling scripts and generating executable (main) files. 
+If using multiple scripts, it also helps with generating a library C++ file, which is required in this case.
+
+If you want your scripts working in native mode(which involves transpilation and such) 
+you also need to create a GNU make file or a Microsoft Compiler(MSC) nmake file. 
+
+MinitScript tools also help with generating documentation.
+
+See section 1.x to have a description of each tool. 
+
+If you just want to have your script(s) working in native mode, you can fast forward to section 2. and use the minitscriptbuild tool. 
 
 ## 1.1. "minitscript" tool
 
@@ -218,7 +232,11 @@ minitscriptdocumentation --heading=6 classes
 
 # 2. How to use MinitScript build script?
 
+
+
 # 3. Other information
+
+- this document and the Makefile build system itself is still WIP
 
 ## 3.1. Links
 
