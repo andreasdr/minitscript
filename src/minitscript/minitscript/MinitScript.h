@@ -69,6 +69,7 @@ class minitscript::minitscript::MinitScript {
 	friend class ApplicationMethods;
 	friend class BaseMethods;
 	friend class JSONMethods;
+	friend class MathMethods;
 	friend class ScriptMethods;
 	friend class Transpiler;
 
@@ -3182,6 +3183,27 @@ protected:
 	}
 
 	/**
+	 * Decode operator
+	 * @param arguments arguments
+	 * @param operatorValueIdx operator value index
+	 * @param defaultOperatorString default operator string
+	 * @return operator string
+	 */
+	static const string decodeOperator(const span<MinitScript::Variable>& arguments, int operatorValueIdx, const string& defaultOperatorString) {
+		//
+		int64_t operatorValue;
+		if (MinitScript::getIntegerValue(arguments, operatorValueIdx, operatorValue) == false) return defaultOperatorString;
+		//
+		string result;
+		auto c1 = (operatorValue & 255);
+		auto c2 = ((operatorValue >> 8) & 255);
+		if (c1 != 0ll) result+= (char)c1;
+		if (c2 != 0ll) result+= (char)c2;
+		//
+		return result;
+	}
+
+	/**
 	 * @return if script has emitted a condition like error
 	 */
 	inline bool hasEmitted() {
@@ -4636,7 +4658,7 @@ public:
 	 * @return has type
 	 */
 	inline static bool hasTypeForOperatorArguments(const span<Variable>& arguments, VariableType type) {
-		for (auto i = 0; i < arguments.size() - 1; i++) {
+		for (auto i = 0; i < arguments.size() - (arguments.size() == 3?1:0); i++) {
 			if (arguments[i].getType() == type) return true;
 		}
 		return false;

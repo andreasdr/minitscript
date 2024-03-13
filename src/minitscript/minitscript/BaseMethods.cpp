@@ -771,7 +771,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					{
 						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_BOOLEAN
 				),
@@ -983,7 +983,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							MinitScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 							returnValue.setValue(stringValueA > stringValueB);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
+							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
 						}
 					} else {
 						float floatValueA;
@@ -992,7 +992,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							MinitScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 							returnValue.setValue(floatValueA > floatValueB);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
+							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
 						}
 					}
 				} else {
@@ -1032,7 +1032,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							MinitScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 							returnValue.setValue(stringValueA >= stringValueB);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
+							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
 						}
 					} else {
 						float floatValueA;
@@ -1041,7 +1041,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							MinitScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 							returnValue.setValue(floatValueA >= floatValueB);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
+							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
 						}
 					}
 				} else {
@@ -1081,7 +1081,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							MinitScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 							returnValue.setValue(stringValueA < stringValueB);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
+							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
 						}
 					} else {
 						float floatValueA;
@@ -1090,7 +1090,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							MinitScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 							returnValue.setValue(floatValueA < floatValueB);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
+							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
 						}
 					}
 				} else {
@@ -1114,7 +1114,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					{
 						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_BOOLEAN),
 					minitScript(minitScript) {}
@@ -1130,7 +1130,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							MinitScript::getStringValue(arguments, 1, stringValueB, false) == true) {
 							returnValue.setValue(stringValueA <= stringValueB);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
+							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
 						}
 					} else {
 						float floatValueA;
@@ -1139,7 +1139,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							MinitScript::getFloatValue(arguments, 1, floatValueB, false) == true) {
 							returnValue.setValue(floatValueA <= floatValueB);
 						} else {
-							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
+							MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
 						}
 					}
 				} else {
@@ -1204,7 +1204,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					MinitScript::getBooleanValue(arguments, 0, booleanValue) == true) {
 					returnValue.setValue(!booleanValue);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 2?arguments[1].getValueAsString():getMethodName(), "'" + arguments[0].getValueAsString() + "' is not a boolean value");
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 1, getMethodName()), "'" + arguments[0].getValueAsString() + "' is not a boolean value");
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1224,7 +1224,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					{
 						{ .type = MinitScript::TYPE_BOOLEAN, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_BOOLEAN, .name = "b", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_BOOLEAN
 				),
@@ -1243,7 +1243,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					isBooleanValueB == true) {
 					returnValue.setValue(booleanValueA && booleanValueB);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), string(isBooleanValueA == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a boolean value":"") + string(isBooleanValueB == false?string(isBooleanValueA == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a boolean value":""));
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), string(isBooleanValueA == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a boolean value":"") + string(isBooleanValueB == false?string(isBooleanValueA == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a boolean value":""));
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1263,7 +1263,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					{
 						{ .type = MinitScript::TYPE_BOOLEAN, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_BOOLEAN, .name = "b", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_BOOLEAN
 				),
@@ -1282,7 +1282,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					isBooleanValueB == true) {
 					returnValue.setValue(booleanValueA || booleanValueB);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), string(isBooleanValueA == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a boolean value":"") + string(isBooleanValueB == false?string(isBooleanValueA == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a boolean value":""));
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), string(isBooleanValueA == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a boolean value":"") + string(isBooleanValueB == false?string(isBooleanValueA == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a boolean value":""));
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1668,7 +1668,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					arguments[0].setValue(value + 1);
 					returnValue.setValue(value);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 2?arguments[1].getValueAsString():getMethodName(), "'" + arguments[0].getValueAsString() + "' is not a integer value");
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 1, getMethodName()), "'" + arguments[0].getValueAsString() + "' is not a integer value");
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1702,7 +1702,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					arguments[0].setValue(value - 1);
 					returnValue.setValue(value);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 2?arguments[1].getValueAsString():getMethodName(), "'" + arguments[0].getValueAsString() + "' is not a integer value");
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 1, getMethodName()), "'" + arguments[0].getValueAsString() + "' is not a integer value");
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1737,7 +1737,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					arguments[0].setValue(value);
 					returnValue.setValue(value);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 2?arguments[1].getValueAsString():getMethodName(), "'" + arguments[0].getValueAsString() + "' is not a integer value");
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 1, getMethodName()), "'" + arguments[0].getValueAsString() + "' is not a integer value");
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1772,7 +1772,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					arguments[0].setValue(value);
 					returnValue.setValue(value);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 2?arguments[1].getValueAsString():getMethodName(), "'" + arguments[0].getValueAsString() + "' is not a integer value");
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 1, getMethodName()), "'" + arguments[0].getValueAsString() + "' is not a integer value");
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1792,7 +1792,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 				MinitScript::Method(
 					{
 						{ .type = MinitScript::TYPE_INTEGER, .name = "value", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_INTEGER),
 					minitScript(minitScript) {}
@@ -1805,7 +1805,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					MinitScript::getIntegerValue(arguments, 0, value) == true) {
 					returnValue.setValue(~value);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 2?arguments[1].getValueAsString():getMethodName(), "'" + arguments[0].getValueAsString() + "' is not a integer value");
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 1, getMethodName()), "'" + arguments[0].getValueAsString() + "' is not a integer value");
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1825,7 +1825,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					{
 						{ .type = MinitScript::TYPE_INTEGER, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_INTEGER, .name = "b", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_INTEGER),
 					minitScript(minitScript) {}
@@ -1843,7 +1843,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					//
 					returnValue.setValue(valueA & valueB);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), string(isValueAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") + string(isValueBInteger == false?string(isValueAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":""));
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), string(isValueAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") + string(isValueBInteger == false?string(isValueAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":""));
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1863,7 +1863,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					{
 						{ .type = MinitScript::TYPE_INTEGER, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_INTEGER, .name = "b", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_INTEGER),
 					minitScript(minitScript) {}
@@ -1881,7 +1881,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					//
 					returnValue.setValue(valueA | valueB);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), string(isValueAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") + string(isValueBInteger == false?string(isValueAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":""));
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), string(isValueAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") + string(isValueBInteger == false?string(isValueAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":""));
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -1901,7 +1901,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					{
 						{ .type = MinitScript::TYPE_INTEGER, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_INTEGER, .name = "b", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_INTEGER),
 					minitScript(minitScript) {}
@@ -1919,7 +1919,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					//
 					returnValue.setValue(valueA ^ valueB);
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), arguments.size() == 3?arguments[2].getValueAsString():getMethodName(), string(isValueAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") + string(isValueBInteger == false?string(isValueAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":""));
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), string(isValueAInteger == false?"Left argument '" + arguments[0].getValueAsString() + "' is not a integer value":"") + string(isValueBInteger == false?string(isValueAInteger == false?" and right argument":"Right argument") + " '" + arguments[1].getValueAsString() + "' is not a integer value":""));
 				}
 			}
 			MinitScript::Operator getOperator() const override {
