@@ -169,6 +169,7 @@ on: nothing
 		$scriptURIs = application.getArguments()
 		# remove the executable CLI argument at index 0
 		$scriptURIs->remove(0)
+		# remove --application, --library, --native-only command line arguments
 		$scriptURIs->removeOf("--application")
 		$scriptURIs->removeOf("--library")
 		$scriptURIs->removeOf("--native-only")
