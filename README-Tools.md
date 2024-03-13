@@ -2,7 +2,7 @@
 
 The MinitScript tool that you might use most is the MinitScript interpreter. 
 
-MinitScript tools also help with transpiling scripts to C++ and generating executable (main) files. 
+MinitScript tools also help with transpiling MinitScript scripts to C++ and generating executable (main) files. 
 If using multiple scripts, it also helps with generating a library C++ file, which is required in this case.
 
 If you want your scripts working in native mode(which involves transpilation and such) 
