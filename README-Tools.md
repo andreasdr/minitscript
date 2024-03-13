@@ -124,7 +124,7 @@ which gets derived from our transpilation file name, which we used in 1.2.
 The third argument ist the main C++ file, that we want to create for our MinitScript application.
 Please note that main file name, needs to end with an "-test.cpp".
  
-Optional flags are:
+Optional command line arguments are:
 - --use-libray - Issues to use a MinitScript library C++ file, if you have multiple script files tranpiled into C++ (see 1.5.)
 - --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and do not want to use optional interpretion you can use the "--native-only" argument
 
@@ -144,7 +144,7 @@ The third argument is the second script file name, the fourth argument the corre
 You can add more script file name and corresponding class names pairs. 
 The last argument is the Library C++ file.
 
-Optional flags are:
+Optional command line arguments are:
 - --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and do not want to use optional interpretion you can use the "--native-only" argument
 
 Please see a complete example here:
@@ -235,7 +235,7 @@ minitscriptdocumentation --heading=6 classes
 If you want to have your script(s) executed in native mode, 
 which requires transpilation of MinitScript scripts to C++ and generation of main, library C++ files and make files, you can use the minitscriptbuild tool.
 
-Optional flags are:
+Optional command line arguments are:
 - --application - Build a application that can be executed from your Operating System
 - --library - Builds a .so(shared object file for Linux/BSD/MacOSX) file or a .dll(dynamic link library for Windows/MINGW) file, that can be embedded in other C++ applications
 - --native-only - By default, scripts gets interpreted also in native mode, if they have changed, so if you only want to compile and do not want to use optional interpretion you can use the "--native-only" argument
