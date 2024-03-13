@@ -4651,8 +4651,7 @@ public:
 	}
 
 	/**
-	 * Check if operator arguments contain argument with given type
-	 * This version ignores the last argument as its the operator string
+	 * Checks if left and right operator arguments have given type
 	 * @param arguments arguments
 	 * @param type type
 	 * @return has type
