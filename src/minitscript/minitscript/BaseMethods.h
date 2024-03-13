@@ -1,14 +1,10 @@
 #pragma once
 
-#include <string>
-
 #include <minitscript/minitscript.h>
 #include <minitscript/minitscript/fwd-minitscript.h>
 #include <minitscript/minitscript/MinitScript.h>
 
 using minitscript::minitscript::MinitScript;
-
-using std::string;
 
 /**
  * MinitScript script base methods
