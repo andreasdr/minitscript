@@ -33,6 +33,7 @@ using minitscript::utilities::StringTools;
 
 int main(int argc, char** argv)
 {
+	// TODO: --application, --library, --native-only
 	//
 	auto printInformation = [&]() -> void {
 		Console::printLine(string("minitscriptbuild ") + Version::getVersion());
@@ -71,6 +72,15 @@ int main(int argc, char** argv)
 		for (auto i = 0; i < argc; i++) {
 			string argumentValue(argv[i]);
 			if (argumentValue == "--help") continue;
+			// we like / more than \
+			argumentValue = StringTools::replace(argumentValue, "\\", "/");
+			// we do not want to have .. or . in path names
+			argumentValue = FileSystem::getCanonicalURI(FileSystem::getPathName(argumentValue), FileSystem::getFileName(argumentValue));
+			//
+			if (FileSystem::exists(argumentValue) == false) {
+				_Console::printLine("Script URI invalid: File not found: " + argumentValue);
+				return EXIT_FAILURE;
+			}
 			//
 			argumentValues.push_back(argumentValue);
 		}
