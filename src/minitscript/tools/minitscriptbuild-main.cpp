@@ -1,6 +1,4 @@
 #include <cstdlib>
-#include <cstdio>
-#include <iostream>
 #include <memory>
 #include <string>
 
@@ -19,11 +17,9 @@
 #include <minitscript/utilities/Exception.h>
 #include <minitscript/utilities/StringTools.h>
 
-using std::cin;
 using std::exit;
 using std::make_unique;
 using std::string;
-using std::tmpnam;
 using std::unique_ptr;
 
 using minitscript::minitscript::Context;
