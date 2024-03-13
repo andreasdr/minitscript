@@ -31,17 +31,15 @@ function: buildApplication($scriptURIs, $application, $library, $nativeOnly)
 			className: "_" + $scriptURI->regexReplace("[^0-9a-zA-Z]", "_")
 		}
 	end
-	# generate required commands
-	$commands = []
-	# delete Tsrc folder
-	if ($$.application::OS == "Windows-MSC")
-		$commands[] = "if exist Tsrc del /S /Q Tsrc\\*"
-		$commands[] = "if exist Tsrc rmdir /S /Q Tsrc"
-	else
-		$commands[] = "rm -rf Tsrc"
+	# remove old Tsrc folder
+	if (filesystem.exists("./Tsrc") == true)
+		filesystem.removePath("./Tsrc", true)
 	end
 	# create Tsrc folder
-	$commands[] = "mkdir Tsrc"
+	filesystem.createPath("./Tsrc")
+	#
+	# generate required commands
+	$commands = []
 	# transpile all scripts
 	forEach($script in $scripts)
 		$commands[] =
@@ -159,7 +157,6 @@ end
 
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
-	# TODO: deleting tsrc has a bug, if Tsrc does not exist
 	# TODO: test build system more and improve
 	# TODO: script URIs need / instead of \ as path separator
 	console.printLine("--------------------------")
