@@ -162,7 +162,6 @@ on: nothing
 	# TODO: deleting tsrc has a bug, if Tsrc does not exist
 	# TODO: test build system more and improve
 	# TODO: script URIs need / instead of \ as path separator
-	# TODO: build library, native only 
 	console.printLine("--------------------------")
 	console.printLine("MinitScript build script")
 	console.printLine("--------------------------")
