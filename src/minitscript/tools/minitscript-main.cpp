@@ -35,18 +35,27 @@ using minitscript::utilities::Console;
 using minitscript::utilities::Exception;
 using minitscript::utilities::StringTools;
 
-static void printInformation() {
-	Console::printLine(string("minitscript ") + Version::getVersion());
-	Console::printLine(Version::getCopyright());
-	Console::printLine();
-	Console::printLine("Usage: minitscript [--version] [--verbose] [path_to_script | < path_to_script] --arguments [script command line arguments...]");
-	Console::printLine();
-	Console::printLine("If you do not provide a path to the script or do not pipe a script into the standard input stream,");
-	Console::printLine("you get a prompt to enter your script. You can finish inputting by hitting Ctrl-D on Unix or Ctrl-Z on Windows.");
-}
-
 int main(int argc, char** argv)
 {
+	//
+	auto printVersion = [&]() -> void {
+		Console::printLine(string("minitscript ") + Version::getVersion());
+		Console::printLine(Version::getCopyright());
+	};
+	//
+	auto printUsage = [&]() -> void {
+		Console::printLine("Usage: minitscript [--version] [--verbose] [path_to_script | < path_to_script] --arguments [script command line arguments...]");
+	};
+	//
+	auto printInformation = [&]() -> void {
+		printVersion();
+		Console::printLine();
+		printUsage();
+		Console::printLine();
+		Console::printLine("If you do not provide a path to the script or do not pipe a script into the standard input stream,");
+		Console::printLine("you get a prompt to enter your script. You can finish inputting by hitting Ctrl-D on Unix or Ctrl-Z on Windows.");
+	};
+
 	//
 	string pathToScript;
 	auto verbose = false;
@@ -67,7 +76,9 @@ int main(int argc, char** argv)
 			break;
 		} else {
 			if (pathToScript.empty() == false) {
-				Console::printLine("Path to script already given");
+				Console::printLine("Invalid command line arguments!");
+				Console::printLine();
+				printUsage();
 				return EXIT_FAILURE;
 			} else {
 				pathToScript = argument;
@@ -77,8 +88,7 @@ int main(int argc, char** argv)
 
 	// version
 	if (version == true) {
-		Console::printLine(string("minitscript ") + Version::getVersion());
-		Console::printLine(Version::getCopyright());
+		printVersion();
 		return EXIT_FAILURE;
 	}
 
