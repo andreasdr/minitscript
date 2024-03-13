@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 		Console::printLine(string("minitscriptbuild ") + Version::getVersion());
 		Console::printLine(Version::getCopyright());
 		Console::printLine();
-		Console::printLine("Usage: minitscriptbuild [--help] main-script.tscript [additional-script1.tscript] [additional-script2.tscript] [additional-scriptN.tscript]");
+		Console::printLine("Usage: minitscriptbuild [--help] [--application|--library] [--native-only] main-script.tscript [additional-script1.tscript] [additional-script2.tscript] [additional-scriptN.tscript]");
 	};
 
 	// no arguments, no build :DDD
@@ -71,8 +71,21 @@ int main(int argc, char** argv)
 		vector<string> argumentValues;
 		for (auto i = 0; i < argc; i++) {
 			string argumentValue(argv[i]);
+			//
 			if (argumentValue == "--help") continue;
-			// we like / more than \
+			if (argumentValue == "--application") {
+				argumentValues.push_back(argumentValue);
+				continue;
+			}
+			if (argumentValue == "--library") {
+				argumentValues.push_back(argumentValue);
+				continue;
+			}
+			if (argumentValue == "--native-only") {
+				argumentValues.push_back(argumentValue);
+				continue;
+			}
+			/* we like / more than */
 			argumentValue = StringTools::replace(argumentValue, "\\", "/");
 			// we do not want to have .. or . in path names
 			argumentValue = FileSystem::getCanonicalURI(FileSystem::getPathName(argumentValue), FileSystem::getFileName(argumentValue));
