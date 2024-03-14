@@ -1,3 +1,11 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Mindty-Kollektiv/minitscript/blob/master/LICENSE)
+[![NIX Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/nix.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
+[![MacOSX Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/macosx.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
+[![Windows/MINGW Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/windows-mingw.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
+[![Windows/MSC Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/windows-msc.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
+  
+![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
+
 This is the home of MinitScript - the mini (C++) transpileable scripting language.
 
 This document and repository is WIP. Expect a BETA release around 2024-04-01.\

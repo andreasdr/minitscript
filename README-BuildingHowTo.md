@@ -1,3 +1,5 @@
+![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
+
 # 1. How to build MinitScript?
 
 ## 1.1. FreeBSD(tested on FreeBSD 14.0)

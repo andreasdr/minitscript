@@ -1,3 +1,5 @@
+![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
+
 # 1. Introduction to MinitScript tools
 
 The MinitScript tool that you might use most is the MinitScript interpreter. 
