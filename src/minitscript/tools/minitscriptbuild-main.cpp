@@ -69,6 +69,7 @@ int main(int argc, char** argv)
 	{
 		// create main argument values
 		vector<string> argumentValues;
+		argumentValues.push_back(argv[0]);
 		for (auto i = 1; i < argc; i++) {
 			string argumentValue(argv[i]);
 			//
