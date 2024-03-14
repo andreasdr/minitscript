@@ -3,6 +3,7 @@
 [![MacOSX Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/macosx.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
 [![Windows/MINGW Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/windows-mingw.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
 [![Windows/MSC Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/windows-msc.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/29926/badge.svg)](https://scan.coverity.com/projects/mindty-kollektiv-minitscript)
   
 ![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
 
