@@ -4766,8 +4766,6 @@ void MinitScript::Variable::setFunctionCallStatement(const string& initializerSt
 	string accessObjectMemberStatement;
 	SyntaxTreeNode* evaluateSyntaxTree = new SyntaxTreeNode();
 	//
-	_Console::printLine("setFunctionCallStatement()");
-	//
 	if (minitScript->parseStatement(initializerStatement, methodName, arguments, initializerScriptStatement, accessObjectMemberStatement) == false) {
 		//
 	} else
