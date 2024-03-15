@@ -12,7 +12,6 @@
 #include <minitscript/minitscript.h>
 #include <minitscript/minitscript/Context.h>
 #include <minitscript/minitscript/MinitScript.h>
-#include <minitscript/minitscript/Transpiler.h>
 #include <minitscript/minitscript/Version.h>
 #include <minitscript/os/filesystem/FileSystem.h>
 #include <minitscript/os/network/Network.h>
@@ -29,7 +28,6 @@ using std::unique_ptr;
 
 using minitscript::minitscript::Context;
 using minitscript::minitscript::MinitScript;
-using minitscript::minitscript::Transpiler;
 using minitscript::minitscript::Version;
 using minitscript::os::filesystem::FileSystem;
 using minitscript::os::network::Network;
@@ -170,8 +168,6 @@ int main(int argc, char** argv)
 			FileSystem::getPathName(pathToScript),
 			FileSystem::getFileName(pathToScript)
 		);
-		//
-		Transpiler::createSourceCode(script.get());
 		//
 		if (script != nullptr) {
 			// verbose
