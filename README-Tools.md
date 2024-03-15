@@ -16,7 +16,7 @@ See section 1.x to have a description of each tool.
 
 If you just want to have your script(s) working in native mode, you can fast forward to section 2. and use the minitscriptbuild tool. 
 
-## 1.1. "minitscript" tool
+## 1.1. minitscript
 
 minitscript is the MinitScript interpreter tool, which means scripts are translated to a syntax tree, which then gets executed. This can be called script interpretion.
 The minitscript tool can take the following arguments:
