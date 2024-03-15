@@ -88,7 +88,7 @@ const string_view StringTools::viewTrim(const string_view& str) {
 	for (int64_t i = str.size() - 1; i >= 0; i--) {
 		if (isspace(str[i]) != 0) end++; else break;
 	}
-	return string_view(&str[start], str.size() - start - end);
+	return string_view(&str[start], str.size() - (start + end));
 }
 
 const string StringTools::toLowerCase(const string& str) {

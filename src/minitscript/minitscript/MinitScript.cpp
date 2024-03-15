@@ -313,7 +313,6 @@ void MinitScript::executeNextStatement() {
 }
 
 bool MinitScript::parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement, string& accessObjectMemberStatement) {
-	_Console::printLine("MinitScript::parseStatement(): " + string(executableStatement));
 	if (VERBOSE == true) _Console::printLine("MinitScript::parseStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
 	//
 	string_view objectMemberAccessObject;
@@ -384,7 +383,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		return true;
 	};
 	//
-	methodStart = 0;
+	methodStart = executableStatementStartIdx;
 	//
 	for (; i < executableStatement.size(); i++) {
 		//
@@ -501,7 +500,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 	// extract method name
 	if (methodStart != string::npos) {
 		// we might have a statement without ()
-		if (methodEnd == string::npos) methodEnd = i;
+		if (methodEnd == string::npos) methodEnd = i - 1;
 		//
 		methodName = _StringTools::viewTrim(string_view(&executableStatement[methodStart], methodEnd - methodStart + 1));
 	}
@@ -551,7 +550,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 	}
 
 	//
-	/*if (VERBOSE == true) */{
+	if (VERBOSE == true) {
 		_Console::printLine("MinitScript::parseStatement(): " + _StringTools::replace(getStatementInformation(statement), "\n", "\\n"));
 		_Console::printLine(string("\t") + ": Method: '" + string(methodName) + "'");
 		_Console::printLine(string("\t") + ": Arguments");
