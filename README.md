@@ -7,7 +7,7 @@
   
 ![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
 
-This is the home of MinitScript - the mini C++ transpileable scripting language.
+This is the home of MinitScript - The mini C++ transpileable scripting language.
 
 This document and repository is WIP. Expect a BETA release around 2024-04-01.\
 See section 1.3. for 1.0 BETA release TODO list.
