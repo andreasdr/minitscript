@@ -313,7 +313,9 @@ void MinitScript::executeNextStatement() {
 }
 
 bool MinitScript::parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement, string& accessObjectMemberStatement) {
+	_Console::printLine("MinitScript::parseStatement(): " + string(executableStatement));
 	if (VERBOSE == true) _Console::printLine("MinitScript::parseStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
+	//
 	string_view objectMemberAccessObject;
 	string_view objectMemberAccessMethod;
 	int executableStatementStartIdx = 0;
@@ -331,65 +333,98 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 	auto argumentSubLineIdx = -1;
 	auto lc  = '\0';
 	//
-	auto viewIsStringMethodAccess = [](const string_view& candidate) -> bool {
-		if (candidate.empty() == true) return false;
+	auto subLineIdx = 0;
+	//
+	auto i = executableStatementStartIdx;
+	//
+	auto hasNextArgument = [&]() -> bool {
 		//
-		auto i = 0;
+		for (i++; i < executableStatement.size(); i++) {
+			auto c = executableStatement[i];
+			// do we have a non space character?
+			if (_Character::isSpace(c) == false) return c != ')';
+		}
+		//
+		return false;
+	};
+	//
+	auto createArgument = [&]() {
+		//
+		if (quotedArgumentStart != string::npos) {
+			auto argumentLength = quotedArgumentEnd - quotedArgumentStart + 1;
+			if (argumentLength > 0) arguments.emplace_back(_StringTools::viewTrim(string_view(&executableStatement[quotedArgumentStart], argumentLength)), argumentSubLineIdx);
+			quotedArgumentStart = string::npos;
+			quotedArgumentEnd = string::npos;
+			argumentSubLineIdx = -1;
+		} else
+		if (argumentStart != string::npos) {
+			if (argumentEnd == string::npos) argumentEnd = i - 1;
+			auto argumentLength = argumentEnd - argumentStart + 1;
+			if (argumentLength > 0) arguments.emplace_back(_StringTools::viewTrim(string_view(&executableStatement[argumentStart], argumentLength)), argumentSubLineIdx);
+			argumentStart = string::npos;
+			argumentEnd = string::npos;
+			argumentSubLineIdx = -1;
+		}
+	};
+	//
+	auto isObjectMemberAccess = [&]() -> bool {
+		//
+		auto j = i + 1;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
-		if (i >= candidate.size()) return false;
-		// -
-		if (candidate[i++] != '-') return false;
+		for (; j < executableStatement.size() && _Character::isSpace(executableStatement[j]) == true; j++);
 		//
-		if (i >= candidate.size()) return false;
+		if (j >= executableStatement.size()) return false;
+		// -
+		if (executableStatement[j++] != '-') return false;
+		//
+		if (j >= executableStatement.size()) return false;
 		// >
-		if (candidate[i++] != '>') return false;
+		if (executableStatement[j++] != '>') return false;
 		//
 		return true;
 	};
 	//
-	auto subLineIdx = 0;
+	methodStart = 0;
 	//
-	for (auto i = executableStatementStartIdx; i < executableStatement.size(); i++) {
+	for (; i < executableStatement.size(); i++) {
+		//
 		auto c = executableStatement[i];
 		// quotes
 		if (squareBracketCount == 0 && curlyBracketCount == 0 && ((c == '"' || c == '\'') && lc != '\\')) {
-			if (bracketCount == 1) {
-				if (quote == '\0') {
+			// new quote
+			if (quote == '\0') {
+				//
+				if (bracketCount == 1) {
+					argumentStart = string::npos;
 					quotedArgumentStart = i;
 					argumentSubLineIdx = subLineIdx;
-					quote = c;
-				} else
-				if (quote == c) {
+				}
+				//
+				quote = c;
+			} else
+			// end of quote
+			if (quote == c) {
+				//
+				if (bracketCount == 1) {
 					quotedArgumentEnd = i;
-					quote = '\0';
-				}
-			} else {
-				if (quote == '\0') {
-					if (argumentStart == string::npos) {
-						argumentStart = i;
-						argumentSubLineIdx = subLineIdx;
+					//
+					if (isObjectMemberAccess() == true) {
+						//
+						if (quotedArgumentStart != string::npos) {
+							argumentStart = quotedArgumentStart;
+							argumentEnd = string::npos;
+							quotedArgumentStart = string::npos;
+							quotedArgumentEnd = string::npos;
+						}
 					}
-					quote = c;
-				} else
-				if (quote == c) {
-					argumentEnd = i;
-					quote = '\0';
 				}
+				//
+				quote = '\0';
 			}
 		} else
-		// quotes end
+		// we still have a quote, so do not process any other chars at other places
 		if (quote != '\0') {
-			if (bracketCount == 1) {
-				quotedArgumentEnd = i;
-			} else {
-				if (argumentStart == string::npos) {
-					argumentStart = i;
-					argumentSubLineIdx = subLineIdx;
-				} else {
-					argumentEnd = i;
-				}
-			}
+			// no op
 		} else {
 			// no quotes, handle \n
 			if (c == '\n') {
@@ -398,147 +433,63 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 			// (
 			if (c == '(') {
 				bracketCount++;
-				if (bracketCount > 1) {
-					if (argumentStart == string::npos) {
+				// mark the method end
+				if (bracketCount == 1) {
+					//
+					methodEnd = i - 1;
+					// check if we have a next argument and mark it
+					// if its a quoted argument, the non quoted argument will be unset later
+					if (hasNextArgument() == true) {
+						//
 						argumentStart = i;
 						argumentSubLineIdx = subLineIdx;
+						//
+						i--;
+						continue;
 					} else {
-						argumentEnd = i;
+						i--;
 					}
 				}
 			} else
 			// )
 			if (c == ')') {
+				//
 				bracketCount--;
-				if (bracketCount == 0) {
-					if (quotedArgumentStart != string::npos) {
-						// do we have a quoted argument end
-						if (quotedArgumentEnd == string::npos) {
-							quotedArgumentEnd = i - 1;
-						} else
-						// extend string with string method access if feasible
-						if (quotedArgumentEnd + 1 < executableStatement.size() &&
-							viewIsStringMethodAccess(string_view(&executableStatement[quotedArgumentEnd + 1], executableStatement.size() - (quotedArgumentEnd + 1))) == true) {
-							quotedArgumentEnd = i - 1;
-						}
-						//
-						auto argumentLength = quotedArgumentEnd - quotedArgumentStart + 1;
-						if (argumentLength > 0) arguments.emplace_back(_StringTools::viewTrim(string_view(&executableStatement[quotedArgumentStart], argumentLength)), argumentSubLineIdx);
-						quotedArgumentStart = string::npos;
-						quotedArgumentEnd = string::npos;
-					} else
-					if (argumentStart != string::npos) {
-						if (argumentEnd == string::npos) argumentEnd = i - 1;
-						auto argumentLength = argumentEnd - argumentStart + 1;
-						if (argumentLength > 0) arguments.emplace_back(_StringTools::viewTrim(string_view(&executableStatement[argumentStart], argumentLength)), argumentSubLineIdx);
-						argumentStart = string::npos;
-						argumentEnd = string::npos;
-						argumentSubLineIdx = -1;
-					}
-				} else {
-					if (argumentStart == string::npos) {
-						argumentStart = i;
-						argumentSubLineIdx = subLineIdx;
-					} else {
-						argumentEnd = i;
-					}
-				}
+				// end of statement, create argument
+				if (bracketCount == 0) createArgument();
 			} else
 			// [
 			if (c == '[' && curlyBracketCount == 0) {
-				if (squareBracketCount == 0) {
-					if (argumentStart == string::npos) {
-						argumentStart = i;
-						argumentSubLineIdx = subLineIdx;
-					} else {
-						argumentEnd = i;
-					}
-				}
 				squareBracketCount++;
 			} else
 			// ]
 			if (c == ']' && curlyBracketCount == 0) {
 				squareBracketCount--;
-				if (squareBracketCount == 0) {
-					if (argumentStart == string::npos) {
-						argumentStart = i;
-						argumentSubLineIdx = subLineIdx;
-					} else {
-						argumentEnd = i;
-					}
-				}
 			} else
 			// {
 			if (c == '{') {
-				if (curlyBracketCount == 0) {
-					if (argumentStart == string::npos) {
-						argumentStart = i;
-						argumentSubLineIdx = subLineIdx;
-					} else {
-						argumentEnd = i;
-					}
-				}
 				curlyBracketCount++;
 			} else
 			// }
 			if (c == '}') {
 				curlyBracketCount--;
-				if (curlyBracketCount == 0) {
-					if (argumentStart == string::npos) {
-						argumentStart = i;
-						argumentSubLineIdx = subLineIdx;
-					} else {
-						argumentEnd = i;
-					}
-				}
 			} else
 			// ,
-			if (squareBracketCount == 0 && curlyBracketCount == 0) {
-				if (c == ',') {
-					if (bracketCount == 1) {
-						if (quotedArgumentStart != string::npos) {
-							// do we have a quoted argument end
-							if (quotedArgumentEnd == string::npos) {
-								quotedArgumentEnd = i - 1;
-							} else
-							// extend string with string method access if feasible
-							if (quotedArgumentEnd + 1 < executableStatement.size() &&
-								viewIsStringMethodAccess(string_view(&executableStatement[quotedArgumentEnd + 1], executableStatement.size() - (quotedArgumentEnd + 1))) == true) {
-								quotedArgumentEnd = i - 1;
-							}
-							auto argumentLength = quotedArgumentEnd - quotedArgumentStart + 1;
-							if (argumentLength > 0) arguments.emplace_back(_StringTools::viewTrim(string_view(&executableStatement[quotedArgumentStart], argumentLength)), argumentSubLineIdx);
-							quotedArgumentStart = string::npos;
-							quotedArgumentEnd = string::npos;
-							argumentSubLineIdx = -1;
-						} else
-						if (argumentStart != string::npos) {
-							if (argumentEnd == string::npos) argumentEnd = i - 1;
-							auto argumentLength = argumentEnd - argumentStart + 1;
-							if (argumentLength > 0) arguments.emplace_back(_StringTools::viewTrim(string_view(&executableStatement[argumentStart], argumentEnd - argumentStart + 1)), argumentSubLineIdx);
-							argumentStart = string::npos;
-							argumentEnd = string::npos;
-							argumentSubLineIdx = -1;
-						}
+			if (squareBracketCount == 0 && curlyBracketCount == 0 && bracketCount == 1 && c == ',') {
+				if (bracketCount == 1) {
+					// create argument
+					createArgument();
+					// check if we have a next argument and mark it
+					// if its a quoted argument, the non quoted argument will be unset later
+					if (hasNextArgument() == true) {
+						//
+						argumentStart = i;
+						argumentSubLineIdx = subLineIdx;
+						//
+						i--;
+						continue;
 					} else {
-						if (argumentStart == string::npos) {
-							argumentStart = i + 1;
-							argumentSubLineIdx = subLineIdx;
-						} else {
-							argumentEnd = i;
-						}
-					}
-				} else
-				if (bracketCount == 0) {
-					if (methodStart == string::npos) methodStart = i; else methodEnd = i;
-				} else {
-					if (argumentStart == string::npos) {
-						if (_Character::isSpace(c) == false) {
-							argumentStart = i;
-							argumentSubLineIdx = subLineIdx;
-						}
-					} else {
-						argumentEnd = i;
+						i--;
 					}
 				}
 			}
@@ -548,7 +499,10 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 	}
 
 	// extract method name
-	if (methodStart != string::npos && methodEnd != string::npos) {
+	if (methodStart != string::npos) {
+		// we might have a statement without ()
+		if (methodEnd == string::npos) methodEnd = i;
+		//
 		methodName = _StringTools::viewTrim(string_view(&executableStatement[methodStart], methodEnd - methodStart + 1));
 	}
 
@@ -597,7 +551,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 	}
 
 	//
-	if (VERBOSE == true) {
+	/*if (VERBOSE == true) */{
 		_Console::printLine("MinitScript::parseStatement(): " + _StringTools::replace(getStatementInformation(statement), "\n", "\\n"));
 		_Console::printLine(string("\t") + ": Method: '" + string(methodName) + "'");
 		_Console::printLine(string("\t") + ": Arguments");
@@ -822,7 +776,6 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 }
 
 bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<ParserArgument>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree, int subLineIdx) {
-	//
 	if (VERBOSE == true) {
 		//
 		auto getArgumentsAsString = [](const vector<ParserArgument>& arguments) -> const string {
@@ -909,10 +862,11 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 			syntaxTree.arguments.push_back(subSyntaxTree);
 		} else
 		if (getObjectMemberAccess(argument.argument, accessObjectMemberObject, accessObjectMemberMethod, accessObjectMemberStartIdx, statement) == true) {
-			// method call
+			// object member access
 			string_view subMethodName;
 			vector<ParserArgument> subArguments;
 			string accessObjectMemberStatement;
+			//
 			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
 				if (createStatementSyntaxTree(scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
@@ -974,6 +928,7 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 			string_view subMethodName;
 			vector<ParserArgument> subArguments;
 			string accessObjectMemberStatement;
+			//
 			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
 				if (createStatementSyntaxTree(scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
@@ -3515,6 +3470,7 @@ bool MinitScript::getObjectMemberAccess(const string_view& executableStatement, 
 	auto squareBracketCount = 0;
 	auto curlyBracketCount = 0;
 	for (auto i = 0; i < executableStatement.size(); i++) {
+		//
 		auto c = executableStatement[i];
 		// handle quotes
 		if ((c == '"' || c == '\'') && lc != '\\') {
@@ -3546,7 +3502,7 @@ bool MinitScript::getObjectMemberAccess(const string_view& executableStatement, 
 		if (c == '}') {
 			curlyBracketCount--;
 		} else
-		if (i > 3 &&
+		if (i > 2 &&
 			lc == '-' && c == '>' &&
 			bracketCount == 0 &&
 			squareBracketCount == 0 &&
@@ -4810,6 +4766,9 @@ void MinitScript::Variable::setFunctionCallStatement(const string& initializerSt
 	vector<ParserArgument> arguments;
 	string accessObjectMemberStatement;
 	SyntaxTreeNode* evaluateSyntaxTree = new SyntaxTreeNode();
+	//
+	_Console::printLine("setFunctionCallStatement()");
+	//
 	if (minitScript->parseStatement(initializerStatement, methodName, arguments, initializerScriptStatement, accessObjectMemberStatement) == false) {
 		//
 	} else

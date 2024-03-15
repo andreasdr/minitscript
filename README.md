@@ -7,7 +7,7 @@
   
 ![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
 
-This is the home of MinitScript - the mini (C++) transpileable scripting language.
+This is the home of MinitScript - the mini C++ transpileable scripting language.
 
 This document and repository is WIP. Expect a BETA release around 2024-04-01.\
 See section 1.3. for 1.0 BETA release TODO list.
@@ -53,8 +53,8 @@ Also note the focus on easy integration into other products and easy customizabi
   - some adjustments
     - optional: make event system optional??? what about error emits/errors in functions/stacklets??? 
     - build system: check executable output directories
-  - tests
-    - bubblesort benchmark vs java script or other script engines, just to get the idea of current state of performance
+  - parser
+    - improve error messages even more
   - documentation
     - detailed documentation for specific sections and maybe methods
     - README.md: resolve TODOs

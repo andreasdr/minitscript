@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 	}
 	//
 	Properties descriptions;
-	descriptions.load("resources/minitscript/documentation", "method-descriptions.properties");
+	descriptions.load(MINITSCRIPT_DATA + "/resources/minitscript/documentation", "method-descriptions.properties");
 	//
 	MinitScript::initialize();
 	//

@@ -9,8 +9,8 @@ function: createNativePath($path)
 	return($path)
 end
 
-# build application script
-function: buildApplication($scriptURIs, $application, $library, $nativeOnly)
+# build script
+function: build($scriptURIs, $application, $library, $nativeOnly)
 	console.print("Building: " + $scriptURIs[0])
 	# print what we will do
 	if ($application == true)
@@ -187,7 +187,7 @@ on: nothing
 			$application = true
 		end
 		#
-		buildApplication($scriptURIs, $application, $library, $nativeOnly)
+		build($scriptURIs, $application, $library, $nativeOnly)
 	end
 	script.stop()
 end

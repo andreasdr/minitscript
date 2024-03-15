@@ -64,35 +64,6 @@ void StringMethods::registerMethods(MinitScript* minitScript) {
 	}
 	{
 		//
-		class MethodStringGetLength: public MinitScript::Method {
-		private:
-			MinitScript* minitScript { nullptr };
-		public:
-			MethodStringGetLength(MinitScript* minitScript):
-				MinitScript::Method(
-					{
-						{ .type = MinitScript::TYPE_STRING, .name = "string", .optional = false, .reference = false, .nullable = false }
-					},
-					MinitScript::TYPE_INTEGER
-				),
-				minitScript(minitScript) {}
-			const string getMethodName() override {
-				return "String::getLength";
-			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
-				string stringValue;
-				if (arguments.size() == 1 &&
-					MinitScript::getStringValue(arguments, 0, stringValue) == true) {
-					returnValue.setValue(static_cast<int64_t>(_UTF8StringTools::getLength(stringValue, arguments[0].getStringValueCache())));
-				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
-				}
-			}
-		};
-		minitScript->registerMethod(new MethodStringGetLength(minitScript));
-	}
-	{
-		//
 		class MethodStringGetSize: public MinitScript::Method {
 		private:
 			MinitScript* minitScript { nullptr };
@@ -112,7 +83,7 @@ void StringMethods::registerMethods(MinitScript* minitScript) {
 				string stringValue;
 				if (arguments.size() == 1 &&
 					MinitScript::getStringValue(arguments, 0, stringValue) == true) {
-					returnValue.setValue(static_cast<int64_t>(stringValue.size()));
+					returnValue.setValue(static_cast<int64_t>(_UTF8StringTools::getLength(stringValue, arguments[0].getStringValueCache())));
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}

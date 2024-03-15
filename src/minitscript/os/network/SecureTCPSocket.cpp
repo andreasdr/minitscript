@@ -90,7 +90,7 @@ void SecureTCPSocket::connect(const string& hostname, const unsigned int port) {
 	//
 	long result = 1;
 	// see: https://stackoverflow.com/questions/59017890/where-is-the-certificate-file-for-ssl-ctx-load-verify-locations-in-openssl-locat
-	result = SSL_CTX_load_verify_locations(ctx, "resources/certs/cacert-2023-08-22.pem" /* truststore */, "resources/certs");
+	result = SSL_CTX_load_verify_locations(ctx, (MINITSCRIPT_DATA + "/resources/certs/cacert-2023-08-22.pem").c_str() /* truststore */, "resources/certs");
 	if (!(1 == result))
 		throw NetworkSocketException("Could not connect socket: " + openSSLGetErrors());
 
