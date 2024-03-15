@@ -256,14 +256,14 @@ If there is no --application or --library command line argument, building applic
 If you want to have your scripts executed native only or do not want to ship the script files in your application installation package, you can e.g. use the following command: 
 
 ```
-minitscriptbuild --native-only main.tscript [script1.tscript] [script2.tscript]
+minitscriptbuild --native-only main.tscript script1.tscript script2.tscript
 ```
 
 If you want to build a .so(shared object file for Linux/BSD/MacOSX) file or a .dll(dynamic link library for Windows/MINGW) file, that can be embedded in other C++ applications, 
 see an example below:  
 
 ```
-minitscriptbuild --library [script1.tscript] [script2.tscript]
+minitscriptbuild --library script1.tscript script2.tscript
 ```
 
 # 3. Other information
