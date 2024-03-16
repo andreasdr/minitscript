@@ -1586,6 +1586,7 @@ Please note:
 - MinitScript, see [README.md](./README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
 - MinitScript - How to use, see [README-Tools.md](./README-Tools.md)
+- MinitScript - ToDo list, see [README-ToDo.md](./README-ToDo.md)
 - The Mindty Kollektiv [Discord Server](https://discord.gg/Na4ACaFD)
 
 # 11. Donation 
