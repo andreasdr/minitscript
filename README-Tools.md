@@ -16,7 +16,7 @@ See section 1.x to have a description of each tool.
 
 If you just want to have your script(s) working in native mode, you can fast forward to section 2. and use the minitscriptbuild tool. 
 
-## 1.1. "minitscript" tool
+## 1.1. minitscript
 
 minitscript is the MinitScript interpreter tool, which means scripts are translated to a syntax tree, which then gets executed. This can be called script interpretion.
 The minitscript tool can take the following arguments:
@@ -256,14 +256,14 @@ If there is no --application or --library command line argument, building applic
 If you want to have your scripts executed native only or do not want to ship the script files in your application installation package, you can e.g. use the following command: 
 
 ```
-minitscriptbuild --native-only main.tscript [script1.tscript] [script2.tscript]
+minitscriptbuild --native-only main.tscript script1.tscript script2.tscript
 ```
 
 If you want to build a .so(shared object file for Linux/BSD/MacOSX) file or a .dll(dynamic link library for Windows/MINGW) file, that can be embedded in other C++ applications, 
 see an example below:  
 
 ```
-minitscriptbuild --library [script1.tscript] [script2.tscript]
+minitscriptbuild --library script1.tscript script2.tscript
 ```
 
 # 3. Other information
