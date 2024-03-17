@@ -134,7 +134,21 @@ function: build($scriptURIs, $application, $library, $nativeOnly)
 			"Tsrc" + 
 			" " + 
 			"TMakefile"
-		$commands[] = "make -f TMakefile mains"
+		if (Array::contains(["FreeBSD", "NetBSD", "OpenBSD"], $$.application::OS) == true)
+			$commands[] = 
+				"gmake" +
+				" " +
+				"-j " + integer(concurrency.getHardwareThreadCount() / 1.5) +
+				" " + 
+				"-f TMakefile mains"
+		else
+			$commands[] = 
+				"make" +
+				" " +
+				"-j " + integer(concurrency.getHardwareThreadCount() / 1.5) +
+				" " + 
+				"-f TMakefile mains"
+		end
 	end
 	# execute commands
 	forEach($command in $commands)

@@ -5,6 +5,7 @@
 #include <minitscript/minitscript.h>
 #include <minitscript/minitscript/BaseMethods.h>
 #include <minitscript/minitscript/MinitScript.h>
+#include <minitscript/os/threading/Thread.h>
 #include <minitscript/utilities/Console.h>
 #include <minitscript/utilities/Hex.h>
 #include <minitscript/utilities/Time.h>
@@ -17,6 +18,7 @@ using minitscript::minitscript::BaseMethods;
 
 using minitscript::minitscript::MinitScript;
 
+using _Thread = minitscript::os::threading::Thread;
 using _Console = minitscript::utilities::Console;
 using _Hex = minitscript::utilities::Hex;
 using _Time = minitscript::utilities::Time;
@@ -2013,5 +2015,30 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 		};
 		minitScript->registerMethod(new SwapMethod(minitScript));
+	}
+	{
+		//
+		class ConcurrencyGetHardwareThreadCountMethod: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			ConcurrencyGetHardwareThreadCountMethod(MinitScript* minitScript):
+				MinitScript::Method(
+					{},
+					MinitScript::TYPE_INTEGER
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "concurrency.getHardwareThreadCount";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				if (arguments.empty() == true) {
+					returnValue.setValue(static_cast<int64_t>(_Thread::getHardwareThreadCount()));
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new ConcurrencyGetHardwareThreadCountMethod(minitScript));
 	}
 }

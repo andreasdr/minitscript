@@ -38,7 +38,7 @@ void MathMethods::registerMethods() {
 					{
 						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "a", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "b", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "operator", .optional = true, .reference = false, .nullable = false }
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_PSEUDO_MIXED
 				),
