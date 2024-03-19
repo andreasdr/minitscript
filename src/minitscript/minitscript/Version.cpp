@@ -9,7 +9,7 @@ using std::string;
 using minitscript::minitscript::Version;
 
 string Version::getVersion() {
-	return "0.9.30 PRE-BETA";
+	return "0.9.31 PRE-BETA";
 }
 
 string Version::getCopyright() {
