@@ -33,7 +33,7 @@ Please note, default block is optional.
 
 ## 2.1. Language Documentation
  - [Syntax](./README-Syntax.md)
- - [Data types and variables](./README-DataTypes%20and%20Variables.md)
+ - [Data types and variables](./README-DataTypes-and-Variables.md)
  - [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
  - [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
  - [Flow Control - loops](./README-FlowControl-Loops.md)
