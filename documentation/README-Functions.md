@@ -104,19 +104,19 @@ end
 # 2. Links
 
 ## 2.1. Language Documentation
- - [Syntax] (./README-Syntax.md)
- - [DataTypes and variables] (./README-DataTypes and Variables.md)
- - [Flow control - If, elseif, else] (./README-FlowControl-Conditions.md)
- - [Flow Control - Switch, Case, Default] (./README-FlowControl-Conditions2.md)
- - [Flow Control - Loops] (./README-FlowControl-Loops.md)
- - [Classes] (./README-Classes.md)
- - [Classes API] (./README-Classes-API.md)
- - [Functions] (./README-Functions.md)
- - [BuildIn Functions] (./README-BuildIn-Functions.md)
- - [Functions] (./README-Functions.md)
- - [Operators] (./README-Operators.md)
- - [Syntax] (./README-Events.md)
- - [Events] (./README-Constants.md)
+ - [Syntax](./README-Syntax.md)
+ - [DataTypes and variables](./README-DataTypes and Variables.md)
+ - [Flow control - If, elseif, else](./README-FlowControl-Conditions.md)
+ - [Flow Control - Switch, Case, Default](./README-FlowControl-Conditions2.md)
+ - [Flow Control - Loops](./README-FlowControl-Loops.md)
+ - [Classes](./README-Classes.md)
+ - [Classes API](./README-Classes-API.md)
+ - [Functions](./README-Functions.md)
+ - [BuildIn Functions](./README-BuildIn-Functions.md)
+ - [Functions](./README-Functions.md)
+ - [Operators](./README-Operators.md)
+ - [Syntax](./README-Events.md)
+ - [Events](./README-Constants.md)
 
 ## 2.2. Other Links
 

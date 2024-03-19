@@ -69,19 +69,19 @@ Also note the focus on easy integration into other products and easy customizabi
 
 # 2. Language Documentation
 
-- [Syntax] (./documentation/README-Syntax.md)
-- [DataTypes and variables] (./documentation/README-DataTypes and Variables.md)
-- [Flow control - If, elseif, else] (./documentation/README-FlowControl-Conditions.md)
-- [Flow Control - Switch, Case, Default] (./documentation/README-FlowControl-Conditions2.md)
-- [Flow Control - Loops] (./documentation/README-FlowControl-Loops.md)
-- [Classes] (./documentation/README-Classes.md)
-- [Classes API] (./documentation/README-Classes-API.md)
-- [Functions] (./documentation/README-Functions.md)
-- [BuildIn Functions] (./documentation/README-BuildIn-Functions.md)
-- [Functions] (./documentation/README-Functions.md)
-- [Operators] (./documentation/README-Operators.md)
-- [Syntax] (./documentation/README-Events.md)
-- [Events] (./documentation/README-Constants.md)
+- [Syntax](./documentation/README-Syntax.md)
+- [DataTypes and variables](./documentation/README-DataTypes and Variables.md)
+- [Flow control - If, elseif, else](./documentation/README-FlowControl-Conditions.md)
+- [Flow Control - Switch, Case, Default](./documentation/README-FlowControl-Conditions2.md)
+- [Flow Control - Loops](./documentation/README-FlowControl-Loops.md)
+- [Classes](./documentation/README-Classes.md)
+- [Classes API](./documentation/README-Classes-API.md)
+- [Functions](./documentation/README-Functions.md)
+- [BuildIn Functions](./documentation/README-BuildIn-Functions.md)
+- [Functions](./documentation/README-Functions.md)
+- [Operators](./documentation/README-Operators.md)
+- [Syntax](./documentation/README-Events.md)
+- [Events](./documentation/README-Constants.md)
 
 ## 3. Links
 
