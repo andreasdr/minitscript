@@ -1,6 +1,6 @@
 ![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Data Types and Variables 
+# 1. Data Types
 
 Default MinitScript works with the following data types:
 - boolean
@@ -15,7 +15,7 @@ Default MinitScript works with the following data types:
 Variable identifiers always start with a "$". Constants need also be prefixed with a "$" and should be named with uppercase letters like "$PI = 3.14".
 You can manually set variables with the setVariable("$variableName", ...) or constants with setConstant("$CONSTANT", ...) methods.
 
-## 4.1. Primitive data types
+## 2. Primitive data types
 
 The following primitive data types are available: boolean, integer, float, string.
 
@@ -77,7 +77,7 @@ The primitive data types can also be assigned by using initialization methods th
 
 ## 2.1. Language Documentation
  - [Syntax](./README-Syntax.md)
- - [Data types and variables](./README-DataTypes-and-Variables.md)
+ - [Data types](./README-DataTypes.md)
  - [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
  - [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
  - [Flow Control - loops](./README-FlowControl-Loops.md)
