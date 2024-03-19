@@ -12,10 +12,7 @@
 - async network methods
 - parser: have a parser with high level projection
 
-
-# 2. Other information
-
-## 2.1. Links
+# 3. Links
 
 - MinitScript, see [README.md](./README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
