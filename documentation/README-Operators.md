@@ -39,7 +39,7 @@
  - [Classes](./README-Classes.md)
  - [Classes API](./README-Classes-API.md)
  - [Functions](./README-Functions.md)
- - [BuildIn Functions](./README-BuildIn-Functions.md)
+ - [BuiltIn Functions](./README-BuiltIn-Functions.md)
  - [Functions](./README-Functions.md)
  - [Operators](./README-Operators.md)
  - [Syntax](./README-Events.md)
