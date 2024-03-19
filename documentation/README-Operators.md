@@ -32,7 +32,7 @@
 
 ## 2.1. Language Documentation
  - [Syntax](./README-Syntax.md)
- - [DataTypes and variables](./README-DataTypes and Variables.md)
+ - [DataTypes and variables](./README-DataTypes%20and%20Variables.md)
  - [Flow control - If, elseif, else](./README-FlowControl-Conditions.md)
  - [Flow Control - Switch, Case, Default](./README-FlowControl-Conditions2.md)
  - [Flow Control - Loops](./README-FlowControl-Loops.md)
