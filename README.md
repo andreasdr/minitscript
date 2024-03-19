@@ -60,7 +60,6 @@ Also note the focus on easy integration into other products and easy customizabi
     - README.md: resolve TODOs
     - README-BuildingHowTo.md: resolve TODOs
     - README-Syntax.md: TODO
-    - README-Tools.md: TODO
     - README-Extension.md: TODO
     - README-Integration.md: TODO
     - ...
