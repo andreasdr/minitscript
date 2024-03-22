@@ -1,0 +1,44 @@
+# initialize
+on: initialize
+end
+
+# scan folder
+function: scanPath($path)
+	console.printLine("scanPath(): " + $path)
+	$files = filesystem.list($path)
+	if ($files == null)
+		console.printLine("scanFolder(): could not list folder: " + $path)
+	end
+	forEach($file in $files)
+		if (filesystem.isPath(filesystem.composeURI($path, $file)) == false)
+			continue
+		end
+		console.printLine("Path - " + $file)
+		scanPath(filesystem.composeURI($path, $file))
+	end
+	forEach($file in $files)
+		if (filesystem.isPath(filesystem.composeURI($path, $file)) == true) 
+			continue
+		end
+		console.printLine("File - " + filesystem.composeURI($path, $file))
+	end
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.printLine("-------------------")
+	console.printLine("Path diff script")
+	console.printLine("-------------------")
+	scanPath(".")
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.printLine("-------------------")
+	console.printLine("Path diff script")
+	console.printLine("-------------------")
+	console.printLine()
+	console.printLine("An error occurred")
+	script.stop()
+end
