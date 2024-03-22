@@ -34,7 +34,7 @@ end
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
 	console.printLine("------------------")
-	console.printLine("Path diff script")
+	console.printLine("Path list script")
 	console.printLine("------------------")
 	if (application.getArguments()->getSize() != 2)
 		console.printLine("No path given: Please pass a path to scan to pathdiff script")
@@ -54,7 +54,7 @@ end
 # an error has occurred
 on: error
 	console.printLine("------------------")
-	console.printLine("Path diff script")
+	console.printLine("Path list script")
 	console.printLine("------------------")
 	console.printLine()
 	console.printLine("An error occurred")
