@@ -3,10 +3,12 @@ on: initialize
 end
 
 # scan folder
-function: scanPath($basePath, $path, &$totalSize)
+function: scanPath($basePath, $path, &$totalSize, &$errors)
 	$files = filesystem.list($path)
 	if ($files == null)
 		console.printLine("scanFolder(): could not list folder: " + $path)
+		$errors++
+		return
 	end
 	forEach($file in $files)
 		if ($file == "." || $file == "..")
@@ -16,7 +18,7 @@ function: scanPath($basePath, $path, &$totalSize)
 			continue
 		end
 		console.printLine(filesystem.composeURI($path, $file)->substring($basePath->getSize() + 1))
-		scanPath($basePath, filesystem.composeURI($path, $file), $totalSize)
+		scanPath($basePath, filesystem.composeURI($path, $file), $totalSize, $errors)
 	end
 	forEach($file in $files)
 		if ($file == "." || $file == "..")
@@ -26,6 +28,10 @@ function: scanPath($basePath, $path, &$totalSize)
 			continue
 		end
 		$fileSize = filesystem.getFileSize($path, $file)
+		if ($fileSize == null)
+			$fileSize = 0
+			$errors++
+		end
 		$totalSize = $totalSize + $fileSize 
 		console.printLine(filesystem.composeURI($path, $file)->substring($basePath->getSize() + 1) + " - " + $fileSize)
 	end
@@ -43,10 +49,12 @@ on: nothing
 	# TODO: $path = application.getArguments()[1]
 	$path = application.getArguments()->get(1)
 	$totalSize = 0
+	$errors = 0
 	console.printLine("Scanning: " + $path)
 	console.printLine()
-	scanPath($path, $path, $totalSize)
+	scanPath($path, $path, $totalSize, $errors)
 	console.printLine()
+	console.printLine("Errors: " + $errors)
 	console.printLine("Total size: " + $totalSize)
 	script.stop()
 end
