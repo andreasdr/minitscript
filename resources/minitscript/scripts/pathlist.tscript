@@ -2,11 +2,11 @@
 on: initialize
 end
 
-# scan folder
+# scan path
 function: scanPath($basePath, $path, &$totalSize, &$errors)
 	$files = filesystem.list($path)
 	if ($files == null)
-		console.printLine("scanFolder(): could not list folder: " + $path)
+		console.printLine("scanPath(): could not list path: " + $path)
 		$errors++
 		return
 	end
