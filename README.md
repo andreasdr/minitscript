@@ -76,7 +76,7 @@ Also note the focus on easy integration into other products and easy customizabi
 - [Classes](./documentation/README-Classes.md)
 - [Classes API](./documentation/README-Classes-API.md)
 - [Functions](./documentation/README-Functions.md)
-- [BuildIn functions](./documentation/README-BuiltIn-Functions.md)
+- [BuiltIn functions](./documentation/README-BuiltIn-Functions.md)
 - [Functions](./documentation/README-Functions.md)
 - [Operators](./documentation/README-Operators.md)
 - [Syntax](./documentation/README-Events.md)

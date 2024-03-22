@@ -1548,7 +1548,9 @@ bool MinitScript::validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode,
 					if (validateContextFunctions(argument, functionStack, statement) == false) return false;
 				}
 				//
-				validateContextFunctions(syntaxTreeNode.value.getValueAsString(), functionStack);
+				if (functionStack.back() != syntaxTreeNode.value.getValueAsString()) {
+					validateContextFunctions(syntaxTreeNode.value.getValueAsString(), functionStack);
+				}
 				//
 				break;
 			}
