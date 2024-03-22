@@ -29,10 +29,11 @@ function: scanPath($basePath, $path, &$totalSize, &$errors)
 		end
 		$fileSize = filesystem.getFileSize($path, $file)
 		if ($fileSize == null)
-			$fileSize = 0
+			$fileSize = "ERROR"
 			$errors++
+		else
+			$totalSize = $totalSize + $fileSize
 		end
-		$totalSize = $totalSize + $fileSize 
 		console.printLine(filesystem.composeURI($path, $file)->substring($basePath->getSize() + 1) + " - " + $fileSize)
 	end
 end
