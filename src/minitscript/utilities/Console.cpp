@@ -1,7 +1,4 @@
-#if defined(_MSC_VER)
-	#include <windows.h>
-#endif
-
+#include <clocale>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -33,10 +30,7 @@ void Console::setLogger(Logger* logger) {
 }
 
 void Console::initialize() {
-	#if defined(_MSC_VER)
-		// set Microsoft Windows console to use UTF-8
-		SetConsoleOutputCP(65001);
-	#endif
+	setlocale(LC_ALL, "de_DE.utf-8");
 }
 
 void Console::printLine(const string_view& str)
