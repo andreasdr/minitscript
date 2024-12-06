@@ -1,4 +1,4 @@
-![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
+![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
 # 1. How to build MinitScript?
 
@@ -17,7 +17,7 @@ exit
 ### 1.1.2. Clone repository
 
 ```bash
-git clone https://github.com/Mindty-Kollektiv/minitscript
+git clone https://github.com/andreasdr/minitscript
 cd minitscript
 ```
 
@@ -44,7 +44,7 @@ exit
 ### 1.2.2. Clone repository
 
 ```bash
-git clone https://github.com/Mindty-Kollektiv/minitscript
+git clone https://github.com/andreasdr/minitscript
 cd minitscript
 ```
 
@@ -71,7 +71,7 @@ exit
 ### 1.3.2. Clone repository
 
 ```bash
-git clone https://github.com/Mindty-Kollektiv/minitscript
+git clone https://github.com/andreasdr/minitscript
 cd minitscript
 ```
 
@@ -97,7 +97,7 @@ sudo apt-get install libssl-dev
 ### 1.4.2. Clone repository
 
 ```bash
-git clone https://github.com/Mindty-Kollektiv/minitscript
+git clone https://github.com/andreasdr/minitscript
 cd minitscript
 ```
 
@@ -118,7 +118,7 @@ You have to install XCode or XCode command line tools.
 ### 1.5.2. Clone repository
 
 ```bash
-git clone https://github.com/Mindty-Kollektiv/minitscript
+git clone https://github.com/andreasdr/minitscript
 cd minitscript
 ```
 
@@ -147,7 +147,7 @@ pacman -S mingw-w64-x86_64-openssl
 ### 1.6.2. Clone repository
 
 ```bash
-git clone https://github.com/Mindty-Kollektiv/minitscript
+git clone https://github.com/andreasdr/minitscript
 cd minitscript
 ```
 
@@ -168,8 +168,8 @@ Be aware that the makefile uses the default installation paths for libraries and
 
 ### 1.7.2. Download or clone repository
 
-Use a GIT client with the following URL: https://github.com/Mindty-Kollektiv/minitscript and clone to a folder into your home folder like "minitscript" OR 
-send your browser to "https://github.com/Mindty-Kollektiv/minitscript" and click "Clone or download/Download ZIP" and extract ZIP somewhere in your home folder, e.g. "minitscript".
+Use a GIT client with the following URL: https://github.com/andreasdr/minitscript and clone to a folder into your home folder like "minitscript" OR 
+send your browser to "https://github.com/andreasdr/minitscript" and click "Clone or download/Download ZIP" and extract ZIP somewhere in your home folder, e.g. "minitscript".
 
 ### 1.7.3. Build
 

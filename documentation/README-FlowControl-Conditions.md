@@ -1,4 +1,4 @@
-![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
+![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
 # 1. Flow Control - If, elseif and else
 

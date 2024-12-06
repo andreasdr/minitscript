@@ -1,30 +1,30 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Mindty-Kollektiv/minitscript/blob/master/LICENSE)
-[![NIX Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/nix.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
-[![MacOSX Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/macosx.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
-[![Windows/MINGW Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/windows-mingw.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
-[![Windows/MSC Build Status](https://github.com/Mindty-Kollektiv/minitscript/actions/workflows/windows-msc.yml/badge.svg)](https://github.com/Mindty-Kollektiv/minitscript/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/andreasdr/minitscript/blob/master/LICENSE)
+[![NIX Build Status](https://github.com/andreasdr/minitscript/actions/workflows/nix.yml/badge.svg)](https://github.com/andreasdr/minitscript/actions)
+[![MacOSX Build Status](https://github.com/andreasdr/minitscript/actions/workflows/macosx.yml/badge.svg)](https://github.com/andreasdr/minitscript/actions)
+[![Windows/MINGW Build Status](https://github.com/andreasdr/minitscript/actions/workflows/windows-mingw.yml/badge.svg)](https://github.com/andreasdr/minitscript/actions)
+[![Windows/MSC Build Status](https://github.com/andreasdr/minitscript/actions/workflows/windows-msc.yml/badge.svg)](https://github.com/andreasdr/minitscript/actions)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/29926/badge.svg)](https://scan.coverity.com/projects/mindty-kollektiv-minitscript)
   
-![LOGO](https://raw.githubusercontent.com/Mindty-Kollektiv/minitscript/master/resources/github/minitscript-logo.png)
+![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
 This is the home of MinitScript - The mini C++ transpileable scripting language.
 
-This document and repository is WIP. Expect a BETA release around 2024-09-01.\
+This document and repository is WIP. Expect a BETA release around 2025-03-01.\
 See section 1.3. for 1.0 BETA release TODO list.
 
 # 1. Introduction
 
-MinitScript is developed as part of our [TDME2 3D Engine](https://github.com/Mindty-Kollektiv/tdme2) to match
+MinitScript is developed as part of our [TDME2 3D Engine](https://github.com/andreasdr/tdme2) to match
 the requirements for high performance script execution, as well as straight forward game logic scripting.
 
-MinitScript might borrow some ideas from JavaScript, Kotlin, PHP and even C# and C++, which you might like and find familier.
+MinitScript might borrow some ideas from JavaScript, Kotlin, PHP and even Pascal, C# and C++, which you might like and find familier.
 Also note the focus on easy integration into other products and easy customizability and extendability.
 
 ## 1.1. Open source
 
 - MinitScript is open source
-  - please check the [license](https://github.com/Mindty-Kollektiv/minitscript/blob/main/LICENSE)
-  - you find the source code at [https://github.com/Mindty-Kollektiv/minitscript](https://github.com/Mindty-Kollektiv/minitscript) 
+  - please check the [license](https://github.com/andreasdr/minitscript/blob/main/LICENSE)
+  - you find the source code at [https://github.com/andreasdr/minitscript](https://github.com/andreasdr/minitscript) 
   - here you find developer [documentation including collaboration graphs and API](https://www.mindty.com/products/minitscript/documentation/)
 
 ## 1.2. Language features
@@ -51,6 +51,12 @@ Also note the focus on easy integration into other products and easy customizabi
 
 - Whats left to do for 1.0 BETA release
   - some adjustments
+    - modules
+    - exceptions
+    - array sub type optimization
+    - passing method arguments with vector of pointer of MinitScript variables
+    - have a more sophisticated parser
+    - have interfaces
     - optional: make event system optional??? what about error emits/errors in functions/stacklets??? 
     - build system: check executable output directories
   - parser

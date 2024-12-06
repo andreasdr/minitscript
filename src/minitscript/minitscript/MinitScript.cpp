@@ -4778,7 +4778,7 @@ void MinitScript::Variable::setFunctionCallStatement(const string& initializerSt
 	}
 }
 
-inline MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScript::Variable* variablePtr, const string& variableStatement, const string& callerMethod, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const SubStatement* subStatement, bool expectVariable) {
+MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScript::Variable* variablePtr, const string& variableStatement, const string& callerMethod, Variable*& parentVariable, int64_t& arrayIdx, string& key, int& setAccessBool, const SubStatement* subStatement, bool expectVariable) {
 	// get root variable
 	key.clear();
 	// no array idx by default
