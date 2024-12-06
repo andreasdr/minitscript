@@ -1,21 +1,21 @@
-This is the home of MinitScript - the mini (C++) transpileable scripting language.
+This is the home of MinitScript - The mini C++ transpileable scripting language.
 
-This document and repository is WIP. Expect a BETA release around 2024-03-01.\
+This document and repository is WIP. Expect a BETA release around 2025-03-01.\
 See section 1.3. for 1.0 BETA release TODO list.
 
 # 1. Introduction
 
-MinitScript was developed as part of our [TDME2 3D Engine](https://github.com/Mindty-Kollektiv/tdme2) to match
+MinitScript is developed as part of our [TDME2 3D Engine](https://github.com/andreasdr/tdme2) to match
 the requirements for high performance script execution, as well as straight forward game logic scripting.
 
-MinitScript might borrow some ideas from JavaScript, Kotlin, PHP and even C# and C++, which you might like and find familier.
+MinitScript might borrow some ideas from JavaScript, Kotlin, PHP and even Pascal, C# and C++, which you might like and find familier.
 Also note the focus on easy integration into other products and easy customizability and extendability.
 
 ## 1.1. Open source
 
 - MinitScript is open source
-  - please check the [license](https://github.com/Mindty-Kollektiv/minitscript/blob/main/LICENSE)
-  - you find the source code at [https://github.com/Mindty-Kollektiv/minitscript](https://github.com/Mindty-Kollektiv/minitscript) 
+  - please check the [license](https://github.com/andreasdr/minitscript/blob/main/LICENSE)
+  - you find the source code at [https://github.com/andreasdr/minitscript](https://github.com/andreasdr/minitscript) 
   - here you find developer [documentation including collaboration graphs and API](https://www.mindty.com/products/minitscript/documentation/)
 
 ## 1.2. Language features
@@ -42,16 +42,23 @@ Also note the focus on easy integration into other products and easy customizabi
 
 - Whats left to do for 1.0 BETA release
   - some adjustments
-    - private members: transpilated/native: check output, it differs from interpreter mode
-    - multi line statement error messages are ugly as fuck???
-    - make event system optional???
-    - preprocessor definition for data files
-    - native scripts should also be executable without original scripts(optional) and with changed scripts(interpreted mode)
-  - tests
-    - native tests for MSC/MINGW
-    - bubblesort benchmark vs java script or other script engines, just to get the idea of current state of performance
+    - modules
+    - exceptions
+    - array sub type optimization
+    - passing method arguments with vector of pointer of MinitScript variables
+    - have a more sophisticated parser
+    - have interfaces
+    - optional: make event system optional??? what about error emits/errors in functions/stacklets??? 
+    - build system: check executable output directories
+  - parser
+    - improve error messages even more
   - documentation
-    - detailed docu for methods and section
+    - detailed documentation for specific sections and maybe methods
+    - README.md: resolve TODOs
+    - README-BuildingHowTo.md: resolve TODOs
+    - README-Syntax.md: TODO
+    - README-Extension.md: TODO
+    - README-Integration.md: TODO
     - ...
   - installer for Windows
   - installer for MacOSX
