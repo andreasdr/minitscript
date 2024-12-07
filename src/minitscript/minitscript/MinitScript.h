@@ -67,6 +67,7 @@ using _Library = minitscript::minitscript::Library;
  */
 class minitscript::minitscript::MinitScript {
 	friend class ApplicationMethods;
+	friend class ArrayMethods;
 	friend class BaseMethods;
 	friend class JSONMethods;
 	friend class MathMethods;
@@ -434,9 +435,9 @@ public:
 	 * Variable
 	 */
 	class Variable {
-		friend class MinitScript;
+		friend class ArrayMethods;
 		friend class BaseMethods;
-
+		friend class MinitScript;
 	private:
 		/**
 		 * Variable initializer
@@ -513,11 +514,18 @@ public:
 		};
 
 		//
-		static constexpr uint32_t TYPE_BITS_VALUE { 268435455 }; // 2 ^ 28 - 1
+		static constexpr uint32_t TYPE_BITS_VALUE { 67108863 }; // 2 ^ 26 - 1
+		static constexpr uint32_t ARRAY_SUBTYPE_BITS_VALUE { 67108864 | 134217728 }; // 2 ^ 26 | 2 ^ 27
 		static constexpr uint32_t CONSTANT_BIT_VALUE { 268435456 }; // 2 ^ 28
 		static constexpr uint32_t REFERENCE_BIT_VALUE { 536870912 }; // 2 ^ 29
 		static constexpr uint32_t PRIVATE_BIT_VALUE { 1073741824 }; // 2 ^ 30
 		static constexpr uint32_t PRIVATESCOPE_BIT_VALUE { 2147483648 }; // 2 ^ 31
+
+		//
+		static constexpr uint32_t ARRAY_SUBTYPE_MIXED { 0 };
+		static constexpr uint32_t ARRAY_SUBTYPE_BOOLEAN { 1 };
+		static constexpr uint32_t ARRAY_SUBTYPE_INTEGER { 2 };
+		static constexpr uint32_t ARRAY_SUBTYPE_FLOAT { 3 };
 
 		//
 		union InitializerReferenceUnion {
@@ -619,14 +627,14 @@ public:
 		 * Unset constant
 		 */
 		inline void unsetConstant() {
-			typeBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
+			typeBits&= TYPE_BITS_VALUE | ARRAY_SUBTYPE_BITS_VALUE | REFERENCE_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
 		}
 
 		/**
 		 * @return unset reference
 		 */
 		inline void unsetReference() {
-			typeBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
+			typeBits&= TYPE_BITS_VALUE | ARRAY_SUBTYPE_BITS_VALUE | CONSTANT_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
 			initializerReferenceUnion.reference = nullptr;
 		}
 
@@ -648,7 +656,33 @@ public:
 		 * Unset private scope
 		 */
 		inline void unsetPrivateScope() {
-			typeBits&= TYPE_BITS_VALUE | REFERENCE_BIT_VALUE | CONSTANT_BIT_VALUE | PRIVATE_BIT_VALUE;
+			typeBits&= TYPE_BITS_VALUE | ARRAY_SUBTYPE_BITS_VALUE | CONSTANT_BIT_VALUE | REFERENCE_BIT_VALUE | PRIVATE_BIT_VALUE;
+		}
+
+		/**
+		 * Set array sub type, see ARRAY_SUBTYPE_*
+		 * @param value value
+		 */
+		inline void setArraySubType(int value) {
+			if (isReference() == false) {
+				typeBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE | REFERENCE_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
+				typeBits|= (value & 0x3) << 26;
+			} else {
+				initializerReferenceUnion.reference->typeBits&= TYPE_BITS_VALUE | CONSTANT_BIT_VALUE | REFERENCE_BIT_VALUE | PRIVATE_BIT_VALUE | PRIVATESCOPE_BIT_VALUE;
+				initializerReferenceUnion.reference->typeBits|= (value & 0x3) << 26;
+			}
+		}
+
+		/**
+		 * Get array sub type, see ARRAY_SUBTYPE_*
+		 * @returns array sub type
+		 */
+		inline int getArraySubType() {
+			if (isReference() == false) {
+				return (typeBits & ARRAY_SUBTYPE_BITS_VALUE) >> 26;
+			} else {
+				return (initializerReferenceUnion.reference->typeBits & ARRAY_SUBTYPE_BITS_VALUE) >> 26;
+			}
 		}
 
 		/**
@@ -1662,9 +1696,8 @@ public:
 		 */
 		inline void setValue(const vector<uint8_t>& value) {
 			setType(TYPE_BYTEARRAY);
-			auto& byteArrayValue = getByteArrayValueReference().value;
 			for (const auto arrayEntry: value) {
-				 byteArrayValue.push_back(arrayEntry);
+				 pushByteArrayEntry(arrayEntry);
 			}
 		}
 
@@ -1674,9 +1707,9 @@ public:
 		 */
 		inline void setValue(const vector<Variable*>& value) {
 			setType(TYPE_ARRAY);
-			auto& arrayValue = getArrayValueReference();
+			setArraySubType(ARRAY_SUBTYPE_MIXED);
 			for (const auto arrayEntry: value) {
-				arrayValue.push_back(new Variable(*arrayEntry));
+				pushArrayEntry(*arrayEntry);
 			}
 		}
 
@@ -1852,6 +1885,78 @@ public:
 		}
 
 		/**
+		 * Set initial array sub type by adding first value
+		 * @param value value
+		 */
+		inline void setInitialArraySubType(const Variable& value) {
+			switch(value.getType()) {
+				case(TYPE_NULL): setArraySubType(ARRAY_SUBTYPE_INTEGER); break;
+				case(TYPE_BOOLEAN): setArraySubType(ARRAY_SUBTYPE_BOOLEAN); break;
+				case(TYPE_INTEGER): setArraySubType(ARRAY_SUBTYPE_INTEGER); break;
+				case(TYPE_FLOAT): setArraySubType(ARRAY_SUBTYPE_FLOAT); break;
+				default: setArraySubType(ARRAY_SUBTYPE_MIXED); break;
+			}
+		}
+
+		/**
+		 * Determine array sub type after adding another value
+		 * @param value value
+		 */
+		inline void determineArraySubType(const Variable& value) {
+			switch (getArraySubType()) {
+				case ARRAY_SUBTYPE_BOOLEAN:
+					{
+						switch(value.getType()) {
+							case(TYPE_NULL): setArraySubType(ARRAY_SUBTYPE_INTEGER); break;
+							case(TYPE_BOOLEAN): break;
+							case(TYPE_INTEGER): setArraySubType(ARRAY_SUBTYPE_INTEGER); break;
+							case(TYPE_FLOAT): setArraySubType(ARRAY_SUBTYPE_FLOAT); break;
+							default: setArraySubType(ARRAY_SUBTYPE_MIXED); break;
+						}
+						break;
+					}
+				case ARRAY_SUBTYPE_INTEGER:
+					{
+						switch(value.getType()) {
+							case(TYPE_NULL): break;
+							case(TYPE_BOOLEAN): break;
+							case(TYPE_INTEGER): break;
+							case(TYPE_FLOAT): setArraySubType(ARRAY_SUBTYPE_FLOAT); break;
+							default: setArraySubType(ARRAY_SUBTYPE_MIXED); break;
+						}
+						break;
+					}
+				case ARRAY_SUBTYPE_FLOAT:
+					{
+						switch(value.getType()) {
+							case(TYPE_NULL): break;
+							case(TYPE_BOOLEAN): break;
+							case(TYPE_INTEGER): break;
+							case(TYPE_FLOAT): break;
+							default: setArraySubType(ARRAY_SUBTYPE_MIXED); break;
+						}
+						break;
+					}
+				case ARRAY_SUBTYPE_MIXED:
+					{
+						break;
+					}
+			}
+		}
+
+		/**
+		 * Compute array sub type
+		 */
+		inline void computeArraySubType() {
+			if (getType() != TYPE_ARRAY) return;
+			setArraySubType(ARRAY_SUBTYPE_MIXED);
+			const auto& arrayValue = getArrayValueReference();
+			if (arrayValue.empty() == true) return;
+			setInitialArraySubType(*arrayValue[0]);
+			for (auto i = 0; i < arrayValue.size(); i++) determineArraySubType(*arrayValue[i]);
+		}
+
+		/**
 		 * Get array size
 		 * @return array size
 		 */
@@ -1883,6 +1988,11 @@ public:
 			while (arrayValue.size() <= idx) pushArrayEntry(Variable());
 			arrayValue[idx]->releaseReference();
 			arrayValue[idx] = new Variable(value);
+			if (arrayValue.size() == 1) {
+				setInitialArraySubType(value);
+			} else {
+				determineArraySubType(value);
+			}
 		}
 
 		/**
@@ -1891,7 +2001,13 @@ public:
 		 */
 		inline void pushArrayEntry(const Variable& value) {
 			setType(TYPE_ARRAY);
-			getArrayValueReference().push_back(new Variable(value));
+			auto& arrayValue = getArrayValueReference();
+			arrayValue.push_back(new Variable(value));
+			if (arrayValue.size() == 1) {
+				setInitialArraySubType(value);
+			} else {
+				determineArraySubType(value);
+			}
 		}
 
 		/**
@@ -1905,6 +2021,9 @@ public:
 				arrayValue[idx]->releaseReference();
 				arrayValue.erase(arrayValue.begin() + idx);
 			}
+			if (arrayValue.empty() == true) {
+				setArraySubType(ARRAY_SUBTYPE_MIXED);
+			}
 			return;
 		}
 
@@ -1916,6 +2035,7 @@ public:
 			auto& arrayValue = getArrayValueReference();
 			for (auto i = 0; i < arrayValue.size(); i++) arrayValue[i]->releaseReference();
 			arrayValue.clear();
+			setArraySubType(ARRAY_SUBTYPE_MIXED);
 		}
 
 		/**

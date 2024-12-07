@@ -31,6 +31,7 @@ void Console::setLogger(Logger* logger) {
 
 void Console::initialize() {
 	setlocale(LC_ALL, "de_DE.utf-8");
+	setlocale(LC_NUMERIC, "C");
 }
 
 void Console::printLine(const string_view& str)

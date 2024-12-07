@@ -176,6 +176,10 @@
 | <sub>set($index: Integer, $value: Mixed): Null</sub>                                             |
 | Sort array                                                                                       |
 | <sub>sort($sortFunction: Function): Null</sub>                                                   |
+| Sort array ascending                                                                             |
+| <sub>sortAscending(): Null</sub>                                                                 |
+| Sort array descending                                                                            |
+| <sub>sortDescending(): Null</sub>                                                                |
 
 ## 1.4. Map class
 

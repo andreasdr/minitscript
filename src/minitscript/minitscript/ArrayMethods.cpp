@@ -222,6 +222,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 					arguments[0].getType() == MinitScript::TYPE_ARRAY &&
 					MinitScript::getIntegerValue(arguments, 1, index) == true) {
 					arguments[0].removeArrayEntry(index);
+					arguments[0].computeArraySubType();
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
@@ -263,6 +264,7 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 							i--;
 						}
 					}
+					arguments[0].computeArraySubType();
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
@@ -311,6 +313,158 @@ void ArrayMethods::registerMethods(MinitScript* minitScript) {
 			}
 		};
 		minitScript->registerMethod(new MethodArrayIndexOf(minitScript));
+	}
+	{
+		//
+		class MethodArraySortAscending: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodArraySortAscending(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
+					},
+					MinitScript::TYPE_NULL
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "Array::sortAscending";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MinitScript::TYPE_ARRAY) {
+					auto arrayPtr = arguments[0].getArrayPointer();
+					if (arrayPtr != nullptr) {
+						switch (arguments[0].getArraySubType()) {
+							case MinitScript::Variable::ARRAY_SUBTYPE_BOOLEAN:
+							case MinitScript::Variable::ARRAY_SUBTYPE_INTEGER:
+								{
+									class SortClass {
+									public:
+										SortClass() {
+										}
+										bool operator()(const MinitScript::Variable* a, const MinitScript::Variable* b) const {
+											return a->getIntegerValueReference() < b->getIntegerValueReference();
+										}
+									};
+									sort(arrayPtr->begin(), arrayPtr->end(), SortClass());
+									break;
+								}
+							case MinitScript::Variable::ARRAY_SUBTYPE_FLOAT:
+								{
+									class SortClass {
+									public:
+										SortClass() {
+										}
+										bool operator()(const MinitScript::Variable* a, const MinitScript::Variable* b) const {
+											auto _a = 0.0f;
+											auto _b = 0.0f;
+											a->getFloatValue(_a, true);
+											b->getFloatValue(_b, true);
+											return _a < _b;
+										}
+									};
+									sort(arrayPtr->begin(), arrayPtr->end(), SortClass());
+									break;
+								}
+							case MinitScript::Variable::ARRAY_SUBTYPE_MIXED:
+								{
+									class SortClass {
+									public:
+										SortClass() {
+										}
+										bool operator()(const MinitScript::Variable* a, const MinitScript::Variable* b) const {
+											return a->getValueAsString() < b->getValueAsString();
+										}
+									};
+									sort(arrayPtr->begin(), arrayPtr->end(), SortClass());
+									break;
+								}
+						}
+					}
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodArraySortAscending(minitScript));
+	}
+	{
+		//
+		class MethodArraySortDescending: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodArraySortDescending(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
+					},
+					MinitScript::TYPE_NULL
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "Array::sortDescending";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				if (arguments.size() == 1 &&
+					arguments[0].getType() == MinitScript::TYPE_ARRAY) {
+					auto arrayPtr = arguments[0].getArrayPointer();
+					if (arrayPtr != nullptr) {
+						switch (arguments[0].getArraySubType()) {
+							case MinitScript::Variable::ARRAY_SUBTYPE_BOOLEAN:
+							case MinitScript::Variable::ARRAY_SUBTYPE_INTEGER:
+								{
+									class SortClass {
+									public:
+										SortClass() {
+										}
+										bool operator()(const MinitScript::Variable* a, const MinitScript::Variable* b) const {
+											return a->getIntegerValueReference() > b->getIntegerValueReference();
+										}
+									};
+									sort(arrayPtr->begin(), arrayPtr->end(), SortClass());
+									break;
+								}
+							case MinitScript::Variable::ARRAY_SUBTYPE_FLOAT:
+								{
+									class SortClass {
+									public:
+										SortClass() {
+										}
+										bool operator()(const MinitScript::Variable* a, const MinitScript::Variable* b) const {
+											auto _a = 0.0f;
+											auto _b = 0.0f;
+											a->getFloatValue(_a, true);
+											b->getFloatValue(_b, true);
+											return _a > _b;
+										}
+									};
+									sort(arrayPtr->begin(), arrayPtr->end(), SortClass());
+									break;
+								}
+							case MinitScript::Variable::ARRAY_SUBTYPE_MIXED:
+								{
+									class SortClass {
+									public:
+										SortClass() {
+										}
+										bool operator()(const MinitScript::Variable* a, const MinitScript::Variable* b) const {
+											return a->getValueAsString() > b->getValueAsString();
+										}
+									};
+									sort(arrayPtr->begin(), arrayPtr->end(), SortClass());
+									break;
+								}
+						}
+					}
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodArraySortDescending(minitScript));
 	}
 	{
 		//
