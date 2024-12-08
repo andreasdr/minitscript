@@ -3734,7 +3734,7 @@ private:
 	/**
 	 * Parse script code into this MinitScript instance
 	 * @param scriptCode script code
-	 * @param _module module
+	 * @param _module module name
 	 * @param lineIdxOffset line index offset
 	 * @return success
 	 */

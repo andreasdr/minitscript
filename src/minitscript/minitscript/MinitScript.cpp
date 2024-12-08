@@ -2034,6 +2034,16 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				//
 				moduleUseStatement = true;
 
+				// parse deferred function script codes,
+				//	which are created by parsing map initializers and possible map inline functions
+				do {
+					auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
+					deferredInlineScriptCodes.clear();
+					for (const auto& functionScriptCodePair: deferredInlineScriptCodesCopy) {
+						parseScriptInternal(functionScriptCodePair.second, string(), functionScriptCodePair.first);
+					}
+				} while (deferredInlineScriptCodes.empty() == false);
+
 				// push to modules
 				auto moduleScriptFileName = _StringTools::trim(_StringTools::substring(statementCode, string("use:").size()));
 				modules.erase(remove(modules.begin(), modules.end(), moduleScriptFileName), modules.end());
@@ -2041,37 +2051,25 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 
 				// load module script code
 				string moduleScriptCode;
-				if (native == false) {
-					// parse already loaded deferred function script codes,
-					//	which are created by parsing map initializers and possible map inline functions
-					do {
-						auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
-						deferredInlineScriptCodes.clear();
-						for (const auto& functionScriptCodePair: deferredInlineScriptCodesCopy) {
-							parseScriptInternal(functionScriptCodePair.second, string(), functionScriptCodePair.first);
-						}
-					} while (deferredInlineScriptCodes.empty() == false);
-					// load module script code
-					try {
-						moduleScriptCode = _FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
-					} catch (_FileSystem::FileSystemException& fse)	{
-						_Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
-						scriptValid = false;
-						parseErrors.push_back("An error occurred: " + string(fse.what()));
-						return false;
-					}
-					// and parse it
-					if (parseScriptInternal(moduleScriptCode, moduleScriptFileName) == false) return false;
-					// parse deferred function script codes,
-					//	which are created by parsing map initializers and possible map inline functions
-					do {
-						auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
-						deferredInlineScriptCodes.clear();
-						for (const auto& functionScriptCodePair: deferredInlineScriptCodesCopy) {
-							parseScriptInternal(functionScriptCodePair.second, moduleScriptFileName, functionScriptCodePair.first);
-						}
-					} while (deferredInlineScriptCodes.empty() == false);
+				try {
+					moduleScriptCode = _FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
+				} catch (_FileSystem::FileSystemException& fse)	{
+					_Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+					scriptValid = false;
+					parseErrors.push_back("An error occurred: " + string(fse.what()));
+					return false;
 				}
+				// and parse it
+				if (parseScriptInternal(moduleScriptCode, moduleScriptFileName) == false) return false;
+				// parse module deferred function script codes,
+				//	which are created by parsing map initializers and possible map inline functions
+				do {
+					auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
+					deferredInlineScriptCodes.clear();
+					for (const auto& functionScriptCodePair: deferredInlineScriptCodesCopy) {
+						parseScriptInternal(functionScriptCodePair.second, moduleScriptFileName, functionScriptCodePair.first);
+					}
+				} while (deferredInlineScriptCodes.empty() == false);
 			}
 
 			// script type
@@ -2235,14 +2233,6 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				return false;
 			}
 		} else {
-			// TODO: check me again
-			if (statementCode == "module" ||
-				_StringTools::startsWith(statementCode, "use:") == true) {
-				_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid module or use statements, they need to be used first");
-				parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": Invalid module or use statements, they need to be used first");
-				scriptValid = false;
-				return false;
-			} else
 			if (_StringTools::startsWith(statementCode, "function:") == true ||
 				_StringTools::startsWith(statementCode, "stacklet:") == true ||
 				_StringTools::startsWith(statementCode, "on:") == true ||
