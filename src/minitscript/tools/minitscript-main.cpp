@@ -171,11 +171,15 @@ int main(int argc, char** argv)
 		//
 		if (script != nullptr) {
 			// verbose
-			if (verbose == true/* && script->isValid() == true*/) Console::printLine(script->getInformation());
+			if (verbose == true) Console::printLine(script->getInformation());
 			//
 			if (script->isValid() == false) {
 				Console::printLine(pathToScript + ": Script not valid. Exiting!");
-				return EXIT_SUCCESS;
+				return EXIT_FAILURE;
+			} else
+			if (script->isModule() == true) {
+				Console::printLine(pathToScript + ": Script is a module. You can not start a module. Exiting!");
+				return EXIT_FAILURE;
 			} else {
 				// TODO: we need a MinitScript startup routine
 				Network::initialize();

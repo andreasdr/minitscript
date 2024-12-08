@@ -1,0 +1,7 @@
+module
+
+function: module2Function()
+	console.printLine("-----------------")
+	console.printLine("module2Function")
+	console.printLine("-----------------")
+end

@@ -3045,6 +3045,7 @@ public:
 		enum Type { TYPE_NONE, TYPE_FUNCTION, TYPE_STACKLET, TYPE_ON, TYPE_ONENABLED };
 		/**
 		 * Constructor
+		 * @param _module module name
 		 * @param type type
 		 * @param line line
 		 * @param condition condition
@@ -3059,6 +3060,7 @@ public:
 		 * @param functionArguments function arguments
 		 */
 		inline Script(
+			const string& _module,
 			Type type,
 			int line,
 			// applies only for on and on-enabled
@@ -3075,6 +3077,7 @@ public:
 			bool callable,
 			const vector<Argument>& arguments
 		):
+			_module(_module),
 			type(type),
 			line(line),
 			condition(condition),
@@ -3089,6 +3092,7 @@ public:
 			arguments(arguments)
 		{}
 		//
+		string _module;
 		Type type;
 		int line;
 		// condition, condition name or function/stacklet/callable name
@@ -3117,6 +3121,20 @@ public:
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALLSTACKLETBYINDEX;
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string METHOD_ENABLENAMEDCONDITION;
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string METHOD_DISABLENAMEDCONDITION;
+
+	/**
+	 * @returns if this MinitScript instance is a module
+	 */
+	inline bool isModule() {
+		return _module;
+	}
+
+	/**
+	 * @returns modules in use
+	 */
+	inline const vector<string>& getModules() {
+		return modules;
+	}
 
 	/**
 	 * Returns arguments as string
@@ -3233,7 +3251,12 @@ protected:
 		Variable returnValue;
 	};
 
-	bool native;
+	// modules
+	bool _module { false };
+	vector<string> modules;
+
+	//
+	bool native { false };
 	_Context* context { nullptr };
 	_Library* library { nullptr };
 	vector<Script> scripts;
@@ -3711,10 +3734,11 @@ private:
 	/**
 	 * Parse script code into this MinitScript instance
 	 * @param scriptCode script code
+	 * @param _module module
 	 * @param lineIdxOffset line index offset
 	 * @return success
 	 */
-	bool parseScriptInternal(const string& scriptCode, int lineIdxOffset = 0);
+	bool parseScriptInternal(const string& scriptCode, const string& _module = string(), int lineIdxOffset = 0);
 
 
 	/**

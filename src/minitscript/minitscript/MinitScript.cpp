@@ -1875,7 +1875,7 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 	return true;
 }
 
-bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffset) {
+bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _module, int lineIdxOffset) {
 	//
 	auto scriptCount = scripts.size();
 	auto haveScript = false;
@@ -1910,7 +1910,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 		// no script yet
 		if (haveScript == false) {
 			// check if we have to read additional info from code
-			if (statementCode == "function:" ||
+			if (statementCode == "use:" ||
+				statementCode == "function:" ||
 				statementCode == "stacklet:" ||
 				statementCode == "on:" ||
 				statementCode == "on-enabled:" ||
@@ -2021,6 +2022,58 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 					}
 				}
 			}
+			//
+			auto moduleUseStatement = false;
+			if (statementCode == "module") {
+				//
+				moduleUseStatement = true;
+				// only apply module for main script
+				if (_module.empty() == true) this->_module = true;
+			} else
+			if (_StringTools::startsWith(statementCode, "use:") == true) {
+				//
+				moduleUseStatement = true;
+
+				// push to modules
+				auto moduleScriptFileName = _StringTools::trim(_StringTools::substring(statementCode, string("use:").size()));
+				modules.erase(remove(modules.begin(), modules.end(), moduleScriptFileName), modules.end());
+				modules.push_back(moduleScriptFileName);
+
+				// load module script code
+				string moduleScriptCode;
+				if (native == false) {
+					// parse already loaded deferred function script codes,
+					//	which are created by parsing map initializers and possible map inline functions
+					do {
+						auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
+						deferredInlineScriptCodes.clear();
+						for (const auto& functionScriptCodePair: deferredInlineScriptCodesCopy) {
+							parseScriptInternal(functionScriptCodePair.second, string(), functionScriptCodePair.first);
+						}
+					} while (deferredInlineScriptCodes.empty() == false);
+					// load module script code
+					try {
+						moduleScriptCode = _FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
+					} catch (_FileSystem::FileSystemException& fse)	{
+						_Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+						scriptValid = false;
+						parseErrors.push_back("An error occurred: " + string(fse.what()));
+						return false;
+					}
+					// and parse it
+					if (parseScriptInternal(moduleScriptCode, moduleScriptFileName) == false) return false;
+					// parse deferred function script codes,
+					//	which are created by parsing map initializers and possible map inline functions
+					do {
+						auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
+						deferredInlineScriptCodes.clear();
+						for (const auto& functionScriptCodePair: deferredInlineScriptCodesCopy) {
+							parseScriptInternal(functionScriptCodePair.second, moduleScriptFileName, functionScriptCodePair.first);
+						}
+					} while (deferredInlineScriptCodes.empty() == false);
+				}
+			}
+
 			// script type
 			auto callable = false;
 			auto scriptType = Script::TYPE_NONE;
@@ -2032,6 +2085,9 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 				callable = true;
 				scriptType = Script::TYPE_FUNCTION;
 			}
+			if (moduleUseStatement == true) {
+				// no op
+			} else
 			// no, but did we got a new script?
 			if (scriptType != Script::TYPE_NONE) {
 				// yes
@@ -2158,6 +2214,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 
 				// push to scripts
 				scripts.emplace_back(
+					_module,
 					scriptType,
 					currentLineIdx + lineIdxOffset,
 					conditionOrName,
@@ -2178,7 +2235,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, int lineIdxOffse
 				return false;
 			}
 		} else {
-			//
+			// TODO: check me again
+			if (statementCode == "module" ||
+				_StringTools::startsWith(statementCode, "use:") == true) {
+				_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid module or use statements, they need to be used first");
+				parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": Invalid module or use statements, they need to be used first");
+				scriptValid = false;
+				return false;
+			} else
 			if (_StringTools::startsWith(statementCode, "function:") == true ||
 				_StringTools::startsWith(statementCode, "stacklet:") == true ||
 				_StringTools::startsWith(statementCode, "on:") == true ||
@@ -2681,11 +2745,8 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 			scriptCode = _FileSystem::getContentAsString(scriptPathName, scriptFileName);
 		} catch (_FileSystem::FileSystemException& fse)	{
 			_Console::printLine(scriptPathName + "/" + scriptFileName + ": An error occurred: " + fse.what());
-			//
 			scriptValid = true;
-			//
 			parseErrors.push_back("An error occurred: " + string(fse.what()));
-			//
 			return;
 		}
 	}
@@ -2723,9 +2784,10 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 		auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
 		deferredInlineScriptCodes.clear();
 		for (const auto& functionScriptCodePair: deferredInlineScriptCodesCopy) {
-			parseScriptInternal(functionScriptCodePair.second, functionScriptCodePair.first);
+			parseScriptInternal(functionScriptCodePair.second, string(), functionScriptCodePair.first);
 		}
 	} while (deferredInlineScriptCodes.empty() == false);
+
 	// set up stacklet and function indices
 	for (auto scriptIdx = 0; scriptIdx < scripts.size(); scriptIdx++) {
 		//
@@ -2734,6 +2796,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 			return;
 		}
 	}
+
 	// validations
 	if (scriptValid == true) {
 		for (auto scriptIdx = 0; scriptIdx < scripts.size(); scriptIdx++) {
@@ -2808,7 +2871,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 			haveErrorScript = true;
 		}
 	}
-	if (haveErrorScript == false) {
+	if (_module == false && haveErrorScript == false) {
 		_Console::printLine(scriptPathName + "/" + scriptFileName + ": Script needs to define an error condition");
 		parseErrors.push_back("Script needs to define an error condition");
 		scriptValid = false;
@@ -3755,7 +3818,7 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 		default: break;
 	}
 	if (script.condition.empty() == false)
-		result+= script.condition + argumentsString + "; ";
+		result+= script.condition + argumentsString + (script._module.empty() == true?string():string(" [module: " + script._module + "]")) + "; ";
 	if (script.name.empty() == false) {
 		result+= "name = '" + script.name + argumentsString + "';\n";
 	} else {
@@ -3885,7 +3948,18 @@ const string MinitScript::getInformation() {
 	result+= "\n";
 
 	//
-	result+="Script:\n";
+	if (modules.empty() == false) {
+		result+= "Modules:\n";
+		{
+			vector<string> modules = this->modules;
+			sort(modules.begin(), modules.end());
+			for (const auto& _module: modules) result+= _module + "\n";
+		}
+		result+= "\n";
+	}
+
+	//
+	result+= string(_module == false?"Script":"Module") + ":\n";
 	{
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
