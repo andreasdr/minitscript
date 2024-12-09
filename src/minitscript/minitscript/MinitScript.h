@@ -3123,20 +3123,6 @@ public:
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string METHOD_DISABLENAMEDCONDITION;
 
 	/**
-	 * @returns if this MinitScript instance is a module
-	 */
-	inline bool isModule() {
-		return _module;
-	}
-
-	/**
-	 * @returns modules in use
-	 */
-	inline const vector<string>& getModules() {
-		return modules;
-	}
-
-	/**
 	 * Returns arguments as string
 	 * @param arguments arguments
 	 * @return arguments as string
@@ -4579,6 +4565,20 @@ public:
 	 */
 	inline bool isValid() {
 		return scriptValid;
+	}
+
+	/**
+	 * @returns if this MinitScript instance is a module
+	 */
+	inline bool isModule() {
+		return _module;
+	}
+
+	/**
+	 * @returns modules in use
+	 */
+	inline const vector<string>& getModules() {
+		return modules;
 	}
 
 	/**
