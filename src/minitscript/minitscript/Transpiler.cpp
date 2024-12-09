@@ -149,7 +149,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			auto methodName = createMethodName(minitScript, scriptIdx);
 			if (script._module.empty() == false) {
 				const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(script._module, "[^0-9a-zA-Z]", "_");
-				generatedExecuteCode+= declarationIndent + "\t\t" + "if (getScriptState().scriptIdx == " + to_string(scriptIdx) + ") " + moduleObjectName + "." + methodName + "(scriptState.statementIdx); else\n";
+				generatedExecuteCode+= declarationIndent + "\t\t" + "if (getScriptState().scriptIdx == " + to_string(scriptIdx) + ") " + moduleObjectName + ".export_" + methodName + "(scriptState.statementIdx); else\n";
 			} else {
 				generatedExecuteCode+= declarationIndent + "\t\t" + "if (getScriptState().scriptIdx == " + to_string(scriptIdx) + ") " + methodName + "(scriptState.statementIdx); else\n";
 			}
@@ -285,6 +285,34 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	generatedDeclarations+= declarationIndent + "\t" + "tryGarbageCollection();" + "\n";
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	generatedDeclarations+= "\n";
+
+	// module only: generate module export inline class methods for functions and stacklets that are our own
+	if (minitScript->isModule() == true) {
+		auto scriptIdx = 0;
+		for (const auto& script: scripts) {
+			//
+			if (script._module.empty() == false ||
+				(script.type != MinitScript::Script::TYPE_FUNCTION &&
+				script.type != MinitScript::Script::TYPE_STACKLET)) {
+				scriptIdx++;
+				continue;
+			}
+			// method name
+			auto methodName = createMethodName(minitScript, scriptIdx);
+			auto shortMethodName = createShortMethodName(minitScript, scriptIdx);
+
+			// declaration
+			generatedDeclarations+= declarationIndent + "/**" + "\n";
+			generatedDeclarations+= declarationIndent + " * Module export of MinitScript transpilation of: " + getScriptTypeReadableName(script.type) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
+			generatedDeclarations+= declarationIndent + " * @param minitScriptGotoStatementIdx MinitScript goto statement index" + "\n";
+			generatedDeclarations+= declarationIndent + " */" + "\n";
+			generatedDeclarations+= declarationIndent + "inline void export_" + methodName + "(int minitScriptGotoStatementIdx) {" + "\n";
+			generatedDeclarations+= declarationIndent + "\t" + methodName + "(minitScriptGotoStatementIdx);" + "\n";
+			generatedDeclarations+= declarationIndent + "}" + "\n";
+			generatedDeclarations+= "\n";
+		}
+	}
+
 	generatedDeclarations+= string() + "protected:" + "\n";
 	for (const auto& moduleClassDeclaration: moduleClassesDeclarations) {
 		generatedDeclarations+= declarationIndent + moduleClassDeclaration+ "\n";
