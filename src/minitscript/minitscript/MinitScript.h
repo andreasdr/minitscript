@@ -4582,6 +4582,12 @@ public:
 	}
 
 	/**
+	 * Initialize module
+	 * @param parent parent Minit Script instance
+	 */
+	virtual void initializeModule(MinitScript* parent);
+
+	/**
 	 * @return if this script was compiled to C++ and is executed natively
 	 */
 	inline bool isNative() {

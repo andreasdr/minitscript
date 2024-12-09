@@ -446,6 +446,18 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	}
 	initializeNativeDefinition+= definitionIndent + "\t" + "}" + "\n";
 	initializeNativeDefinition+= definitionIndent + ");" + "\n";
+
+	//
+	if (minitScript->getModules().empty() == false) {
+		initializeNativeDefinition+= definitionIndent + "// initialize modules" + "\n";
+		for (const auto& _module: minitScript->getModules()) {
+			const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
+			initializeNativeDefinition+= definitionIndent + moduleObjectName + ".initializeModule(this);" + "\n";
+		}
+		initializeNativeDefinition+= "\n";
+	}
+
+	//
 	initializeNativeDefinition+= string() + "}" + "\n";
 
 	//

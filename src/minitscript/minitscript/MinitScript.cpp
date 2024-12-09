@@ -192,9 +192,12 @@ MinitScript::MinitScript() {
 }
 
 MinitScript::~MinitScript() {
-	for (const auto& [methodName, method]: this->methods) delete method;
-	for (const auto& [stateMachineStateId, stateMachineState]: this->stateMachineStates) delete stateMachineState;
+	if (isModule() == false) {
+		for (const auto& [methodName, method]: this->methods) delete method;
+		for (const auto& [stateMachineStateId, stateMachineState]: this->stateMachineStates) delete stateMachineState;
+	}
 	while (scriptStateStack.empty() == false) popScriptState();
+	// TODO: check me regarding modules
 	garbageCollection();
 	for (auto& garbageCollectionDataType: garbageCollectionDataTypes) garbageCollectionDataType.dataType->deleteScriptContext(garbageCollectionDataType.context);
 }
@@ -206,6 +209,10 @@ void MinitScript::registerStateMachineState(StateMachineState* state) {
 		return;
 	}
 	stateMachineStates[state->getId()] = state;
+}
+
+void MinitScript::initializeModule(MinitScript* parent) {
+	methods = parent->methods;
 }
 
 void MinitScript::initializeNative() {
