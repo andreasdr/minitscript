@@ -176,8 +176,7 @@ const vector<string> MinitScript::getTranspilationUnits() {
 }
 
 MinitScript::MinitScript() {
-	//
-	for (auto dataType: dataTypes) {
+	for (auto dataType: MinitScript::dataTypes) {
 		if (dataType->isRequiringGarbageCollection() == false) continue;
 		// create script context
 		auto scriptContext = dataType->createScriptContext();
@@ -211,8 +210,20 @@ void MinitScript::registerStateMachineState(StateMachineState* state) {
 	stateMachineStates[state->getId()] = state;
 }
 
-void MinitScript::initializeModule(MinitScript* parent) {
-	methods = parent->methods;
+void MinitScript::initializeModule(MinitScript* parentScript) {
+	_Console::printLine("Initializing module " + scriptFileName + " with parent " + parentScript->scriptFileName);
+	//
+	this->parentScript = parentScript;
+	// determine root script, which is initially "this"
+	auto rootScriptCandidate = rootScript;
+	while (rootScriptCandidate != nullptr) {
+		rootScript = rootScriptCandidate;
+		rootScriptCandidate = rootScriptCandidate->parentScript;
+	}
+	//
+	_Console::printLine("this->rootScript != nullptr: " + (this->rootScript != nullptr));
+	_Console::printLine("this->parentScript != nullptr: " + (this->parentScript != nullptr));
+	_Console::printLine("this->parentScript == this->rootScript: " + (this->parentScript == this->rootScript));
 }
 
 void MinitScript::initializeNative() {
@@ -277,17 +288,17 @@ void MinitScript::complainOperator(const string& methodName, const string& opera
 }
 
 void MinitScript::registerMethod(Method* method) {
-	auto methodsIt = methods.find(method->getMethodName());
-	if (methodsIt != methods.end()) {
+	auto methodsIt = rootScript->methods.find(method->getMethodName());
+	if (methodsIt != rootScript->methods.end()) {
 		_Console::printLine("MinitScript::registerMethod(): " + scriptFileName + ": Method with name " + method->getMethodName() + " already registered.");
 		return;
 	}
-	methods[method->getMethodName()] = method;
+	rootScript->methods[method->getMethodName()] = method;
 }
 
 void MinitScript::registerDataType(DataType* dataType) {
-	dataType->setType(static_cast<VariableType>(TYPE_PSEUDO_DATATYPES + dataTypes.size()));
-	dataTypes.push_back(dataType);
+	dataType->setType(static_cast<VariableType>(TYPE_PSEUDO_DATATYPES + MinitScript::dataTypes.size()));
+	MinitScript::dataTypes.push_back(dataType);
 }
 
 void MinitScript::executeNextStatement() {
@@ -896,8 +907,8 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 			//
 			Method* method = nullptr;
 			{
-				auto methodsIt = methods.find(methodName);
-				if (methodsIt != methods.end()) {
+				auto methodsIt = rootScript->methods.find(methodName);
+				if (methodsIt != rootScript->methods.end()) {
 					method = methodsIt->second;
 				} else {
 					_Console::printLine(getStatementInformation(statement, subLineIdx + argument.subLineIdx) + ": Unknown method: " + methodName);
@@ -2731,7 +2742,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 	stateMachineStates.clear();
 	while (scriptStateStack.empty() == false) popScriptState();
 
-	// shutdown script state
+	// push root script state and reset execution
 	pushScriptState();
 	resetScriptExecutationState(SCRIPTIDX_NONE, STATEMACHINESTATE_WAIT_FOR_CONDITION);
 
@@ -3725,7 +3736,7 @@ bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& retur
 
 const vector<MinitScript::Method*> MinitScript::getMethods() {
 	vector<Method*> methods;
-	for (const auto& [methodName, method]: this->methods) {
+	for (const auto& [methodName, method]: rootScript->methods) {
 		if (method->isPrivate() == true) continue;
 		methods.push_back(method);
 	}
@@ -3894,7 +3905,7 @@ const string MinitScript::getInformation() {
 	result+= "Methods:\n";
 	{
 		vector<string> methods;
-		for (const auto& [methodName, method]: this->methods) {
+		for (const auto& [methodName, method]: rootScript->methods) {
 			if (method->isPrivate() == true) continue;
 			string methodDescription;
 			methodDescription+= method->getMethodName();
@@ -3913,7 +3924,7 @@ const string MinitScript::getInformation() {
 	result+= "Operators:\n";
 	{
 		vector<string> operators;
-		for (const auto& [operatorId, method]: this->operators) {
+		for (const auto& [operatorId, method]: rootScript->operators) {
 			string operatorString;
 			operatorString+= getOperatorAsString(method->getOperator());
 			operatorString+= " --> ";
@@ -4113,13 +4124,13 @@ void MinitScript::registerMethods() {
 	XMLMethods::registerMethods(this);
 
 	//
-	for (const auto dataType: dataTypes) {
+	for (const auto dataType: MinitScript::dataTypes) {
 		if (dataType->isMathDataType() == true) minitScriptMath->registerDataType(dataType);
 		dataType->registerMethods(this);
 	}
 
 	// determine operators
-	for (const auto& [scriptMethodName, scriptMethod]: methods) {
+	for (const auto& [scriptMethodName, scriptMethod]: rootScript->methods) {
 		auto methodOperator = scriptMethod->getOperator();
 		if (methodOperator != OPERATOR_NONE) {
 			auto methodOperatorString = getOperatorAsString(methodOperator);
@@ -4192,7 +4203,7 @@ void MinitScript::registerVariables() {
 	XMLMethods::registerConstants(this);
 
 	//
-	for (const auto dataType: dataTypes) dataType->registerConstants(this);
+	for (const auto dataType: MinitScript::dataTypes) dataType->registerConstants(this);
 }
 
 void MinitScript::createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement, const string& nameHint) {

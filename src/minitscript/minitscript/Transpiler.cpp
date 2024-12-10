@@ -374,12 +374,6 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	{
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
-			//
-			if (script._module.empty() == false) {
-				scriptIdx++;
-				continue;
-			}
-			//
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "Script(" + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + escapeString(script._module) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + getScriptTypeEnumIdentifier(script.type) + "," + "\n";
@@ -397,16 +391,23 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + script.name + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + (script.emitCondition == true?"true":"false") + "," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "{" + "\n";
-			auto statementIdx = MinitScript::STATEMENTIDX_FIRST;
-			for (const auto& statement: script.statements) {
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "Statement(" + "\n";
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.line) + "," + "\n";
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.statementIdx) + "," + "\n";
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(statement.statement) + "\"," + "\n";
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(statement.executableStatement) + "\"," + "\n";
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.gotoStatementIdx) + "\n";
-				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + ")" + (statementIdx < script.statements.size() - 1?",":"") + "\n";
-				statementIdx++;
+
+			//
+			if (script._module.empty() == false) {
+				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "// no statements here, they are stored in " + script._module + " module" + "\n";
+			} else {
+				//
+				auto statementIdx = MinitScript::STATEMENTIDX_FIRST;
+				for (const auto& statement: script.statements) {
+					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "Statement(" + "\n";
+					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.line) + "," + "\n";
+					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.statementIdx) + "," + "\n";
+					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(statement.statement) + "\"," + "\n";
+					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(statement.executableStatement) + "\"," + "\n";
+					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.gotoStatementIdx) + "\n";
+					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + ")" + (statementIdx < script.statements.size() - 1?",":"") + "\n";
+					statementIdx++;
+				}
 			}
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "}," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "{},\n";

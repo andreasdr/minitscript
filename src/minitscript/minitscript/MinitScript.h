@@ -3240,6 +3240,8 @@ protected:
 	// modules
 	bool _module { false };
 	vector<string> modules;
+	MinitScript* rootScript { this };
+	MinitScript* parentScript { nullptr };
 
 	//
 	bool native { false };
@@ -3414,17 +3416,24 @@ protected:
 	void dumpScriptState(ScriptState& scriptState, const string& message = string());
 
 	/**
+	 * @returns has script state
+	 */
+	inline bool hasScriptState() {
+		return rootScript->scriptStateStack.empty() == false;
+	}
+
+	/**
 	 * Push a new script state
 	 */
 	inline void pushScriptState() {
-		scriptStateStack.push_back(make_unique<ScriptState>());
+		rootScript->scriptStateStack.push_back(make_unique<ScriptState>());
 	}
 
 	/**
 	 * Pop script state
 	 */
 	inline void popScriptState() {
-		if (scriptStateStack.empty() == true) return;
+		if (hasScriptState() == false) return;
 		auto& scriptState = getScriptState();
 		// we need to delete references first
 		unordered_set<string> deletedVariables;
@@ -3439,7 +3448,7 @@ protected:
 			delete variable;
 		}
 		scriptState.variables.clear();
-		scriptStateStack.erase(scriptStateStack.begin() + scriptStateStack.size() - 1);
+		rootScript->scriptStateStack.erase(rootScript->scriptStateStack.begin() + rootScript->scriptStateStack.size() - 1);
 	}
 
 	/**
@@ -3447,7 +3456,7 @@ protected:
 	 */
 	inline bool isFunctionRunning() {
 		// function?
-		if (scriptStateStack.size() > 1) return true;
+		if (rootScript->scriptStateStack.size() > 1) return true;
 		// stacklet?
 		for (const auto& block: getRootScriptState().blockStack) {
 			if (block.type == ScriptState::Block::TYPE_STACKLET) return true;
@@ -3526,7 +3535,7 @@ protected:
 	 * Stop script execution
 	 */
 	inline void stopScriptExecution() {
-		while (scriptStateStack.size() > 1) popScriptState();
+		while (rootScript->scriptStateStack.size() > 1) popScriptState();
 		//
 		garbageCollection();
 		//
@@ -4504,7 +4513,7 @@ public:
 	 * @return data types
 	 */
 	inline static const vector<DataType*>& getDataTypes() {
-		return dataTypes;
+		return MinitScript::dataTypes;
 	}
 
 	/**
@@ -4513,7 +4522,7 @@ public:
 	 * @return data type
 	 */
 	inline static DataType* getDataTypeByClassName(const string& className) {
-		for (const auto dataType: dataTypes) {
+		for (const auto dataType: MinitScript::dataTypes) {
 			if (dataType->getTypeAsString() == className) return dataType;
 		}
 		return nullptr;
@@ -4583,9 +4592,9 @@ public:
 
 	/**
 	 * Initialize module
-	 * @param parent parent Minit Script instance
+	 * @param parentScript parent Minit Script instance
 	 */
-	virtual void initializeModule(MinitScript* parent);
+	virtual void initializeModule(MinitScript* parentScript);
 
 	/**
 	 * @return if this script was compiled to C++ and is executed natively
@@ -4626,21 +4635,21 @@ public:
 	 * @return root script state
 	 */
 	inline ScriptState& getRootScriptState() {
-		return *(scriptStateStack[0].get());
+		return *(rootScript->scriptStateStack[0].get());
 	}
 
 	/**
 	 * @return script state
 	 */
 	inline ScriptState& getScriptState() {
-		return *(scriptStateStack[scriptStateStack.size() - 1].get());
+		return *(rootScript->scriptStateStack[scriptStateStack.size() - 1].get());
 	}
 
 	/**
 	 * @return math methods
 	 */
 	inline MathMethods* getMathMethods() {
-		return minitScriptMath.get();
+		return rootScript->minitScriptMath.get();
 	}
 
 	/**
@@ -4733,7 +4742,7 @@ public:
 	 * @return arguments information
 	 */
 	inline const string getArgumentsInformation(const string& methodName) {
-		auto scriptMethod = getMethod(methodName);
+		auto scriptMethod = rootScript->getMethod(methodName);
 		if (scriptMethod == nullptr) {
 			_Console::printLine("MinitScript::getArgumentInformation(): method not found: " + methodName);
 			return "No information available";
@@ -5437,7 +5446,7 @@ public:
 	 * @return method or nullptr
 	 */
 	inline Method* getMethod(const string& methodName) {
-		auto methodIt = methods.find(methodName);
+		auto methodIt = rootScript->methods.find(methodName);
 		if (methodIt != methods.end()) {
 			return methodIt->second;
 		} else {
