@@ -4643,7 +4643,7 @@ public:
 	 * @return script state
 	 */
 	inline ScriptState& getScriptState() {
-		return *(rootScript->scriptStateStack[scriptStateStack.size() - 1].get());
+		return *(rootScript->scriptStateStack[rootScript->scriptStateStack.size() - 1].get());
 	}
 
 	/**
