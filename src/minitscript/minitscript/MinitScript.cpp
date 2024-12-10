@@ -186,17 +186,14 @@ MinitScript::MinitScript() {
 		garbageCollectionDataTypes.emplace_back(dataType,scriptContext);
 		garbageCollectionScriptContextsByDataType[dataType->getType()] = scriptContext;
 	}
-	setNative(false);
-	pushScriptState();
 }
 
 MinitScript::~MinitScript() {
-	if (isModule() == false) {
+	if (_module == false) {
 		for (const auto& [methodName, method]: this->methods) delete method;
 		for (const auto& [stateMachineStateId, stateMachineState]: this->stateMachineStates) delete stateMachineState;
 	}
 	while (hasScriptState() == true) popScriptState();
-	// TODO: check me regarding modules
 	garbageCollection();
 	for (auto& garbageCollectionDataType: garbageCollectionDataTypes) garbageCollectionDataType.dataType->deleteScriptContext(garbageCollectionDataType.context);
 }

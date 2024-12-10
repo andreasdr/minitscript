@@ -497,6 +497,12 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	}
 
 	//
+	if (minitScript->isModule() == true) {
+		initializeNativeDefinition+= definitionIndent + "// modules do not have further initialization" + "\n";
+		initializeNativeDefinition+= definitionIndent + "this->scripts = nativeScripts;" + "\n";
+	}
+
+	//
 	initializeNativeDefinition+= string() + "}" + "\n";
 
 	//

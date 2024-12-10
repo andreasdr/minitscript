@@ -40,14 +40,14 @@ on: nothing
 	console.printLine("mixed $array asc sorted: " + $array)
 	$array->sortDescending()
 	console.printLine("mixed $array desc sorted: " + $array)
-	# delete "d"
+	# delete "d", we have a float array now
 	$array = [6.0, 5, "d", 3, 2, 1.0]
 	$array->remove(2)
-	console.printLine("mixed $array unsorted: " + $array)
+	console.printLine("float $array unsorted: " + $array)
 	$array->sortAscending()
-	console.printLine("mixed $array asc sorted: " + $array)
+	console.printLine("float $array asc sorted: " + $array)
 	$array->sortDescending()
-	console.printLine("mixed $array desc sorted: " + $array)
+	console.printLine("float $array desc sorted: " + $array)
 	# done
 	script.stop()
 end
