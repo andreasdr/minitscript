@@ -3237,6 +3237,10 @@ protected:
 		Variable returnValue;
 	};
 
+	//
+	string scriptPathName;
+	string scriptFileName;
+
 	// modules
 	bool _module { false };
 	vector<string> modules;
@@ -3673,9 +3677,6 @@ private:
 	unordered_map<int, StateMachineState*> stateMachineStates;
 	// operators
 	unordered_map<uint8_t, Method*> operators;
-	//
-	string scriptPathName;
-	string scriptFileName;
 	//
 	bool scriptValid { false };
 

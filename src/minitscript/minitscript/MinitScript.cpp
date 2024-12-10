@@ -195,7 +195,7 @@ MinitScript::~MinitScript() {
 		for (const auto& [methodName, method]: this->methods) delete method;
 		for (const auto& [stateMachineStateId, stateMachineState]: this->stateMachineStates) delete stateMachineState;
 	}
-	while (scriptStateStack.empty() == false) popScriptState();
+	while (hasScriptState() == true) popScriptState();
 	// TODO: check me regarding modules
 	garbageCollection();
 	for (auto& garbageCollectionDataType: garbageCollectionDataTypes) garbageCollectionDataType.dataType->deleteScriptContext(garbageCollectionDataType.context);
@@ -2740,7 +2740,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 	for (const auto& [stateMachineStateId, stateMachineState]: stateMachineStates) delete stateMachineState;
 	methods.clear();
 	stateMachineStates.clear();
-	while (scriptStateStack.empty() == false) popScriptState();
+	while (hasScriptState() == true) popScriptState();
 
 	// push root script state and reset execution
 	pushScriptState();
@@ -3613,7 +3613,7 @@ bool MinitScript::getObjectMemberAccess(const string_view& executableStatement, 
 }
 
 void MinitScript::dumpScriptState(ScriptState& scriptState, const string& message) {
-	_Console::printLine("MinitScript::dumpScriptState(): " + (message.empty() == false?message + ": ":"") + to_string(scriptStateStack.size()) + " on stack");
+	_Console::printLine("MinitScript::dumpScriptState(): " + (message.empty() == false?message + ": ":"") + to_string(rootScript->scriptStateStack.size()) + " on stack");
 	_Console::printLine(string("\t") + "state: " + to_string(scriptState.state));
 	_Console::printLine(string("\t") + "lastState: " + to_string(scriptState.lastState));
 	_Console::printLine(string("\t") + "running: " + (scriptState.running == true?"true":"false"));

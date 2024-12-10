@@ -143,7 +143,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	string declarationIndent = "\t";
 	string definitionIndent = "\t";
 	string generatedExecuteCode;
-	{
+	if (minitScript->isModule() == false) {
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
 			auto methodName = createMethodName(minitScript, scriptIdx);
@@ -201,9 +201,11 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	generatedDeclarations+= declarationIndent + " */" + "\n";
 	generatedDeclarations+= declarationIndent + "inline ~" + minitScriptClassName + "() {" + "\n";
 	generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
+	generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
 	for (const auto& variable: globalVariables) {
 		generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
 	}
+	generatedDeclarations+= declarationIndent + "\t\t" + "// function stacks" + "\n";
 	{
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
@@ -229,60 +231,72 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	generatedDeclarations+= declarationIndent + "// overridden methods" + "\n";
 	generatedDeclarations+= declarationIndent + "void registerMethods() override;" + "\n";
 	generatedDeclarations+= declarationIndent + "inline void registerVariables() override {" + "\n";
-	if (globalVariables.empty() == false) {
+	if (minitScript->isModule() == true) {
+		generatedDeclarations+= declarationIndent + "\t" + "_Console::printLine(\"" + minitScriptClassName + "::registerVariables(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
+	} else {
+		if (globalVariables.empty() == false) {
+			generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
+			generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
+			for (const auto& variable: globalVariables) {
+				generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
+			}
+			generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
+			generatedDeclarations+= declarationIndent + "\t" + "//" + "\n";
+		}
 		generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
+		generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
 		for (const auto& variable: globalVariables) {
-			generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
+			generatedDeclarations+= declarationIndent + "\t\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + ";" + "\n";
+			generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
 		}
 		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
-		generatedDeclarations+= declarationIndent + "\t" + "//" + "\n";
 	}
-	generatedDeclarations+= declarationIndent + "\t" + minitScript->getBaseClass() + "::registerVariables();" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
-	for (const auto& variable: globalVariables) {
-		generatedDeclarations+= declarationIndent + "\t\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + ";" + "\n";
-		generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
-	}
-	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	generatedDeclarations+= declarationIndent + "void emit(const string& condition) override;" + "\n";
 	generatedDeclarations+= declarationIndent + "inline void startScript() override {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "if (native == false) {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + minitScript->getBaseClass() + "::startScript();" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + "return;" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "getScriptState().running = true;" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "registerVariables();" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "resetScriptExecutationState(" + to_string(initializeScriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
+	if (minitScript->isModule() == true) {
+		generatedDeclarations+= declarationIndent + "\t" + "_Console::printLine(\"" + minitScriptClassName + "::startScript(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
+	} else {
+		generatedDeclarations+= declarationIndent + "\t" + "if (native == false) {" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + minitScript->getBaseClass() + "::startScript();" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + "return;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "getScriptState().running = true;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "registerVariables();" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "resetScriptExecutationState(" + to_string(initializeScriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
+	}
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	generatedDeclarations+= declarationIndent + "inline void execute() override {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "if (native == false) {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + minitScript->getBaseClass() + "::execute();" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + "return;" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "auto& scriptState = getScriptState();" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "if (scriptState.running == false) return;" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "// execute while having statements to be processed" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "if (scriptState.state == STATEMACHINESTATE_NEXT_STATEMENT) {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + "// take goto statement index into account" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + "if (scriptState.gotoStatementIdx != STATEMENTIDX_NONE) {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + "\t" + "scriptState.statementIdx = scriptState.gotoStatementIdx;" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + "\t" + "scriptState.gotoStatementIdx = STATEMENTIDX_NONE;" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + "}" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "\t" + "//" + "\n";
-	generatedDeclarations+= generatedExecuteCode;
-	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "if (isFunctionRunning() == false && deferredEmit.empty() == false) {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t\t" + "auto condition = deferredEmit;" + "\n";
-	generatedDeclarations+= declarationIndent + "\t\t" + "deferredEmit.clear();" + "\n";
-	generatedDeclarations+= declarationIndent + "\t\t" + "emit(condition);" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "executeStateMachine();" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "// try garbage collection" + "\n";
-	generatedDeclarations+= declarationIndent + "\t" + "tryGarbageCollection();" + "\n";
+	if (minitScript->isModule() == true) {
+		generatedDeclarations+= declarationIndent + "\t" + "_Console::printLine(\"" + minitScriptClassName + "::execute(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
+	} else {
+		generatedDeclarations+= declarationIndent + "\t" + "if (native == false) {" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + minitScript->getBaseClass() + "::execute();" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + "return;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "auto& scriptState = getScriptState();" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "if (scriptState.running == false) return;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "// execute while having statements to be processed" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "if (scriptState.state == STATEMACHINESTATE_NEXT_STATEMENT) {" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + "// take goto statement index into account" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + "if (scriptState.gotoStatementIdx != STATEMENTIDX_NONE) {" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + "\t" + "scriptState.statementIdx = scriptState.gotoStatementIdx;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + "\t" + "scriptState.gotoStatementIdx = STATEMENTIDX_NONE;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + "}" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + "//" + "\n";
+		generatedDeclarations+= generatedExecuteCode;
+		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "if (isFunctionRunning() == false && deferredEmit.empty() == false) {" + "\n";
+		generatedDeclarations+= declarationIndent + "\t\t" + "auto condition = deferredEmit;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t\t" + "deferredEmit.clear();" + "\n";
+		generatedDeclarations+= declarationIndent + "\t\t" + "emit(condition);" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "executeStateMachine();" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "// try garbage collection" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "tryGarbageCollection();" + "\n";
+	}
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	generatedDeclarations+= "\n";
 
@@ -331,31 +345,55 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 
 	string registerMethodsDefinitions;
 	registerMethodsDefinitions+= "void " + minitScriptClassName + "::registerMethods() {" + "\n";
-	registerMethodsDefinitions+= definitionIndent + minitScript->getBaseClass() + "::registerMethods();" + "\n";
-	registerMethodsDefinitions+= definitionIndent + "if (native == false) return;" + "\n";
-	//
-	for (const auto& memberAccessEvaluationDefinition: memberAccessEvaluationDefinitions) {
-		registerMethodsDefinitions+= definitionIndent + memberAccessEvaluationDefinition + "\n";
+	if (minitScript->isModule() == true) {
+		registerMethodsDefinitions+= definitionIndent + "if (native == false) return;" + "\n";
+		//
+		for (const auto& memberAccessEvaluationDefinition: memberAccessEvaluationDefinitions) {
+			registerMethodsDefinitions+= definitionIndent + memberAccessEvaluationDefinition + "\n";
+		}
+	} else {
+		registerMethodsDefinitions+= definitionIndent + minitScript->getBaseClass() + "::registerMethods();" + "\n";
+		registerMethodsDefinitions+= definitionIndent + "if (native == false) return;" + "\n";
+		//
+		for (const auto& memberAccessEvaluationDefinition: memberAccessEvaluationDefinitions) {
+			registerMethodsDefinitions+= definitionIndent + memberAccessEvaluationDefinition + "\n";
+		}
+		//
+		if (minitScript->getModules().empty() == false) {
+			registerMethodsDefinitions+= definitionIndent + "// modules" + "\n";
+			for (const auto& _module: minitScript->getModules()) {
+				const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
+				registerMethodsDefinitions+= definitionIndent + moduleObjectName + ".registerMethods();" + "\n";
+			}
+			registerMethodsDefinitions += "\n";
+		}
 	}
 	registerMethodsDefinitions+= string() + "}" + "\n";
 
 	//
 	string emitDefinition;
 	emitDefinition+= "void " + minitScriptClassName + "::emit(const string& condition) {" + "\n";
-	emitDefinition+= definitionIndent + "if (native == false) {" + "\n";
-	emitDefinition+= definitionIndent + "\t" + minitScript->getBaseClass() + "::emit(condition);" + "\n";
-	emitDefinition+= definitionIndent + "\t" + "return;" + "\n";
-	emitDefinition+= definitionIndent + "}" + "\n";
-	emitDefinition+= definitionIndent + "if (isFunctionRunning() == true) {" + "\n";
-	emitDefinition+= definitionIndent + "\t" + "deferredEmit = condition;" + "\n";
-	emitDefinition+= definitionIndent + "\t" + "return;" + "\n";
-	emitDefinition+= definitionIndent + "}" + "\n";
-	emitDefinition+= definitionIndent + "emitted = true;" + "\n";
+	if (minitScript->isModule() == true) {
+		emitDefinition+= definitionIndent + "// this MinitScript instance is a module, so forward to root script" + "\n";
+		emitDefinition+= definitionIndent + "rootScript->emit(condition);" + "\n";
+	} else {
+		emitDefinition+= definitionIndent + "if (native == false) {" + "\n";
+		emitDefinition+= definitionIndent + "\t" + minitScript->getBaseClass() + "::emit(condition);" + "\n";
+		emitDefinition+= definitionIndent + "\t" + "return;" + "\n";
+		emitDefinition+= definitionIndent + "}" + "\n";
+		emitDefinition+= definitionIndent + "if (isFunctionRunning() == true) {" + "\n";
+		emitDefinition+= definitionIndent + "\t" + "deferredEmit = condition;" + "\n";
+		emitDefinition+= definitionIndent + "\t" + "return;" + "\n";
+		emitDefinition+= definitionIndent + "}" + "\n";
+		emitDefinition+= definitionIndent + "emitted = true;" + "\n";
+	}
 
 	//
 	string generatedDefinitions = "\n";
 	string initializeNativeDefinition;
 	initializeNativeDefinition+= "void " + minitScriptClassName + "::initializeNative() {" + "\n";
+	initializeNativeDefinition+= definitionIndent + "this->scriptFileName = " + "\"" + escapeString(minitScript->getScriptFileName()) + "\"" + ";" + "\n";
+	initializeNativeDefinition+= definitionIndent + "this->scriptPathName = " + "\"" + escapeString(minitScript->getScriptPathName()) + "\"" + ";" + "\n";
 	initializeNativeDefinition+= definitionIndent + "this->_module = " + string(minitScript->isModule() == true?"true":"false") + ";" + "\n";
 	initializeNativeDefinition+= definitionIndent + "this->modules = " + "\n";
 	initializeNativeDefinition+= definitionIndent + "\t" + "{" + "\n";
@@ -464,17 +502,27 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	//
 	string generatedDetermineScriptIdxToStartDefinition = "\n";
 	generatedDetermineScriptIdxToStartDefinition+= "int " + minitScriptClassName + "::determineScriptIdxToStart() {" + "\n";
-	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "#define MINITSCRIPT_METHOD_POPSTACK()" + "\n";
-	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "if (native == false) return MinitScript::determineScriptIdxToStart();" + "\n";
-	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "// MinitScript setup" + "\n";
-	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "auto minitScript = this;" + "\n";
-	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
+	if (minitScript->isModule() == true) {
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "_Console::printLine(\"" + minitScriptClassName + "::determineScriptIdxToStart(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "return SCRIPTIDX_NONE;" + "\n";
+	} else {
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "#define MINITSCRIPT_METHOD_POPSTACK()" + "\n";
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "if (native == false) return MinitScript::determineScriptIdxToStart();" + "\n";
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "// MinitScript setup" + "\n";
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "auto minitScript = this;" + "\n";
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
+	}
 	string generatedDetermineNamedScriptIdxToStartDefinition = "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= "int " + minitScriptClassName + "::determineNamedScriptIdxToStart() {" + "\n";
-	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "#define MINITSCRIPT_METHOD_POPSTACK()" + "\n";
-	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "if (native == false) return MinitScript::determineNamedScriptIdxToStart();" + "\n";
-	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "auto minitScript = this;" + "\n";
-	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "for (const auto& enabledNamedCondition: enabledNamedConditions) {" + "\n";
+	if (minitScript->isModule() == true) {
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "_Console::printLine(\"" + minitScriptClassName + "::determineNamedScriptIdxToStart(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "return SCRIPTIDX_NONE;" + "\n";
+	} else {
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "#define MINITSCRIPT_METHOD_POPSTACK()" + "\n";
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "if (native == false) return MinitScript::determineNamedScriptIdxToStart();" + "\n";
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "auto minitScript = this;" + "\n";
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "for (const auto& enabledNamedCondition: enabledNamedConditions) {" + "\n";
+	}
 	{
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
@@ -693,27 +741,31 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	}
 
 	//
-	generatedDetermineScriptIdxToStartDefinition+= "\n";
-	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
-	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "return " + to_string(nothingScriptIdx) + ";" + "\n";
-	generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "#undef MINITSCRIPT_METHOD_POPSTACK" + "\n";
+	if (minitScript->isModule() == false) {
+		generatedDetermineScriptIdxToStartDefinition+= "\n";
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "return " + to_string(nothingScriptIdx) + ";" + "\n";
+		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "#undef MINITSCRIPT_METHOD_POPSTACK" + "\n";
+	}
 	generatedDetermineScriptIdxToStartDefinition+= string() + "}" + "\n";
 	//
-	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "}" + "\n";
-	generatedDetermineNamedScriptIdxToStartDefinition+= "\n";
-	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
-	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "return SCRIPTIDX_NONE;" + "\n";
-	generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "#undef MINITSCRIPT_METHOD_POPSTACK" + "\n";
+	if (minitScript->isModule() == false) {
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "}" + "\n";
+		generatedDetermineNamedScriptIdxToStartDefinition+= "\n";
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "return SCRIPTIDX_NONE;" + "\n";
+		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "#undef MINITSCRIPT_METHOD_POPSTACK" + "\n";
+	}
 	generatedDetermineNamedScriptIdxToStartDefinition+= string() + "}" + "\n";
 
 	//
-	{
+	if (minitScript->isModule() == false) {
 		string emitDefinitionIndent = "\t";
 		emitDefinition+= emitDefinitionIndent + "{" + "\n";
 		emitDefinition+= emitDefinitionIndent + "\t" + "_Console::printLine(\"" + minitScriptClassName + "::emit(): no condition with name: '\" + condition + \"'\");" + "\n";
 		emitDefinition+= emitDefinitionIndent + "}" + "\n";
-		emitDefinition+= string() + "}" + "\n";
 	}
+	emitDefinition+= string() + "}" + "\n";
 
 	//
 	if (globalVariables.empty() == false) {
