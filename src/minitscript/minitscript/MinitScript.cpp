@@ -602,7 +602,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		// TODO: sub line index
 		_Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced bracket count: " + to_string(_Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
 		//
-		parseErrors.push_back(string(executableStatement) + ": Unbalanced bracket count: " + to_string(_Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
+		parseErrors.push_back(getStatementInformation(statement) + ": " + string(executableStatement) + ": Unbalanced bracket count: " + to_string(_Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
 		//
 		return false;
 	}
@@ -611,7 +611,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		// TODO: sub line index
 		_Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced square bracket count: " + to_string(_Math::abs(squareBracketCount)) + " " + (squareBracketCount < 0?"too much closed":"still open"));
 		//
-		parseErrors.push_back(string(executableStatement) + ": Unbalanced square bracket count: " + to_string(_Math::abs(squareBracketCount)) + " " + (squareBracketCount < 0?"too much closed":"still open"));
+		parseErrors.push_back(getStatementInformation(statement) + ": " + string(executableStatement) + ": Unbalanced square bracket count: " + to_string(_Math::abs(squareBracketCount)) + " " + (squareBracketCount < 0?"too much closed":"still open"));
 		//
 		return false;
 	}
@@ -620,7 +620,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		// TODO: sub line index
 		_Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced curly bracket count: " + to_string(_Math::abs(curlyBracketCount)) + " " + (curlyBracketCount < 0?"too much closed":"still open"));
 		//
-		parseErrors.push_back(string(executableStatement) + ": Unbalanced curly bracket count: " + to_string(_Math::abs(curlyBracketCount)) + " " + (curlyBracketCount < 0?"too much closed":"still open"));
+		parseErrors.push_back(getStatementInformation(statement) + ": " + string(executableStatement) + ": Unbalanced curly bracket count: " + to_string(_Math::abs(curlyBracketCount)) + " " + (curlyBracketCount < 0?"too much closed":"still open"));
 		//
 		return false;
 	}
@@ -1707,7 +1707,7 @@ void MinitScript::execute() {
 	tryGarbageCollection();
 }
 
-bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, string& statement) {
+bool MinitScript::getNextStatement(const string& scriptFileName, const string& scriptCode, int& i, int& line, string& statement) {
 	string statementCode;
 	vector<string> statementCodeLines;
 	statementCodeLines.emplace_back();
@@ -1912,6 +1912,7 @@ bool MinitScript::getNextStatement(const string& scriptCode, int& i, int& line, 
 
 bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _module, int lineIdxOffset) {
 	//
+	auto _scriptFileName = _module.empty() == true?scriptFileName:_module;
 	auto scriptCount = scripts.size();
 	auto haveScript = false;
 	auto lineIdx = LINE_FIRST;
@@ -1931,7 +1932,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 
 		// try to get next statement code
 		string statementCode;
-		if (getNextStatement(scriptCode, i, lineIdx, statementCode) == false) {
+		if (getNextStatement(_scriptFileName, scriptCode, i, lineIdx, statementCode) == false) {
 			//
 			scriptValid = false;
 			return false;
@@ -1956,7 +1957,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				// we need the condition or name
 				for (; i < scriptCode.size(); i++) {
 					string nextStatementCode;
-					if (getNextStatement(scriptCode, i, lineIdx, nextStatementCode) == false) {
+					if (getNextStatement(_scriptFileName, scriptCode, i, lineIdx, nextStatementCode) == false) {
 						//
 						scriptValid = false;
 						return false;
@@ -1987,7 +1988,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					//
 					for (; i < scriptCode.size(); i++) {
 						string nextStatementCode;
-						if (getNextStatement(scriptCode, i, lineIdx, nextStatementCode) == false) {
+						if (getNextStatement(_scriptFileName, scriptCode, i, lineIdx, nextStatementCode) == false) {
 							//
 							scriptValid = false;
 							return false;
@@ -2045,7 +2046,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					//
 					for (; i < scriptCode.size(); i++) {
 						string nextStatementCode;
-						if (getNextStatement(scriptCode, i, lineIdx, nextStatementCode) == false) {
+						if (getNextStatement(_scriptFileName, scriptCode, i, lineIdx, nextStatementCode) == false) {
 							//
 							scriptValid = false;
 							return false;
@@ -2118,6 +2119,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				callable = true;
 				scriptType = Script::TYPE_FUNCTION;
 			}
+			if (_module.empty() == false &&
+				(scriptType == Script::TYPE_ON ||
+				scriptType == Script::TYPE_ONENABLED)) {
+							_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": 'on:' and  'on-enabled:': Conditional execution functionality is not available in modules");
+							parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": 'on:' and  'on-enabled:': Conditional execution functionality is not available in modules");
+							scriptValid = false;
+							return false;
+			} else
 			if (moduleUseStatement == true) {
 				// no op
 			} else
@@ -2167,14 +2176,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					auto rightBracketIdx = statement.find(')');
 					if (leftBracketIdx != string::npos || leftBracketIdx != string::npos) {
 						if (leftBracketIdx == string::npos) {
-							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
-							parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
+							_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
+							parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
 							scriptValid = false;
 							return false;
 						} else
 						if (rightBracketIdx == string::npos) {
-							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
-							parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
+							_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
+							parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
 							scriptValid = false;
 							return false;
 						} else {
@@ -2202,8 +2211,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 											privateScope
 										);
 									} else {
-										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid argument name: '" + argumentNameTrimmed + "'");
-										parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid argument name: '" + argumentNameTrimmed + "'");
+										_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid argument name: '" + argumentNameTrimmed + "'");
+										parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid argument name: '" + argumentNameTrimmed + "'");
 										scriptValid = false;
 										return false;
 
@@ -2217,8 +2226,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 											false
 										);
 									} else {
-										_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
-										parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
+										_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
+										parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
 										scriptValid = false;
 										return false;
 									}
@@ -2263,8 +2272,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					scripts.size()
 				);
 			} else {
-				_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
-				parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
+				_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
+				parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
 				scriptValid = false;
 				return false;
 			}
@@ -2275,8 +2284,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				_StringTools::startsWith(statementCode, "on-enabled:") == true ||
 				_StringTools::startsWith(statementCode, "callable:") == true
 			) {
-				_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
-				parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
+				_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
+				parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 				scriptValid = false;
 				return false;
 			} else {
@@ -2354,8 +2363,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 								}
 								break;
 							default:
-								_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if/elseif");
-								parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": else without if/elseif");
+								_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if/elseif");
+								parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if/elseif");
 								scriptValid = false;
 								return false;
 						}
@@ -2364,8 +2373,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							statementIdx
 						);
 					} else {
-						_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if");
-						parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": else without if");
+						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if");
+						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if");
 						scriptValid = false;
 						return false;
 					}
@@ -2406,8 +2415,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							statementIdx
 						);
 					} else {
-						_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
-						parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
+						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
+						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
 						scriptValid = false;
 						return false;
 					}
@@ -2440,8 +2449,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							//
 							statementCode = "forCondition(" + string(forArguments[1].argument) + ", -> { " + string(forArguments[2].argument) + " })";
 						} else {
-							_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
-							parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
+							_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
+							parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
 							scriptValid = false;
 							return false;
 						}
@@ -2651,8 +2660,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							"})";
 					} else
 					if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\(.*\\)$", &matches) == true) {
-						_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
-						parseErrors.push_back(to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
+						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
+						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
 						scriptValid = false;
 						return false;
 					} else
@@ -2702,8 +2711,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 
 	// check for unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end
 	if (scriptValid == true && blockStack.empty() == false) {
-		_Console::printLine(scriptFileName + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
-		parseErrors.push_back("Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
+		_Console::printLine(_scriptFileName + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
+		parseErrors.push_back(_scriptFileName + ":" + "Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 		scriptValid = false;
 		return false;
 	}

@@ -3748,13 +3748,14 @@ private:
 
 	/**
 	 * Get next statement from script code
+	 * @param scriptFileName script file name
 	 * @param scriptCode script code
 	 * @param i character index
 	 * @param line line
 	 * @param statement statement
 	 * @return success
 	 */
-	bool getNextStatement(const string& scriptCode, int& i, int& line, string& statement);
+	bool getNextStatement(const string& scriptFileName, const string& scriptCode, int& i, int& line, string& statement);
 
 	/**
 	 * Parse a statement
