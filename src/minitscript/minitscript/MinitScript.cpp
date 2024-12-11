@@ -207,8 +207,7 @@ void MinitScript::registerStateMachineState(StateMachineState* state) {
 	stateMachineStates[state->getId()] = state;
 }
 
-void MinitScript::initializeModule(MinitScript* parentScript) {
-	_Console::printLine("Initializing module " + scriptFileName + " with parent " + parentScript->scriptFileName);
+void MinitScript::initializeNativeModule(MinitScript* parentScript) {
 	//
 	this->parentScript = parentScript;
 	// determine root script, which is initially "this"
@@ -217,10 +216,31 @@ void MinitScript::initializeModule(MinitScript* parentScript) {
 		rootScript = rootScriptCandidate;
 		rootScriptCandidate = rootScriptCandidate->parentScript;
 	}
-	//
-	_Console::printLine("this->rootScript != nullptr: " + (this->rootScript != nullptr));
-	_Console::printLine("this->parentScript != nullptr: " + (this->parentScript != nullptr));
-	_Console::printLine("this->parentScript == this->rootScript: " + (this->parentScript == this->rootScript));
+	// find root script indices
+	// 	so iterate our module scripts
+	for (auto i = 0; i < scripts.size(); i++) {
+		auto& moduleScript = scripts[i];
+		// only applies for functions and stacklets
+		if (moduleScript.type != Script::TYPE_FUNCTION &&
+			moduleScript.type != Script::TYPE_STACKLET) {
+		       continue;
+		}
+		// find module script in root native scripts
+		for (auto j = 0; j < rootScript->nativeScripts.size(); j++) {
+			auto& script = rootScript->nativeScripts[j];
+			//
+			if (moduleScript.condition == script.condition) {
+				moduleScript.rootScriptIdx = j;
+			}
+		}
+	}
+	// print out scripts that have no root script index
+	for (auto i = 0; i < scripts.size(); i++) {
+		auto& moduleScript = scripts[i];
+		if (moduleScript.rootScriptIdx == SCRIPTIDX_NONE) {
+			_Console::printLine("MinitScript::initializeModule()): " + scriptFileName + ": " + moduleScript.condition + ": Not available in root script");
+		}
+	}
 }
 
 void MinitScript::initializeNative() {
@@ -2239,7 +2259,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					initializer_list<Statement>{},
 					initializer_list<SyntaxTreeNode>{},
 					callable,
-					arguments
+					arguments,
+					scripts.size()
 				);
 			} else {
 				_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
@@ -2893,11 +2914,13 @@ void MinitScript::startScript() {
 		_Console::printLine(scriptFileName + ": Script not valid: not starting");
 		return;
 	}
-	auto& scriptState = getScriptState();
-	for (const auto& [variableName, variable]: scriptState.variables) delete variable;
-	scriptState.variables.clear();
-	scriptState.running = true;
+	//
+	while (hasScriptState() == true) popScriptState();
+	pushScriptState();
 	registerVariables();
+	//
+	auto& scriptState = getScriptState();
+	scriptState.running = true;
 	//
 	if (hasCondition("initialize") == true) emit("initialize");
 }
@@ -3677,7 +3700,7 @@ bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& retur
 			argumentIdx++;
 		}
 		//
-		resetScriptExecutationState(scriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
+		resetScriptExecutationState(script.rootScriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
 	} else {
 		//
 		if (script.type != Script::TYPE_STACKLET) {
@@ -3685,7 +3708,7 @@ bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& retur
 			return false;
 		}
 		//
-		resetStackletScriptExecutationState(scriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
+		resetStackletScriptExecutationState(script.rootScriptIdx, STATEMACHINESTATE_NEXT_STATEMENT);
 	}
 	// script state vector could get modified, so
 	{

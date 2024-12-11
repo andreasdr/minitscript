@@ -209,6 +209,15 @@ on: nothing
 	testScript(["resources/minitscript/tests/functions-test.tscript"], null)
 	testScript(["resources/minitscript/tests/lamdafunctions-test.tscript"], null)
 	testScript(["resources/minitscript/tests/loop-test.tscript"], null)
+	testScript(
+		[
+			"resources/minitscript/tests/module-test.tscript",
+			"resources/minitscript/tests/module_1.tscript",
+			"resources/minitscript/tests/module_2.tscript",
+			"resources/minitscript/tests/module_3.tscript"
+		],
+		null
+	)
 	testScript(["resources/minitscript/tests/network-test.tscript"], null)
 	testScript(["resources/minitscript/tests/pipe-test.tscript"], "./tests/pipe-test.input")
 	testScript(["resources/minitscript/tests/preprocessor-test.tscript"], null)

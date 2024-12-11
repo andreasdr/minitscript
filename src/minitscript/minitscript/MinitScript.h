@@ -3058,6 +3058,7 @@ public:
 		 * @param syntaxTree syntax tree
 		 * @param callableFunction callable function
 		 * @param functionArguments function arguments
+		 * @param rootScriptIdx root script index
 		 */
 		inline Script(
 			const string& _module,
@@ -3075,7 +3076,8 @@ public:
 			const vector<SyntaxTreeNode>& syntaxTree,
 			// applies only for functions/stacklets
 			bool callable,
-			const vector<Argument>& arguments
+			const vector<Argument>& arguments,
+			int rootScriptIdx
 		):
 			_module(_module),
 			type(type),
@@ -3089,7 +3091,8 @@ public:
 			statements(statements),
 			syntaxTree(syntaxTree),
 			callable(callable),
-			arguments(arguments)
+			arguments(arguments),
+			rootScriptIdx(rootScriptIdx)
 		{}
 		//
 		string _module;
@@ -3107,6 +3110,7 @@ public:
 		vector<SyntaxTreeNode> syntaxTree;
 		bool callable;
 		vector<Argument> arguments;
+		int rootScriptIdx;
 	};
 
 	static constexpr int SCRIPTIDX_NONE { -1 };
@@ -4592,12 +4596,6 @@ public:
 	}
 
 	/**
-	 * Initialize module
-	 * @param parentScript parent Minit Script instance
-	 */
-	virtual void initializeModule(MinitScript* parentScript);
-
-	/**
 	 * @return if this script was compiled to C++ and is executed natively
 	 */
 	inline bool isNative() {
@@ -4610,6 +4608,12 @@ public:
 	inline const string& getNativeHash() {
 		return nativeHash;
 	}
+
+	/**
+	 * Initialize native module
+	 * @param parentScript parent Minit Script instance
+	 */
+	virtual void initializeNativeModule(MinitScript* parentScript);
 
 	/**
 	 * @return script path name

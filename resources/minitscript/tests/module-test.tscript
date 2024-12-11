@@ -16,9 +16,9 @@ on: nothing
 	console.printLine("-----------------------")
 	console.printLine()
 	# call module functions
-	console.printLine("Calling module1Function() from module_1.tscript") 
+	console.printLine("main: Calling module1Function() from module_1.tscript")
 	module1Function()
-	console.printLine("Calling module2Function() from module_2.tscript")
+	console.printLine("main: Calling module2Function() from module_2.tscript")
 	module2Function()
 	# done
 	script.stop()

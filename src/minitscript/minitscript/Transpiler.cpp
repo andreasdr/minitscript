@@ -268,7 +268,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	generatedDeclarations+= declarationIndent + "inline void execute() override {" + "\n";
 	if (minitScript->isModule() == true) {
-		generatedDeclarations+= declarationIndent + "\t" + "_Console::printLine(\"" + minitScriptClassName + "::execute(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "rootScript->execute();" + "\n";
 	} else {
 		generatedDeclarations+= declarationIndent + "\t" + "if (native == false) {" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "\t" + minitScript->getBaseClass() + "::execute();" + "\n";
@@ -426,7 +426,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + to_string(script.conditionStatement.gotoStatementIdx) + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + ")," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "{}," + "\n";
-			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + script.name + "\"," + "\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + escapeString(script.name) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + (script.emitCondition == true?"true":"false") + "," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "{" + "\n";
 
@@ -460,7 +460,8 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 				initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" ")" + (argumentIdx != script.arguments.size() - 1?",":"") + "\n";
 				argumentIdx++;
 			}
-			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "}\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "},\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + to_string(minitScript->isModule() == false?script.rootScriptIdx:MinitScript::SCRIPTIDX_NONE) + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + ")" + (scriptIdx < scripts.size() - 1?",":"") + "\n";
 			scriptIdx++;
 		}
@@ -491,9 +492,8 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		initializeNativeDefinition+= definitionIndent + "// initialize modules" + "\n";
 		for (const auto& _module: minitScript->getModules()) {
 			const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
-			initializeNativeDefinition+= definitionIndent + moduleObjectName + ".initializeModule(this);" + "\n";
+				initializeNativeDefinition+= definitionIndent + moduleObjectName + ".initializeNativeModule(this);" + "\n";
 		}
-		initializeNativeDefinition+= "\n";
 	}
 
 	//
