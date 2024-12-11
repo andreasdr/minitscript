@@ -189,10 +189,8 @@ MinitScript::MinitScript() {
 }
 
 MinitScript::~MinitScript() {
-	if (_module == false) {
-		for (const auto& [methodName, method]: this->methods) delete method;
-		for (const auto& [stateMachineStateId, stateMachineState]: this->stateMachineStates) delete stateMachineState;
-	}
+	for (const auto& [methodName, method]: this->methods) delete method;
+	for (const auto& [stateMachineStateId, stateMachineState]: this->stateMachineStates) delete stateMachineState;
 	while (hasScriptState() == true) popScriptState();
 	garbageCollection();
 	for (auto& garbageCollectionDataType: garbageCollectionDataTypes) garbageCollectionDataType.dataType->deleteScriptContext(garbageCollectionDataType.context);
