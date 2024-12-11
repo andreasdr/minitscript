@@ -6,6 +6,8 @@ function: module2Function()
 	console.printLine("-----------------")
 	console.printLine("module2Function")
 	console.printLine("-----------------")
+	console.printLine("$$.application::OS = " , $$.application::OS)
+	console.printLine("$$.application::CPU = " , $$.application::CPU)
 	# call module functions
 	console.printLine("module2Function: Calling module3Function() from module_3.tscript")
 	module3Function()
