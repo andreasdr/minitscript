@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <stack>
 
 #include <minitscript/minitscript.h>
@@ -9,6 +10,7 @@
 #include <{$base-class-header}>
 
 using std::stack;
+using std::unique_ptr;
 
 using _Console = minitscript::utilities::Console;
 
