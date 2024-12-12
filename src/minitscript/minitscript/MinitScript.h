@@ -3265,7 +3265,9 @@ protected:
 	_Library* library { nullptr };
 	vector<Script> scripts;
 	string nativeHash;
+	vector<string> nativeModuleHashes;
 	vector<Script> nativeScripts;
+	unordered_map<string, int> nativeFunctions;
 	vector<unique_ptr<ScriptState>> scriptStateStack;
 
 	// root context variables
@@ -3285,6 +3287,20 @@ protected:
 
 	string deferredEmit;
 	bool emitted { false };
+
+	//
+	int64_t dataTypesGCTime { -1ll };
+
+	// functions/stacklets/callables defined by script itself
+	unordered_map<string, int> functions;
+	// registered methods
+	unordered_map<string, Method*> methods;
+	// registered state machine states
+	unordered_map<int, StateMachineState*> stateMachineStates;
+	// operators
+	unordered_map<uint8_t, Method*> operators;
+	//
+	bool scriptValid { false };
 
 	/**
 	 * Escape string variable
@@ -3363,22 +3379,6 @@ protected:
 	virtual void initializeNative();
 
 	/**
-	 * Set native
-	 * @param native native
-	 */
-	inline void setNative(bool native) {
-		this->native = native;
-	}
-
-	/**
-	 * Set native hash
-	 * @param nativeHash native hash
-	 */
-	inline void setNativeHash(const string& nativeHash) {
-		this->nativeHash = nativeHash;
-	}
-
-	/**
 	 * Go to statement
 	 * @param statement statement
 	 */
@@ -3394,29 +3394,6 @@ protected:
 	inline void gotoStatementGoto(const Statement& statement) {
 		setScriptStateState(MinitScript::STATEMACHINESTATE_NEXT_STATEMENT);
 		getScriptState().gotoStatementIdx = statement.gotoStatementIdx;
-	}
-
-	/**
-	 * @return native script
-	 */
-	inline vector<Script> getNativeScripts() {
-		return nativeScripts;
-	}
-
-	/**
-	 * Set native scripts
-	 * @param nativeScripts native scripts
-	 */
-	inline void setNativeScripts(const vector<Script>& nativeScripts) {
-		this->nativeScripts = nativeScripts;
-	}
-
-	/**
-	 * Set native functions
-	 * @param nativeFunctions native functions
-	 */
-	inline void setNativeFunctions(const unordered_map<string, int>& nativeFunctions) {
-		this->functions = nativeFunctions;
 	}
 
 	/**
@@ -3678,21 +3655,6 @@ private:
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string OPERATOR_CHARS;
 	MINITSCRIPT_STATIC_DLL_IMPEXT static vector<DataType*> dataTypes;
 	MINITSCRIPT_STATIC_DLL_IMPEXT static ShutdownRAII shutdownRAII;
-
-	//
-	int64_t dataTypesGCTime { -1ll };
-
-	// TODO: maybe we need a better naming for this
-	// functions/stacklets/callables defined by script itself
-	unordered_map<string, int> functions;
-	// registered methods
-	unordered_map<string, Method*> methods;
-	// registered state machine states
-	unordered_map<int, StateMachineState*> stateMachineStates;
-	// operators
-	unordered_map<uint8_t, Method*> operators;
-	//
-	bool scriptValid { false };
 
 	/**
 	 * Garbage collection data type
@@ -4621,6 +4583,12 @@ public:
 		return nativeHash;
 	}
 
+	/**
+	 * @return native module script hashes
+	 */
+	inline const vector<string>& getNativeModuleHashes() {
+		return nativeModuleHashes;
+	}
 	/**
 	 * Initialize native module
 	 * @param parentScript parent Minit Script instance

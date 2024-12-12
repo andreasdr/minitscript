@@ -2080,30 +2080,36 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 
 				// push to modules
 				auto moduleScriptFileName = _StringTools::trim(_StringTools::substring(statementCode, string("use:").size()));
-				modules.erase(remove(modules.begin(), modules.end(), moduleScriptFileName), modules.end());
-				modules.push_back(moduleScriptFileName);
+				if (find(modules.begin(), modules.end(), moduleScriptFileName) != modules.end()) {
+					// no op
+				} else {
+					//
+					modules.push_back(moduleScriptFileName);
 
-				// load module script code
-				string moduleScriptCode;
-				try {
-					moduleScriptCode = _FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
-				} catch (_FileSystem::FileSystemException& fse)	{
-					_Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
-					scriptValid = false;
-					parseErrors.push_back("An error occurred: " + string(fse.what()));
-					return false;
-				}
-				// and parse it
-				if (parseScriptInternal(moduleScriptCode, moduleScriptFileName) == false) return false;
-				// parse module deferred function script codes,
-				//	which are created by parsing map initializers and possible map inline functions
-				do {
-					auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
-					deferredInlineScriptCodes.clear();
-					for (const auto& functionScriptCodePair: deferredInlineScriptCodesCopy) {
-						parseScriptInternal(functionScriptCodePair.second, moduleScriptFileName, functionScriptCodePair.first);
+					// load module script code
+					string moduleScriptCode;
+					try {
+						moduleScriptCode = _FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
+					} catch (_FileSystem::FileSystemException& fse)	{
+						_Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+						scriptValid = false;
+						parseErrors.push_back("An error occurred: " + string(fse.what()));
+						return false;
 					}
-				} while (deferredInlineScriptCodes.empty() == false);
+					// hash
+					nativeModuleHashes.push_back( _SHA256::encode(moduleScriptCode));
+					// and parse it
+					if (parseScriptInternal(moduleScriptCode, moduleScriptFileName) == false) return false;
+					// parse module deferred function script codes,
+					//	which are created by parsing map initializers and possible map inline functions
+					do {
+						auto deferredInlineScriptCodesCopy = deferredInlineScriptCodes;
+						deferredInlineScriptCodes.clear();
+						for (const auto& functionScriptCodePair: deferredInlineScriptCodesCopy) {
+							parseScriptInternal(functionScriptCodePair.second, moduleScriptFileName, functionScriptCodePair.first);
+						}
+					} while (deferredInlineScriptCodes.empty() == false);
+				}
 			}
 
 			// script type
@@ -2898,6 +2904,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 		if (native == true) {
 			if (nativeOnly == true || scriptHash == nativeHash) {
 				scripts = nativeScripts;
+				functions = nativeFunctions;
 				registerStateMachineStates();
 				registerMethods();
 				registerVariables();
