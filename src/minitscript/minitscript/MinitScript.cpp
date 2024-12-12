@@ -2092,8 +2092,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						moduleScriptCode = _FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
 					} catch (_FileSystem::FileSystemException& fse)	{
 						_Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+						parseErrors.push_back(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
 						scriptValid = false;
-						parseErrors.push_back("An error occurred: " + string(fse.what()));
 						return false;
 					}
 					// hash
@@ -2892,8 +2892,8 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 			scriptCode = _FileSystem::getContentAsString(scriptPathName, scriptFileName);
 		} catch (_FileSystem::FileSystemException& fse)	{
 			_Console::printLine(scriptPathName + "/" + scriptFileName + ": An error occurred: " + fse.what());
+			parseErrors.push_back(scriptPathName + "/" + scriptFileName + ": An error occurred: " + fse.what());
 			scriptValid = true;
-			parseErrors.push_back("An error occurred: " + string(fse.what()));
 			return;
 		}
 	}
@@ -2902,7 +2902,28 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 	{
 		auto scriptHash = _SHA256::encode(scriptCode);
 		if (native == true) {
-			if (nativeOnly == true || scriptHash == nativeHash) {
+			// check modules hashes also
+			string nativeModuleHashesConcatenated;
+			for (const auto& moduleHash: nativeModuleHashes) nativeModuleHashesConcatenated+= moduleHash;
+			string moduleHashesConcatenated;
+			//
+			if (nativeOnly == false) {
+				for (const auto& moduleScriptFileName: modules) {
+					// load module script code
+					string moduleScriptCode;
+					try {
+						moduleScriptCode = _FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
+					} catch (_FileSystem::FileSystemException& fse)	{
+						_Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+						parseErrors.push_back(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+					}
+					// hash
+					moduleHashesConcatenated+= _SHA256::encode(moduleScriptCode);
+				}
+			}
+			//
+			if (nativeOnly == true ||
+				(scriptHash == nativeHash && moduleHashesConcatenated == nativeModuleHashesConcatenated)) {
 				scripts = nativeScripts;
 				functions = nativeFunctions;
 				registerStateMachineStates();
@@ -2911,8 +2932,11 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 				startScript();
 				return;
 			} else {
-				_Console::printLine(scriptPathName + "/" + scriptFileName + ": Script has changed. Script will be run in interpreted mode. Retranspile and recompile your script if you want to run it natively.");
+				_Console::printLine(scriptPathName + "/" + scriptFileName + ": Scripts have changed. Scripts will be run in interpreted mode. Retranspile and recompile your scripts if you want to run it natively.");
+				// unset some native related variables
 				native = false;
+				_module = false;
+				modules = {};
 			}
 		}
 		nativeHash = scriptHash;

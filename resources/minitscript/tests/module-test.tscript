@@ -15,8 +15,6 @@ on: nothing
 	console.printLine("module-test: Nothing")
 	console.printLine("-----------------------")
 	console.printLine()
-	console.printLine("$$.application::OS = " , $$.application::OS)
-	console.printLine("$$.application::CPU = " , $$.application::CPU)
 	# call module functions
 	console.printLine("main: Calling module1Function() from module_1.tscript")
 	module1Function()

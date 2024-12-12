@@ -4,6 +4,4 @@ function: module1Function()
 	console.printLine("-----------------")
 	console.printLine("module1Function")
 	console.printLine("-----------------")
-	console.printLine("$$.application::OS = " , $$.application::OS)
-	console.printLine("$$.application::CPU = " , $$.application::CPU)
 end
