@@ -130,6 +130,7 @@ public:
 	struct Statement {
 		/**
 		 * Constructor
+		 * @param fileName fileName
 		 * @param line line
 		 * @param statementIdx statement index
 		 * @param statement statement
@@ -137,12 +138,14 @@ public:
 		 * @param gotoStatementIdx goto statement index
 		 */
 		inline Statement(
+			const string& fileName,
 			int line,
 			int statementIdx,
 			const string& statement,
 			const string& executableStatement,
 			int gotoStatementIdx
 		):
+			fileName(fileName),
 			line(line),
 			statementIdx(statementIdx),
 			statement(statement),
@@ -150,6 +153,7 @@ public:
 			gotoStatementIdx(gotoStatementIdx)
 		{}
 		//
+		string fileName;
 		int line;
 		int statementIdx;
 		string statement;
@@ -450,6 +454,7 @@ public:
 				inline Initializer():
 					statement(
 						MinitScript::Statement(
+							string(),
 							MinitScript::LINE_NONE,
 							MinitScript::STATEMENTIDX_NONE,
 							string(),
@@ -2259,12 +2264,13 @@ public:
 
 		/**
 		 * Set array/map values initializer function call statement
+		 * @param scriptFileName script file name
 		 * @param initializerStatement initializer statement
 		 * @param minitScript minitscript instance
 		 * @param scriptIdx script index
 		 * @param statement statement
 		 */
-		void setFunctionCallStatement(const string& initializerStatement, MinitScript* minitScript, int scriptIdx, const Statement& statement);
+		void setFunctionCallStatement(const string& scriptFileName, const string& initializerStatement, MinitScript* minitScript, int scriptIdx, const Statement& statement);
 
 		/**
 		 * Set function assignment from given value into variable
@@ -2292,23 +2298,25 @@ public:
 
 		/**
 		 * Set implicit typed value given by value string
+		 * @param scriptFileName script file name
 		 * @param value value
 		 * @param minitScript mini script
 		 * @param scriptIdx script index
 		 * @param statement statement
 		 */
-		inline void setImplicitTypedValue(const string& value, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
-			setImplicitTypedValueFromStringView(string_view(value), minitScript, scriptIdx, statement);
+		inline void setImplicitTypedValue(const string& scriptFileName, const string& value, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
+			setImplicitTypedValueFromStringView(scriptFileName, string_view(value), minitScript, scriptIdx, statement);
 		}
 
 		/**
 		 * Set implicit typed value given by value string
+		 * @param scriptFileName script file name
 		 * @param value value
 		 * @param minitScript mini script
 		 * @param scriptIdx script index
 		 * @param statement statement
 		 */
-		inline void setImplicitTypedValueFromStringView(const string_view& value, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
+		inline void setImplicitTypedValueFromStringView(const string& scriptFileName, const string_view& value, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
 			//
 			auto viewIsFunctionAssignment = [](const string_view& candidate, string_view& function) -> bool {
 				if (candidate.size() == 0) return false;
@@ -2398,11 +2406,11 @@ public:
 			} else
 			if (_StringTools::viewStartsWith(value, "{") == true &&
 				_StringTools::viewEndsWith(value, "}") == true) {
-				*this = initializeMapSet(value, minitScript, scriptIdx, statement);
+				*this = initializeMapSet(scriptFileName, value, minitScript, scriptIdx, statement);
 			} else
 			if (_StringTools::viewStartsWith(value, "[") == true &&
 				_StringTools::viewEndsWith(value, "]") == true) {
-				*this = initializeArray(value, minitScript, scriptIdx, statement);
+				*this = initializeArray(scriptFileName, value, minitScript, scriptIdx, statement);
 			} else
 			if (viewIsFunctionAssignment(value, functionOrStacklet) == true) {
 				setFunctionAssignment(string(functionOrStacklet));
@@ -2411,10 +2419,10 @@ public:
 				setStackletAssignment(string(functionOrStacklet));
 			} else
 			if (viewIsCall(value) == true) {
-				setFunctionCallStatement(minitScript->doStatementPreProcessing(string(value), statement), minitScript, scriptIdx, statement);
+				setFunctionCallStatement(scriptFileName, minitScript->doStatementPreProcessing(string(value), statement), minitScript, scriptIdx, statement);
 			} else
 			if (viewIsVariableAccess(value) == true) {
-				setFunctionCallStatement("getVariable(\"" + string(value) + "\")", minitScript, scriptIdx, statement);
+				setFunctionCallStatement(scriptFileName, "getVariable(\"" + string(value) + "\")", minitScript, scriptIdx, statement);
 			} else {
 				setValue(minitScript->deescape(value, statement));
 			}
@@ -3603,23 +3611,25 @@ protected:
 
 	/**
 	 * Initialize array by initializer string
+	 * @param scriptFileName script file name
 	 * @param initializerString initializer string
 	 * @param minitScript mini script
 	 * @param scriptIdx script index
 	 * @param statement statement
 	 * @return initialized variable
 	 */
-	static const Variable initializeArray(const string_view& initializerString, MinitScript* minitScript, int scriptIdx, const Statement& statement);
+	static const Variable initializeArray(const string& scriptFileName, const string_view& initializerString, MinitScript* minitScript, int scriptIdx, const Statement& statement);
 
 	/**
 	 * Initialize map/set by initializer string
+	 * @param scriptFileName script file name
 	 * @param initializerString initializer string
 	 * @param minitScript mini script
 	 * @param scriptIdx script index
 	 * @param statement statement
 	 * @return initialized variable
 	 */
-	static const Variable initializeMapSet(const string_view& initializerString, MinitScript* minitScript, int scriptIdx, const Statement& statement);
+	static const Variable initializeMapSet(const string& scriptFileName, const string_view& initializerString, MinitScript* minitScript, int scriptIdx, const Statement& statement);
 
 	/**
 	 * Try garbage collection
@@ -3778,6 +3788,7 @@ private:
 
 	/**
 	 * Create statement syntax tree
+	 * @param scriptFileName script file name
 	 * @param scriptIdx script index
 	 * @param methodName method name
 	 * @param arguments arguments
@@ -3786,7 +3797,7 @@ private:
 	 * @param subLineIdx sub line index
 	 * @return success
 	 */
-	bool createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<ParserArgument>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree, int subLineIdx = 0);
+	bool createStatementSyntaxTree(const string& scriptFileName, int scriptIdx, const string_view& methodName, const vector<ParserArgument>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree, int subLineIdx = 0);
 
 	/**
 	 * Setup function and stacket script indices
@@ -4730,7 +4741,7 @@ public:
 			}
 		}
 		//
-		return scriptFileName + ":" + to_string(statementLine) +  ": " + statementCode;
+		return statement.fileName + ":" + to_string(statementLine) +  ": " + statementCode;
 	}
 
 	/**
@@ -5430,6 +5441,7 @@ public:
 	 */
 	inline bool evaluate(const string& evaluateStatement, Variable& returnValue) {
 		Statement evaluateScriptStatement(
+			"evaluate",
 			LINE_NONE,
 			STATEMENTIDX_FIRST,
 			"internal.script.evaluate(" + _StringTools::replace(_StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",

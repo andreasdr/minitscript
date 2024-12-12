@@ -807,7 +807,7 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 	return returnValue;
 }
 
-bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& methodName, const vector<ParserArgument>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree, int subLineIdx) {
+bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int scriptIdx, const string_view& methodName, const vector<ParserArgument>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree, int subLineIdx) {
 	if (VERBOSE == true) {
 		//
 		auto getArgumentsAsString = [](const vector<ParserArgument>& arguments) -> const string {
@@ -901,7 +901,7 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 			//
 			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
-				if (createStatementSyntaxTree(scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
+				if (createStatementSyntaxTree(scriptFileName, scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
 					return false;
 				}
 				syntaxTree.arguments.push_back(subSyntaxTree);
@@ -963,7 +963,7 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 			//
 			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
 				SyntaxTreeNode subSyntaxTree;
-				if (createStatementSyntaxTree(scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
+				if (createStatementSyntaxTree(scriptFileName, scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
 					return false;
 				}
 				syntaxTree.arguments.push_back(subSyntaxTree);
@@ -974,7 +974,7 @@ bool MinitScript::createStatementSyntaxTree(int scriptIdx, const string_view& me
 		} else {
 			// implicitely literal
 			Variable value;
-			value.setImplicitTypedValueFromStringView(argument.argument, this, scriptIdx, statement);
+			value.setImplicitTypedValueFromStringView(scriptFileName, argument.argument, this, scriptIdx, statement);
 			//
 			syntaxTree.arguments.emplace_back(
 				SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL,
@@ -2237,6 +2237,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				}
 				auto trimmedStatement = _StringTools::trim(statement);
 				Statement evaluateStatement(
+					_scriptFileName,
 					currentLineIdx + lineIdxOffset,
 					STATEMENTIDX_FIRST,
 					"internal.script.evaluate(" + _StringTools::replace(_StringTools::replace(trimmedStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
@@ -2259,7 +2260,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					currentLineIdx + lineIdxOffset,
 					conditionOrName,
 					conditionOrNameExecutable,
-					Statement(currentLineIdx + lineIdxOffset, statementIdx, conditionOrName, conditionOrNameExecutable, STATEMENTIDX_NONE),
+					Statement(
+						_scriptFileName,
+						currentLineIdx + lineIdxOffset,
+						statementIdx,
+						conditionOrName,
+						conditionOrNameExecutable,
+						STATEMENTIDX_NONE
+					),
 					SyntaxTreeNode(),
 					name,
 					emitCondition,
@@ -2298,48 +2306,104 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							case Block::TYPE_FOR:
 							case Block::TYPE_FOREACH:
 								{
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, block.statementIdx);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										block.statementIdx
+									);
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
 								}
 								break;
 							case Block::TYPE_IF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 							case Block::TYPE_ELSE:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 							case Block::TYPE_ELSEIF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 							case Block::TYPE_SWITCH:
 								{
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 							case Block::TYPE_CASE:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size() + 1;
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 							case Block::TYPE_DEFAULT:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size() + 1;
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 						}
 					} else{
-						scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+						scripts.back().statements.emplace_back(
+							_scriptFileName,
+							currentLineIdx + lineIdxOffset,
+							statementIdx,
+							statementCode,
+							statementCode,
+							STATEMENTIDX_NONE
+						);
 						haveScript = false;
 					}
 				} else
@@ -2351,13 +2415,27 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							case Block::TYPE_IF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 							case Block::TYPE_ELSEIF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, statementCode, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 							default:
@@ -2379,6 +2457,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				} else
 				if (_StringTools::regexMatch(regexStatementCode, "^elseif[\\s]*\\(.*\\)$") == true) {
 					Statement elseIfStatement(
+						_scriptFileName,
 						currentLineIdx + lineIdxOffset,
 						STATEMENTIDX_FIRST,
 						_StringTools::replace(_StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
@@ -2393,13 +2472,27 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							case Block::TYPE_IF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										executableStatement,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 							case Block::TYPE_ELSEIF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx, statementCode, executableStatement, STATEMENTIDX_NONE);
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										executableStatement,
+										STATEMENTIDX_NONE
+									);
 								}
 								break;
 							default:
@@ -2421,6 +2514,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				} else {
 					smatch matches;
 					Statement generatedStatement(
+						_scriptFileName,
 						currentLineIdx + lineIdxOffset,
 						STATEMENTIDX_FIRST,
 						statementCode,
@@ -2438,7 +2532,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							forArguments.size() == 3) {
 							// create initialize statement
 							string initializeStatement = string(forArguments[0].argument);
-							scripts.back().statements.emplace_back(currentLineIdx + lineIdxOffset, statementIdx++, statementCode, initializeStatement, STATEMENTIDX_NONE);
+							scripts.back().statements.emplace_back(
+								_scriptFileName,
+								currentLineIdx + lineIdxOffset,
+								statementIdx++,
+								statementCode,
+								initializeStatement,
+								STATEMENTIDX_NONE
+							);
 							//
 							blockStack.emplace_back(
 								Block::TYPE_FOR,
@@ -2508,6 +2609,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						//
 						if (containerByInitializer == true) {
 							scripts.back().statements.emplace_back(
+								_scriptFileName,
 								currentLineIdx + lineIdxOffset,
 								statementIdx++,
 								statementCode,
@@ -2516,6 +2618,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							);
 						}
 						scripts.back().statements.emplace_back(
+							_scriptFileName,
 							currentLineIdx + lineIdxOffset,
 							statementIdx++,
 							statementCode,
@@ -2523,6 +2626,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							STATEMENTIDX_NONE
 						);
 						scripts.back().statements.emplace_back(
+							_scriptFileName,
 							currentLineIdx + lineIdxOffset,
 							statementIdx++,
 							statementCode,
@@ -2610,6 +2714,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						//
 						if (containerByInitializer == true) {
 							scripts.back().statements.emplace_back(
+								_scriptFileName,
 								currentLineIdx + lineIdxOffset,
 								statementIdx++,
 								statementCode,
@@ -2618,6 +2723,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							);
 						}
 						scripts.back().statements.emplace_back(
+							_scriptFileName,
 							currentLineIdx + lineIdxOffset,
 							statementIdx++,
 							statementCode,
@@ -2625,6 +2731,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							STATEMENTIDX_NONE
 						);
 						scripts.back().statements.emplace_back(
+							_scriptFileName,
 							currentLineIdx + lineIdxOffset,
 							statementIdx++,
 							statementCode,
@@ -2695,6 +2802,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						);
 					}
 					scripts.back().statements.emplace_back(
+						_scriptFileName,
 						currentLineIdx + lineIdxOffset,
 						statementIdx,
 						statementCode,
@@ -2727,7 +2835,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				scriptValid = false;
 				return false;
 			} else
-			if (createStatementSyntaxTree(SCRIPTIDX_NONE, method, arguments, script.conditionStatement, script.conditionSyntaxTree) == false) {
+			if (createStatementSyntaxTree(_scriptFileName, SCRIPTIDX_NONE, method, arguments, script.conditionStatement, script.conditionSyntaxTree) == false) {
 				scriptValid = false;
 				return false;
 			}
@@ -2744,7 +2852,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				scriptValid = false;
 				return false;
 			} else
-			if (createStatementSyntaxTree(scriptIdx, methodName, arguments, statement, syntaxTree) == false) {
+			if (createStatementSyntaxTree(_scriptFileName, scriptIdx, methodName, arguments, statement, syntaxTree) == false) {
 				scriptValid = false;
 				return false;
 			}
@@ -4273,7 +4381,7 @@ void MinitScript::createStacklet(Variable& variable, const string& scopeName, co
 	variable.setStackletAssignment(stackletName);
 }
 
-const MinitScript::Variable MinitScript::initializeArray(const string_view& initializerString, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
+const MinitScript::Variable MinitScript::initializeArray(const string& scriptFileName, const string_view& initializerString, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
 	Variable variable;
 	variable.setType(TYPE_ARRAY);
 	//
@@ -4300,7 +4408,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string_view& init
 				auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 				if (arrayValueStringView.empty() == false) {
 					Variable arrayValue;
-					arrayValue.setImplicitTypedValueFromStringView(arrayValueStringView, minitScript, scriptIdx, statement);
+					arrayValue.setImplicitTypedValueFromStringView(scriptFileName, arrayValueStringView, minitScript, scriptIdx, statement);
 					variable.pushArrayEntry(arrayValue);
 				}
 			}
@@ -4410,7 +4518,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string_view& init
 						if (arrayValueLength > 0) {
 							auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 							if (arrayValueStringView.empty() == false) {
-								auto arrayValue = initializeArray(arrayValueStringView, minitScript, scriptIdx, statement);
+								auto arrayValue = initializeArray(scriptFileName, arrayValueStringView, minitScript, scriptIdx, statement);
 								variable.pushArrayEntry(arrayValue);
 							}
 						}
@@ -4454,7 +4562,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string_view& init
 									minitScript->createLamdaFunction(arrayValue, lamdaFunctionArguments, lamdaFunctionScriptCode, lamdaFunctionLineIdx, false, statement);
 									variable.pushArrayEntry(arrayValue);
 								} else {
-									auto arrayValue = initializeMapSet(arrayValueStringView, minitScript, scriptIdx, statement);
+									auto arrayValue = initializeMapSet(scriptFileName, arrayValueStringView, minitScript, scriptIdx, statement);
 									variable.pushArrayEntry(arrayValue);
 								}
 							}
@@ -4482,7 +4590,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string_view& init
 	return variable;
 }
 
-const MinitScript::Variable MinitScript::initializeMapSet(const string_view& initializerString, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
+const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFileName, const string_view& initializerString, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
 	//
 	Variable variable;
 	variable.setType(TYPE_MAP);
@@ -4545,7 +4653,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 					if (mapValueStringView.empty() == false) {
 						//
 						Variable mapValue;
-						mapValue.setImplicitTypedValueFromStringView(mapValueStringView, minitScript, scriptIdx, statement);
+						mapValue.setImplicitTypedValueFromStringView(scriptFileName, mapValueStringView, minitScript, scriptIdx, statement);
 						//
 						variable.setMapEntry(string(mapKey), mapValue, _private);
 						//
@@ -4746,7 +4854,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 										hasValues = true;
 									} else {
 										// map/set
-										auto mapValue = initializeMapSet(mapValueStringView, minitScript, scriptIdx, statement);
+										auto mapValue = initializeMapSet(scriptFileName, mapValueStringView, minitScript, scriptIdx, statement);
 										variable.setMapEntry(string(mapKey), mapValue, _private);
 										//
 										hasValues = true;
@@ -4811,7 +4919,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 							if (mapValueLength > 0) {
 								auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 								if (mapValueStringView.empty() == false) {
-									auto mapValue = initializeArray(mapValueStringView, minitScript, scriptIdx, statement);
+									auto mapValue = initializeArray(scriptFileName, mapValueStringView, minitScript, scriptIdx, statement);
 									variable.setMapEntry(string(mapKey), mapValue, _private);
 									//
 									hasValues = true;
@@ -4860,11 +4968,12 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string_view& ini
 	return variable;
 }
 
-void MinitScript::Variable::setFunctionCallStatement(const string& initializerStatement, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
+void MinitScript::Variable::setFunctionCallStatement(const string& scriptFileName, const string& initializerStatement, MinitScript* minitScript, int scriptIdx, const Statement& statement) {
 	setType(TYPE_FUNCTION_CALL);
 	getStringValueReference().setValue(initializerStatement);
 	//
 	Statement initializerScriptStatement(
+		scriptFileName,
 		statement.line,
 		statement.statementIdx,
 		initializerStatement,
@@ -4880,7 +4989,7 @@ void MinitScript::Variable::setFunctionCallStatement(const string& initializerSt
 	if (minitScript->parseStatement(initializerStatement, methodName, arguments, initializerScriptStatement, accessObjectMemberStatement) == false) {
 		//
 	} else
-	if (minitScript->createStatementSyntaxTree(scriptIdx, methodName, arguments, initializerScriptStatement, *evaluateSyntaxTree) == false) {
+	if (minitScript->createStatementSyntaxTree(scriptFileName, scriptIdx, methodName, arguments, initializerScriptStatement, *evaluateSyntaxTree) == false) {
 		//
 	} else {
 		getInitializerReference() = new Initializer(initializerStatement, statement, evaluateSyntaxTree);
@@ -5089,6 +5198,7 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 
 inline bool MinitScript::evaluateInternal(const string& statement, const string& executableStatement, Variable& returnValue, bool pushScriptState) {
 	Statement evaluateStatement(
+		"evaluate",
 		LINE_NONE,
 		0,
 		"internal.script.evaluate(" + statement + ")",
@@ -5104,7 +5214,7 @@ inline bool MinitScript::evaluateInternal(const string& statement, const string&
 	if (parseStatement(scriptEvaluateStatement, methodName, arguments, evaluateStatement, accessObjectMemberStatement) == false) {
 		return false;
 	} else
-	if (createStatementSyntaxTree(SCRIPTIDX_NONE, methodName, arguments, evaluateStatement, evaluateSyntaxTree) == false) {
+	if (createStatementSyntaxTree("evaluate", SCRIPTIDX_NONE, methodName, arguments, evaluateStatement, evaluateSyntaxTree) == false) {
 		return false;
 	} else {
 		//

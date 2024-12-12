@@ -425,6 +425,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + escapeString(script.condition) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + escapeString(script.executableCondition) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "Statement(" + "\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(script.conditionStatement.fileName) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + to_string(script.conditionStatement.line) + "," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + to_string(script.conditionStatement.statementIdx) + "," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(script.conditionStatement.statement) + "\"," + "\n";
@@ -444,6 +445,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 				auto statementIdx = MinitScript::STATEMENTIDX_FIRST;
 				for (const auto& statement: script.statements) {
 					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "Statement(" + "\n";
+					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(statement.fileName) + "\"," + "\n";
 					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.line) + "," + "\n";
 					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + to_string(statement.statementIdx) + "," + "\n";
 					initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(statement.statement) + "\"," + "\n";
@@ -1736,7 +1738,13 @@ void Transpiler::generateArrayAccessMethods(
 									// check if literal
 									MinitScript::Variable arrayAccessStatementAsScriptVariable;
 									//
-									arrayAccessStatementAsScriptVariable.setImplicitTypedValue(arrayAccessStatementString, minitScript, scriptIdx, statement);
+									arrayAccessStatementAsScriptVariable.setImplicitTypedValue(
+										minitScript->getScriptFileName(),
+										arrayAccessStatementString,
+										minitScript,
+										scriptIdx,
+										statement
+									);
 									switch (arrayAccessStatementAsScriptVariable.getType()) {
 										case MinitScript::TYPE_BOOLEAN:
 											{
@@ -1791,6 +1799,7 @@ void Transpiler::generateArrayAccessMethods(
 									string accessObjectMemberStatement;
 									// create a pseudo statement (information)
 									MinitScript::Statement arrayAccessStatement(
+										minitScript->getScriptFileName(),
 										statement.line,
 										statement.statementIdx,
 										arrayAccessStatementString,
@@ -1803,7 +1812,14 @@ void Transpiler::generateArrayAccessMethods(
 									}
 									// create syntax tree for this array access
 									MinitScript::SyntaxTreeNode arrayAccessSyntaxTree;
-									if (minitScript->createStatementSyntaxTree(scriptIdx, arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, arrayAccessSyntaxTree) == false) {
+									if (minitScript->createStatementSyntaxTree(
+										minitScript->getScriptFileName(),
+										scriptIdx,
+										arrayAccessMethodName,
+										arrayAccessArguments,
+										arrayAccessStatement,
+										arrayAccessSyntaxTree) == false) {
+										//
 										break;
 									}
 
