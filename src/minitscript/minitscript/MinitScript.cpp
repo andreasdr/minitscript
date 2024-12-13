@@ -191,7 +191,10 @@ MinitScript::MinitScript() {
 MinitScript::~MinitScript() {
 	for (const auto& [methodName, method]: this->methods) delete method;
 	for (const auto& [stateMachineStateId, stateMachineState]: this->stateMachineStates) delete stateMachineState;
+	//
+	unregisterVariables();
 	while (hasScriptState() == true) popScriptState();
+	//
 	garbageCollection();
 	for (auto& garbageCollectionDataType: garbageCollectionDataTypes) garbageCollectionDataType.dataType->deleteScriptContext(garbageCollectionDataType.context);
 }
@@ -2879,6 +2882,9 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 	for (const auto& [stateMachineStateId, stateMachineState]: stateMachineStates) delete stateMachineState;
 	methods.clear();
 	stateMachineStates.clear();
+
+	//
+	unregisterVariables();
 	while (hasScriptState() == true) popScriptState();
 
 	// push root script state and reset execution
@@ -2928,7 +2934,6 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 				functions = nativeFunctions;
 				registerStateMachineStates();
 				registerMethods();
-				registerVariables();
 				startScript();
 				return;
 			} else {
@@ -2945,7 +2950,6 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 	//
 	registerStateMachineStates();
 	registerMethods();
-	registerVariables();
 
 	//
 	if (parseScriptInternal(scriptCode) == false) return;
@@ -3061,8 +3065,6 @@ void MinitScript::startScript() {
 		return;
 	}
 	//
-	while (hasScriptState() == true) popScriptState();
-	pushScriptState();
 	registerVariables();
 	//
 	auto& scriptState = getScriptState();
@@ -4312,8 +4314,9 @@ void MinitScript::registerMethods() {
 
 void MinitScript::registerVariables() {
 	//
-	for (const auto& [variableName, variable]: getRootScriptState().variables) delete variable;
-	getRootScriptState().variables.clear();
+	unregisterVariables();
+	while (getScriptStateStackSize() > 1) popScriptState();
+	if (hasScriptState() == false) pushScriptState();
 
 	//
 	minitScriptMath->registerConstants();
@@ -4370,6 +4373,10 @@ void MinitScript::registerVariables() {
 
 	//
 	for (const auto dataType: MinitScript::dataTypes) dataType->registerConstants(this);
+}
+
+void MinitScript::unregisterVariables() {
+	// no op for ast interpretation
 }
 
 void MinitScript::createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement, const string& nameHint) {

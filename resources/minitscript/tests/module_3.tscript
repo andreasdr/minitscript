@@ -4,5 +4,4 @@ function: module3Function()
 	console.printLine("-----------------")
 	console.printLine("module3Function")
 	console.printLine("-----------------")
-	console.printLine("xxx")
 end

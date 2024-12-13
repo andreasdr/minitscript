@@ -200,10 +200,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	generatedDeclarations+= declarationIndent + " */" + "\n";
 	generatedDeclarations+= declarationIndent + "inline ~" + minitScriptClassName + "() {" + "\n";
 	generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
-	for (const auto& variable: globalVariables) {
-		generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
-	}
+	generatedDeclarations+= declarationIndent + "\t\t" + "unregisterVariables();" + "\n";
 	generatedDeclarations+= declarationIndent + "\t\t" + "// function stacks" + "\n";
 	{
 		auto scriptIdx = 0;
@@ -228,37 +225,51 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	generatedDeclarations+= "\n";
 	generatedDeclarations+= declarationIndent + "// overridden methods" + "\n";
+	//
 	generatedDeclarations+= declarationIndent + "void registerMethods() override;" + "\n";
+	//
 	generatedDeclarations+= declarationIndent + "inline void registerVariables() override {" + "\n";
-	if (globalVariables.empty() == false) {
-		generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
-		generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
-		for (const auto& variable: globalVariables) {
-			generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
-		}
-		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
-		generatedDeclarations+= declarationIndent + "\t" + "//" + "\n";
-	}
 	if (minitScript->isModule() == false) {
 		generatedDeclarations+= declarationIndent + "\t" + minitScript->getBaseClass() + "::registerVariables();" + "\n";
 	}
 	generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
-	generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
-	for (const auto& variable: globalVariables) {
-		generatedDeclarations+= declarationIndent + "\t\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + ";" + "\n";
-		generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
-	}
-	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
-	if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
-		generatedDeclarations+= declarationIndent + "\t" + "// modules" + "\n";
-		for (const auto& _module: minitScript->getModules()) {
-			const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
-			generatedDeclarations+= declarationIndent + "\t" + moduleObjectName + "->registerVariables();" + "\n";
+	if (globalVariables.empty() == false) {
+		generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
+		for (const auto& variable: globalVariables) {
+			generatedDeclarations+= declarationIndent + "\t\t" + "if (hasVariable(\"" + variable + "\") == false) setVariable(\"" + variable + "\", Variable())" + ";" + "\n";
+			generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + " = getVariable(\"" + variable + "\", nullptr, true);" + "\n";
 		}
 	}
+	if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
+		generatedDeclarations+= declarationIndent + "\t\t" + "// modules" + "\n";
+		for (const auto& _module: minitScript->getModules()) {
+			const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
+			generatedDeclarations+= declarationIndent + "\t\t" + moduleObjectName + "->registerVariables();" + "\n";
+		}
+	}
+	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
+	generatedDeclarations+= declarationIndent + "}" + "\n";
+	//
+	generatedDeclarations+= declarationIndent + "inline void unregisterVariables() override {" + "\n";
+	generatedDeclarations+= declarationIndent + "\t" + "if (native == true) {" + "\n";
+	if (globalVariables.empty() == false) {
+		generatedDeclarations+= declarationIndent + "\t\t" + "// global script variables" + "\n";
+		for (const auto& variable: globalVariables) {
+			generatedDeclarations+= declarationIndent + "\t\t" + createGlobalVariableName(variable) + ".unset();" + "\n";
+		}
+	}
+	if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
+		generatedDeclarations+= declarationIndent + "\t\t" + "// modules" + "\n";
+		for (const auto& _module: minitScript->getModules()) {
+			const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
+			generatedDeclarations+= declarationIndent + "\t\t" + moduleObjectName + "->unregisterVariables();" + "\n";
+		}
+	}
+	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	//
 	generatedDeclarations+= declarationIndent + "void emit(const string& condition) override;" + "\n";
+	//
 	generatedDeclarations+= declarationIndent + "inline void startScript() override {" + "\n";
 	if (minitScript->isModule() == true) {
 		generatedDeclarations+= declarationIndent + "\t" + "_Console::printLine(\"" + minitScriptClassName + "::startScript(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
@@ -272,6 +283,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		generatedDeclarations+= declarationIndent + "\t" + "resetScriptExecutationState(" + to_string(initializeScriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
 	}
 	generatedDeclarations+= declarationIndent + "}" + "\n";
+	//
 	generatedDeclarations+= declarationIndent + "inline void execute() override {" + "\n";
 	if (minitScript->isModule() == true) {
 		generatedDeclarations+= declarationIndent + "\t" + "rootScript->execute();" + "\n";

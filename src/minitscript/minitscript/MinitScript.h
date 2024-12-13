@@ -3416,6 +3416,13 @@ protected:
 	}
 
 	/**
+	 * @returns get script state stack size
+	 */
+	inline bool getScriptStateStackSize() {
+		return rootScript->scriptStateStack.size();
+	}
+
+	/**
 	 * Push a new script state
 	 */
 	inline void pushScriptState() {
@@ -4676,6 +4683,11 @@ public:
 	 * Register variables
 	 */
 	virtual void registerVariables();
+
+	/**
+	 * Unregister variables
+	 */
+	virtual void unregisterVariables();
 
 	/**
 	 * Get statement sub line index
