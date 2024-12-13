@@ -2,19 +2,23 @@
 
 # 1. Classes
 
-Classes in MinitScript can be represented by maps, a constructed map with function assignments and/or definitions can be called object, see map section in 4.4.
+Classes in MinitScript can be represented by maps. 
+A constructed map with function assignments and/or definitions can be called object, see map section in 4.4.
 
 Creating a object in MinitScript works by using map initializer plus () -> methodName function assignment, or () -> { console.dump($this) } inline function definition.
-Please see a example below.
+Please see the example below, which shows a object definition, which includes (private) member variables and member methods. 
+
+Note that you can set member variables and member methods to private, if they are prefixed with a "-".
+
 
 ```
 ...
 	#
 	$car = {
 		# member variables
-		wheelCount: 4,
-		color: "blue",
-		horsePower: 75,
+		-wheelCount: 4,
+		-color: "blue",
+		-horsePower: 75,
 		# member methods
 		setWheelCount: ($wheelCount) -> 
 			{
@@ -45,6 +49,10 @@ Please see a example below.
 				$wheelCount = $this.wheelCount
 				$color = $this.color
 				$horsePower = $this.horsePower
+			},
+		-somePrivateFunction: () ->
+			{
+				console.printLine("This just shows a private member function")
 			}
 	}
 	#
@@ -115,29 +123,25 @@ end
 	#...
 ```
 
-TODO: private properties, && argument prefix
-
 # 2. Links
 
 ## 2.1. Language Documentation
- - [Syntax](./README-Syntax.md)
- - [Data types](./README-DataTypes.md)
- - [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
- - [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
- - [Flow Control - loops](./README-FlowControl-Loops.md)
- - [Classes](./README-Classes.md)
- - [Classes API](./README-Classes-API.md)
- - [Functions](./README-Functions.md)
- - [BuiltIn functions](./README-BuiltIn-Functions.md)
- - [Functions](./README-Functions.md)
- - [Operators](./README-Operators.md)
- - [Syntax](./README-Events.md)
- - [Events](./README-Constants.md)
+- [Syntax](./documentation/README-Syntax.md)
+- [DataTypes](./documentation/README-DataTypes.md)
+- [Flow control - if, elseif, else](./documentation/README-FlowControl-Conditions.md)
+- [Flow Control - switch, case, default](./documentation/README-FlowControl-Conditions2.md)
+- [Flow Control - loops](./documentation/README-FlowControl-Loops.md)
+- [Classes](./documentation/README-Classes.md)
+- [Classes API](./documentation/README-Classes-API.md)
+- [Functions](./documentation/README-Functions.md)
+- [BuiltIn functions](./documentation/README-BuiltIn-Functions.md)
+- [Modules](./documentation/README-Modules.md)
+- [Operators](./documentation/README-Operators.md)
+- [Constants](./documentation/README-Constants.md)
 
 ## 2.2. Other Links
 
 - MinitScript, see [README.md](./README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
 - MinitScript - How to use, see [README-Tools.md](./README-Tools.md)
-- MinitScript - ToDo list, see [README-ToDo.md](./README-ToDo.md)
 - The Mindty Kollektiv [Discord Server](https://discord.gg/Na4ACaFD)

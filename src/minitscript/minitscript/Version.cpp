@@ -13,5 +13,5 @@ string Version::getVersion() {
 }
 
 string Version::getCopyright() {
-	return "Developed 2012-2024 by Andreas Drewke, Dominik Hepp, Kolja Gumpert, drewke.net, mindty.com. Please see the license @ https://github.com/Mindty-Kollektiv/minitscript/blob/master/LICENSE";
+	return "Developed 2012-2024 by Andreas Drewke, Dominik Hepp, Kolja Gumpert, drewke.net, mindty.com. Please see the license @ https://github.com/andreasdr/minitscript/blob/master/LICENSE";
 }

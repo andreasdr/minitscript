@@ -375,24 +375,22 @@
 # 2. Links
 
 ## 2.1. Language Documentation
- - [Syntax](./README-Syntax.md)
- - [Data types](./README-DataTypes.md)
- - [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
- - [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
- - [Flow Control - loops](./README-FlowControl-Loops.md)
- - [Classes](./README-Classes.md)
- - [Classes API](./README-Classes-API.md)
- - [Functions](./README-Functions.md)
- - [BuiltIn functions](./README-BuiltIn-Functions.md)
- - [Functions](./README-Functions.md)
- - [Operators](./README-Operators.md)
- - [Syntax](./README-Events.md)
- - [Events](./README-Constants.md)
+- [Syntax](./documentation/README-Syntax.md)
+- [DataTypes](./documentation/README-DataTypes.md)
+- [Flow control - if, elseif, else](./documentation/README-FlowControl-Conditions.md)
+- [Flow Control - switch, case, default](./documentation/README-FlowControl-Conditions2.md)
+- [Flow Control - loops](./documentation/README-FlowControl-Loops.md)
+- [Classes](./documentation/README-Classes.md)
+- [Classes API](./documentation/README-Classes-API.md)
+- [Functions](./documentation/README-Functions.md)
+- [BuiltIn functions](./documentation/README-BuiltIn-Functions.md)
+- [Modules](./documentation/README-Modules.md)
+- [Operators](./documentation/README-Operators.md)
+- [Constants](./documentation/README-Constants.md)
 
 ## 2.2. Other Links
 
 - MinitScript, see [README.md](./README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
 - MinitScript - How to use, see [README-Tools.md](./README-Tools.md)
-- MinitScript - ToDo list, see [README-ToDo.md](./README-ToDo.md)
 - The Mindty Kollektiv [Discord Server](https://discord.gg/Na4ACaFD)
