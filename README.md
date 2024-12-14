@@ -51,7 +51,6 @@ Also note the focus on easy integration into other products and easy customizabi
 
 - Whats left to do for 1.0 BETA release
   - some adjustments
-    - modules(WIP)
     - exceptions
     - passing method arguments with vector of pointer of MinitScript variables
     - have a more sophisticated parser
