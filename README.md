@@ -84,8 +84,6 @@ Also note the focus on easy integration into other products and easy customizabi
 - [Modules](./documentation/README-Modules.md)
 - [Functions](./documentation/README-Functions.md)
 - [Operators](./documentation/README-Operators.md)
-- [Syntax](./documentation/README-Events.md)
-- [Events](./documentation/README-Constants.md)
 
 ## 3. Links
 
