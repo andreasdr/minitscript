@@ -77,15 +77,15 @@ Also note the focus on easy integration into other products and easy customizabi
 - [Flow control - if, elseif, else](./documentation/README-FlowControl-Conditions.md)
 - [Flow Control - switch, case, default](./documentation/README-FlowControl-Conditions2.md)
 - [Flow Control - loops](./documentation/README-FlowControl-Loops.md)
+- [Functions](./documentation/README-Functions.md)
+- [Lambda Functions](./documentation/README-Lambda-Functions.md)
 - [Classes](./documentation/README-Classes.md)
-- [Classes API](./documentation/README-Classes-API.md)
-- [Functions](./documentation/README-Functions.md)
 - [BuiltIn functions](./documentation/README-BuiltIn-Functions.md)
+- [Classes API](./documentation/README-Classes-API.md)
 - [Modules](./documentation/README-Modules.md)
-- [Functions](./documentation/README-Functions.md)
 - [Operators](./documentation/README-Operators.md)
-- [Syntax](./documentation/README-Events.md)
-- [Events](./documentation/README-Constants.md)
+- [Constants](./documentation/README-Constants.md)
+
 
 ## 3. Links
 

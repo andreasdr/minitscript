@@ -126,12 +126,13 @@ end
 ```
 
 To have more information, I would suggest you to read the following sections next or on demand.
-- [DataTypes](./documentation/README-DataTypes.md)
-- [Flow control - if, elseif, else](./documentation/README-FlowControl-Conditions.md)
-- [Flow Control - switch, case, default](./documentation/README-FlowControl-Conditions2.md)
-- [Flow Control - loops](./documentation/README-FlowControl-Loops.md)
-- [Classes](./documentation/README-Classes.md)
-- [Functions](./documentation/README-Functions.md)
+- [DataTypes](./README-DataTypes.md)
+- [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
+- [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
+- [Flow Control - loops](./README-FlowControl-Loops.md)
+- [Functions](./README-Functions.md)
+- [Lambda Functions](./README-Lambda-Functions.md)
+- [Classes](./README-Classes.md)
 
 - Modules Section
 - (Events Section?)
@@ -145,10 +146,11 @@ To have more information, I would suggest you to read the following sections nex
 - [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
 - [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
 - [Flow Control - loops](./README-FlowControl-Loops.md)
-- [Classes](./README-Classes.md)
-- [Classes API](./README-Classes-API.md)
 - [Functions](./README-Functions.md)
+- [Lambda Functions](./README-Lambda-Functions.md)
+- [Classes](./README-Classes.md)
 - [BuiltIn functions](./README-BuiltIn-Functions.md)
+- [Classes API](./README-Classes-API.md)
 - [Modules](./README-Modules.md)
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
