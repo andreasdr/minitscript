@@ -92,9 +92,9 @@ Please note:
 - [Functions](./README-Functions.md)
 - [Lambda Functions](./README-Lambda-Functions.md)
 - [Classes](./README-Classes.md)
+- [Modules](./README-Modules.md)
 - [BuiltIn functions](./README-BuiltIn-Functions.md)
 - [Classes API](./README-Classes-API.md)
-- [Modules](./README-Modules.md)
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
 

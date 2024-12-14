@@ -80,9 +80,9 @@ Also note the focus on easy integration into other products and easy customizabi
 - [Functions](./documentation/README-Functions.md)
 - [Lambda Functions](./documentation/README-Lambda-Functions.md)
 - [Classes](./documentation/README-Classes.md)
+- [Modules](./documentation/README-Modules.md)
 - [BuiltIn functions](./documentation/README-BuiltIn-Functions.md)
 - [Classes API](./documentation/README-Classes-API.md)
-- [Modules](./documentation/README-Modules.md)
 - [Operators](./documentation/README-Operators.md)
 - [Constants](./documentation/README-Constants.md)
 
