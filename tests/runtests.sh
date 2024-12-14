@@ -12,6 +12,7 @@
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/functions-test.tscript
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/lamdafunctions-test.tscript
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/loop-test.tscript
+./bin/minitscript/tools/minitscript resources/minitscript/tests/module-test.tscript
 #./bin/minitscript/tools/minitscript resources/minitscript/tests/network-test.tscript
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/pipe-test.tscript < ./tests/pipe-test.input
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/preprocessor-test.tscript
