@@ -99,4 +99,3 @@ Also note the focus on easy integration into other products and easy customizabi
 
 # 12. Bounties
 - We will most likely accept MinitScript (related) tasks as kind of bounties for a customized MinitScript or default MinitScript
-

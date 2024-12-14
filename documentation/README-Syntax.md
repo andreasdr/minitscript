@@ -133,10 +133,7 @@ To have more information, I would suggest you to read the following sections nex
 - [Functions](./README-Functions.md)
 - [Lambda Functions](./README-Lambda-Functions.md)
 - [Classes](./README-Classes.md)
-
-- Modules Section
-- (Events Section?)
-
+- [Modules](./README-Modules.md)
 
 # 2. Links
 
