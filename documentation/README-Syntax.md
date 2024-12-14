@@ -126,16 +126,13 @@ end
 ```
 
 To have more information, I would suggest you to read the following sections next or on demand.
-- [DataTypes](./documentation/README-DataTypes.md)
-- [Flow control - if, elseif, else](./documentation/README-FlowControl-Conditions.md)
-- [Flow Control - switch, case, default](./documentation/README-FlowControl-Conditions2.md)
-- [Flow Control - loops](./documentation/README-FlowControl-Loops.md)
-- [Classes](./documentation/README-Classes.md)
-- [Functions](./documentation/README-Functions.md)
-
-- Modules Section
-- (Events Section?)
-
+- [DataTypes](./README-DataTypes.md)
+- [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
+- [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
+- [Flow Control - loops](./README-FlowControl-Loops.md)
+- [Classes](./README-Classes.md)
+- [Functions](./README-Functions.md)
+- [Modules](./README-Modules.md)
 
 # 2. Links
 
