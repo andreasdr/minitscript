@@ -70,7 +70,7 @@ Also note the focus on easy integration into other products and easy customizabi
   - installer for Windows
   - installer for MacOSX
 
-# 2. Language Documentation
+# 2. Language documentation
 
 - [Syntax](./documentation/README-Syntax.md)
 - [Data types, variables and constants](./documentation/README-DataTypes.md)
