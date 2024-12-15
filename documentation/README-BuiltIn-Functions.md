@@ -1,6 +1,6 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Built In - Functions
+# 1. Built-in - Functions
 
 ## 1.1. Base functions
 
