@@ -73,7 +73,7 @@ Also note the focus on easy integration into other products and easy customizabi
 # 2. Language Documentation
 
 - [Syntax](./documentation/README-Syntax.md)
-- [DataTypes](./documentation/README-DataTypes.md)
+- [Data types, variables and constants](./documentation/README-DataTypes.md)
 - [Flow control - if, elseif, else](./documentation/README-FlowControl-Conditions.md)
 - [Flow Control - switch, case, default](./documentation/README-FlowControl-Conditions2.md)
 - [Flow Control - loops](./documentation/README-FlowControl-Loops.md)
@@ -81,8 +81,8 @@ Also note the focus on easy integration into other products and easy customizabi
 - [Lambda Functions](./documentation/README-Lambda-Functions.md)
 - [Classes](./documentation/README-Classes.md)
 - [Modules](./documentation/README-Modules.md)
-- [BuiltIn functions](./documentation/README-BuiltIn-Functions.md)
-- [Classes API](./documentation/README-Classes-API.md)
+- [Built-in functions](./documentation/README-BuiltIn-Functions.md)
+- [Built-in classes](./documentation/README-BuiltIn-Classes.md)
 - [Operators](./documentation/README-Operators.md)
 - [Constants](./documentation/README-Constants.md)
 

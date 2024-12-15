@@ -376,7 +376,7 @@
 
 ## 2.1. Language Documentation
 - [Syntax](./README-Syntax.md)
-- [DataTypes](./README-DataTypes.md)
+- [Data types, variables and constants](./README-DataTypes.md)
 - [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
 - [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
 - [Flow Control - loops](./README-FlowControl-Loops.md)
@@ -384,8 +384,8 @@
 - [Lambda Functions](./README-Lambda-Functions.md)
 - [Classes](./README-Classes.md)
 - [Modules](./README-Modules.md)
-- [BuiltIn functions](./README-BuiltIn-Functions.md)
-- [Classes API](./README-Classes-API.md)
+- [Built-in functions](./README-BuiltIn-Functions.md)
+- [Built-in classes](./README-BuiltIn-Classes.md)
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
 
