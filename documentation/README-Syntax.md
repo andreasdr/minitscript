@@ -37,15 +37,15 @@ This can also be used like:
 ## 1.2. Methods, functions and callables.
 
 A method is provided by a C++ class and its member method, hence the name. 
-In the documentation you find them in [Built-in functions](./documentation/README-BuiltIn-Functions.md) section.
+In the documentation you find them in [Built-in functions](./README-BuiltIn-Functions.md) section.
 This sounds a bit confusing, but makes sense.
 
-Methods (and possibly a custom data type) can also be used to generate a classes like API, just look in the [Built-in classes](./documentation/README-BuiltIn-Classes.md) section.
+Methods (and possibly a custom data type) can also be used to generate a classes like API, just look in the [Built-in classes](./README-BuiltIn-Classes.md) section.
 
 Function and callables are defined by the scripts itself. Callables are basically public functions for script interoperability with some more safety checks.
-See section [Functions](./documentation/README-Functions.md)
+See section [Functions](./README-Functions.md)
 
-In combination with map datatype, you can also generate classes like objects in MinitScript language. See section [Classes](./documentation/README-Classes.md).
+In combination with map datatype, you can also generate classes like objects in MinitScript language. See section [Classes](./README-Classes.md).
 
 ## 1.3. Top level script syntax
 
