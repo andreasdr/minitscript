@@ -45,23 +45,24 @@ Sort array values descending.
 Log set keys to console using set.forEach.
 
 ```
-	$set = {a, b, c}
-	$set->forEach(($key) -> { console.printLine($key) })
+  $set = {a, b, c}
+  $set->forEach(($key) -> { console.printLine($key) })
 ```
 
 # 1.3. Maps
 
 Log map key, value pairs to console using set.forEach.
 ```
-	$map = {a: 1, b: 2, c: 3}
-	$map->forEach(($key, $value) -> { console.printLine($key + " = " + $value) })
+  $map = {a: 1, b: 2, c: 3}
+  $map->forEach(($key, $value) -> { console.printLine($key + " = " + $value) })
 ```
 
 Sum map values using map.forEach.
 
 ```
-	$sum = 0
-	$map->forEach(($key, $value, &$sum) -> { $sum = $sum + $value }, $sum)
+  $map = {a: 1, b: 2, c: 3}
+  $sum = 0
+  $map->forEach(($key, $value, &$sum) -> { $sum = $sum + $value }, $sum)
 ```
 
 1.4. Some additional example
@@ -69,16 +70,16 @@ Sum map values using map.forEach.
 Use lambda functions in arrays.
 
 ```
-	$functions = [
-		($value) -> { console.printLine("a: " + $value) },
-		($value) -> { console.printLine("b: " + $value) },
-		($value) -> { console.printLine("c: " + $value) }
-	]
-	$value = 1
-	forEach($function in $functions)
-		script.callFunction($function, $value)
-		$value++
-	end
+  $functions = [
+    ($value) -> { console.printLine("a: " + $value) },
+    ($value) -> { console.printLine("b: " + $value) },
+    ($value) -> { console.printLine("c: " + $value) }
+  ]
+  $value = 1
+  forEach($function in $functions)
+    script.callFunction($function, $value)
+    $value++
+  end
 ```
 
 # 2. Links
