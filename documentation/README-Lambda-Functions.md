@@ -96,7 +96,7 @@ Using lambda functions in arrays.
   end
 ```
 
-Using lambda functions with forCondition.
+Using a lambda function with forCondition.
 
 ```
   $i = 0
