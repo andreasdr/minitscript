@@ -10,7 +10,7 @@ As a statement lambda functions are written like
 
 See some examples:
 
-# 1.1. Arrays
+## 1.1. Arrays
 
 Log array values to console using array.forEach.
 
@@ -41,7 +41,7 @@ Sort array values descending.
   $array->sort(($a, $b) -> { return($a > $b) })
 ```
 
-# 1.2. Sets
+## 1.2. Sets
 
 Log set keys to console using set.forEach.
 
@@ -50,7 +50,7 @@ Log set keys to console using set.forEach.
   $set->forEach(($key) -> { console.printLine($key) })
 ```
 
-# 1.3. Maps
+## 1.3. Maps
 
 Log map key, value pairs to console using set.forEach.
 ```
@@ -66,9 +66,9 @@ Sum map values using map.forEach.
   $map->forEach(($key, $value, &$sum) -> { $sum = $sum + $value }, $sum)
 ```
 
-1.4. Some additional example
+## 1.4. Some additional example
 
-Use lambda functions in arrays.
+Using lambda functions in arrays.
 
 ```
   $functions = [
