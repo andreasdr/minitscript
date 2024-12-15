@@ -72,9 +72,9 @@ Use lambda functions in arrays.
 
 ```
   $functions = [
-    ($value) -> { console.printLine("a: " + $value) },
-    ($value) -> { console.printLine("b: " + $value) },
-    ($value) -> { console.printLine("c: " + $value) }
+    ($value) -> { console.printLine("function 1: " + $value) },
+    ($value) -> { console.printLine("function 2: " + $value) },
+    ($value) -> { console.printLine("function 3: " + $value) }
   ]
   $value = 1
   forEach($function in $functions)
