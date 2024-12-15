@@ -63,7 +63,7 @@ The primitive data types can also be assigned by using initialization methods th
 
 ## 1.2. Additional data types
 
-Additionally we have strings, arrays, sets and maps datatypes. See some initialization examples below:
+Additionally we have string, array, set and map datatypes. See some initialization examples below:
 
 ```
 ...
@@ -73,23 +73,23 @@ Additionally we have strings, arrays, sets and maps datatypes. See some initiali
 
 ```
 ...
-	$array = {"a", "b", "c")
+	$array = {"a", "b", "c"}
 ...
 ```
 
 ```
 ...
-	$set = {"a", "b", "c")
+	$set = {"a", "b", "c"}
 ...
 ```
 
 ```
 ...
-	$map = {"a": 1, "b": 2, "c": 3)
+	$map = {"a": 1, "b": 2, "c": 3}
 ...
 ```
 
-For more information about those data types, check [Classes API](./README-Classes-API.md).
+For more information about how to work with those data types, check [Classes API](./README-Classes-API.md).
 
 # 2. Links
 
