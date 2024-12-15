@@ -65,11 +65,15 @@ The primitive data types can also be assigned by using initialization methods th
 
 Additionally we have string, array, set and map datatypes. See some initialization examples below:
 
+See how to initialize a string.
+
 ```
 ...
 	$string = "This is my mighty string"
 ...
 ```
+
+See how to initialize an array.
 
 ```
 ...
@@ -77,11 +81,15 @@ Additionally we have string, array, set and map datatypes. See some initializati
 ...
 ```
 
+See how to initialize a set.
+
 ```
 ...
 	$set = {"a", "b", "c"}
 ...
 ```
+
+See how to initialize a map.
 
 ```
 ...
