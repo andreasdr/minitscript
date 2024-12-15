@@ -1958,7 +1958,7 @@ public:
 			const auto& arrayValue = getArrayValueReference();
 			if (arrayValue.empty() == true) return;
 			setInitialArraySubType(*arrayValue[0]);
-			for (auto i = 0; i < arrayValue.size(); i++) determineArraySubType(*arrayValue[i]);
+			for (auto i = 1; i < arrayValue.size(); i++) determineArraySubType(*arrayValue[i]);
 		}
 
 		/**
