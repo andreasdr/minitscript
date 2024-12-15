@@ -66,7 +66,7 @@ Sum map values using map.forEach.
   $map->forEach(($key, $value, &$sum) -> { $sum = $sum + $value }, $sum)
 ```
 
-## 1.4. Some additional example
+## 1.4. Additional examples
 
 Using lambda functions in arrays.
 
@@ -80,6 +80,15 @@ Using lambda functions in arrays.
   forEach($function in $functions)
     script.callFunction($function, $value)
     $value++
+  end
+```
+
+Using lambda functions with forCondition.
+
+```
+  $j = 0
+  forCondition($j < 5, -> { $j++ })
+    console.printLine("$j = " + $j)
   end
 ```
 
