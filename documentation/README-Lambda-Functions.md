@@ -13,12 +13,12 @@ As a statement lambda functions are written like
 If there are no lambda function arguments, you can write the lambda function also like this:
 
 ```
-  () -> { console.printLine($arg0); ... }
+  () -> { console.printLine("Test"); ... }
 ```
 
 or
 ```
-  -> { console.printLine($arg0); ... }
+  -> { console.printLine("Test"); ... }
 ```
 
 See some examples:
