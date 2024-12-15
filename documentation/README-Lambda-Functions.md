@@ -2,7 +2,8 @@
 
 # 1. Lambda functions
 
-Lambda functions are anonymous functions, means they have no name, and are defined inline. You can use lambda functions with array, set, maps and more MinitScript API.
+Lambda functions are anonymous functions, means they have no name, and are defined inline. You can use lambda functions with array, set, maps and more MinitScript API, if a argument takes a Function.
+
 As a statement lambda functions are written like 
   
   ($arg0, ..., $argN) -> { console.printLine($arg0); ... }
