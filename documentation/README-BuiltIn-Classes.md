@@ -1,6 +1,6 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Build-in classes
+# 1. Built-in classes
 
 ## 1.1. String class
 
