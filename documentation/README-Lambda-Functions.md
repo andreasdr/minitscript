@@ -8,6 +8,14 @@ As a statement lambda functions are written like
   
   ($arg0, ..., $argN) -> { console.printLine($arg0); ... }
 
+If there are no lambda function arguments, you can write the lambda function also like this:
+
+  () -> { console.printLine($arg0); ... }
+
+or
+
+  -> { console.printLine($arg0); ... }
+
 See some examples:
 
 ## 1.1. Arrays
@@ -86,9 +94,9 @@ Using lambda functions in arrays.
 Using lambda functions with forCondition.
 
 ```
-  $j = 0
-  forCondition($j < 5, -> { $j++ })
-    console.printLine("$j = " + $j)
+  $i = 0
+  forCondition($i < 5, -> { $i++ })
+    console.printLine("$i = " + $i)
   end
 ```
 
