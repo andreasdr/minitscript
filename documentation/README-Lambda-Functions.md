@@ -1,7 +1,83 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
 # 1. Lambda functions
-- ...
+
+Lambda functions are anonymous functions, means they have no name, and are defined inline. You can use lambda functions with array, set, maps and more MinitScript API.
+As a statement lambda functions are written like ($arg0, ..., $arg1) -> { console.printLine($arg0); ... }
+
+See some examples:
+
+# 1.1. Arrays
+
+Log array values to console using array.forEach.
+
+```
+  $array = [1, 2, 3, 4, 5, 6]
+  $array->forEach(($element) -> { console.printLine($element) })
+```
+
+Log array values to console using array.forRange.
+
+```
+  $array = [1, 2, 3, 4, 5, 6]
+  $array->forRange(($element) -> { console.printLine($element) }, 1, 3, 2)
+```
+
+Sum array values using array.forEach.
+
+```
+  $array = [1, 2, 3, 4, 5, 6]
+  $sum = 0
+  $array->forEach(($element, &$sum) -> { $sum = $sum + $element }, $sum)
+```
+
+Sort array values descending.
+
+```
+  $array = [1, 2, 3, 4, 5, 6]
+  $array->sort(($a, $b) -> { return($a > $b) })
+```
+
+# 1.2. Sets
+
+Log set keys to console using set.forEach.
+
+```
+	$set = {a, b, c}
+	$set->forEach(($key) -> { console.printLine($key) })
+```
+
+# 1.3. Maps
+
+Log map key, value pairs to console using set.forEach.
+```
+	$map = {a: 1, b: 2, c: 3}
+	$map->forEach(($key, $value) -> { console.printLine($key + " = " + $value) })
+```
+
+Sum map values using map.forEach.
+
+```
+	$sum = 0
+	$map->forEach(($key, $value, &$sum) -> { $sum = $sum + $value }, $sum)
+```
+
+1.4. Some additional example
+
+Use lamdda functions in arrays.
+
+```
+	$functions = [
+		($value) -> { console.printLine("a: " + $value) },
+		($value) -> { console.printLine("b: " + $value) },
+		($value) -> { console.printLine("c: " + $value) }
+	]
+	$value = 1
+	forEach($function in $functions)
+		script.callFunction($function, $value)
+		$value++
+	end
+```
 
 # 2. Links
 
