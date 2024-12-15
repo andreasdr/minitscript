@@ -137,7 +137,7 @@ To have more information, I would suggest you to read the following sections nex
 
 # 2. Links
 
-## 2.1. Language Documentation
+## 2.1. Language documentation
 - [Syntax](./README-Syntax.md)
 - [Data types, variables and constants](./README-DataTypes.md)
 - [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
@@ -152,7 +152,7 @@ To have more information, I would suggest you to read the following sections nex
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
 
-## 2.2. Other Links
+## 2.2. Other links
 
 - MinitScript, see [README.md](../README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](../README-BuildingHowTo.md)
