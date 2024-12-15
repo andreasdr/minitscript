@@ -76,7 +76,7 @@ Also note the focus on easy integration into other products and easy customizabi
 - [Data types, variables and constants](./documentation/README-DataTypes.md)
 - [Flow control - if, elseif, else](./documentation/README-FlowControl-Conditions.md)
 - [Flow Control - switch, case, default](./documentation/README-FlowControl-Conditions2.md)
-- [Flow Control - loops](./documentation/README-FlowControl-Loops.md)
+- [Flow control - forTime, forCondition, for and forEach](./documentation/README-FlowControl-Loops.md)
 - [Functions](./documentation/README-Functions.md)
 - [Lambda Functions](./documentation/README-Lambda-Functions.md)
 - [Classes](./documentation/README-Classes.md)
