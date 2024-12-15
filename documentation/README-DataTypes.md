@@ -77,7 +77,7 @@ See how to initialize an array.
 
 ```
 ...
-	$array = {"a", "b", "c"}
+	$array = ["a", "b", "c"]
 ...
 ```
 
