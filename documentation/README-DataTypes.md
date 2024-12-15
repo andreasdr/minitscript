@@ -7,17 +7,17 @@ Default MinitScript works with the following data types:
 - integer
 - float
 - string
-- byte array
 - array
 - map
-- set  
+- set
+- ...
 
 Variable and constant identifiers always start with a "$".
 You can manually set variables with the setVariable("$variableName", ...) or constants with setConstant("$CONSTANT", ...) methods.
 
-## 2. Primitive data types
+## 1.1. Primitive data types
 
-The following primitive data types are available: boolean, integer, float, string.
+The following primitive data types are available: boolean, integer, float.
 
 Variables of those types can be assigned implicitly, which means the parser know about the data type by given value:
 
@@ -37,12 +37,6 @@ Variables of those types can be assigned implicitly, which means the parser know
 ```
 ...
 	$float = 456.789
-...
-```
-
-```
-...
-	$string = "This is my mighty string"
 ...
 ```
 
@@ -67,11 +61,35 @@ The primitive data types can also be assigned by using initialization methods th
 ...
 ```
 
+## 1.2. Additional data types
+
+Additionally we have strings, arrays, sets and maps datatypes. See some initialization examples below:
+
 ```
 ...
-	$string = string("This is my mighty string")
+	$string = "This is my mighty string"
 ...
 ```
+
+```
+...
+	$array = {"a", "b", "c")
+...
+```
+
+```
+...
+	$set = {"a", "b", "c")
+...
+```
+
+```
+...
+	$map = {"a": 1, "b": 2, "c": 3)
+...
+```
+
+For more information about those data types, check [Classes API](./README-Classes-API.md).
 
 # 2. Links
 
