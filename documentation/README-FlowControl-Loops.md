@@ -1,6 +1,6 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Flow control - forTime, forCondition, for, forEach
+# 1. Flow control - forTime, forCondition, for and forEach
 
 ## 1.1. forTime
 
