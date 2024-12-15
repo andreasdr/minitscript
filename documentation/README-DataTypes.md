@@ -1,6 +1,6 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Data types
+# 1. Data types, variables and constants
 
 Default MinitScript works with the following data types:
 - boolean
