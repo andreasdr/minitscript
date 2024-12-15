@@ -66,7 +66,7 @@ Sum map values using map.forEach.
 
 1.4. Some additional example
 
-Use lamdda functions in arrays.
+Use lambda functions in arrays.
 
 ```
 	$functions = [
