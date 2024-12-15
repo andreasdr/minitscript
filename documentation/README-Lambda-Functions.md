@@ -5,16 +5,21 @@
 Lambda functions are anonymous functions, means they have no name, and are defined inline. You can use lambda functions with array, set, maps and more MinitScript API, if a argument takes a Function.
 
 As a statement lambda functions are written like 
-  
+
+```
   ($arg0, ..., $argN) -> { console.printLine($arg0); ... }
+```
 
 If there are no lambda function arguments, you can write the lambda function also like this:
 
+```
   () -> { console.printLine($arg0); ... }
+```
 
 or
-
+```
   -> { console.printLine($arg0); ... }
+```
 
 See some examples:
 
