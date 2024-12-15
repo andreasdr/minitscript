@@ -1,6 +1,6 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Flow Control - Switch, case and default
+# 1. Flow control - switch, case and default
 
 Switch, case, and default are flow control methods too. Please see the usage below.
 
@@ -31,7 +31,7 @@ Please note, default block is optional.
 
 # 2. Links
 
-## 2.1. Language Documentation
+## 2.1. Language documentation
 - [Syntax](./README-Syntax.md)
 - [Data types, variables and constants](./README-DataTypes.md)
 - [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
@@ -46,7 +46,7 @@ Please note, default block is optional.
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
 
-## 2.2. Other Links
+## 2.2. Other links
 
 - MinitScript, see [README.md](../README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](../README-BuildingHowTo.md)
