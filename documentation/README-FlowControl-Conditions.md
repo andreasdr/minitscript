@@ -1,6 +1,6 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Flow Control - If, elseif and else
+# 1. Flow control - if, elseif and else
 
 If, elseif and else are flow control methods. Please see the usage below.
 
@@ -48,7 +48,7 @@ See an example of if, elseif and else:
 
 # 2. Links
 
-## 2.1. Language Documentation
+## 2.1. Language documentation
 - [Syntax](./README-Syntax.md)
 - [Data types, variables and constants](./README-DataTypes.md)
 - [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
@@ -63,7 +63,7 @@ See an example of if, elseif and else:
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
 
-## 2.2. Other Links
+## 2.2. Other links
 
 - MinitScript, see [README.md](../README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](../README-BuildingHowTo.md)
