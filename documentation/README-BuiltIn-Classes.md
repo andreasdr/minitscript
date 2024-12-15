@@ -301,9 +301,9 @@
 - [Functions](./README-Functions.md)
 - [Lambda Functions](./README-Lambda-Functions.md)
 - [Classes](./README-Classes.md)
+- [Modules](./README-Modules.md)
 - [Built-in functions](./README-BuiltIn-Functions.md)
 - [Built-in classes](./README-BuiltIn-Classes.md)
-- [Classes API](./README-Classes-API.md)
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
 
