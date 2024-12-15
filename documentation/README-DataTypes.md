@@ -105,7 +105,7 @@ For more information about how to work with those data types, check [Classes API
 - [Syntax](./README-Syntax.md)
 - [Data types, variables and constants](./README-DataTypes.md)
 - [Flow control - if, elseif and else](./README-FlowControl-Conditions.md)
-- [Flow Control - switch, case and default](./README-FlowControl-Conditions2.md)
+- [Flow control - switch, case and default](./README-FlowControl-Conditions2.md)
 - [Flow control - forTime, forCondition, for and forEach](./README-FlowControl-Loops.md)
 - [Functions](./README-Functions.md)
 - [Lambda Functions](./README-Lambda-Functions.md)
