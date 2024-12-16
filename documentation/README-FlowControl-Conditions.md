@@ -4,7 +4,7 @@
 
 If, elseif and else are flow control methods. Please see the usage below.
 
-## 1.1 If
+## 1.1. If
 
 See an example of if:
 ```
@@ -16,7 +16,7 @@ See an example of if:
 ...
 ```
 
-## 1.2 If and else
+## 1.2. If and else
 
 See an example of if and else:
 ```
@@ -30,7 +30,7 @@ See an example of if and else:
 ...
 ```
 
-## 1.3 If, elseif and else
+## 1.3. If, elseif and else
 
 See an example of if, elseif and else:
 
