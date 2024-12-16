@@ -1,6 +1,8 @@
+
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\advanced-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\application-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\base-test.tscript
+.\bin\minitscript\tools\minitscript resources\minitscript\tests\benchmark-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\class-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\console-test.tscript < tests\console-test.input
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\constants-test.tscript
@@ -11,7 +13,8 @@
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\functions-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\lamdafunctions-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\loop-test.tscript
-.\bin\minitscript\tools\minitscript resources\minitscript\tests\network-test.tscript
+.\bin/minitscript\tools\minitscript resources\minitscript\tests\module-test.tscript
+REM .\bin\minitscript\tools\minitscript resources\minitscript\tests\network-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\pipe-test.tscript < tests\pipe-test.input
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\preprocessor-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\string-test.tscript

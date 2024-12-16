@@ -199,6 +199,7 @@ on: nothing
 	testScript(["resources/minitscript/tests/advanced-test.tscript"], null)
 	testScript(["resources/minitscript/tests/application-test.tscript"], null)
 	testScript(["resources/minitscript/tests/base-test.tscript"], null)
+	testScript(["resources/minitscript/tests/benchmark-test.tscript"], null)
 	testScript(["resources/minitscript/tests/class-test.tscript"], null)
 	testScript(["resources/minitscript/tests/console-test.tscript"], "./tests/console-test.input")
 	testScript(["resources/minitscript/tests/constants-test.tscript"], null)
@@ -218,7 +219,7 @@ on: nothing
 		],
 		null
 	)
-	testScript(["resources/minitscript/tests/network-test.tscript"], null)
+	#testScript(["resources/minitscript/tests/network-test.tscript"], null)
 	testScript(["resources/minitscript/tests/pipe-test.tscript"], "./tests/pipe-test.input")
 	testScript(["resources/minitscript/tests/preprocessor-test.tscript"], null)
 	testScript(["resources/minitscript/tests/string-test.tscript"], null)

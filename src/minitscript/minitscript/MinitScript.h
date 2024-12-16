@@ -3200,13 +3200,14 @@ protected:
 		 * Block
 		 */
 		struct Block {
-			enum Type { TYPE_NONE, TYPE_GLOBAL, TYPE_STACKLET, TYPE_FUNCTION, TYPE_FOR, TYPE_FORTIME, TYPE_IF, TYPE_SWITCH, TYPE_CASE };
+			enum Type { TYPE_NONE, TYPE_GLOBAL, TYPE_STACKLET, TYPE_FUNCTION, TYPE_FOR, TYPE_FORTIME, TYPE_IF, TYPE_SWITCH, TYPE_CASE, TYPE_TRY, TYPE_CATCH };
 			/**
 			 * Constructor
 			 * @param type block type
 			 * @param match match
 			 * @param continueStatement continue statement
 			 * @param breakStatement break statement
+			 * @param catchStatement catch statement
 			 * @param parameter switch variable / iteration function
 			 */
 			inline Block(
@@ -3214,12 +3215,14 @@ protected:
 				bool match,
 				const Statement* continueStatement,
 				const Statement* breakStatement,
+				const Statement* catchStatement,
 				const Variable& parameter
 			):
 				type(type),
 				match(match),
 				continueStatement(continueStatement),
 				breakStatement(breakStatement),
+				catchStatement(catchStatement),
 				parameter(parameter)
 			{}
 			//
@@ -3227,6 +3230,7 @@ protected:
 			bool match;
 			const Statement* continueStatement;
 			const Statement* breakStatement;
+			const Statement* catchStatement;
 			Variable parameter;
 		};
 		enum ConditionType {
@@ -3483,12 +3487,14 @@ protected:
 				false,
 				nullptr,
 				nullptr,
+				nullptr,
 				Variable()
 			);
 		} else {
 			scriptState.blockStack.emplace_back(
 				ScriptState::Block::TYPE_NONE,
 				false,
+				nullptr,
 				nullptr,
 				nullptr,
 				Variable()
@@ -3513,6 +3519,7 @@ protected:
 		scriptState.blockStack.emplace_back(
 			ScriptState::Block::TYPE_STACKLET,
 			false,
+			nullptr,
 			nullptr,
 			nullptr,
 			Variable()
@@ -3633,7 +3640,7 @@ protected:
 
 private:
 	static constexpr bool VERBOSE { false };
-	static constexpr bool VALIDATION { false };
+	static constexpr bool VALIDATION { true };
 	static constexpr int64_t GARBAGE_COLLECTION_INTERVAL { 1000ll };
 
 	/**

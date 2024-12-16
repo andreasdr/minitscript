@@ -1,0 +1,42 @@
+# initialize
+on: initialize
+	console.printLine("----------------------------")
+	console.printLine("benchmark-test: Initialize")
+	console.printLine("----------------------------")
+	console.printLine()
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.printLine("-------------------------")
+	console.printLine("benchmark-test: Nothing")
+	console.printLine("-------------------------")
+	console.printLine()
+	$startTime = time.getCurrentMillis()
+	$i = 0
+	$j = 0
+	$k = 0
+	forCondition($i < 500000)
+		$a = 123 + 456 * (25 / 12) + (7.5 * 12.25) - 8
+		if ($j == 0)
+			++$k
+		end
+		++$i
+		++$j
+		if ($j == 2)
+			$j = 0
+		end
+	end
+	$endTime = time.getCurrentMillis()
+	console.printLine("Finished. Time: " + ($endTime - $startTime))
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.printLine("-----------------------")
+	console.printLine("benchmark-test: Error")
+	console.printLine("-----------------------")
+	console.printLine("An error occurred")
+	script.stop()
+end

@@ -640,6 +640,7 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 	vector<Variable> arguments;
 	Variable returnValue;
 	// construct argument values
+	arguments.reserve(syntaxTree.arguments.size());
 	for (const auto& argument: syntaxTree.arguments) {
 		switch (argument.type) {
 			case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
@@ -1920,7 +1921,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 	auto currentLineIdx = LINE_NONE;
 	auto statementIdx = STATEMENTIDX_FIRST;
 	struct Block {
-		enum Type { TYPE_FOR, TYPE_FOREACH, TYPE_IF, TYPE_ELSE, TYPE_ELSEIF, TYPE_SWITCH, TYPE_CASE, TYPE_DEFAULT };
+		enum Type { TYPE_FOR, TYPE_FOREACH, TYPE_IF, TYPE_ELSE, TYPE_ELSEIF, TYPE_SWITCH, TYPE_CASE, TYPE_DEFAULT, TYPE_TRY, TYPE_CATCH };
 		Block(Type type, int statementIdx): type(type), statementIdx(statementIdx) {}
 		Type type;
 		int statementIdx;
@@ -2403,8 +2404,22 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 									);
 								}
 								break;
+							case Block::TYPE_CATCH:
+								{
+									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size() + 1;
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
+								}
+								break;
+
 						}
-					} else{
+					} else {
 						scripts.back().statements.emplace_back(
 							_scriptFileName,
 							currentLineIdx + lineIdxOffset,
@@ -2517,6 +2532,36 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					} else {
 						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
 						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
+						scriptValid = false;
+						return false;
+					}
+				} else
+				if (_StringTools::regexMatch(regexStatementCode, "^catch[\\s]*\\(.*\\)$") == true) {
+					if (blockStack.empty() == false) {
+						auto block = blockStack.back();
+						blockStack.erase(blockStack.begin() + blockStack.size() - 1);
+						switch(block.type) {
+							case Block::TYPE_TRY:
+								{
+									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+									scripts.back().statements.emplace_back(
+										_scriptFileName,
+										currentLineIdx + lineIdxOffset,
+										statementIdx,
+										statementCode,
+										statementCode,
+										STATEMENTIDX_NONE
+									);
+								}
+								break;
+						}
+						blockStack.emplace_back(
+							Block::TYPE_CATCH,
+							statementIdx
+						);
+					} else {
+						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": catch without try");
+						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": catch without try");
 						scriptValid = false;
 						return false;
 					}
@@ -2807,6 +2852,12 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					if (_StringTools::regexMatch(regexStatementCode, "^default[\\s]*$") == true) {
 						blockStack.emplace_back(
 							Block::TYPE_DEFAULT,
+							statementIdx
+						);
+					} else
+					if (_StringTools::regexMatch(regexStatementCode, "^try[\\s]*$") == true) {
+						blockStack.emplace_back(
+							Block::TYPE_TRY,
 							statementIdx
 						);
 					}
@@ -4011,6 +4062,7 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 			if (statementMethod == "else") indent-= 1; else
 			if (statementMethod == "case") indent-= 1; else
 			if (statementMethod == "default") indent-= 1; else
+			if (statementMethod == "catch") indent-= 1; else
 			if (statementMethod == "end") indent-= 1;
 			for (auto i = 0; i < indent; i++) result+= "  ";
 			result+= statement;
@@ -4021,27 +4073,27 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 			if (statementMethod == "forCondition") indent+= 1; else
 			if (statementMethod == "switch") indent+= 1; else
 			if (statementMethod == "case") indent+= 1; else
-			if (statementMethod == "default") indent+= 1;
+			if (statementMethod == "default") indent+= 1; else
+			if (statementMethod == "try") indent+= 1; else
+			if (statementMethod == "catch") indent+= 1;
 			return result;
 		};
 		result+=
 			string() +
-			"\t" + "    " + ": start" + "\n";
+			"\t" + "        " + ": start" + "\n";
 		for (const auto& statement: script.statements) {
 			string newLineIndent; for (auto i = 0; i < indent + 2; i++) newLineIndent+= "  ";
 			result+=
+				string() +
 				"\t" +
-				/*
-				_StringTools::padLeft(to_string(statement.statementIdx), "0", 4) +
-				"|" +
-				*/
+				"[" +
 				_StringTools::padLeft(to_string(statement.line), "0", 4) +
-				": " +
+				"|" +
+				_StringTools::padLeft(to_string(statement.statementIdx), "0", 4) +
+				"] " +
 				_StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t    :" + newLineIndent)
-				/*
 				+
-				(statement.gotoStatementIdx != STATEMENTIDX_NONE?" (gotoStatement " + to_string(statement.gotoStatementIdx) + ")":"")
-				*/
+				(statement.gotoStatementIdx != STATEMENTIDX_NONE?" [gotoStatement " + to_string(statement.gotoStatementIdx) + "]":"")
 				+ "\n";
 		}
 		result+= "\n";

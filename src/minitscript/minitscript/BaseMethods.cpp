@@ -429,7 +429,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					if (minitScript->getScriptState().blockStack.empty() == true) {
-						MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "end without if/elseif/else/switch/case/default/forCondition/forTime/end");
+						MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "end without if/elseif/else/switch/case/default/forCondition/forTime/catch");
 					} else {
 						auto& blockStack = minitScript->getScriptState().blockStack;
 						auto& block = blockStack.back();
@@ -500,6 +500,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							false,
 							&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx - 1],
 							&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx],
+							nullptr,
 							MinitScript::Variable()
 						);
 					}
@@ -550,6 +551,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 								false,
 								&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx - 1],
 								&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx],
+								nullptr,
 								iterationStacklet.empty() == true?MinitScript::Variable():MinitScript::Variable(static_cast<int64_t>(iterationStackletScriptIdx))
 							);
 						}
@@ -581,7 +583,14 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 				bool booleanValue;
 				if (arguments.size() == 1 &&
 					minitScript->getBooleanValue(arguments, 0, booleanValue) == true) {
-					minitScript->getScriptState().blockStack.emplace_back(MinitScript::ScriptState::Block::TYPE_IF, booleanValue, nullptr, nullptr, MinitScript::Variable());
+					minitScript->getScriptState().blockStack.emplace_back(
+						MinitScript::ScriptState::Block::TYPE_IF,
+						booleanValue,
+						nullptr,
+						nullptr,
+						nullptr,
+						MinitScript::Variable()
+					);
 					if (booleanValue == false) {
 						minitScript->gotoStatementGoto(*subStatement.statement);
 					}
@@ -680,7 +689,14 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 1) {
 					auto& scriptState = minitScript->getScriptState();
-					scriptState.blockStack.emplace_back(MinitScript::ScriptState::Block::TYPE_SWITCH, false, nullptr, nullptr, arguments[0]);
+					scriptState.blockStack.emplace_back(
+						MinitScript::ScriptState::Block::TYPE_SWITCH,
+						false,
+						nullptr,
+						nullptr,
+						nullptr,
+						arguments[0]
+					);
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
@@ -719,7 +735,14 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 								minitScript->gotoStatementGoto(*subStatement.statement);
 							} else {
 								block.match = match;
-								scriptState.blockStack.emplace_back(MinitScript::ScriptState::Block::TYPE_CASE, false, nullptr, nullptr, MinitScript::Variable());
+								scriptState.blockStack.emplace_back(
+									MinitScript::ScriptState::Block::TYPE_CASE,
+									false,
+									nullptr,
+									nullptr,
+									nullptr,
+									MinitScript::Variable()
+								);
 							}
 						}
 					}
@@ -760,6 +783,139 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 		};
 		minitScript->registerMethod(new MethodDefault(minitScript));
+	}
+	// try, catch and throw
+	{
+		//
+		class MethodTry: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodTry(MinitScript* minitScript):
+				MinitScript::Method(),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "try";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				auto& scriptState = minitScript->getScriptState();
+				scriptState.blockStack.emplace_back(
+					MinitScript::ScriptState::Block::TYPE_TRY,
+					false,
+					nullptr,
+					nullptr,
+					&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx],
+					MinitScript::Variable()
+				);
+			}
+		};
+		minitScript->registerMethod(new MethodTry(minitScript));
+	}
+	{
+		//
+		class MethodCatch: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodCatch(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "exception", .optional = false, .reference = true, .nullable = false }
+					}
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "catch";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				auto& blockStack = minitScript->getScriptState().blockStack;
+				auto& block = blockStack.back();
+				//
+				auto hadException = false;
+				// did we had an exception?
+				if (block.type == MinitScript::ScriptState::Block::TYPE_CATCH) {
+					// set exception in arguments
+					if (arguments.empty() == false) arguments[0].setValue(block.parameter);
+					// delete our TYPE_CATCH block
+					blockStack.erase(blockStack.begin() + blockStack.size() - 1);
+					block = blockStack.back();
+					// we had an exception
+					hadException = true;
+				}
+				//
+				if (block.type == MinitScript::ScriptState::Block::TYPE_TRY) {
+					// delete our TYPE_TRY block
+					blockStack.erase(blockStack.begin() + blockStack.size() - 1);
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "catch without try");
+				}
+				// did we had an exception?
+				if (hadException == true) {
+					// we had a exception, hence are in catch block, we need this for "end"
+					minitScript->getScriptState().blockStack.emplace_back(
+						MinitScript::ScriptState::Block::TYPE_CATCH,
+						false,
+						nullptr,
+						nullptr,
+						nullptr,
+						MinitScript::Variable()
+					);
+				} else {
+					// no exception, so jump after it
+					minitScript->gotoStatementGoto(*subStatement.statement);
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodCatch(minitScript));
+	}
+	{
+		//
+		class MethodThrow: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodThrow(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "exception", .optional = false, .reference = false, .nullable = false }
+					}
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "throw";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				auto& blockStack = minitScript->getScriptState().blockStack;
+				auto& block = blockStack.back();
+				//
+				auto tryBlockIdx = -1;
+				for (int i = blockStack.size() - 1; i >= 0; i--) {
+					if (blockStack[i].type == MinitScript::ScriptState::Block::TYPE_TRY) {
+						tryBlockIdx = i;
+						break;
+					}
+				}
+				if (tryBlockIdx == -1) {
+					MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "catch without try");
+				} else {
+					auto catchStatement = blockStack[tryBlockIdx].catchStatement;
+					//
+					blockStack.erase(blockStack.begin() + tryBlockIdx + 1, blockStack.end());
+					//
+					blockStack.emplace_back(
+						MinitScript::ScriptState::Block::TYPE_CATCH,
+						false,
+						nullptr,
+						nullptr,
+						nullptr,
+						arguments.empty() == false?arguments[0]:MinitScript::Variable()
+					);
+					//
+					minitScript->gotoStatement(*catchStatement);
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodThrow(minitScript));
 	}
 	// equality
 	{

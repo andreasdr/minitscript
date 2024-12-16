@@ -29,8 +29,8 @@ on: nothing
 	# log array values to console using array.forEach
 	console.printLine("array.forEach() log test: [6, 5, 4, 3, 2, 1]")
 	$array->forEach(($element) -> { console.printLine($element) })
-	console.printLine("set.forEach() log test: {aaa, bbb, ccc}")
 	# log set keys to console using set.forEach
+	console.printLine("set.forEach() log test: {aaa, bbb, ccc}")
 	$set = {aaa, bbb, ccc}
 	$set->forEach(($key) -> { console.printLine($key) })
 	console.printLine("set.forEach() log test: {aaa, bbb, ccc}")

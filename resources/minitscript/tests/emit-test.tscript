@@ -38,27 +38,6 @@ on: emittest
 	console.printLine("---------------------------------")
 	console.printLine("SCRIPT JUST EMITTED A CONDITION")
 	console.printLine("---------------------------------")
-	console.printLine()
-	console.printLine("----------")
-	console.printLine("Benchmark ")
-	console.printLine("----------")
-	$startTime = time.getCurrentMillis()
-	$i = 0
-	$j = 0
-	$k = 0
-	forCondition($i < 500000)
-		$a = 123 + 456 * (25 / 12) + (7.5 * 12.25) - 8
-		if ($j == 0)
-			++$k
-		end
-		++$i
-		++$j
-		if ($j == 2)
-			$j = 0
-		end
-	end
-	$endTime = time.getCurrentMillis()
-	console.printLine("Finished. Time: " + ($endTime - $startTime))
 	script.stop()
 end
 

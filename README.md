@@ -44,6 +44,8 @@ Also note the focus on easy integration into other products and easy customizabi
     - for script classes/objects
     - for custom data types
   - supports event like programming
+  - supports exceptions
+  - supports modules
   - unicode support via UTF8
   - can be transpiled to C++
 
@@ -51,8 +53,7 @@ Also note the focus on easy integration into other products and easy customizabi
 
 - Whats left to do for 1.0 BETA release
   - some adjustments
-    - exceptions
-    - passing method arguments with vector of pointer of MinitScript variables
+    - exceptions(WIP)
     - have a more sophisticated parser
     - have interfaces
     - optional: make event system optional??? what about error emits/errors in functions/stacklets??? 
