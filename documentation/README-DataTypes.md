@@ -75,6 +75,8 @@ See how to initialize a string.
 ...
 ```
 
+For further usage see [String class] documentation (./README-BuiltIn-Classes.md#11-string-class)
+
 ### 1.2.2. Array
 
 An array is a sequence of values which can be accessed by indices.
