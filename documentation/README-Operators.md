@@ -6,17 +6,17 @@
 |----|---------------------------------------------------------------------------------------------|
 | !  | not($boolean: Boolean[, $operator: Integer]): Boolean                                       |
 | != | notEqual($a: Mixed, $b: Mixed[, $operator: Integer]): Boolean                               |
-| %  | mod($value: Number, $range: Number[, $operator: String]): Number                            |
+| %  | mod($value: Number, $range: Number[, $operator: Integer]): Number                           |
 | &  | bitwiseAnd($a: Integer, $b: Integer[, $operator: Integer]): Integer                         |
 | && | and($a: Boolean, $b: Boolean[, $operator: Integer]): Boolean                                |
-| *  | mul($a: Mixed, $b: Mixed[, $operator: String]): Mixed                                       |
+| *  | mul($a: Mixed, $b: Mixed[, $operator: Integer]): Mixed                                      |
 | +  | add($a: Mixed, $b: Mixed[, $operator: Integer]): Mixed                                      |
 | ++ | postfixIncrement(&$variable: Integer[, $operator: Integer]): Integer                        |
 | ++ | prefixIncrement(&$variable: Integer[, $operator: Integer]): Integer                         |
-| -  | sub($a: Mixed, $b: Mixed[, $operator: String]): Mixed                                       |
+| -  | sub($a: Mixed, $b: Mixed[, $operator: Integer]): Mixed                                      |
 | -- | postfixDecrement(&$variable: Integer[, $operator: Integer]): Integer                        |
 | -- | prefixDecrement(&$variable: Integer[, $operator: Integer]): Integer                         |
-| /  | div($a: Mixed, $b: Mixed[, $operator: String]): Mixed                                       |
+| /  | div($a: Mixed, $b: Mixed[, $operator: Integer]): Mixed                                      |
 | <  | lesser($a: Mixed, $b: Mixed[, $operator: Integer]): Boolean                                 |
 | <= | lesserEquals($a: Mixed, $b: Mixed[, $operator: Integer]): Boolean                           |
 | =  | setVariable($variable: String, $value: Mixed[, $operator: Integer]): Mixed                  |
