@@ -110,7 +110,7 @@ Events get more interesting with conditions and a specific order to match a requ
 
 We might add a section for events later.
 
-## 1.4. Functions and callables
+## 1.5. Functions and callables
 
 At top level script scope we still can define functions like:
 
@@ -131,7 +131,7 @@ callable: helloWorldFunction()
 end
 ```
 
-## 1.5. Additional documentation
+## 1.6. Additional documentation
 
 To have more information, I would suggest you to read the following sections next or on demand.
 - [Data types, variables and constants](./README-DataTypes.md)
