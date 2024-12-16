@@ -97,7 +97,7 @@ See how to initialize a map.
 ...
 ```
 
-For more information about how to work with those data types, check [Built-in classes](./README-BuiltIn-Classes.md).
+For more information about how to work with those data types, check [Built-in classes](./README-BuiltIn-Classes.md) section.
 
 # 2. Links
 
