@@ -96,6 +96,7 @@ Initializing an array by constructor:
 ```
 
 ... or initialize and push values to it:
+
 ```
 ...
 	$array = Array(1, 2, 3)
@@ -103,6 +104,7 @@ Initializing an array by constructor:
 ```
 
 Pushing values using Array::push():
+
 ```
 ...
 	$array->push(5, 6, 7)
@@ -110,6 +112,7 @@ Pushing values using Array::push():
 ```
 
 Pushing values using [] operator:
+
 ```
 ...
 	$array[] = 8
@@ -119,6 +122,7 @@ Pushing values using [] operator:
 ```
 
 Removing values from arrays using Array::removeOf():
+
 ```
 ...
 	$array->removeOf(6)
@@ -127,12 +131,15 @@ Removing values from arrays using Array::removeOf():
 ```
 
 Removing from arrays using a index with Array::remove():
+
 ```
 ...
 	$array->remove(2)
 ...
 ```
+
 Iterating arrays using Array::length() and Array::get():
+
 ```
 ...
 	$i = 0
@@ -144,6 +151,7 @@ Iterating arrays using Array::length() and Array::get():
 ```
 
 Iterating arrays using Array::length() and [] operator:
+
 ```
 ...
 	$i = 0
@@ -155,9 +163,20 @@ Iterating arrays using Array::length() and [] operator:
 ```
 
 Iterating arrays using Array::forEach() and a lamda function
+
 ```
 ...
 	$array->forEach(($value) -> { console.printLine($value) })
+...
+```
+
+Iterating arrays using forEach
+
+```
+...
+	forEach ($value in $array) 
+		console.printLine($value)
+	end
 ...
 ```
 
@@ -166,6 +185,7 @@ Iterating arrays using Array::forEach() and a lamda function
 A map is key, value pair storage using a underlying hash map. Keys can only exist once in a map.
 
 Initializing a map by map initializer
+
 ```
 ...
 	$map = {"test1": 123, "test2": 456, "test3": [1, 2, 3], "test4": "Yaaaa"}
@@ -173,6 +193,7 @@ Initializing a map by map initializer
 ```
 
 Initializing a map by map constructor:
+
 ```
 ...
 	$map = Map()
@@ -180,6 +201,7 @@ Initializing a map by map constructor:
 ```
 
 Setting map key, value pairs using Map::set():
+
 ```
 ...
 	$map->set("test1", 123)
@@ -190,6 +212,7 @@ Setting map key, value pairs using Map::set():
 ```
 
 Removing from map using Map::remove() and a given key:
+
 ```
 ...
 	$map->remove("test2")
@@ -197,6 +220,7 @@ Removing from map using Map::remove() and a given key:
 ```
 
 Reading values from map using Map::get() and given keys:
+
 ```
 ...
 	console.printLine("map value for test1 key using map.get(): ", $map->get("test1"))
@@ -207,6 +231,7 @@ Reading values from map using Map::get() and given keys:
 ```
 
 Reading values from map using dot operator:
+
 ```
 ...
 	console.printLine("map value for test1 using map dot operator: ", $map.test1)
@@ -217,6 +242,7 @@ Reading values from map using dot operator:
 ```
 
 Setting key, value pairs to map using dot operator:
+
 ```
 ...
 	$map.test6 = 666
@@ -225,6 +251,7 @@ Setting key, value pairs to map using dot operator:
 ```
 
 Reading map keys:
+
 ```
 ...
 	console.printLine("map keys: ", $map->getKeys())
@@ -232,6 +259,7 @@ Reading map keys:
 ```
 
 Reading map values:
+
 ```
 ...
 	console.printLine("map values: ", $map->getValues())
@@ -239,23 +267,34 @@ Reading map values:
 ```
 
 Reading all keys and values from map using Map::get() and Map::getKeys()
+
 ```
 ...
-	$mapKeys = $map->getKeys()
-	$i = 0
-	forCondition($i < $mapKeys->length())
-		console.printLine($mapKeys[$i] + " = " + $map->get($mapKeys[$i]))
-		++$i
+	$keys = $map->getKeys()
+	forEach($key in $keys)
+		console.printLine($key + " = " + $map->get($key))
 	end
 ...
 ```
 
 Iterating maps using Map::forEach() and a lamda function
+
 ```
 ...
 	$map->forEach(($key, $value) -> { console.printLine($key + " = " + $value) })
 ...
 ```
+
+Iterating maps using forEach
+
+```
+...
+	forEach($key, $value in $map)
+		console.printLine($key + " = " + $value)
+	end
+...
+```
+
 
 ### 1.2.4. Set
 
@@ -337,6 +376,17 @@ Iterating sets using Set::forEach() and a lamda function
 	$set->forEach(($key) -> { console.printLine($key) })
 ...
 ```
+
+Iterating sets using forEach
+
+```
+...
+	forEach ($key in $set) 
+		console.printLine($key)
+	end
+...
+```
+
 
 For more information about how to work with those data types, see [Built-in classes](./README-BuiltIn-Classes.md) section.
 
