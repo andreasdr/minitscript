@@ -394,7 +394,9 @@ Iterating sets using forEach
 
 For further usage see [Set class](./README-BuiltIn-Classes.md#15-set-class) documentation.
 
-For more information about how to work with those data types, see [Built-in classes](./README-BuiltIn-Classes.md) section.
+### 1.2.5. More ...
+
+For more information about how to work with data types and classes, see [Built-in classes](./README-BuiltIn-Classes.md) section.
 
 # 2. Links
 
