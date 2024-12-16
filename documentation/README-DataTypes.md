@@ -182,6 +182,8 @@ Iterating arrays using forEach
 ...
 ```
 
+For further usage see [Array class](./README-BuiltIn-Classes.md#13-array-class) documentation.
+
 ### 1.2.3. Map
 
 A map is key, value pair storage using a underlying hash map. Keys can only exist once in a map.
@@ -297,6 +299,7 @@ Iterating maps using forEach
 ...
 ```
 
+For further usage see [Map class](./README-BuiltIn-Classes.md#14-map-class) documentation.
 
 ### 1.2.4. Set
 
@@ -389,6 +392,7 @@ Iterating sets using forEach
 ...
 ```
 
+For further usage see [Set class](./README-BuiltIn-Classes.md#15-set-class) documentation.
 
 For more information about how to work with those data types, see [Built-in classes](./README-BuiltIn-Classes.md) section.
 
