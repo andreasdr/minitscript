@@ -49,7 +49,7 @@ See [Functions](./README-Functions.md) section.
 
 In combination with map datatype, you can also generate classes like objects in MinitScript language. See [Classes](./README-Classes.md) section.
 
-## 1.3. Top level script syntax
+## 1.4. Top level script syntax
 
 At top level MinitScript can take the following syntax:
 - event like approach:
@@ -60,7 +60,7 @@ At top level MinitScript can take the following syntax:
   - callable: ...
   - stacklet: ...
 
-### 1.3.1. Events
+### 1.4.1. Events
 
 First see the event like approach, which we might change still. This is WIP.
 The event like approach was invented to have the ability to have a simple state machine and action graph available as feasible script interpretation.
@@ -110,7 +110,7 @@ Events get more interesting with conditions and a specific order to match a requ
 
 We might add a section for events later.
 
-### 1.3.2. Functions and callables
+### 1.4.2. Functions and callables
 
 At top level script scope we still can define functions like:
 
