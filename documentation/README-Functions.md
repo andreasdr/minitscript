@@ -2,7 +2,7 @@
 
 # 1. Functions/Stacklets/Callables
 
-# 1.1. Functions
+## 1.1. Functions
 
 See this example that shows functions and recursion.
 
@@ -62,7 +62,7 @@ end
 ...
 ```
 
-# 1.2. Stacklets
+## 1.2. Stacklets
 
 Stacklets are basically functions without a own stack(or scope), that e.g. holds variables. 
 But stacklets are able to read/write variables of root scope or of a defined scope function scope. 
@@ -85,7 +85,7 @@ end
 
 ```  
 
-# 1.3. Callables
+## 1.3. Callables
 
 A special type of functions are callables. Callables are functions that are used to interact between MinitScript scripts.
  
