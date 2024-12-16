@@ -75,7 +75,7 @@ See how to initialize a string.
 ...
 ```
 
-For further usage see [String class] documentation (./README-BuiltIn-Classes.md#11-string-class)
+For further usage see [String class](./README-BuiltIn-Classes.md#11-string-class) documentation.
 
 ### 1.2.2. Array
 
