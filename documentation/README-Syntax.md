@@ -43,7 +43,7 @@ This sounds a bit confusing, but makes sense.
 Methods (and possibly a custom data type) can also be used to generate a classes like API, just look in the [Built-in classes](./README-BuiltIn-Classes.md) section.
 
 Function and callables are defined by the scripts itself. Callables are basically public functions for script interoperability with some more safety checks.
-See section [Functions](./README-Functions.md)
+See section [Functions](./README-Functions.md).
 
 In combination with map datatype, you can also generate classes like objects in MinitScript language. See section [Classes](./README-Classes.md).
 
