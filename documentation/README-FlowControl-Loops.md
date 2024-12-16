@@ -1,6 +1,6 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Flow Control - Loops
+# 1. Flow control - forTime, forCondition, for and forEach
 
 ## 1.1. forTime
 
@@ -113,12 +113,12 @@ If you want to manipulate the value, you can also use references here.
 
 # 2. Links
 
-## 2.1. Language Documentation
+## 2.1. Language documentation
 - [Syntax](./README-Syntax.md)
 - [Data types, variables and constants](./README-DataTypes.md)
-- [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
-- [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
-- [Flow Control - loops](./README-FlowControl-Loops.md)
+- [Flow control - if, elseif and else](./README-FlowControl-Conditions.md)
+- [Flow control - switch, case and default](./README-FlowControl-Conditions2.md)
+- [Flow control - forTime, forCondition, for and forEach](./README-FlowControl-Loops.md)
 - [Functions](./README-Functions.md)
 - [Lambda Functions](./README-Lambda-Functions.md)
 - [Classes](./README-Classes.md)
@@ -128,7 +128,7 @@ If you want to manipulate the value, you can also use references here.
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
 
-## 2.2. Other Links
+## 2.2. Other links
 
 - MinitScript, see [README.md](../README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](../README-BuildingHowTo.md)

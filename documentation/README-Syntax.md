@@ -10,6 +10,8 @@ which are identified by a name, including some namespace information, and argume
 
 E.g. namespace.functionName($arg0, ..., $argN)
 
+## 1.2. Statements
+
 You can simply list statements line by line.
 
 ```
@@ -34,20 +36,20 @@ This can also be used like:
 	forEach($entry in $array); console.printLine($entry); end
 ```
 
-## 1.2. Methods, functions and callables.
+## 1.3. Methods, functions and callables.
 
 A method is provided by a C++ class and its member method, hence the name. 
-In the documentation you find them in [BuiltIn functions](./documentation/README-BuiltIn-Functions.md) section.
+In the documentation you find them in [Built-in functions](./README-BuiltIn-Functions.md) section.
 This sounds a bit confusing, but makes sense.
 
-Methods (and possibly a custom data type) can also be used to generate a classes like API, just look in the [Classes API](./documentation/README-Classes-API.md) section.
+Methods (and possibly a custom data type) can also be used to generate a classes like API, just look in the [Built-in classes](./README-BuiltIn-Classes.md) section.
 
 Function and callables are defined by the scripts itself. Callables are basically public functions for script interoperability with some more safety checks.
-See section [Functions](./documentation/README-Functions.md)
+See [Functions](./README-Functions.md) section.
 
-In combination with map datatype, you can also generate classes like objects in MinitScript language. See section [Classes](./documentation/README-Classes.md).
+In combination with map datatype, you can also generate classes like objects in MinitScript language. See [Classes](./README-Classes.md) section.
 
-## 1.3. Top level script syntax
+## 1.4. Top level script syntax
 
 At top level MinitScript can take the following syntax:
 - event like approach:
@@ -57,6 +59,8 @@ At top level MinitScript can take the following syntax:
   - function: ...
   - callable: ...
   - stacklet: ...
+
+### 1.4.1. Events
 
 First see the event like approach, which we might change still. This is WIP.
 The event like approach was invented to have the ability to have a simple state machine and action graph available as feasible script interpretation.
@@ -106,6 +110,8 @@ Events get more interesting with conditions and a specific order to match a requ
 
 We might add a section for events later.
 
+### 1.4.2. Functions and callables
+
 At top level script scope we still can define functions like:
 
 ```
@@ -125,11 +131,13 @@ callable: helloWorldFunction()
 end
 ```
 
+## 1.6. Additional documentation
+
 To have more information, I would suggest you to read the following sections next or on demand.
 - [Data types, variables and constants](./README-DataTypes.md)
-- [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
-- [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
-- [Flow Control - loops](./README-FlowControl-Loops.md)
+- [Flow control - if, elseif and else](./README-FlowControl-Conditions.md)
+- [Flow control - switch, case and default](./README-FlowControl-Conditions2.md)
+- [Flow control - forTime, forCondition, for and forEach](./README-FlowControl-Loops.md)
 - [Functions](./README-Functions.md)
 - [Lambda Functions](./README-Lambda-Functions.md)
 - [Classes](./README-Classes.md)
@@ -137,12 +145,12 @@ To have more information, I would suggest you to read the following sections nex
 
 # 2. Links
 
-## 2.1. Language Documentation
+## 2.1. Language documentation
 - [Syntax](./README-Syntax.md)
 - [Data types, variables and constants](./README-DataTypes.md)
-- [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
-- [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
-- [Flow Control - loops](./README-FlowControl-Loops.md)
+- [Flow control - if, elseif and else](./README-FlowControl-Conditions.md)
+- [Flow control - switch, case and default](./README-FlowControl-Conditions2.md)
+- [Flow control - forTime, forCondition, for and forEach](./README-FlowControl-Loops.md)
 - [Functions](./README-Functions.md)
 - [Lambda Functions](./README-Lambda-Functions.md)
 - [Classes](./README-Classes.md)
@@ -152,7 +160,7 @@ To have more information, I would suggest you to read the following sections nex
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
 
-## 2.2. Other Links
+## 2.2. Other links
 
 - MinitScript, see [README.md](../README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](../README-BuildingHowTo.md)

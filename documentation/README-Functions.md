@@ -2,6 +2,8 @@
 
 # 1. Functions/Stacklets/Callables
 
+## 1.1. Functions
+
 See this example that shows functions and recursion.
 
 Argument variables, parsed in function declarations are populated in function context with corresponding values.
@@ -59,6 +61,9 @@ end
 	console.printLine("globalVariableTest(): post: $globalTest = " + $globalTest)
 ...
 ```
+
+## 1.2. Stacklets
+
 Stacklets are basically functions without a own stack(or scope), that e.g. holds variables. 
 But stacklets are able to read/write variables of root scope or of a defined scope function scope. 
 Stacklets take no argument if used in root scope. It can take a single argument that names the function the stacklet is bound too, to use its scope.
@@ -79,6 +84,8 @@ end
 ...
 
 ```  
+
+## 1.3. Callables
 
 A special type of functions are callables. Callables are functions that are used to interact between MinitScript scripts.
  
@@ -118,12 +125,12 @@ end
 
 # 2. Links
 
-## 2.1. Language Documentation
+## 2.1. Language documentation
 - [Syntax](./README-Syntax.md)
 - [Data types, variables and constants](./README-DataTypes.md)
-- [Flow control - if, elseif, else](./README-FlowControl-Conditions.md)
-- [Flow Control - switch, case, default](./README-FlowControl-Conditions2.md)
-- [Flow Control - loops](./README-FlowControl-Loops.md)
+- [Flow control - if, elseif and else](./README-FlowControl-Conditions.md)
+- [Flow control - switch, case and default](./README-FlowControl-Conditions2.md)
+- [Flow control - forTime, forCondition, for and forEach](./README-FlowControl-Loops.md)
 - [Functions](./README-Functions.md)
 - [Lambda Functions](./README-Lambda-Functions.md)
 - [Classes](./README-Classes.md)
@@ -133,7 +140,7 @@ end
 - [Operators](./README-Operators.md)
 - [Constants](./README-Constants.md)
 
-## 2.2. Other Links
+## 2.2. Other links
 
 - MinitScript, see [README.md](../README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](../README-BuildingHowTo.md)
