@@ -63,7 +63,7 @@ The primitive data types can also be assigned by using initialization methods th
 
 ## 1.2. Additional data types
 
-Additionally we have string, array, set and map datatypes. See some initialization examples below:
+Additionally we have string, array, set and map datatypes.
 
 ### 1.2.1. String
 
