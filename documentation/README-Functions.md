@@ -2,6 +2,8 @@
 
 # 1. Functions/Stacklets/Callables
 
+# 1.1. Functions
+
 See this example that shows functions and recursion.
 
 Argument variables, parsed in function declarations are populated in function context with corresponding values.
@@ -59,6 +61,9 @@ end
 	console.printLine("globalVariableTest(): post: $globalTest = " + $globalTest)
 ...
 ```
+
+# 1.2. Stacklets
+
 Stacklets are basically functions without a own stack(or scope), that e.g. holds variables. 
 But stacklets are able to read/write variables of root scope or of a defined scope function scope. 
 Stacklets take no argument if used in root scope. It can take a single argument that names the function the stacklet is bound too, to use its scope.
@@ -79,6 +84,8 @@ end
 ...
 
 ```  
+
+# 1.3. Callables
 
 A special type of functions are callables. Callables are functions that are used to interact between MinitScript scripts.
  
