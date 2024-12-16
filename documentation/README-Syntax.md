@@ -10,6 +10,8 @@ which are identified by a name, including some namespace information, and argume
 
 E.g. namespace.functionName($arg0, ..., $argN)
 
+## 1.2. Statements
+
 You can simply list statements line by line.
 
 ```
@@ -34,7 +36,7 @@ This can also be used like:
 	forEach($entry in $array); console.printLine($entry); end
 ```
 
-## 1.2. Methods, functions and callables.
+## 1.3. Methods, functions and callables.
 
 A method is provided by a C++ class and its member method, hence the name. 
 In the documentation you find them in [Built-in functions](./README-BuiltIn-Functions.md) section.
@@ -57,6 +59,8 @@ At top level MinitScript can take the following syntax:
   - function: ...
   - callable: ...
   - stacklet: ...
+
+## 1.4. Events
 
 First see the event like approach, which we might change still. This is WIP.
 The event like approach was invented to have the ability to have a simple state machine and action graph available as feasible script interpretation.
@@ -106,6 +110,8 @@ Events get more interesting with conditions and a specific order to match a requ
 
 We might add a section for events later.
 
+## 1.4. Functions and callables
+
 At top level script scope we still can define functions like:
 
 ```
@@ -124,6 +130,8 @@ callable: helloWorldFunction()
 	console.printLine("helloWorldFunction(): Hello world")
 end
 ```
+
+## 1.5. Additional documentation
 
 To have more information, I would suggest you to read the following sections next or on demand.
 - [Data types, variables and constants](./README-DataTypes.md)
