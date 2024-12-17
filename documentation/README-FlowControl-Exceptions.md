@@ -1,33 +1,7 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Flow control - switch, case and default
-
-Switch, case, and default are flow control methods too. Please see the usage below.
-
-See an example:
-
-```
-...
-	#
-	$i = 1
-	switch($i)
-		case(0)
-			console.printLine("$i = 0")
-		end
-		case(1)
-			console.printLine("$i = 1")
-		end
-		case(2)
-			console.printLine("$i = 2")
-		end
-		default
-			console.printLine("default: $i = " + $i)
-		end
-	end
-...
-```
-
-Please note, default block is optional.
+# 1. Exceptions
+- ...
 
 # 2. Links
 
