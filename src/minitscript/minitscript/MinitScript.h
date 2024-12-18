@@ -3580,8 +3580,6 @@ protected:
 
 	/**
 	 * Unset exception
-	 * @param scriptIdx script index
-	 * @param subStatement sub statement
 	 */
 	inline void unsetException() {
 		this->exceptionScriptIdx = STATEMENTIDX_NONE;
