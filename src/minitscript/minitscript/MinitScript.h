@@ -170,7 +170,7 @@ public:
 		 */
 		SubStatement():
 			statement(nullptr),
-			subLineIdx(-1)
+			subLineIdx(SUBLINEIDX_NONE)
 		{}
 		/**
 		 * Sub statement
@@ -3126,6 +3126,7 @@ public:
 	static constexpr int STATEMENTIDX_NONE { -1 };
 	static constexpr int STATEMENTIDX_FIRST { 0 };
 	static constexpr int ARGUMENTIDX_NONE { -1 };
+	static constexpr int SUBLINEIDX_NONE { -1 };
 
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALL;
 	MINITSCRIPT_STATIC_DLL_IMPEXT static const string METHOD_SCRIPTCALLSTACKLET;
@@ -3292,6 +3293,10 @@ protected:
 	string deferredEmit;
 	bool emitted { false };
 
+	int exceptionScriptIdx { STATEMENTIDX_NONE };
+	SubStatement exceptionSubStatement;
+	Variable exceptionThrowArgument;
+
 	//
 	int64_t dataTypesGCTime { -1ll };
 
@@ -3422,7 +3427,7 @@ protected:
 	/**
 	 * @returns get script state stack size
 	 */
-	inline bool getScriptStateStackSize() {
+	inline int getScriptStateStackSize() {
 		return rootScript->scriptStateStack.size();
 	}
 
@@ -3552,6 +3557,36 @@ protected:
 		//
 		if (isFunctionRunning() == false) timeEnabledConditionsCheckLast = TIME_NONE;
 		resetScriptExecutationState(SCRIPTIDX_NONE, STATEMACHINESTATE_NONE);
+	}
+
+	/**
+	 * @return has exception
+	 */
+	inline bool hasException() {
+		return exceptionSubStatement.statement != nullptr;
+	}
+
+	/**
+	 * Set exception
+	 * @param scriptIdx script index
+	 * @param subStatement sub statement
+	 * @param throwArgument throwArgument
+	 */
+	inline void setException(int scriptIdx, const MinitScript::SubStatement& subStatement, const Variable& throwArgument) {
+		this->exceptionScriptIdx = scriptIdx;
+		this->exceptionSubStatement = subStatement;
+		this->exceptionThrowArgument = throwArgument;
+	}
+
+	/**
+	 * Unset exception
+	 * @param scriptIdx script index
+	 * @param subStatement sub statement
+	 */
+	inline void unsetException() {
+		this->exceptionScriptIdx = STATEMENTIDX_NONE;
+		this->exceptionSubStatement = SubStatement();
+		this->exceptionThrowArgument.unset();
 	}
 
 	/**

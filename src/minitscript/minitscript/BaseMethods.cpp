@@ -287,7 +287,16 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 						MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "No function is being executed, return($value) has no effect");
 					} else
 					if (arguments.size() == 1) minitScript->getScriptState().returnValue.setValue(arguments[0]);
-					minitScript->stopRunning();
+					//
+					auto& scriptState = minitScript->getScriptState();
+					auto& blockStack = scriptState.blockStack;
+					// jump to end of current script
+					const auto& scripts = minitScript->getScripts();
+					const auto& statements = scripts[scriptState.scriptIdx].statements;
+					//
+					blockStack.erase(blockStack.begin() + 1, blockStack.end());
+					//
+					minitScript->gotoStatement(statements[statements.size() - 1]);
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
@@ -885,7 +894,8 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 				return "throw";
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
-				auto& blockStack = minitScript->getScriptState().blockStack;
+				auto& scriptState = minitScript->getScriptState();
+				auto& blockStack = scriptState.blockStack;
 				auto& block = blockStack.back();
 				//
 				auto tryBlockIdx = -1;
@@ -896,7 +906,24 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					}
 				}
 				if (tryBlockIdx == -1) {
-					MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "catch without try");
+					// set exception and jump to end of script
+					minitScript->setException(
+						scriptState.scriptIdx,
+						subStatement,
+						arguments.empty() == false?arguments[0]:MinitScript::Variable()
+					);
+					// jump to end of current script
+					const auto& scripts = minitScript->getScripts();
+					const auto& statements = scripts[scriptState.scriptIdx].statements;
+					//
+					blockStack.erase(blockStack.begin() + 1, blockStack.end());
+					// unhandled global exception
+					if (minitScript->getScriptStateStackSize() == 1) {
+						MINITSCRIPT_METHODUSAGE_COMPLAINM(getMethodName(), "Unhandled exception!");
+					} else {
+						// somewhere else in a function
+						minitScript->gotoStatement(statements[statements.size() - 1]);
+					}
 				} else {
 					auto catchStatement = blockStack[tryBlockIdx].catchStatement;
 					//
@@ -2196,5 +2223,42 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 		};
 		minitScript->registerMethod(new ConcurrencyGetHardwareThreadCountMethod(minitScript));
+	}
+}
+
+bool BaseMethods::_throw(MinitScript* minitScript, const MinitScript::Variable& throwArgument) {
+	auto& scriptState = minitScript->getScriptState();
+	auto& blockStack = scriptState.blockStack;
+	auto& block = blockStack.back();
+	//
+	auto tryBlockIdx = -1;
+	for (int i = blockStack.size() - 1; i >= 0; i--) {
+		if (blockStack[i].type == MinitScript::ScriptState::Block::TYPE_TRY) {
+			tryBlockIdx = i;
+			break;
+		}
+	}
+	if (tryBlockIdx == -1) {
+		//
+		blockStack.erase(blockStack.begin() + 1, blockStack.end());
+		//
+		return false;
+	} else {
+		auto catchStatement = blockStack[tryBlockIdx].catchStatement;
+		//
+		blockStack.erase(blockStack.begin() + tryBlockIdx + 1, blockStack.end());
+		//
+		blockStack.emplace_back(
+			MinitScript::ScriptState::Block::TYPE_CATCH,
+			false,
+			nullptr,
+			nullptr,
+			nullptr,
+			throwArgument
+		);
+		//
+		minitScript->gotoStatement(*catchStatement);
+		//
+		return true;
 	}
 }

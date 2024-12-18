@@ -342,6 +342,9 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			generatedDeclarations+= declarationIndent + "\t" + methodName + "(minitScriptGotoStatementIdx);" + "\n";
 			generatedDeclarations+= declarationIndent + "}" + "\n";
 			generatedDeclarations+= "\n";
+
+			//
+			scriptIdx++;
 		}
 	}
 
@@ -2999,6 +3002,7 @@ bool Transpiler::transpile(MinitScript* minitScript, const string& className, st
 			gotoStatementIdxSet.insert(statement.gotoStatementIdx);
 		}
 	}
+	gotoStatementIdxSet.insert(script.statements.size() - 1);
 
 	//
 	auto statementIdx = MinitScript::STATEMENTIDX_FIRST;

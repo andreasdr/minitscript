@@ -2306,6 +2306,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				return false;
 			} else {
 				//
+				smatch matches;
 				auto regexStatementCode = _StringTools::replace(statementCode, "\n", " ");
 				//
 				if (statementCode == "end") {
@@ -2420,6 +2421,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 
 						}
 					} else {
+						// end of 'on:', 'on-enabled:', 'function' ... block
 						scripts.back().statements.emplace_back(
 							_scriptFileName,
 							currentLineIdx + lineIdxOffset,
@@ -2439,27 +2441,13 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							case Block::TYPE_IF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(
-										_scriptFileName,
-										currentLineIdx + lineIdxOffset,
-										statementIdx,
-										statementCode,
-										statementCode,
-										STATEMENTIDX_NONE
-									);
+									// we push "else" to statements later
 								}
 								break;
 							case Block::TYPE_ELSEIF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(
-										_scriptFileName,
-										currentLineIdx + lineIdxOffset,
-										statementIdx,
-										statementCode,
-										statementCode,
-										STATEMENTIDX_NONE
-									);
+									// we push "else" to statements later
 								}
 								break;
 							default:
@@ -2496,27 +2484,13 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							case Block::TYPE_IF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(
-										_scriptFileName,
-										currentLineIdx + lineIdxOffset,
-										statementIdx,
-										statementCode,
-										executableStatement,
-										STATEMENTIDX_NONE
-									);
+									// we push "if" to statements later
 								}
 								break;
 							case Block::TYPE_ELSEIF:
 								{
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
-									scripts.back().statements.emplace_back(
-										_scriptFileName,
-										currentLineIdx + lineIdxOffset,
-										statementIdx,
-										statementCode,
-										executableStatement,
-										STATEMENTIDX_NONE
-									);
+									// we push "if" to statements later
 								}
 								break;
 							default:
@@ -2536,22 +2510,32 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						return false;
 					}
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^catch[\\s]*\\(.*\\)$") == true) {
+				if (_StringTools::regexMatch(regexStatementCode, "^catch[\\s]*\\((.*)\\)$", &matches) == true) {
+					auto exceptionVariable = matches[1].str();
 					if (blockStack.empty() == false) {
 						auto block = blockStack.back();
 						blockStack.erase(blockStack.begin() + blockStack.size() - 1);
 						switch(block.type) {
 							case Block::TYPE_TRY:
 								{
+									//
 									scripts.back().statements[block.statementIdx].gotoStatementIdx = scripts.back().statements.size();
+									// create initialize statement and push it
+									string initializeVariableStatement =
+										"setVariable(\"" +
+											_StringTools::replace(_StringTools::replace(exceptionVariable, "\\", "\\\\"), "\"", "\\\"") +
+											"\", " +
+											"null"
+										")";
 									scripts.back().statements.emplace_back(
 										_scriptFileName,
 										currentLineIdx + lineIdxOffset,
-										statementIdx,
+										statementIdx++,
 										statementCode,
-										statementCode,
+										initializeVariableStatement,
 										STATEMENTIDX_NONE
 									);
+									// we push "catch" to statements later
 								}
 								break;
 						}
@@ -2565,8 +2549,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						scriptValid = false;
 						return false;
 					}
-				} else {
-					smatch matches;
+				} else
+				if (_StringTools::regexMatch(regexStatementCode, "^for[\\s]*\\(.*\\)$") == true) {
 					Statement generatedStatement(
 						_scriptFileName,
 						currentLineIdx + lineIdxOffset,
@@ -2575,292 +2559,322 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						statementCode,
 						STATEMENTIDX_NONE
 					);
-					if (_StringTools::regexMatch(regexStatementCode, "^for[\\s]*\\(.*\\)$") == true) {
-						// parse for statement
-						string_view forMethodName;
-						vector<ParserArgument> forArguments;
-						string accessObjectMemberStatement;
-						string executableStatement = doStatementPreProcessing(statementCode, generatedStatement);
-						// success?
-						if (parseStatement(executableStatement, forMethodName, forArguments, generatedStatement, accessObjectMemberStatement) == true &&
-							forArguments.size() == 3) {
-							// create initialize statement
-							string initializeStatement = string(forArguments[0].argument);
-							scripts.back().statements.emplace_back(
-								_scriptFileName,
-								currentLineIdx + lineIdxOffset,
-								statementIdx++,
-								statementCode,
-								initializeStatement,
-								STATEMENTIDX_NONE
-							);
-							//
-							blockStack.emplace_back(
-								Block::TYPE_FOR,
-								statementIdx
-							);
-							//
-							statementCode = "forCondition(" + string(forArguments[1].argument) + ", -> { " + string(forArguments[2].argument) + " })";
-						} else {
-							_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
-							parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
-							scriptValid = false;
-							return false;
-						}
-					} else
-					// array/set forEach
-					if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
-						auto iterationDepth = 0;
-						for (const auto& block: blockStack) {
-							if (block.type == Block::TYPE_FOREACH) iterationDepth++;
-						}
-						//
-						auto entryReference = false;
-						auto entryVariable = matches[1].str();
-						if (_StringTools::startsWith(entryVariable, "&") == true) {
-							entryReference = true;
-							entryVariable = _StringTools::substring(entryVariable, 1);
-						}
-						auto containerByInitializer = false;
-						auto containerVariable = matches[2].str();
-						string containerInitializer;
-						if (_StringTools::startsWith(containerVariable, "[") == true || _StringTools::startsWith(containerVariable, "{") == true) {
-							containerByInitializer = true;
-							containerInitializer = containerVariable;
-							containerVariable = string("$___cv_" + to_string(iterationDepth));
-						}
-						auto initializationStackletVariable = string("$___is_" + to_string(iterationDepth));
-						auto containerVariableType = string("$___vt_" + to_string(iterationDepth));
-						auto iterationVariable = string("$___it_" + to_string(iterationDepth));
-						auto entryVariableBackup = string("$___evb_" + to_string(iterationDepth));
-						auto containerArrayVariable = string("$___cav_" + to_string(iterationDepth));
-						auto containerArrayVariableBackup = string("$___cavb_" + to_string(iterationDepth));
-						string iterationUpdate =
-							entryReference == true?
-								"setVariableReference(\"" + entryVariable + "\", " + containerArrayVariable + "[" + iterationVariable + "])":
-								entryVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]";
-						//
-						string initialization =
-							initializationStackletVariable + " = -> { " +
-								"if (script.isNative() == true); " +
-									"setVariableReference(\"" + containerArrayVariableBackup + "\", " + containerArrayVariable + "); " +
-									"setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + "); " +
-								"end; " +
-								containerVariableType + " = getType(" + containerVariable + "); " +
-								"if (" + containerVariableType + " == \"Array\"); " +
-									"setVariableReference(\"" + containerArrayVariable + "\", " + containerVariable + "); " +
-								"elseif (" + containerVariableType + " == \"Set\"); " +
-									containerArrayVariable + " = Set::getKeys(" + containerVariable + "); " +
-								"else; " +
-									"console.printLine(\"forEach() expects array or set as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
-									"script.emit(\"error\"); " +
-								"end; " +
-								iterationVariable + " = 0; " +
-								"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
-									iterationUpdate + "; " +
-								"end;" +
-							"}";
-						//
-						if (containerByInitializer == true) {
-							scripts.back().statements.emplace_back(
-								_scriptFileName,
-								currentLineIdx + lineIdxOffset,
-								statementIdx++,
-								statementCode,
-								doStatementPreProcessing(containerVariable + " = " + containerInitializer, generatedStatement),
-								STATEMENTIDX_NONE
-							);
-						}
+					// parse for statement
+					string_view forMethodName;
+					vector<ParserArgument> forArguments;
+					string accessObjectMemberStatement;
+					string executableStatement = doStatementPreProcessing(statementCode, generatedStatement);
+					// success?
+					if (parseStatement(executableStatement, forMethodName, forArguments, generatedStatement, accessObjectMemberStatement) == true &&
+						forArguments.size() == 3) {
+						// create initialize statement
+						string initializeStatement = string(forArguments[0].argument);
 						scripts.back().statements.emplace_back(
 							_scriptFileName,
 							currentLineIdx + lineIdxOffset,
 							statementIdx++,
 							statementCode,
-							doStatementPreProcessing(initialization, generatedStatement),
+							initializeStatement,
 							STATEMENTIDX_NONE
 						);
-						scripts.back().statements.emplace_back(
-							_scriptFileName,
-							currentLineIdx + lineIdxOffset,
-							statementIdx++,
-							statementCode,
-							"internal.script.callStacklet(" + initializationStackletVariable + ")",
-							STATEMENTIDX_NONE
-						);
-						blockStack.emplace_back(
-							Block::TYPE_FOREACH,
-							statementIdx
-						);
 						//
-						statementCode =
-							"forCondition(" + iterationVariable + " < Array::getSize(" + containerArrayVariable + "), " +
-							"-> { " +
-								iterationVariable + "++" + "; " +
-								"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
-									iterationUpdate + "; " +
-								"else; " +
-									"if (script.isNative() == true); " +
-										"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
-										"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
-									"else; " +
-										"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
-										"unsetVariableReference(\"" + entryVariable + "\"); " +
-									"end; " +
-									"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
-									"setVariable(\"" + entryVariable + "\", $$.___NULL); " +
-									(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
-								"end; " +
-							"})";
-					} else
-					// map forEach
-					if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*,[\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
-						auto iterationDepth = 0;
-						for (const auto& block: blockStack) {
-							if (block.type == Block::TYPE_FOREACH) iterationDepth++;
-						}
-						//
-						auto entryKeyVariable = matches[1].str();
-						auto entryValueReference = false;
-						auto entryValueVariable = matches[2].str();
-						if (_StringTools::startsWith(entryValueVariable, "&") == true) {
-							entryValueReference = true;
-							entryValueVariable = _StringTools::substring(entryValueVariable, 1);
-						}
-						auto containerByInitializer = false;
-						auto containerVariable = matches[3].str();
-						string containerInitializer;
-						if (_StringTools::startsWith(containerVariable, "[") == true || _StringTools::startsWith(containerVariable, "{") == true) {
-							containerByInitializer = true;
-							containerInitializer = containerVariable;
-							containerVariable = string("$___cv_" + to_string(iterationDepth));
-						}
-						auto initializationStackletVariable = string("$___is_" + to_string(iterationDepth));
-						auto containerVariableType = string("$___vt_" + to_string(iterationDepth));
-						auto iterationVariable = string("$___it_" + to_string(iterationDepth));
-						auto entryValueVariableBackup = string("$___evb_" + to_string(iterationDepth));
-						auto containerArrayVariable = string("$___cav_" + to_string(iterationDepth));
-						auto containerArrayVariableBackup = string("$___cavb_" + to_string(iterationDepth));
-						string iterationUpdate =
-							entryKeyVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]; " +
-							(entryValueReference == true?
-								"setVariableReference(\"" + entryValueVariable + "\", Map::getReference(" + containerVariable + ", " + entryKeyVariable + "))":
-								entryValueVariable + " = Map::get(" + containerVariable + ", " + entryKeyVariable + ")"
-							);
-						//
-						string initialization =
-							initializationStackletVariable + " = -> { " +
-								"if (script.isNative() == true); " +
-									"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
-									"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
-								"end; " +
-								containerVariableType + " = getType(" + containerVariable + "); " +
-								"if (" + containerVariableType + " == \"Map\"); " +
-									containerArrayVariable + " = Map::getKeys(" + containerVariable + "); " +
-								"else; " +
-									"console.printLine(\"forEach() expects map as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
-									"script.emit(\"error\"); " +
-								"end; " +
-								iterationVariable + " = 0; " +
-								"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
-									iterationUpdate + "; " +
-								"end; " +
-							"}";
-						//
-						if (containerByInitializer == true) {
-							scripts.back().statements.emplace_back(
-								_scriptFileName,
-								currentLineIdx + lineIdxOffset,
-								statementIdx++,
-								statementCode,
-								doStatementPreProcessing(containerVariable + " = " + containerInitializer, generatedStatement),
-								STATEMENTIDX_NONE
-							);
-						}
-						scripts.back().statements.emplace_back(
-							_scriptFileName,
-							currentLineIdx + lineIdxOffset,
-							statementIdx++,
-							statementCode,
-							doStatementPreProcessing(initialization, generatedStatement),
-							STATEMENTIDX_NONE
-						);
-						scripts.back().statements.emplace_back(
-							_scriptFileName,
-							currentLineIdx + lineIdxOffset,
-							statementIdx++,
-							statementCode,
-							"internal.script.callStacklet(" + initializationStackletVariable + ")",
-							STATEMENTIDX_NONE
-						);
-						blockStack.emplace_back(
-							Block::TYPE_FOREACH,
-							statementIdx
-						);
-						//
-						statementCode =
-							"forCondition(" + iterationVariable + " < Array::getSize(" + containerArrayVariable + "), " +
-							"-> { " +
-								iterationVariable + "++" + "; " +
-								"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
-									iterationUpdate + "; " +
-								"else; " +
-									"if (script.isNative() == true); " +
-										"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
-										"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
-									"else; "
-										"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
-										"unsetVariableReference(\"" + entryValueVariable + "\"); " +
-									"end; " +
-									"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
-									"setVariable(\"" + entryKeyVariable + "\", $$.___NULL); "
-									"setVariable(\"" + entryValueVariable + "\", $$.___NULL); " +
-									(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
-								"end;"
-							"})";
-					} else
-					if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\(.*\\)$", &matches) == true) {
-						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
-						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
-						scriptValid = false;
-						return false;
-					} else
-					if (_StringTools::regexMatch(regexStatementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
-						_StringTools::regexMatch(regexStatementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {
 						blockStack.emplace_back(
 							Block::TYPE_FOR,
 							statementIdx
 						);
-					} else
-					if (_StringTools::regexMatch(regexStatementCode, "^if[\\s]*\\(.*\\)$") == true) {
-						blockStack.emplace_back(
-							Block::TYPE_IF,
-							statementIdx
-						);
-					} else
-					if (_StringTools::regexMatch(regexStatementCode, "^switch[\\s]*\\(.*\\)$") == true) {
-						blockStack.emplace_back(
-							Block::TYPE_SWITCH,
+						//
+						statementCode = "forCondition(" + string(forArguments[1].argument) + ", -> { " + string(forArguments[2].argument) + " })";
+					} else {
+						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
+						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
+						scriptValid = false;
+						return false;
+					}
+				} else
+				// array/set forEach
+				if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+					Statement generatedStatement(
+						_scriptFileName,
+						currentLineIdx + lineIdxOffset,
+						STATEMENTIDX_FIRST,
+						statementCode,
+						statementCode,
+						STATEMENTIDX_NONE
+					);
+					//
+					auto iterationDepth = 0;
+					for (const auto& block: blockStack) {
+						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
+					}
+					//
+					auto entryReference = false;
+					auto entryVariable = matches[1].str();
+					if (_StringTools::startsWith(entryVariable, "&") == true) {
+						entryReference = true;
+						entryVariable = _StringTools::substring(entryVariable, 1);
+					}
+					auto containerByInitializer = false;
+					auto containerVariable = matches[2].str();
+					string containerInitializer;
+					if (_StringTools::startsWith(containerVariable, "[") == true || _StringTools::startsWith(containerVariable, "{") == true) {
+						containerByInitializer = true;
+						containerInitializer = containerVariable;
+						containerVariable = string("$___cv_" + to_string(iterationDepth));
+					}
+					auto initializationStackletVariable = string("$___is_" + to_string(iterationDepth));
+					auto containerVariableType = string("$___vt_" + to_string(iterationDepth));
+					auto iterationVariable = string("$___it_" + to_string(iterationDepth));
+					auto entryVariableBackup = string("$___evb_" + to_string(iterationDepth));
+					auto containerArrayVariable = string("$___cav_" + to_string(iterationDepth));
+					auto containerArrayVariableBackup = string("$___cavb_" + to_string(iterationDepth));
+					string iterationUpdate =
+						entryReference == true?
+							"setVariableReference(\"" + entryVariable + "\", " + containerArrayVariable + "[" + iterationVariable + "])":
+							entryVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]";
+					//
+					string initialization =
+						initializationStackletVariable + " = -> { " +
+							"if (script.isNative() == true); " +
+								"setVariableReference(\"" + containerArrayVariableBackup + "\", " + containerArrayVariable + "); " +
+								"setVariableReference(\"" + entryVariableBackup + "\", " + entryVariable + "); " +
+							"end; " +
+							containerVariableType + " = getType(" + containerVariable + "); " +
+							"if (" + containerVariableType + " == \"Array\"); " +
+								"setVariableReference(\"" + containerArrayVariable + "\", " + containerVariable + "); " +
+							"elseif (" + containerVariableType + " == \"Set\"); " +
+								containerArrayVariable + " = Set::getKeys(" + containerVariable + "); " +
+							"else; " +
+								"console.printLine(\"forEach() expects array or set as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
+								"script.emit(\"error\"); " +
+							"end; " +
+							iterationVariable + " = 0; " +
+							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
+								iterationUpdate + "; " +
+							"end;" +
+						"}";
+					//
+					if (containerByInitializer == true) {
+						scripts.back().statements.emplace_back(
+							_scriptFileName,
+							currentLineIdx + lineIdxOffset,
+							statementIdx++,
+							statementCode,
+							doStatementPreProcessing(containerVariable + " = " + containerInitializer, generatedStatement),
 							STATEMENTIDX_NONE
 						);
-					} else
-					if (_StringTools::regexMatch(regexStatementCode, "^case[\\s]*\\(.*\\)$") == true) {
-						blockStack.emplace_back(
-							Block::TYPE_CASE,
-							statementIdx
+					}
+					scripts.back().statements.emplace_back(
+						_scriptFileName,
+						currentLineIdx + lineIdxOffset,
+						statementIdx++,
+						statementCode,
+						doStatementPreProcessing(initialization, generatedStatement),
+						STATEMENTIDX_NONE
+					);
+					scripts.back().statements.emplace_back(
+						_scriptFileName,
+						currentLineIdx + lineIdxOffset,
+						statementIdx++,
+						statementCode,
+						"internal.script.callStacklet(" + initializationStackletVariable + ")",
+						STATEMENTIDX_NONE
+					);
+					blockStack.emplace_back(
+						Block::TYPE_FOREACH,
+						statementIdx
+					);
+					//
+					statementCode =
+						"forCondition(" + iterationVariable + " < Array::getSize(" + containerArrayVariable + "), " +
+						"-> { " +
+							iterationVariable + "++" + "; " +
+							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
+								iterationUpdate + "; " +
+							"else; " +
+								"if (script.isNative() == true); " +
+									"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
+									"setVariableReference(\"" + entryVariable + "\", " + entryVariableBackup + "); " +
+								"else; " +
+									"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
+									"unsetVariableReference(\"" + entryVariable + "\"); " +
+								"end; " +
+								"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
+								"setVariable(\"" + entryVariable + "\", $$.___NULL); " +
+								(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
+							"end; " +
+						"})";
+				} else
+				// map forEach
+				if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*,[\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+					Statement generatedStatement(
+						_scriptFileName,
+						currentLineIdx + lineIdxOffset,
+						STATEMENTIDX_FIRST,
+						statementCode,
+						statementCode,
+						STATEMENTIDX_NONE
+					);
+					//
+					auto iterationDepth = 0;
+					for (const auto& block: blockStack) {
+						if (block.type == Block::TYPE_FOREACH) iterationDepth++;
+					}
+					//
+					auto entryKeyVariable = matches[1].str();
+					auto entryValueReference = false;
+					auto entryValueVariable = matches[2].str();
+					if (_StringTools::startsWith(entryValueVariable, "&") == true) {
+						entryValueReference = true;
+						entryValueVariable = _StringTools::substring(entryValueVariable, 1);
+					}
+					auto containerByInitializer = false;
+					auto containerVariable = matches[3].str();
+					string containerInitializer;
+					if (_StringTools::startsWith(containerVariable, "[") == true || _StringTools::startsWith(containerVariable, "{") == true) {
+						containerByInitializer = true;
+						containerInitializer = containerVariable;
+						containerVariable = string("$___cv_" + to_string(iterationDepth));
+					}
+					auto initializationStackletVariable = string("$___is_" + to_string(iterationDepth));
+					auto containerVariableType = string("$___vt_" + to_string(iterationDepth));
+					auto iterationVariable = string("$___it_" + to_string(iterationDepth));
+					auto entryValueVariableBackup = string("$___evb_" + to_string(iterationDepth));
+					auto containerArrayVariable = string("$___cav_" + to_string(iterationDepth));
+					auto containerArrayVariableBackup = string("$___cavb_" + to_string(iterationDepth));
+					string iterationUpdate =
+						entryKeyVariable + " = " + containerArrayVariable + "[" + iterationVariable + "]; " +
+						(entryValueReference == true?
+							"setVariableReference(\"" + entryValueVariable + "\", Map::getReference(" + containerVariable + ", " + entryKeyVariable + "))":
+							entryValueVariable + " = Map::get(" + containerVariable + ", " + entryKeyVariable + ")"
 						);
-					} else
-					if (_StringTools::regexMatch(regexStatementCode, "^default[\\s]*$") == true) {
-						blockStack.emplace_back(
-							Block::TYPE_DEFAULT,
-							statementIdx
-						);
-					} else
-					if (_StringTools::regexMatch(regexStatementCode, "^try[\\s]*$") == true) {
-						blockStack.emplace_back(
-							Block::TYPE_TRY,
-							statementIdx
+					//
+					string initialization =
+						initializationStackletVariable + " = -> { " +
+							"if (script.isNative() == true); " +
+								"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
+								"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
+							"end; " +
+							containerVariableType + " = getType(" + containerVariable + "); " +
+							"if (" + containerVariableType + " == \"Map\"); " +
+								containerArrayVariable + " = Map::getKeys(" + containerVariable + "); " +
+							"else; " +
+								"console.printLine(\"forEach() expects map as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
+								"script.emit(\"error\"); " +
+							"end; " +
+							iterationVariable + " = 0; " +
+							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
+								iterationUpdate + "; " +
+							"end; " +
+						"}";
+					//
+					if (containerByInitializer == true) {
+						scripts.back().statements.emplace_back(
+							_scriptFileName,
+							currentLineIdx + lineIdxOffset,
+							statementIdx++,
+							statementCode,
+							doStatementPreProcessing(containerVariable + " = " + containerInitializer, generatedStatement),
+							STATEMENTIDX_NONE
 						);
 					}
+					scripts.back().statements.emplace_back(
+						_scriptFileName,
+						currentLineIdx + lineIdxOffset,
+						statementIdx++,
+						statementCode,
+						doStatementPreProcessing(initialization, generatedStatement),
+						STATEMENTIDX_NONE
+					);
+					scripts.back().statements.emplace_back(
+						_scriptFileName,
+						currentLineIdx + lineIdxOffset,
+						statementIdx++,
+						statementCode,
+						"internal.script.callStacklet(" + initializationStackletVariable + ")",
+						STATEMENTIDX_NONE
+					);
+					blockStack.emplace_back(
+						Block::TYPE_FOREACH,
+						statementIdx
+					);
+					//
+					statementCode =
+						"forCondition(" + iterationVariable + " < Array::getSize(" + containerArrayVariable + "), " +
+						"-> { " +
+							iterationVariable + "++" + "; " +
+							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
+								iterationUpdate + "; " +
+							"else; " +
+								"if (script.isNative() == true); " +
+									"setVariableReference(\"" + containerArrayVariable + "\", " + containerArrayVariableBackup + "); " +
+									"setVariableReference(\"" + entryValueVariable + "\", " + entryValueVariableBackup + "); " +
+								"else; "
+									"unsetVariableReference(\"" + containerArrayVariable + "\"); " +
+									"unsetVariableReference(\"" + entryValueVariable + "\"); " +
+								"end; " +
+								"setVariable(\"" + containerArrayVariable + "\", $$.___ARRAY); " +
+								"setVariable(\"" + entryKeyVariable + "\", $$.___NULL); "
+								"setVariable(\"" + entryValueVariable + "\", $$.___NULL); " +
+								(containerByInitializer == true?"setVariable(\"" + containerVariable + "\", $$.___ARRAY); ":"") +
+							"end;"
+						"})";
+				} else
+				if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\(.*\\)$", &matches) == true) {
+					_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
+					parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
+					scriptValid = false;
+					return false;
+				}
+				// do we need to push to block stack?
+				if (_StringTools::regexMatch(regexStatementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
+					_StringTools::regexMatch(regexStatementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_FOR,
+						statementIdx
+					);
+				} else
+				if (_StringTools::regexMatch(regexStatementCode, "^if[\\s]*\\(.*\\)$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_IF,
+						statementIdx
+					);
+				} else
+				if (_StringTools::regexMatch(regexStatementCode, "^switch[\\s]*\\(.*\\)$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_SWITCH,
+						STATEMENTIDX_NONE
+					);
+				} else
+				if (_StringTools::regexMatch(regexStatementCode, "^case[\\s]*\\(.*\\)$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_CASE,
+						statementIdx
+					);
+				} else
+				if (_StringTools::regexMatch(regexStatementCode, "^default[\\s]*$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_DEFAULT,
+						statementIdx
+					);
+				} else
+				if (_StringTools::regexMatch(regexStatementCode, "^try[\\s]*$") == true) {
+					blockStack.emplace_back(
+						Block::TYPE_TRY,
+						statementIdx
+					);
+				}
+				// push to statements now, except "end", we already did push that
+				if (statementCode != "end") {
+					// add to statements
+					Statement generatedStatement(
+						_scriptFileName,
+						currentLineIdx + lineIdxOffset,
+						STATEMENTIDX_FIRST,
+						statementCode,
+						statementCode,
+						STATEMENTIDX_NONE
+					);
+					//
 					scripts.back().statements.emplace_back(
 						_scriptFileName,
 						currentLineIdx + lineIdxOffset,
@@ -2870,8 +2884,9 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						STATEMENTIDX_NONE
 					);
 				}
-				statementIdx++;
 			}
+			//
+			statementIdx++;
 		}
 	}
 
@@ -3943,6 +3958,31 @@ bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& retur
 	}
 	// try garbage collection
 	tryGarbageCollection();
+	// handle unhandled exception
+	if (hasException() == true) {
+		// global scope?
+		if (getScriptStateStackSize() > 1) {
+			// function scope: rethrow
+			if (BaseMethods::_throw(this, exceptionThrowArgument) == true) {
+				unsetException();
+			} else {
+				// goto "end" of current script
+				const auto& scriptState = getScriptState();
+				const auto& script = scripts[scriptState.scriptIdx];
+				gotoStatement(script.statements[script.statements.size() - 1]);
+			}
+		} else {
+			//
+			if (hasException() == true) {
+				//
+				auto minitScript = this;
+				const auto& subStatement = exceptionSubStatement;
+				MINITSCRIPT_METHODUSAGE_COMPLAINM("throw", "Unhandled exception!");
+				//
+				unsetException();
+			}
+		}
+	}
 	// if function calls are worked off, we can do the deferred emit
 	if (isFunctionRunning() == false && deferredEmit.empty() == false) {
 		auto condition = deferredEmit;

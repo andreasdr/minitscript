@@ -474,7 +474,6 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				if (arguments.size() == 0) {
 					minitScript->stopScriptExecution();
-					minitScript->stopRunning();
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}

@@ -206,6 +206,13 @@ on: nothing
 	testScript(["resources/minitscript/tests/context-test.tscript", "resources/minitscript/tests/context-test-2.tscript"], null)
 	testScript(["resources/minitscript/tests/cryptography-test.tscript"], null)
 	testScript(["resources/minitscript/tests/emit-test.tscript"], null)
+	testScript(
+		[
+			"resources/minitscript/tests/exception-test.tscript",
+			"resources/minitscript/tests/exception-module-test.tscript"
+		],
+		null
+	)
 	testScript(["resources/minitscript/tests/filesystem-test.tscript"], null)
 	testScript(["resources/minitscript/tests/functions-test.tscript"], null)
 	testScript(["resources/minitscript/tests/lamdafunctions-test.tscript"], null)

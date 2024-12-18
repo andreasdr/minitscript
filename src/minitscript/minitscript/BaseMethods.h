@@ -24,4 +24,11 @@ public:
 	 */
 	static void registerMethods(MinitScript* minitScript);
 
+	/**
+	 * Throw
+	 * @param minitScript minitScript
+	 * @param throwArgument throw argument
+	 * @returns if exception has been handled
+	 */
+	static bool _throw(MinitScript* minitScript, const MinitScript::Variable& throwArgument);
 };
