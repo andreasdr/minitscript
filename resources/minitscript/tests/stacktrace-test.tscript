@@ -42,9 +42,9 @@ end
 
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
-	console.printLine("-------------------------")
-	console.printLine("exception-test: Nothing")
-	console.printLine("-------------------------")
+	console.printLine("--------------------------")
+	console.printLine("stacktrace-test: Nothing")
+	console.printLine("--------------------------")
 	console.printLine()
 	function1()
 	module_function1()
@@ -53,9 +53,9 @@ end
 
 # an error has occurred
 on: error
-	console.printLine("-----------------------")
-	console.printLine("exception-test: Error")
-	console.printLine("-----------------------")
+	console.printLine("------------------------")
+	console.printLine("stacktrace-test: Error")
+	console.printLine("------------------------")
 	console.printLine("An error occurred")
 	script.stop()
 end
