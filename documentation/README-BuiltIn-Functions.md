@@ -38,12 +38,14 @@
 | <sub>break([$levels: Integer]): Null</sub>                                                       |
 | Begins a case block within a switch block, which will be executed if the case value has matched  |
 | <sub>case($value: Mixed): Null</sub>                                                             |
+| Catch block                                                                                      |
+| <sub>catch(&$exception: Mixed): Null</sub>                                                       |
 | Continue to next iteration of forCondition or forTime loop                                       |
 | <sub>continue([$levels: Integer]): Null</sub>                                                    |
 | Begins a default block within a switch block, which will be executed if no case value has matched|
 | <sub>default(): Null</sub>                                                                       |
 | Divide                                                                                           |
-| <sub>div($a: Mixed, $b: Mixed[, $operator: String]): Mixed</sub>                                 |
+| <sub>div($a: Mixed, $b: Mixed[, $operator: Integer]): Mixed</sub>                                |
 | Else                                                                                             |
 | <sub>else(): Null</sub>                                                                          |
 | Else if                                                                                          |
@@ -69,9 +71,9 @@
 | Lesser equals                                                                                    |
 | <sub>lesserEquals($a: Mixed, $b: Mixed[, $operator: Integer]): Boolean</sub>                     |
 | Compute modulo                                                                                   |
-| <sub>mod($value: Number, $range: Number[, $operator: String]): Number</sub>                      |
+| <sub>mod($value: Number, $range: Number[, $operator: Integer]): Number</sub>                     |
 | Multiply                                                                                         |
-| <sub>mul($a: Mixed, $b: Mixed[, $operator: String]): Mixed</sub>                                 |
+| <sub>mul($a: Mixed, $b: Mixed[, $operator: Integer]): Mixed</sub>                                |
 | Logical not                                                                                      |
 | <sub>not($boolean: Boolean[, $operator: Integer]): Boolean</sub>                                 |
 | Logical not equal                                                                                |
@@ -88,12 +90,18 @@
 | <sub>prefixIncrement(&$variable: Integer[, $operator: Integer]): Integer</sub>                   |
 | Returns from function with optional return value                                                 |
 | <sub>return([$value: Mixed]): Null</sub>                                                         |
+| Returns the current stack trace                                                                  |
+| <sub>stackTrace(): String</sub>                                                                  |
 | Subtract                                                                                         |
-| <sub>sub($a: Mixed, $b: Mixed[, $operator: String]): Mixed</sub>                                 |
+| <sub>sub($a: Mixed, $b: Mixed[, $operator: Integer]): Mixed</sub>                                |
 | Swap two variables                                                                               |
 | <sub>swap(&$a: Mixed, &$b: Mixed): Null</sub>                                                    |
 | Begins switch block to match a given value to case values or a default                           |
 | <sub>switch($value: Mixed): Null</sub>                                                           |
+| Throw an exception                                                                               |
+| <sub>throw($exception: Mixed): Null</sub>                                                        |
+| Try block                                                                                        |
+| <sub>try(): Null</sub>                                                                           |
 
 ## 1.2. Application functions
 
@@ -154,7 +162,7 @@
 | Remove a script from context                                                                     |
 | <sub>context.script.removeScript($scriptId: String): Null</sub>                                  |
 
-## 1.1. Cryptography Base64 functions
+## 1.7. Cryptography Base64 functions
 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of functions &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -356,7 +364,7 @@
 | Get last error statement if any exists                                                           |
 | <sub>script.error.getStatement(): ?Map</sub>                                                     |
 
-## 1.11. Time functions
+## 1.17. Time functions
 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of functions &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

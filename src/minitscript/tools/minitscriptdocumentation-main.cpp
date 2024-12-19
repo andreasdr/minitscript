@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 		Console::printLine(string("minitscriptdocumentation ") + Version::getVersion());
 		Console::printLine(Version::getCopyright());
 		Console::printLine();
-		Console::printLine("Usage: minitscriptdocumentation [--heading=n] classes|methods|variables|operators|keys|keywords");
+		Console::printLine("Usage: minitscriptdocumentation [--heading=n] classes|functions|variables|operators|keys|keywords");
 		Console::printLine();
 	};
 	//
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 	} else
 	if (documentationType == "methods") {
 		// base methods
-		auto methodsDocumentation = Documentation::generateMethodsDocumentation("Methods", heading, minitScript.get(), descriptions, "minitscript.basemethod.", allClassMethods);
+		auto methodsDocumentation = Documentation::generateMethodsDocumentation("Functions", heading, minitScript.get(), descriptions, "minitscript.basemethod.", allClassMethods);
 		Console::printLine(methodsDocumentation);
 	} else
 	if (documentationType == "variables") {

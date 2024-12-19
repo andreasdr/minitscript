@@ -292,7 +292,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					auto& blockStack = scriptState.blockStack;
 					// jump to end of current script
 					const auto& scripts = minitScript->getScripts();
-					const auto& statements = scripts[scriptState.scriptIdx].statements;
+					const auto& statements = scripts[scriptState.scriptIdx].getStatements();
 					//
 					blockStack.erase(blockStack.begin() + 1, blockStack.end());
 					//
@@ -507,8 +507,8 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 						scriptState.blockStack.emplace_back(
 							MinitScript::ScriptState::Block::TYPE_FORTIME,
 							false,
-							&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx - 1],
-							&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx],
+							&minitScript->rootScript->getScripts()[scriptState.scriptIdx].getStatements()[subStatement.statement->gotoStatementIdx - 1],
+							&minitScript->rootScript->getScripts()[scriptState.scriptIdx].getStatements()[subStatement.statement->gotoStatementIdx],
 							nullptr,
 							MinitScript::Variable()
 						);
@@ -558,8 +558,8 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							scriptState.blockStack.emplace_back(
 								MinitScript::ScriptState::Block::TYPE_FOR,
 								false,
-								&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx - 1],
-								&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx],
+								&minitScript->rootScript->getScripts()[scriptState.scriptIdx].getStatements()[subStatement.statement->gotoStatementIdx - 1],
+								&minitScript->rootScript->getScripts()[scriptState.scriptIdx].getStatements()[subStatement.statement->gotoStatementIdx],
 								nullptr,
 								iterationStacklet.empty() == true?MinitScript::Variable():MinitScript::Variable(static_cast<int64_t>(iterationStackletScriptIdx))
 							);
@@ -813,7 +813,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 					false,
 					nullptr,
 					nullptr,
-					&minitScript->getScripts()[scriptState.scriptIdx].statements[subStatement.statement->gotoStatementIdx],
+					&minitScript->rootScript->getScripts()[scriptState.scriptIdx].getStatements()[subStatement.statement->gotoStatementIdx],
 					MinitScript::Variable()
 				);
 			}
@@ -913,8 +913,8 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 						arguments.empty() == false?arguments[0]:MinitScript::Variable()
 					);
 					// jump to end of current script
-					const auto& scripts = minitScript->getScripts();
-					const auto& statements = scripts[scriptState.scriptIdx].statements;
+					const auto& scripts = minitScript->rootScript->getScripts();
+					const auto& statements = scripts[scriptState.scriptIdx].getStatements();
 					//
 					blockStack.erase(blockStack.begin() + 1, blockStack.end());
 					// unhandled global exception
@@ -2172,6 +2172,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 		};
 		minitScript->registerMethod(new MethodHexDecode(minitScript));
 	}
+	// swap
 	{
 		//
 		class SwapMethod: public MinitScript::Method {
@@ -2190,6 +2191,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 				return "swap";
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				//
 				if (arguments.size() == 2) {
 					MinitScript::Variable::swap(arguments[0], arguments[1]);
 				} else {
@@ -2199,6 +2201,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 		};
 		minitScript->registerMethod(new SwapMethod(minitScript));
 	}
+	// threading ...
 	{
 		//
 		class ConcurrencyGetHardwareThreadCountMethod: public MinitScript::Method {
@@ -2224,41 +2227,31 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 		};
 		minitScript->registerMethod(new ConcurrencyGetHardwareThreadCountMethod(minitScript));
 	}
-}
-
-bool BaseMethods::_throw(MinitScript* minitScript, const MinitScript::Variable& throwArgument) {
-	auto& scriptState = minitScript->getScriptState();
-	auto& blockStack = scriptState.blockStack;
-	auto& block = blockStack.back();
-	//
-	auto tryBlockIdx = -1;
-	for (int i = blockStack.size() - 1; i >= 0; i--) {
-		if (blockStack[i].type == MinitScript::ScriptState::Block::TYPE_TRY) {
-			tryBlockIdx = i;
-			break;
-		}
-	}
-	if (tryBlockIdx == -1) {
+	// stacktrace
+	{
 		//
-		blockStack.erase(blockStack.begin() + 1, blockStack.end());
-		//
-		return false;
-	} else {
-		auto catchStatement = blockStack[tryBlockIdx].catchStatement;
-		//
-		blockStack.erase(blockStack.begin() + tryBlockIdx + 1, blockStack.end());
-		//
-		blockStack.emplace_back(
-			MinitScript::ScriptState::Block::TYPE_CATCH,
-			false,
-			nullptr,
-			nullptr,
-			nullptr,
-			throwArgument
-		);
-		//
-		minitScript->gotoStatement(*catchStatement);
-		//
-		return true;
+		class StackTraceMethod: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			StackTraceMethod(MinitScript* minitScript):
+				MinitScript::Method(
+					{},
+					MinitScript::TYPE_STRING
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "stackTrace";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				//
+				if (arguments.empty() == true) {
+					returnValue.setValue(minitScript->stackTrace(arguments, subStatement));
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+				}
+			}
+		};
+		minitScript->registerMethod(new StackTraceMethod(minitScript));
 	}
 }

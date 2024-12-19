@@ -15,7 +15,7 @@ See section 1.3. for 1.0 BETA release TODO list.
 # 1. Introduction
 
 MinitScript is developed as part of our [TDME2 3D Engine](https://github.com/andreasdr/tdme2) to match
-the requirements for high performance script execution, as well as straight forward game logic scripting.
+the requirements for performant script execution, as well as straight forward game logic scripting.
 
 MinitScript might borrow some ideas from JavaScript, Kotlin, PHP and even Pascal, C# and C++, which you might like and find familier.
 Also note the focus on easy integration into other products and easy customizability and extendability.

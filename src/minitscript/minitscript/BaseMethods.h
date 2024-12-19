@@ -3,8 +3,11 @@
 #include <minitscript/minitscript.h>
 #include <minitscript/minitscript/fwd-minitscript.h>
 #include <minitscript/minitscript/MinitScript.h>
+#include <minitscript/utilities/StringTools.h>
 
 using minitscript::minitscript::MinitScript;
+
+using _StringTools = minitscript::utilities::StringTools;
 
 /**
  * MinitScript script base methods
@@ -24,11 +27,4 @@ public:
 	 */
 	static void registerMethods(MinitScript* minitScript);
 
-	/**
-	 * Throw
-	 * @param minitScript minitScript
-	 * @param throwArgument throw argument
-	 * @returns if exception has been handled
-	 */
-	static bool _throw(MinitScript* minitScript, const MinitScript::Variable& throwArgument);
 };

@@ -18,7 +18,7 @@ public:
 	/**
 	 * @brief Encodes an string to base 64 string
 	 * @param decodedString string to encode
-	 * @returns encodedString
+	 * @return encodedString
 	 */
 	inline static const string encode(const string& decodedString) {
 		string encodedString;
@@ -29,7 +29,7 @@ public:
 	/**
 	 * @brief Decodes an base64 encoded string
 	 * @param encodedString encoded string
-	 * @returns decodedString
+	 * @return decodedString
 	 */
 	inline static const string decode(const string& encodedString) {
 		string decodedString;

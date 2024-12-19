@@ -221,16 +221,23 @@ void MinitScript::initializeNativeModule(MinitScript* parentScript) {
 	// 	so iterate our module scripts
 	for (auto i = 0; i < scripts.size(); i++) {
 		auto& moduleScript = scripts[i];
-		// only applies for functions and stacklets
-		if (moduleScript.type != Script::TYPE_FUNCTION &&
-			moduleScript.type != Script::TYPE_STACKLET) {
-		       continue;
+        // only applies for functions and stacklets
+		if ((moduleScript.type != Script::TYPE_FUNCTION &&
+			moduleScript.type != Script::TYPE_STACKLET)) {
+			continue;
 		}
+		// only applies for functions and stacklets
 		// find module script in root native scripts
 		for (auto j = 0; j < rootScript->nativeScripts.size(); j++) {
 			auto& script = rootScript->nativeScripts[j];
 			//
-			if (moduleScript.condition == script.condition) {
+			if (moduleScript.condition == script.condition &&
+				moduleScript.name == script.name) {
+				//
+				if (moduleScript._module.empty() == true) {
+					script.moduleStatements = &(moduleScript.statements);
+				}
+				//
 				moduleScript.rootScriptIdx = j;
 			}
 		}
@@ -320,6 +327,7 @@ void MinitScript::registerDataType(DataType* dataType) {
 }
 
 void MinitScript::executeNextStatement() {
+	// Note: modules do not execute in their own MinitScript instance
 	auto& scriptState = getScriptState();
 	if (scriptState.scriptIdx == SCRIPTIDX_NONE || scriptState.statementIdx == STATEMENTIDX_NONE || scriptState.running == false) return;
 	//
@@ -3963,13 +3971,14 @@ bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& retur
 		// global scope?
 		if (getScriptStateStackSize() > 1) {
 			// function scope: rethrow
-			if (BaseMethods::_throw(this, exceptionThrowArgument) == true) {
+			if (_throw(rootScript->exceptionThrowArgument) == true) {
 				unsetException();
 			} else {
 				// goto "end" of current script
 				const auto& scriptState = getScriptState();
-				const auto& script = scripts[scriptState.scriptIdx];
-				gotoStatement(script.statements[script.statements.size() - 1]);
+				const auto& script = rootScript->scripts[scriptState.scriptIdx];
+				const auto& statements = script.getStatements();
+				gotoStatement(statements[statements.size() - 1]);
 			}
 		} else {
 			//
@@ -4121,7 +4130,7 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 		result+=
 			string() +
 			"\t" + "        " + ": start" + "\n";
-		for (const auto& statement: script.statements) {
+		for (const auto& statement: script.getStatements()) {
 			string newLineIndent; for (auto i = 0; i < indent + 2; i++) newLineIndent+= "  ";
 			result+=
 				string() +
@@ -5594,5 +5603,112 @@ void MinitScript::garbageCollection() {
 	for (auto index: garbageCollectionDataTypesIndicesCopy) {
 		auto& garbageCollectionDataType = garbageCollectionDataTypes[index];
 		garbageCollectionDataType.dataType->garbageCollection(garbageCollectionDataType.context);
+	}
+}
+
+const string MinitScript::stackTrace(const span<Variable>& arguments, const SubStatement& subStatement) {
+	//
+	auto createMethodName = [](MinitScript* rootScript, int scriptIdx) -> const string {
+		if (scriptIdx < 0 || scriptIdx >= rootScript->getScripts().size()) return string();
+		const auto& script = rootScript->getScripts()[scriptIdx];
+		//
+		string methodType;
+		switch(script.type) {
+			case MinitScript::Script::TYPE_NONE: break;
+			case MinitScript::Script::TYPE_FUNCTION: methodType = "function: "; break;
+			case MinitScript::Script::TYPE_STACKLET: methodType = "stacklet: "; break;
+			case MinitScript::Script::TYPE_ON: methodType = "on: "; break;
+			case MinitScript::Script::TYPE_ONENABLED: methodType = "on_enabled: "; break;
+		};
+		//
+		return
+			methodType + "_" +
+			(script.name.empty() == false?script.name:(
+				_StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
+					script.condition:
+					to_string(scriptIdx)
+				)
+			);
+	};
+
+	//
+	string result;
+	result+=
+		string() +
+		"Stack trace:" +
+		"\n";
+	//
+	auto j = 0;
+	for (int i = rootScript->scriptStateStack.size() - 1; i >= 0; --i) {
+		auto scriptState = rootScript->scriptStateStack[i].get();
+		const auto& script = rootScript->scripts[scriptState->scriptIdx];
+		const auto& statements = script.getStatements();
+		const auto& statement = statements[scriptState->statementIdx];
+		auto methodName = createMethodName(this->rootScript, scriptState->scriptIdx);
+		auto scriptMethod = rootScript->getMethod(methodName);
+		// arguments for script methods
+		string arguments = scriptMethod != nullptr?scriptMethod->getArgumentsInformation():string();
+		// arguments for functions and stacklets
+		if (script.type == MinitScript::Script::TYPE_FUNCTION || script.type == MinitScript::Script::TYPE_STACKLET) {
+			for (const auto& argument: script.arguments) {
+				auto variableIt = scriptState->variables.find(argument.name);
+				auto variable = variableIt == scriptState->variables.end()?MinitScript::Variable():variableIt->second;
+				if (arguments.empty() == false) arguments+= ", ";
+				arguments+= argument.name;
+			}
+		}
+		//
+		result+=
+			string() +
+			"[" + to_string(j) + "]: " +
+			statement.fileName +
+			":" +
+			to_string(statement.line) +
+			": " +
+			methodName +
+			"(" + arguments + "): " +
+			statement.statement +
+			(i > 0?"\n":"");
+		//
+		++j;
+	}
+	//
+	return result;
+}
+
+bool MinitScript::_throw(const MinitScript::Variable& throwArgument) {
+	auto& scriptState = getScriptState();
+	auto& blockStack = scriptState.blockStack;
+	auto& block = blockStack.back();
+	//
+	auto tryBlockIdx = -1;
+	for (int i = blockStack.size() - 1; i >= 0; i--) {
+		if (blockStack[i].type == MinitScript::ScriptState::Block::TYPE_TRY) {
+			tryBlockIdx = i;
+			break;
+		}
+	}
+	if (tryBlockIdx == -1) {
+		//
+		blockStack.erase(blockStack.begin() + 1, blockStack.end());
+		//
+		return false;
+	} else {
+		auto catchStatement = blockStack[tryBlockIdx].catchStatement;
+		//
+		blockStack.erase(blockStack.begin() + tryBlockIdx + 1, blockStack.end());
+		//
+		blockStack.emplace_back(
+			MinitScript::ScriptState::Block::TYPE_CATCH,
+			false,
+			nullptr,
+			nullptr,
+			nullptr,
+			throwArgument
+		);
+		//
+		gotoStatement(*catchStatement);
+		//
+		return true;
 	}
 }

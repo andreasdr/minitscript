@@ -680,7 +680,7 @@ public:
 
 		/**
 		 * Get array sub type, see ARRAY_SUBTYPE_*
-		 * @returns array sub type
+		 * @return array sub type
 		 */
 		inline int getArraySubType() {
 			if (isReference() == false) {
@@ -949,7 +949,7 @@ public:
 		/**
 		 * Create variable optimized for method argument usage
 		 * @param variable variable
-		 * @returns reference/non reference variable based on data type
+		 * @return reference/non reference variable based on data type
 		 */
 		inline static Variable createMethodArgumentVariable(const Variable* variable) {
 			auto createReference = false;
@@ -986,7 +986,7 @@ public:
 		/**
 		 * Create reference variable
 		 * @param variable variable
-		 * @returns reference variable
+		 * @return reference variable
 		 */
 		inline static Variable createReferenceVariable(const Variable* variable) {
 			Variable referenceVariable;
@@ -997,7 +997,7 @@ public:
 		/**
 		 * Create reference variable pointer
 		 * @param variable variable
-		 * @returns reference variable
+		 * @return reference variable
 		 */
 		inline static Variable* createReferenceVariablePointer(const Variable* variable) {
 			auto referenceVariable = new Variable();
@@ -1008,7 +1008,7 @@ public:
 		/**
 		 * Create none reference variable
 		 * @param variable variable
-		 * @returns reference variable
+		 * @return reference variable
 		 */
 		inline static Variable createNonReferenceVariable(const Variable* variable) {
 			Variable nonReferenceVariable;
@@ -1021,7 +1021,7 @@ public:
 		/**
 		 * Create none reference variable pointer
 		 * @param variable variable
-		 * @returns reference variable
+		 * @return reference variable
 		 */
 		inline static Variable* createNonReferenceVariablePointer(const Variable* variable) {
 			auto nonReferenceVariable = new Variable();
@@ -3102,6 +3102,14 @@ public:
 			arguments(arguments),
 			rootScriptIdx(rootScriptIdx)
 		{}
+
+		/**
+		 * @return statements
+		 */
+		inline const vector<Statement>& getStatements() const {
+			return moduleStatements != nullptr?*moduleStatements:statements;
+		}
+
 		//
 		string _module;
 		Type type;
@@ -3118,7 +3126,10 @@ public:
 		vector<SyntaxTreeNode> syntaxTree;
 		bool callable;
 		vector<Argument> arguments;
+		// modules
 		int rootScriptIdx;
+		// safe to use, also with modules
+		vector<Statement> const * moduleStatements { nullptr };
 	};
 
 	static constexpr int SCRIPTIDX_NONE { -1 };
@@ -3361,7 +3372,7 @@ protected:
 	 * @param defaultOperatorString default operator string
 	 * @return operator string
 	 */
-	static const string decodeOperator(const span<MinitScript::Variable>& arguments, int operatorValueIdx, const string& defaultOperatorString) {
+	inline static const string decodeOperator(const span<MinitScript::Variable>& arguments, int operatorValueIdx, const string& defaultOperatorString) {
 		//
 		int64_t operatorValue;
 		if (MinitScript::getIntegerValue(arguments, operatorValueIdx, operatorValue) == false) return defaultOperatorString;
@@ -3418,14 +3429,14 @@ protected:
 	void dumpScriptState(ScriptState& scriptState, const string& message = string());
 
 	/**
-	 * @returns has script state
+	 * @return has script state
 	 */
 	inline bool hasScriptState() {
 		return rootScript->scriptStateStack.empty() == false;
 	}
 
 	/**
-	 * @returns get script state stack size
+	 * @return get script state stack size
 	 */
 	inline int getScriptStateStackSize() {
 		return rootScript->scriptStateStack.size();
@@ -3563,7 +3574,7 @@ protected:
 	 * @return has exception
 	 */
 	inline bool hasException() {
-		return exceptionSubStatement.statement != nullptr;
+		return rootScript->exceptionSubStatement.statement != nullptr;
 	}
 
 	/**
@@ -3573,18 +3584,18 @@ protected:
 	 * @param throwArgument throwArgument
 	 */
 	inline void setException(int scriptIdx, const MinitScript::SubStatement& subStatement, const Variable& throwArgument) {
-		this->exceptionScriptIdx = scriptIdx;
-		this->exceptionSubStatement = subStatement;
-		this->exceptionThrowArgument = throwArgument;
+		this->rootScript->exceptionScriptIdx = scriptIdx;
+		this->rootScript->exceptionSubStatement = subStatement;
+		this->rootScript->exceptionThrowArgument = throwArgument;
 	}
 
 	/**
 	 * Unset exception
 	 */
 	inline void unsetException() {
-		this->exceptionScriptIdx = STATEMENTIDX_NONE;
-		this->exceptionSubStatement = SubStatement();
-		this->exceptionThrowArgument.unset();
+		this->rootScript->exceptionScriptIdx = STATEMENTIDX_NONE;
+		this->rootScript->exceptionSubStatement = SubStatement();
+		this->rootScript->exceptionThrowArgument.unset();
 	}
 
 	/**
@@ -4603,14 +4614,14 @@ public:
 	}
 
 	/**
-	 * @returns if this MinitScript instance is a module
+	 * @return if this MinitScript instance is a module
 	 */
 	inline bool isModule() {
 		return _module;
 	}
 
 	/**
-	 * @returns modules in use
+	 * @return modules in use
 	 */
 	inline const vector<string>& getModules() {
 		return modules;
@@ -5529,5 +5540,19 @@ public:
 	 * @return information as string
 	 */
 	const string getInformation();
+
+	/**
+	 * Stack trace
+	 * @param arguments arguments
+	 * @param subStatement sub statement
+	 */
+	const string stackTrace(const span<Variable>& arguments, const SubStatement& subStatement);
+
+	/**
+	 * Throw
+	 * @param throwArgument throw argument
+	 * @return if exception has been handled
+	 */
+	bool _throw(const MinitScript::Variable& throwArgument);
 
 };

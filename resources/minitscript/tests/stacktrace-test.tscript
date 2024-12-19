@@ -1,0 +1,61 @@
+use: stacktrace-module-test.tscript
+
+# initialize
+on: initialize
+	console.printLine("-----------------------------")
+	console.printLine("stacktrace-test: Initialize")
+	console.printLine("-----------------------------")
+	console.printLine()
+end
+
+function: function1()
+	console.printLine("-------------------")
+	console.printLine("function1(): init")
+	console.printLine("-------------------")
+	function2()
+	console.printLine("-------------------")
+	console.printLine("function1(): done")
+	console.printLine("-------------------")
+end
+
+function: function2()
+	console.printLine("-------------------")
+	console.printLine("function2(): init")
+	console.printLine("-------------------")
+	function3()
+	console.printLine("-------------------")
+	console.printLine("function2(): done")
+	console.printLine("-------------------")
+	console.printLine()
+end
+
+function: function3()
+	console.printLine("-------------------")
+	console.printLine("function3(): init")
+	console.printLine("-------------------")
+	console.printLine(stackTrace())
+	console.printLine("-------------------")
+	console.printLine("function3(): done")
+	console.printLine("-------------------")
+	console.printLine()
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.printLine("-------------------------")
+	console.printLine("exception-test: Nothing")
+	console.printLine("-------------------------")
+	console.printLine()
+	function1()
+	module_function1()
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.printLine("-----------------------")
+	console.printLine("exception-test: Error")
+	console.printLine("-----------------------")
+	console.printLine("An error occurred")
+	script.stop()
+end

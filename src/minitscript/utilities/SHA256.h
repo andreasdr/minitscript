@@ -18,7 +18,7 @@ public:
 	/**
 	 * @brief Encodes an string to SHA256 string
 	 * @param decodedString string to encode
-	 * @returns encodedString
+	 * @return encodedString
 	 */
 	inline static const string encode(const string& decodedString) {
 		string encodedString;

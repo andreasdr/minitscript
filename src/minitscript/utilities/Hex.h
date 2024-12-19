@@ -19,7 +19,7 @@ public:
 	/**
 	 * @brief Encodes an 64 bit unsigned integer to a hex string representation
 	 * @param decodedInt int value to encode
-	 * @returns encodedString
+	 * @return encodedString
 	 */
 	inline static const string encodeInt(const uint64_t decodedInt) {
 		string encodedString;
@@ -30,7 +30,7 @@ public:
 	/**
 	 * @brief Decodes a hex string representation to an 64 bit unsigned integer
 	 * @param encodedInt string value to decode
-	 * @returns decodedString
+	 * @return decodedString
 	 */
 	inline static uint64_t decodeInt(const string& encodedString) {
 		uint64_t decodedInt;

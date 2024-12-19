@@ -229,6 +229,13 @@ on: nothing
 	#testScript(["resources/minitscript/tests/network-test.tscript"], null)
 	testScript(["resources/minitscript/tests/pipe-test.tscript"], "./tests/pipe-test.input")
 	testScript(["resources/minitscript/tests/preprocessor-test.tscript"], null)
+	testScript(
+		[
+			"resources/minitscript/tests/stacktrace-test.tscript",
+			"resources/minitscript/tests/stacktrace-module-test.tscript"
+		],
+		null
+	)
 	testScript(["resources/minitscript/tests/string-test.tscript"], null)
 	testScript(["resources/minitscript/tests/switch-test.tscript"], null)
 	testScript(["resources/minitscript/tests/utf8-test.tscript"], null)

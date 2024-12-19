@@ -2989,7 +2989,6 @@ bool Transpiler::transpile(MinitScript* minitScript, const string& className, st
 	//
 	generatedCodeHeader+= methodIndent + "// script setup" + "\n";
 	generatedCodeHeader+= methodIndent + "auto minitScript = this;" + "\n";
-	generatedCodeHeader+= methodIndent + "getScriptState().scriptIdx = " + to_string(scriptIdx) + ";" + "\n";
 
 	// method name
 	auto methodName = createMethodName(minitScript, scriptIdx);

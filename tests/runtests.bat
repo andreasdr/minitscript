@@ -18,6 +18,7 @@
 REM .\bin\minitscript\tools\minitscript resources\minitscript\tests\network-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\pipe-test.tscript < tests\pipe-test.input
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\preprocessor-test.tscript
+.\bin\minitscript\tools\minitscript resources\minitscript\tests\stacktrace-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\string-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\switch-test.tscript
 .\bin\minitscript\tools\minitscript resources\minitscript\tests\utf8-test.tscript

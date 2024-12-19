@@ -23,7 +23,7 @@ public:
 	/**
 	 * Determine IP version
 	 * @param ip ip
-	 * @returns ip version
+	 * @return ip version
 	 */
 	static IpVersion determineIpVersion(const string& ip);
 
