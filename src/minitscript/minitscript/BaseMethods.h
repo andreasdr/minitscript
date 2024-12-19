@@ -3,11 +3,8 @@
 #include <minitscript/minitscript.h>
 #include <minitscript/minitscript/fwd-minitscript.h>
 #include <minitscript/minitscript/MinitScript.h>
-#include <minitscript/utilities/StringTools.h>
 
 using minitscript::minitscript::MinitScript;
-
-using _StringTools = minitscript::utilities::StringTools;
 
 /**
  * MinitScript script base methods
