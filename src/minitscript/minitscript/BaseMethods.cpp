@@ -2291,38 +2291,6 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 		};
 		minitScript->registerMethod(new MethodSubScript(minitScript));
 	}
-	// subscript operator
-	{
-		//
-		class MethodSubScriptEnd: public MinitScript::Method {
-		private:
-			MinitScript* minitScript { nullptr };
-		public:
-			MethodSubScriptEnd(MinitScript* minitScript):
-				MinitScript::Method(
-					{
-						{ .type = MinitScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
-						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
-					},
-					MinitScript::TYPE_PSEUDO_MIXED
-				),
-				minitScript(minitScript) {}
-			const string getMethodName() override {
-				return "subscriptnew";
-			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
-				if ((arguments.size() == 1 || arguments.size() == 2) &&
-					arguments[0].getType() == MinitScript::TYPE_ARRAY) {
-					arguments[0].pushArrayEntry(MinitScript::Variable());
-					auto arrayEntryPtr = arguments[0].getArrayEntryPtr(arguments[0].getArraySize() - 1);
-					if (arrayEntryPtr != nullptr) returnValue.setReference(arrayEntryPtr);
-				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAINO(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()));
-				}
-			}
-		};
-		minitScript->registerMethod(new MethodSubScriptEnd(minitScript));
-	}
 	// property operator
 	{
 		//

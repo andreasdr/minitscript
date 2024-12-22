@@ -33,8 +33,9 @@ on: nothing
 	#console.printLine($array)
 	#$i = 1
 	#console.printLine($array[$i * 2 + 1])
-	$array = [1, 2, 3]
+	$array = [1, 2, 3, [a, b, c]]
 	$array[] = 8
+	$array[3][] = d
 	console.printLine($array)
 	script.stop()
 end

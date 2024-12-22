@@ -926,9 +926,9 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 		//
 		return true;
 	} else {
-		_Console::printLine(getStatementInformation(statement, subLineIdx) + ": A: Unknown function/method: " + string(methodName) + "()");
+		_Console::printLine(getStatementInformation(statement, subLineIdx) + ": Unknown function/method: " + string(methodName) + "()");
 		//
-		parseErrors.push_back(getStatementInformation(statement, subLineIdx) + ": B: Unknown function/method: " + string(methodName) + "()");
+		parseErrors.push_back(getStatementInformation(statement, subLineIdx) + ": Unknown function/method: " + string(methodName) + "()");
 		//
 		return false;
 	}
@@ -3521,6 +3521,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 								string leftArgumentBrackets;
 								int leftArgumentLength = 0;
 								auto leftArgument = findLeftArgument(preprocessedStatement, i - 1, leftArgumentLength, leftArgumentBrackets);
+								//
 								if (leftArgument.length() == 0) continue;
 								// find idx2
 								bool _lamdaFunctionDeclaration = false;
