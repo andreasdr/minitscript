@@ -35,10 +35,10 @@ Also note the focus on easy integration into other products and easy customizabi
   - can be easily extended by writing state machine machine states and script methods in C++ as well as custom data types
   - built-in data types: null, boolean, integer, float, string, byte array, array, map and set, ...
   - when calling script C++ methods or script functions with arguments it does optionally use references or value by copy
-  - supports functions/stacklets and recursion
-  - supports lamda functions and inline stacklets
   - supports operators by operator to method mapping by a preprocessor run
   - supports loops, conditions and switch/case/default blocks
+  - supports functions/stacklets and recursion
+  - supports lamda functions and inline stacklets
   - supports exceptions
   - supports programming with classes style programming
     - for built-in datatypes: string, byte array, array, map and set, ...

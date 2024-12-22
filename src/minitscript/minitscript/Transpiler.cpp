@@ -1820,7 +1820,6 @@ void Transpiler::generateArrayAccessMethods(
 									// parse array access statment at current index
 									string_view arrayAccessMethodName;
 									vector<MinitScript::ParserArgument> arrayAccessArguments;
-									string accessObjectMemberStatement;
 									// create a pseudo statement (information)
 									MinitScript::Statement arrayAccessStatement(
 										minitScript->getScriptFileName(),
@@ -1831,7 +1830,7 @@ void Transpiler::generateArrayAccessMethods(
 										MinitScript::STATEMENTIDX_NONE
 									);
 									// parse script statement
-									if (minitScript->parseStatement(string_view(arrayAccessStatementString), arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement, accessObjectMemberStatement) == false) {
+									if (minitScript->parseStatement(string_view(arrayAccessStatementString), arrayAccessMethodName, arrayAccessArguments, arrayAccessStatement) == false) {
 										break;
 									}
 									// create syntax tree for this array access

@@ -24,6 +24,7 @@ using _Console = minitscript::utilities::Console;
 
 MinitScript* NativeLibrary::loadScript(const string& pathName, const string& fileName, const string& basePathName) {
 	_Console::printLine("NativeLibrary::loadScript(): " + pathName + "/" + fileName + (basePathName.empty() == false?" @ " + basePathName:""));
+	//
 	unique_ptr<MinitScript> script;
 	//
 	{$library-code}

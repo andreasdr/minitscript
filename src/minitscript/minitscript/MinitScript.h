@@ -79,6 +79,9 @@ public:
 		// see: https://en.cppreference.com/w/cpp/language/operator_precedence
 		OPERATOR_NONE,
 		// priority 2
+		OPERATOR_SUBSCRIPT,
+		OPERATOR_MEMBERACCESS_PROPERTY,
+		OPERATOR_MEMBERACCESS_EXECUTE,
 		OPERATOR_POSTFIX_INCREMENT,
 		OPERATOR_POSTFIX_DECREMENT,
 		// priority 3
@@ -1983,6 +1986,18 @@ public:
 		}
 
 		/**
+		 * Get entry pointer from array with given index
+		 * @param idx index
+		 * @return entry from array with given index
+		 */
+		inline const Variable* getArrayEntryPtr(int64_t idx) const {
+			if (getType() != TYPE_ARRAY) return nullptr;
+			const auto& arrayValue = getArrayValueReference();
+			if (idx >= 0 && idx < arrayValue.size()) return arrayValue[idx];
+			return nullptr;
+		}
+
+		/**
 		 * Set entry in array with given index
 		 * @param idx index
 		 */
@@ -3793,10 +3808,9 @@ private:
 	 * @param methodName method name
 	 * @param arguments arguments
 	 * @param statement statment
-	 * @param accessObjectMember generated access object member statement
 	 * @return success
 	 */
-	bool parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement, string& accessObjectMemberStatement);
+	bool parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement);
 
 	/**
 	 * Execute a statement
@@ -3919,17 +3933,6 @@ private:
 	 * @param statement statement
 	 */
 	const string doStatementPreProcessing(const string& processedStatement, const Statement& statement);
-
-	/**
-	 * Returns if statement has a object member access
-	 * @param executableStatement executable statement
-	 * @param object object
-	 * @param method method
-	 * @param methodStartIdx method start index
-	 * @param statement statement
-	 * @return statement has a object member access
-	 */
-	bool getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, int& methodStartIdx, const Statement& statement);
 
 	/**
 	 * Get access operator left and right indices
@@ -4806,6 +4809,9 @@ public:
 	inline static string getOperatorAsString(Operator operator_) {
 		switch(operator_) {
 			case(OPERATOR_NONE): return "NONE";
+			case(OPERATOR_SUBSCRIPT): return "[]";
+			case(OPERATOR_MEMBERACCESS_PROPERTY): return ".";
+			case(OPERATOR_MEMBERACCESS_EXECUTE): return "->";
 			case(OPERATOR_POSTFIX_INCREMENT): return "++";
 			case(OPERATOR_POSTFIX_DECREMENT): return "--";
 			case(OPERATOR_PREFIX_INCREMENT): return "++";

@@ -177,7 +177,7 @@ on: nothing
 	console.printLine("MinitScript build script")
 	console.printLine("--------------------------")
 	console.printLine()
-	if (application.getArguments()->isEmpty() == true)
+	if (application.getArguments()->getSize() <= 1)
 		console.printLine("Usage: minitscriptbuild [--application|--library] [--native-only] main-script.tscript [additional-script1.tscript] [additional-script2.tscript] [additional-scriptN.tscript]")
 	else
 		$scriptURIs = application.getArguments()

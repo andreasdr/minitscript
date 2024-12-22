@@ -6,6 +6,38 @@ on: initialize
 	console.printLine()
 end
 
+function: bubbleSortA(&$array)
+	$startTime = time.getCurrentMillis()
+	# best code quality, but less performance
+	for ($i = 1, $i < $array->getSize(), ++$i)
+		for ($j = 0, $j < $array->getSize() - $i, ++$j)
+			if ($array[$j] > $array[$j + 1])
+				swap($array[$j], $array[$j + 1])
+			end
+		end
+	end
+end
+
+function: bubbleSortB(&$array)
+	# this is faster,
+	# without stacklets, which are generated if using "for" instead of "forCondition",
+	# and function style programming
+	$i = 1
+	forCondition ($i < Array::getSize($array))
+		$j = 0
+		forCondition ($j < Array::getSize($array) - $i)
+			if (
+				Array::get($array, $j) >
+				Array::get($array, $j + 1)
+			)
+				swap($array[$j], $array[$j + 1])
+			end
+			$j++
+		end
+		$i++
+	end
+end
+
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
 	console.printLine("--------------------------")
@@ -18,36 +50,30 @@ on: nothing
 	$startTime = time.getCurrentMillis()
 	#
 	$array = [];
-	for ($i = 0, $i < $count, $i++)
+	for ($i = 0, $i < $count, ++$i)
 		$array[] = $count - $i
 	end
-	$endTime = time.getCurrentMillis()
-	console.printLine(", time: " + ($endTime - $startTime) + ": " + $array)
-	#
-	console.print("Sorting array of integers with " + $count + " entries")
+
+	$arrayA = $array
+	$arrayB = $array
+	# test bubble sort A
 	$startTime = time.getCurrentMillis()
-	# best code quality, but less performance
-	#for ($i = 1, $i < $array->getSize(), $i++)
-	#	for ($j = 0, $j < $array->getSize() - $i, $j++)
-	#		if ($array[$j] > $array[$j + 1]) 
-	#			swap($array[$j], $array[$j + 1])
-	#		end
-	#	end
-	#end
-	# this way is multiple times faster, without stacklets, which are generated if using "for" instead of "forCondition"
-	$i = 1
-	forCondition ($i < $array->getSize())
-		$j = 0
-		forCondition ($j < $array->getSize() - $i)
-			if ($array[$j] > $array[$j + 1]) 
-				swap($array[$j], $array[$j + 1])
-			end
-			$j++
-		end
-		$i++
-	end
+	bubbleSortA($arrayA)
 	$endTime = time.getCurrentMillis()
-	console.printLine(", time: " + ($endTime - $startTime) + ": " + $array)
+	console.printLine($arrayA)
+	console.printLine()
+	console.printLine("bubbleSortA: Time: " + ($endTime - $startTime) + ": " + $array)
+	console.printLine()
+
+	# test bubble sort B
+	$startTime = time.getCurrentMillis()
+	bubbleSortB($arrayB)
+	$endTime = time.getCurrentMillis()
+	console.printLine($arrayB)
+	console.printLine()
+	console.printLine("bubbleSortB: Time: " + ($endTime - $startTime) + ": " + $array)
+	console.printLine()
+
 	#
 	script.stop()
 end

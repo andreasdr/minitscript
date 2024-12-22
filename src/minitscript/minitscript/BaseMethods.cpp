@@ -974,7 +974,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 						}
 					}
 				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+					MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Can not compare '" + arguments[0].getValueAsString() + "' with '" + arguments[1].getValueAsString() + "'");
 				}
 			}
 			MinitScript::Operator getOperator() const override {
@@ -2253,5 +2253,217 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 			}
 		};
 		minitScript->registerMethod(new StackTraceMethod(minitScript));
+	}
+	// subscript operator
+	{
+		//
+		class MethodSubScript: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodSubScript(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "index", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
+					},
+					MinitScript::TYPE_PSEUDO_MIXED
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "subscript";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				int64_t index;
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					arguments[0].getType() == MinitScript::TYPE_ARRAY &&
+					MinitScript::getIntegerValue(arguments, 1, index) == true) {
+					auto arrayEntryPtr = arguments[0].getArrayEntryPtr(index);
+					if (arrayEntryPtr != nullptr) returnValue.setReference(arrayEntryPtr);
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAINO(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()));
+				}
+			}
+			MinitScript::Operator getOperator() const override {
+				return MinitScript::OPERATOR_SUBSCRIPT;
+			}
+		};
+		minitScript->registerMethod(new MethodSubScript(minitScript));
+	}
+	// subscript operator
+	{
+		//
+		class MethodSubScriptEnd: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodSubScriptEnd(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_ARRAY, .name = "array", .optional = false, .reference = true, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
+					},
+					MinitScript::TYPE_PSEUDO_MIXED
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "subscriptnew";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				if ((arguments.size() == 1 || arguments.size() == 2) &&
+					arguments[0].getType() == MinitScript::TYPE_ARRAY) {
+					arguments[0].pushArrayEntry(MinitScript::Variable());
+					auto arrayEntryPtr = arguments[0].getArrayEntryPtr(arguments[0].getArraySize() - 1);
+					if (arrayEntryPtr != nullptr) returnValue.setReference(arrayEntryPtr);
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAINO(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()));
+				}
+			}
+		};
+		minitScript->registerMethod(new MethodSubScriptEnd(minitScript));
+	}
+	// property operator
+	{
+		//
+		class MethodProperty: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodProperty(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_MAP, .name = "object", .optional = false, .reference = true, .nullable = false },
+						{ .type = MinitScript::TYPE_STRING, .name = "property", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
+					},
+					MinitScript::TYPE_PSEUDO_MIXED
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "property";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				string key;
+				if ((arguments.size() == 2 || arguments.size() == 3) &&
+					arguments[0].getType() == MinitScript::TYPE_MAP &&
+					MinitScript::getStringValue(arguments, 1, key) == true) {
+					auto mapEntryPtr = arguments[0].getMapEntryPtr(key);
+					if (mapEntryPtr != nullptr) returnValue.setReference(mapEntryPtr);
+				} else {
+					MINITSCRIPT_METHODUSAGE_COMPLAINO(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()));
+				}
+			}
+			MinitScript::Operator getOperator() const override {
+				return MinitScript::OPERATOR_MEMBERACCESS_PROPERTY;
+			}
+		};
+		minitScript->registerMethod(new MethodProperty(minitScript));
+	}
+	// execute operator
+	{
+		//
+		class MethodProperty: public MinitScript::Method {
+		private:
+			MinitScript* minitScript { nullptr };
+		public:
+			MethodProperty(MinitScript* minitScript):
+				MinitScript::Method(
+					{
+						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "object", .optional = false, .reference = true, .nullable = false },
+						{ .type = MinitScript::TYPE_STRING, .name = "method", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
+					},
+					MinitScript::TYPE_PSEUDO_MIXED
+				),
+				minitScript(minitScript) {}
+			const string getMethodName() override {
+				return "execute";
+			}
+			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+				string methodName;
+				//
+				if (arguments.size() < 3 ||
+					minitScript->getStringValue(arguments, 1, methodName, false) == false) {
+					MINITSCRIPT_METHODUSAGE_COMPLAINO(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()));
+				} else {
+					// complain?
+					auto complain = true;
+					// check if map, if so fetch function assignment of member property
+					auto functionScriptIdx = MinitScript::SCRIPTIDX_NONE;
+					if (arguments[0].getType() == MinitScript::TYPE_MAP) {
+						string function;
+						auto mapValue = arguments[0].getMapEntry(methodName);
+						if (mapValue.getType() == MinitScript::TYPE_FUNCTION_ASSIGNMENT && mapValue.getFunctionValue(function, functionScriptIdx) == true) {
+							// check if private and private scope
+							if (mapValue.isPrivate() == true && arguments[0].isPrivateScope() == false) {
+								complain = false;
+								functionScriptIdx = MinitScript::SCRIPTIDX_NONE;
+								_Console::printLine(minitScript->getSubStatementInformation(subStatement) + ": Private variable: " + /*thisVariableName*/ + "No variable name: access not allowed from outside of object");
+							} else
+							// no function idx, so get it
+							if (functionScriptIdx == MinitScript::SCRIPTIDX_NONE) functionScriptIdx = minitScript->getFunctionScriptIdx(function);
+						}
+					}
+					//
+					const auto& className = arguments[0].getTypeAsString();
+					//
+					if (className.empty() == false || functionScriptIdx != MinitScript::SCRIPTIDX_NONE) {
+						//
+						MinitScript::Method* method { nullptr };
+						if (functionScriptIdx == MinitScript::SCRIPTIDX_NONE) {
+							#if defined(__MINITSCRIPT_TRANSPILATION__)
+								method = evaluateMemberAccessArrays[static_cast<int>(arguments[1].getType()) - static_cast<int>(MinitScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
+							#else
+								method = minitScript->getMethod(className + "::" + methodName);
+							#endif
+						}
+						if (method != nullptr || functionScriptIdx != MinitScript::SCRIPTIDX_NONE) {
+							// create method call arguments
+							vector<MinitScript::Variable> callArguments(arguments.size() - 2);
+							//	this
+							callArguments[0] = move(arguments[0]);
+							//
+							for (auto argumentIdx = 2; argumentIdx < arguments.size() - 1; argumentIdx++) {
+								callArguments[argumentIdx - 1] = move(arguments[argumentIdx]);
+							}
+							//
+							span callArgumentsSpan(callArguments);
+							//
+							if (method != nullptr) {
+								method->executeMethod(callArgumentsSpan, returnValue, subStatement);
+							} else
+							if (functionScriptIdx != MinitScript::SCRIPTIDX_NONE) {
+								minitScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
+							}
+							//
+							// write back arguments from call arguments
+							//	this
+							arguments[0] = move(callArguments[0]);
+							//	additional arguments
+							{
+								for (auto argumentIdx = 2; argumentIdx < arguments.size() - 1; argumentIdx++) {
+									arguments[argumentIdx] = move(callArguments[argumentIdx - 1]);
+								}
+							}
+						} else {
+							if (complain == true) {
+								MINITSCRIPT_METHODUSAGE_COMPLAINOM(getMethodName(), MinitScript::decodeOperator(arguments, 2, getMethodName()), "Class/object member not found: " + methodName + "()");
+							}
+						}
+					} else {
+						if (complain == true) {
+							MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+						}
+					}
+				}			}
+			bool isVariadic() const override {
+				return true;
+			}
+			MinitScript::Operator getOperator() const override {
+				return MinitScript::OPERATOR_MEMBERACCESS_EXECUTE;
+			}
+		};
+		minitScript->registerMethod(new MethodProperty(minitScript));
 	}
 }

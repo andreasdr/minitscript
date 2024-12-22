@@ -200,16 +200,6 @@ on: nothing
 	console.printLine("set does have test3 key using $set->contains(): ", $set->contains("test3"))
 	console.printLine("set does have test4 key using $set->contains(): ", $set->contains("test4"))
 	console.printLine("set does have test5 key using $set->contains(): ", $set->contains("test5"))
-	console.printLine("set key for test1 using set dot operator: ", $set.test1)
-	console.printLine("set key for test2 using set dot operator: ", $set.test2)
-	console.printLine("set key for test3 using set dot operator: ", $set.test3)
-	console.printLine("set key for test4 using set dot operator: ", $set.test4)
-	console.printLine("set key for test5 using set dot operator: ", $set.test5)
-	console.printLine("inserting set values using set dot operator: ")
-	$set.test6 = true
-	$set.test7 = true
-	$set.test8 = false
-	$set.test9 = true
 	console.printLine("set keys: ", $set->getKeys())
 	script.stop()
 end

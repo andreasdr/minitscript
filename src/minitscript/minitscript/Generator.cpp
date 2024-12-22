@@ -66,6 +66,10 @@ void Generator::generateLibrary(
 		libraryIncludes+= string() + "#include \"" + className + ".h\"" + "\n";
 		libraryCode+= string() + "\t" + "if (scriptURI == \"" + scriptURI + "\") {" + "\n";
 		libraryCode+= string() + "\t\t" + "script = make_unique<" + className + ">();" + "\n";
+		libraryCode+= string() + "\t\t" + "if (script->isModule() == true) {" + "\n";
+		libraryCode+= string() + "\t\t\t" + "script = nullptr;" + "\n";
+		libraryCode+= string() + "\t\t\t" + "_Console::printLine(scriptURI + \": Unable to load a module script.\");" + "\n";
+		libraryCode+= string() + "\t\t" + "}" + "\n";
 		libraryCode+= string() + "\t" + "} else" + "\n";
 	}
 

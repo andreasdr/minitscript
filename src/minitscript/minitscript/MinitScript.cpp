@@ -37,6 +37,7 @@
 #include <minitscript/minitscript/SetMethods.h>
 #include <minitscript/minitscript/StringMethods.h>
 #include <minitscript/minitscript/TimeMethods.h>
+#include <minitscript/minitscript/Transpiler.h>
 #include <minitscript/minitscript/XMLMethods.h>
 
 #include <minitscript/math/Math.h>
@@ -91,6 +92,7 @@ using minitscript::minitscript::ScriptMethods;
 using minitscript::minitscript::SetMethods;
 using minitscript::minitscript::StringMethods;
 using minitscript::minitscript::TimeMethods;
+using minitscript::minitscript::Transpiler;
 using minitscript::minitscript::XMLMethods;
 
 // TODO: we can remove the _ here again, as MinitScript.cpp is not a transpilation unit anymore
@@ -105,7 +107,7 @@ using _SHA256 = minitscript::utilities::SHA256;
 using _Time = minitscript::utilities::Time;
 using _Thread = minitscript::os::threading::Thread;
 
-const string MinitScript::OPERATOR_CHARS = "+-!~/%<>=&^|";
+const string MinitScript::OPERATOR_CHARS = "[].->+-!~/*%<>=&^|";
 
 vector<MinitScript::DataType*> MinitScript::dataTypes;
 MinitScript::ShutdownRAII MinitScript::shutdownRAII(MinitScript::dataTypes);
@@ -356,13 +358,9 @@ void MinitScript::executeNextStatement() {
 	}
 }
 
-bool MinitScript::parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement, string& accessObjectMemberStatement) {
+bool MinitScript::parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement) {
 	if (VERBOSE == true) _Console::printLine("MinitScript::parseStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
-	//
-	string_view objectMemberAccessObject;
-	string_view objectMemberAccessMethod;
 	int executableStatementStartIdx = 0;
-	auto objectMemberAccess = getObjectMemberAccess(executableStatement, objectMemberAccessObject, objectMemberAccessMethod, executableStatementStartIdx, statement);
 	auto bracketCount = 0;
 	auto squareBracketCount = 0;
 	auto curlyBracketCount = 0;
@@ -410,23 +408,6 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		}
 	};
 	//
-	auto isObjectMemberAccess = [&]() -> bool {
-		//
-		auto j = i + 1;
-		// spaces
-		for (; j < executableStatement.size() && _Character::isSpace(executableStatement[j]) == true; j++);
-		//
-		if (j >= executableStatement.size()) return false;
-		// -
-		if (executableStatement[j++] != '-') return false;
-		//
-		if (j >= executableStatement.size()) return false;
-		// >
-		if (executableStatement[j++] != '>') return false;
-		//
-		return true;
-	};
-	//
 	methodStart = executableStatementStartIdx;
 	//
 	for (; i < executableStatement.size(); i++) {
@@ -450,16 +431,6 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 				//
 				if (bracketCount == 1) {
 					quotedArgumentEnd = i;
-					//
-					if (isObjectMemberAccess() == true) {
-						//
-						if (quotedArgumentStart != string::npos) {
-							argumentStart = quotedArgumentStart;
-							argumentEnd = string::npos;
-							quotedArgumentStart = string::npos;
-							quotedArgumentEnd = string::npos;
-						}
-					}
 				}
 				//
 				quote = '\0';
@@ -547,50 +518,6 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		if (methodEnd == string::npos) methodEnd = i - 1;
 		//
 		methodName = _StringTools::viewTrim(string_view(&executableStatement[methodStart], methodEnd - methodStart + 1));
-	}
-
-	// handle object member access and generate internal.script.evaluateMemberAccess call
-	if (objectMemberAccess == true) {
-		// construct executable statement and arguments
-		string_view evaluateMemberAccessMethodName;
-		vector<ParserArgument> evaluateMemberAccessArguments;
-
-		//
-		auto objectMemberAccessObjectVariable = viewIsVariableAccess(objectMemberAccessObject);
-
-		// construct new method name and argument string views
-		accessObjectMemberStatement.reserve(16384); // TODO: check me later
-		auto idx = accessObjectMemberStatement.size();
-		accessObjectMemberStatement+= "internal.script.evaluateMemberAccess";
-		evaluateMemberAccessMethodName = string_view(&accessObjectMemberStatement.data()[idx], accessObjectMemberStatement.size() - idx);
-		accessObjectMemberStatement+= "(";
-		idx = accessObjectMemberStatement.size();
-		accessObjectMemberStatement+= objectMemberAccessObjectVariable == true?"\"" + string(objectMemberAccessObject) + "\"":"null";
-		evaluateMemberAccessArguments.emplace_back(string_view(&accessObjectMemberStatement.data()[idx], accessObjectMemberStatement.size() - idx), 0);
-		idx = accessObjectMemberStatement.size();
-		accessObjectMemberStatement+= ", ";
-		idx = accessObjectMemberStatement.size();
-		accessObjectMemberStatement+= objectMemberAccessObjectVariable == true?"null":string(objectMemberAccessObject);
-		evaluateMemberAccessArguments.emplace_back(string_view(&accessObjectMemberStatement.data()[idx], accessObjectMemberStatement.size() - idx), 0);
-		accessObjectMemberStatement+= ", ";
-		idx = accessObjectMemberStatement.size();
-		accessObjectMemberStatement+= "\"" + string(methodName) + "\"";
-		evaluateMemberAccessArguments.emplace_back(string_view(&accessObjectMemberStatement.data()[idx], accessObjectMemberStatement.size() - idx), 0);
-		for (const auto& argument: arguments) {
-			auto argumentVariable = viewIsVariableAccess(argument.argument);
-			accessObjectMemberStatement+= ", ";
-			idx = accessObjectMemberStatement.size();
-			accessObjectMemberStatement+= argumentVariable == true?"\"" + string(argument.argument) + "\"":"null";
-			evaluateMemberAccessArguments.emplace_back(string_view(&accessObjectMemberStatement.data()[idx], accessObjectMemberStatement.size() - idx), 0);
-			accessObjectMemberStatement+= ", ";
-			idx = accessObjectMemberStatement.size();
-			accessObjectMemberStatement+= argumentVariable == true?"null":string(argument.argument);
-			evaluateMemberAccessArguments.emplace_back(string_view(&accessObjectMemberStatement.data()[idx], accessObjectMemberStatement.size() - idx), 0);
-		}
-		accessObjectMemberStatement+= ")";
-		// set up new results
-		methodName = evaluateMemberAccessMethodName;
-		arguments = evaluateMemberAccessArguments;
 	}
 
 	//
@@ -878,8 +805,6 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 	auto argumentIdx = 0;
 	for (const auto& argument: arguments) {
 		// object member access
-		string_view accessObjectMemberObject;
-		string_view accessObjectMemberMethod;
 		int accessObjectMemberStartIdx;
 		vector<string_view> lamdaFunctionStackletArguments;
 		string_view lamdaFunctionStackletScriptCode;
@@ -905,22 +830,6 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 			SyntaxTreeNode subSyntaxTree(SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL, variable, nullptr, {}, subLineIdx + argument.subLineIdx);
 			syntaxTree.arguments.push_back(subSyntaxTree);
 		} else
-		if (getObjectMemberAccess(argument.argument, accessObjectMemberObject, accessObjectMemberMethod, accessObjectMemberStartIdx, statement) == true) {
-			// object member access
-			string_view subMethodName;
-			vector<ParserArgument> subArguments;
-			string accessObjectMemberStatement;
-			//
-			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
-				SyntaxTreeNode subSyntaxTree;
-				if (createStatementSyntaxTree(scriptFileName, scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
-					return false;
-				}
-				syntaxTree.arguments.push_back(subSyntaxTree);
-			} else {
-				return false;
-			}
-		} else
 		// plain variable
 		if (viewIsVariableAccess(argument.argument) == true) {
 			//
@@ -928,9 +837,10 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 			value.setValue(deescape(argument.argument, statement));
 			// look up getVariable method
 			string methodName =
-				argumentIdx >= argumentReferences.size() || argumentReferences[argumentIdx] == false?
-					(method != nullptr?"getMethodArgumentVariable":"getVariable"):
-					"getVariableReference";
+				method != nullptr && method->getMethodName() == "execute" && argumentIdx >= 3?"getVariableReference":
+					(argumentIdx >= argumentReferences.size() || argumentReferences[argumentIdx] == false?
+							(method != nullptr?"getMethodArgumentVariable":"getVariable"):
+							"getVariableReference");
 			//
 			Method* method = nullptr;
 			{
@@ -971,9 +881,8 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 			// method call
 			string_view subMethodName;
 			vector<ParserArgument> subArguments;
-			string accessObjectMemberStatement;
 			//
-			if (parseStatement(argument.argument, subMethodName, subArguments, statement, accessObjectMemberStatement) == true) {
+			if (parseStatement(argument.argument, subMethodName, subArguments, statement) == true) {
 				SyntaxTreeNode subSyntaxTree;
 				if (createStatementSyntaxTree(scriptFileName, scriptIdx, subMethodName, subArguments, statement, subSyntaxTree, subLineIdx + argument.subLineIdx) == false) {
 					return false;
@@ -1017,9 +926,9 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 		//
 		return true;
 	} else {
-		_Console::printLine(getStatementInformation(statement, subLineIdx) + ": Unknown function/method: " + string(methodName) + "()");
+		_Console::printLine(getStatementInformation(statement, subLineIdx) + ": A: Unknown function/method: " + string(methodName) + "()");
 		//
-		parseErrors.push_back(getStatementInformation(statement, subLineIdx) + ": Unknown function/method: " + string(methodName) + "()");
+		parseErrors.push_back(getStatementInformation(statement, subLineIdx) + ": B: Unknown function/method: " + string(methodName) + "()");
 		//
 		return false;
 	}
@@ -2570,10 +2479,9 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					// parse for statement
 					string_view forMethodName;
 					vector<ParserArgument> forArguments;
-					string accessObjectMemberStatement;
 					string executableStatement = doStatementPreProcessing(statementCode, generatedStatement);
 					// success?
-					if (parseStatement(executableStatement, forMethodName, forArguments, generatedStatement, accessObjectMemberStatement) == true &&
+					if (parseStatement(executableStatement, forMethodName, forArguments, generatedStatement) == true &&
 						forArguments.size() == 3) {
 						// create initialize statement
 						string initializeStatement = string(forArguments[0].argument);
@@ -2913,8 +2821,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 		if (script.emitCondition == false && script.executableCondition.empty() == false) {
 			string_view method;
 			vector<ParserArgument> arguments;
-			string accessObjectMemberStatement;
-			if (parseStatement(script.executableCondition, method, arguments, script.conditionStatement, accessObjectMemberStatement) == false) {
+			if (parseStatement(script.executableCondition, method, arguments, script.conditionStatement) == false) {
 				scriptValid = false;
 				return false;
 			} else
@@ -2930,8 +2837,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 			auto& syntaxTree = script.syntaxTree.back();
 			string_view methodName;
 			vector<ParserArgument> arguments;
-			string accessObjectMemberStatement;
-			if (parseStatement(statement.executableStatement, methodName, arguments, statement, accessObjectMemberStatement) == false) {
+			if (parseStatement(statement.executableStatement, methodName, arguments, statement) == false) {
 				scriptValid = false;
 				return false;
 			} else
@@ -3239,11 +3145,11 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 	//
 	struct StatementOperator {
 		int idx { OPERATORIDX_NONE };
-		Operator operator_;
-		string invalidOperator;
+		int idx2 { OPERATORIDX_NONE };
+		Operator operator_ { OPERATOR_NONE };
 	};
 	//
-	auto trimArgument = [](const string& argument) -> const string {
+	auto trimArgument = [](const string& argument, bool removeBrackets = true) -> const string {
 		auto leftNewLineCount = 0;
 		for (auto i = 0; i < argument.size(); i++) {
 			auto c = argument[i];
@@ -3265,13 +3171,14 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 		}
 		auto processedArgument = _StringTools::trim(argument);
-		if (_StringTools::startsWith(processedArgument, "(") == true && _StringTools::endsWith(processedArgument, ")") == true) {
+		if (removeBrackets == true &&
+			_StringTools::startsWith(processedArgument, "(") == true && _StringTools::endsWith(processedArgument, ")") == true) {
 			processedArgument = _StringTools::substring(processedArgument, 1, processedArgument.size() - 1);
 		}
 		return processedArgument.empty() == true?string():_StringTools::generate("\n", leftNewLineCount) + processedArgument + _StringTools::generate("\n", rightNewLineCount);
 	};
 	//
-	auto findLeftArgument = [&](const string& statement, int position, int& length, string& brackets) -> const string {
+	auto findLeftArgument = [&](const string& statement, int position, int& length, string& brackets, bool removeBrackets = true) -> const string {
 		//
 		auto bracketCount = 0;
 		auto squareBracketCount = 0;
@@ -3311,7 +3218,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					bracketCount--;
 					if (bracketCount < 0) {
 						brackets = "()";
-						return trimArgument(argument);
+						return trimArgument(argument, removeBrackets);
 					}
 					argument = c + argument;
 				} else
@@ -3319,7 +3226,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					squareBracketCount--;
 					if (squareBracketCount < 0) {
 						brackets = "[]";
-						return trimArgument(argument);
+						return trimArgument(argument, removeBrackets);
 					}
 					argument = c + argument;
 				} else
@@ -3327,12 +3234,12 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					curlyBracketCount--;
 					if (curlyBracketCount < 0) {
 						brackets = "{}";
-						return trimArgument(argument);
+						return trimArgument(argument, removeBrackets);
 					}
 					argument = c + argument;
 				} else
 				if (squareBracketCount == 0 && curlyBracketCount == 0 && c == ',') {
-					if (bracketCount == 0) return trimArgument(argument);
+					if (bracketCount == 0) return trimArgument(argument, removeBrackets);
 					argument = c + argument;
 				} else {
 					argument = c + argument;
@@ -3343,10 +3250,10 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			length++;
 		}
-		return trimArgument(argument);
+		return trimArgument(argument, removeBrackets);
 	};
 	//
-	auto findRightArgument = [&](const string& statement, int position, int& length, string& brackets) -> const string {
+	auto findRightArgument = [&](const string& statement, int position, int& length, string& brackets, bool removeBrackets = true) -> const string {
 		//
 		auto bracketCount = 0;
 		auto squareBracketCount = 0;
@@ -3385,7 +3292,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					bracketCount--;
 					if (bracketCount < 0) {
 						brackets = "()";
-						return trimArgument(argument);
+						return trimArgument(argument, removeBrackets);
 					}
 					argument+= c;
 				} else
@@ -3396,7 +3303,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 						// no
 						if (squareBracketCount < 0) {
 							brackets = "[]";
-							return trimArgument(argument);
+							return trimArgument(argument, removeBrackets);
 						}
 					}
 					argument+= c;
@@ -3405,12 +3312,12 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					curlyBracketCount--;
 					if (curlyBracketCount < 0) {
 						brackets = "{}";
-						return trimArgument(argument);
+						return trimArgument(argument, removeBrackets);
 					}
 					argument+= c;
 				} else
 				if (squareBracketCount == 0 && curlyBracketCount == 0 && c == ',') {
-					if (bracketCount == 0) return trimArgument(argument);
+					if (bracketCount == 0) return trimArgument(argument, removeBrackets);
 					//
 					if (argument.empty() == true && (c == ' ' || c == '\t')) {
 						// no op
@@ -3434,7 +3341,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			lc = lc == '\\' && c == '\\'?'\0':c;
 		}
 		//
-		return trimArgument(argument);
+		return trimArgument(argument, removeBrackets);
 	};
 	//
 	auto viewIsLamdaFunction = [](const string_view& candidate) -> bool {
@@ -3554,27 +3461,31 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 							if (isOperatorChar(processedStatement[j]) == false) break;
 							operatorCandidate = operatorCandidate + processedStatement[j];
 						}
-						// skip on empty operator or -> object member call
-						if (operatorCandidate.empty() == false && operatorCandidate != "->") {
-							// invalid operator
-							if (isOperator(operatorCandidate) == false) {
-								nextOperator.idx = i;
-								nextOperator.operator_ = OPERATOR_NONE;
-								nextOperator.invalidOperator = operatorCandidate;
-							}
+						// skip on empty operator or invalid operators
+						if (operatorCandidate.empty() == true ||
+							(isOperator(operatorCandidate) == false && operatorCandidate != "[")) {
+							continue;
 						}
 					}
+					//
 					for (int j = OPERATOR_NONE + 1; j < OPERATOR_MAX; j++) {
 						auto priorizedOperator = static_cast<Operator>(j);
 						string operatorCandidate;
 						auto operatorString = getOperatorAsString(priorizedOperator);
-						if (operatorString.size() == 1) operatorCandidate+= processedStatement[i];
-						if (operatorString.size() == 2 && i + 1 < processedStatement.size()) {
+						if (priorizedOperator == OPERATOR_SUBSCRIPT) operatorString = _StringTools::substring(operatorString, 0, 1);
+						if (operatorString.size() == 1) {
+							operatorCandidate+= processedStatement[i];
+						}
+						if (operatorString.size() == 2 &&
+							i + 1 < processedStatement.size()) {
 							operatorCandidate+= processedStatement[i];
 							operatorCandidate+= processedStatement[i + 1];
 						}
+						//
 						if (operatorString == operatorCandidate && (nextOperator.idx == OPERATORIDX_NONE || priorizedOperator > nextOperator.operator_)) {
+							auto idx2 = -1;
 							auto isMemberAccessOrAssignmentOperator = [](const string& candidate) { return candidate == "->"; };
+							auto isSubscriptOperator = [](const string& candidate) { return candidate == "["; };
 							if (operatorString.size() == 1 &&
 								i > 0 &&
 								isOperatorChar(processedStatement[i - 1]) == true &&
@@ -3604,8 +3515,102 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 								auto leftArgumentLeft = 0;
 								auto leftArgument = findLeftArgument(processedStatement, i - 1, leftArgumentLeft, leftArgumentBrackets);
 								if (leftArgument.length() == 0) continue;
+							} else
+							if (priorizedOperator == OPERATOR_SUBSCRIPT) {
+								// find left argument
+								string leftArgumentBrackets;
+								int leftArgumentLength = 0;
+								auto leftArgument = findLeftArgument(preprocessedStatement, i - 1, leftArgumentLength, leftArgumentBrackets);
+								if (leftArgument.length() == 0) continue;
+								// find idx2
+								bool _lamdaFunctionDeclaration = false;
+								auto _squareBracketCount = 0;
+								auto _curlyBracketCount = 0;
+								auto _bracketCount = 0;
+								auto _quote = '\0';
+								auto _lc = '\0';
+								for (auto k = i; k < processedStatement.size(); k++) {
+									auto _c = processedStatement[k];
+									if ((_c == '"' || _c == '\'') && _lc != '\\') {
+										if (_quote == '\0') {
+											_quote = _c;
+										} else
+										if (_quote == _c) {
+											_quote = '\0';
+										}
+									} else
+									if (_quote == '\0') {
+										if (_c == '(') {
+											// read ahead if inline/lambda function
+											string_view lamdaFunctionCandidate(&processedStatement[k], processedStatement.size() - k);
+											if (viewIsLamdaFunction(lamdaFunctionCandidate) == true) _lamdaFunctionDeclaration = true;
+											_bracketCount++;
+										} else
+										if (_c == ')') {
+											if (_lamdaFunctionDeclaration == true) _lamdaFunctionDeclaration = false;
+											_bracketCount--;
+										} else
+										if (_c == '{') {
+											_curlyBracketCount++;
+										} else
+										if (_c == '}') {
+											_curlyBracketCount--;
+										} else
+										if (_c == '[') {
+											_squareBracketCount++;
+										} else
+										if (_c == ']') {
+											_squareBracketCount--;
+										}
+										//
+										if (_bracketCount == 0 &&
+											_curlyBracketCount == 0 &&
+											_lamdaFunctionDeclaration == false &&
+											_squareBracketCount == 0) {
+											//
+											idx2 = k;
+											// done here
+											break;
+										}
+									}
+									//
+									_lc = _lc == '\\' && _c == '\\'?'\0':_c;
+								}
+							} else
+							if (priorizedOperator == OPERATOR_MEMBERACCESS_PROPERTY) {
+								// find left argument
+								string leftArgumentBrackets;
+								int leftArgumentLength = 0;
+								auto leftArgument = findLeftArgument(preprocessedStatement, i - 1, leftArgumentLength, leftArgumentBrackets);
+								// needs to be a variable or function/method call
+								if (leftArgument.length() == 0 ||
+									(leftArgument[0] != '$' &&
+									leftArgument[leftArgument.size() - 1] != ')')) {
+									continue;
+								}
+								// no $$, $GLOBAL
+								if (leftArgument == "$$" ||
+									leftArgument == "$GLOBAL") {
+									continue;
+								}
+							} else
+							if (priorizedOperator == OPERATOR_MEMBERACCESS_EXECUTE) {
+								// find left argument
+								string leftArgumentBrackets;
+								int leftArgumentLength = 0;
+								auto leftArgument = findLeftArgument(preprocessedStatement, i - 1, leftArgumentLength, leftArgumentBrackets, false);
+								// check for inline function/lambda
+								//	which happens if no left argument or we have argument definition
+								if (leftArgument.empty() == true ||
+									(leftArgument[0] == '(' &&
+									leftArgument[leftArgument.size() - 1] == ')')) {
+									//
+									continue;
+								}
 							}
+							//
 							nextOperator.idx = i;
+							nextOperator.idx2 = idx2;
 							nextOperator.operator_ = priorizedOperator;
 						}
 					}
@@ -3613,7 +3618,6 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			lc = lc == '\\' && c == '\\'?'\0':c;
 		}
-
 		//
 		if (bracketCount > 0) {
 			//
@@ -3632,12 +3636,8 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 	//
 	StatementOperator nextOperator;
 	while (getNextStatementOperator(preprocessedStatement, nextOperator, statement) == true) {
-		//
-		if (nextOperator.invalidOperator.empty() == false) {
-			_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": Invalid operator: " + nextOperator.invalidOperator);
-			scriptValid = false;
-			return preprocessedStatement;
-		}
+		static int z = 0;
+		//_Console::printLine(to_string(z) + ": pre: Operator " + getOperatorAsString(nextOperator.operator_) + "@" + to_string(nextOperator.idx) + "..." + to_string(nextOperator.idx2));
 		//
 		Method* method { nullptr };
 		Method* prefixOperatorMethod { nullptr };
@@ -3673,19 +3673,89 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				method->getOperator() == OPERATOR_PREFIX_DECREMENT) {
 				//
 				if (prefixOperatorMethod == nullptr) {
-					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": No prefix operator method found");
+					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": No prefix operator method found");
 					scriptValid = false;
 					return preprocessedStatement;
 				}
 				//
 				if (postfixOperatorMethod == nullptr) {
-					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": No postfix operator method found");
+					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": No postfix operator method found");
 					scriptValid = false;
 					return preprocessedStatement;
 				}
 			}
 		}
 		//
+		if (nextOperator.operator_ == OPERATOR_SUBSCRIPT) {
+			// find the single argument right
+			auto operatorString = getOperatorAsString(nextOperator.operator_);
+			// find left argument
+			string leftArgumentBrackets;
+			int leftArgumentLength = 0;
+			auto leftArgument = findLeftArgument(preprocessedStatement, nextOperator.idx - 1, leftArgumentLength, leftArgumentBrackets);
+			// find index
+			auto index = doStatementPreProcessing(_StringTools::substring(preprocessedStatement, nextOperator.idx + 1, nextOperator.idx2), statement);
+			//
+			auto leftArgumentNewLines = 0;
+			for (auto i = 0; i < leftArgument.size(); i++) {
+				auto c = leftArgument[i];
+				if (c == '\n') leftArgumentNewLines++; else break;
+			}
+
+			// substitute with method call
+			preprocessedStatement =
+				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
+				_StringTools::generate("\n", leftArgumentNewLines) +
+				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + index + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
+				_StringTools::substring(preprocessedStatement, nextOperator.idx2 + 1, preprocessedStatement.size()
+			);
+		} else
+		if (nextOperator.operator_ == OPERATOR_MEMBERACCESS_EXECUTE) {
+			//
+			auto operatorString = getOperatorAsString(nextOperator.operator_);
+			// find left argument
+			string leftArgumentBrackets;
+			int leftArgumentLength = 0;
+			auto leftArgument = findLeftArgument(preprocessedStatement, nextOperator.idx - 1, leftArgumentLength, leftArgumentBrackets);
+			// find right argument
+			string rightArgumentBrackets;
+			int rightArgumentLength = 0;
+			auto rightArgument = findRightArgument(preprocessedStatement, nextOperator.idx + operatorString.size(), rightArgumentLength, rightArgumentBrackets);
+			// object member access
+			string_view subMethodName;
+			vector<ParserArgument> subArguments;
+			//
+			if (parseStatement(rightArgument, subMethodName, subArguments, statement) == false) {
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Could not parse statement: " + rightArgument);
+				scriptValid = false;
+				return preprocessedStatement;
+			}
+			string arguments;
+			arguments+= "\"" + _StringTools::replace(_StringTools::replace(string(subMethodName), "\\", "\\\\"), "\"", "\\\"") + "\"";
+			for (const auto& argument: subArguments) {
+				arguments+= ", " + string(argument.argument);
+			}
+			//
+			if (leftArgument.empty() == true || rightArgument.empty() == true) {
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
+				scriptValid = false;
+				return preprocessedStatement;
+			}
+			//
+			auto leftArgumentNewLines = 0;
+			for (auto i = 0; i < leftArgument.size(); i++) {
+				auto c = leftArgument[i];
+				if (c == '\n') leftArgumentNewLines++; else break;
+			}
+			// substitute with method call
+			preprocessedStatement =
+				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
+				_StringTools::generate("\n", leftArgumentNewLines) +
+				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + arguments + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
+				_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
+			);
+			//
+		} else
 		if (method->isVariadic() == false &&
 			method->getArgumentTypes().size() == 2) {
 			// find the single argument right
@@ -3721,7 +3791,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					postfixOperatorMethod->getMethodName() + "(" + rightArgument + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
 					_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size());
 			} else {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": Requires left or right argument");
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left or right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3740,7 +3810,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			auto rightArgument = findRightArgument(preprocessedStatement, nextOperator.idx + operatorString.size(), rightArgumentLength, rightArgumentBrackets);
 			//
 			if (leftArgument.empty() == true || rightArgument.empty() == true) {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": Requires left and right argument");
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3763,95 +3833,12 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			);
 			//
 		}
+		//_Console::printLine(to_string(z++) + ": post: Operator " + getOperatorAsString(nextOperator.operator_) + "@" + to_string(nextOperator.idx) + "..." + to_string(nextOperator.idx2));
 		//
 		nextOperator = StatementOperator();
 	}
 	//
 	return preprocessedStatement;
-}
-
-bool MinitScript::getObjectMemberAccess(const string_view& executableStatement, string_view& object, string_view& method, int& methodStartIdx, const Statement& statement) {
-	//
-	auto objectMemberAccess = false;
-	auto objectStartIdx = string::npos;
-	auto objectEndIdx = string::npos;
-	auto memberCallStartIdx = string::npos;
-	auto memberCallEndIdx = string::npos;
-	//
-	auto quote = '\0';
-	auto lc = '\0';
-	auto bracketCount = 0;
-	auto squareBracketCount = 0;
-	auto curlyBracketCount = 0;
-	for (auto i = 0; i < executableStatement.size(); i++) {
-		//
-		auto c = executableStatement[i];
-		// handle quotes
-		if ((c == '"' || c == '\'') && lc != '\\') {
-			if (quote == '\0') {
-				quote = c;
-			} else
-			if (quote == c) {
-				quote = '\0';
-			}
-		} else
-		if (quote != '\0') {
-			// no op
-		} else
-		if (c == '(') {
-			bracketCount++;
-		} else
-		if (c == ')') {
-			bracketCount--;
-		} else
-		if (c == '[') {
-			squareBracketCount++;
-		} else
-		if (c == ']') {
-			squareBracketCount--;
-		} else
-		if (c == '{') {
-			curlyBracketCount++;
-		} else
-		if (c == '}') {
-			curlyBracketCount--;
-		} else
-		if (i > 2 &&
-			lc == '-' && c == '>' &&
-			bracketCount == 0 &&
-			squareBracketCount == 0 &&
-			curlyBracketCount == 0) {
-			//
-			auto objectStartIdxCandidate = 0;
-			auto objectEndIdxCandidate = i - 1;
-			auto memberCallStartIdxCandidate = i + 1;
-			auto memberCallEndIdxCandidate = executableStatement.size();
-			//
-			auto objectCandidate = _StringTools::viewTrim(string_view(&executableStatement[objectStartIdxCandidate], objectEndIdxCandidate - objectStartIdxCandidate));
-			auto methodCandidate = _StringTools::viewTrim(string_view(&executableStatement[memberCallStartIdxCandidate], memberCallEndIdxCandidate - memberCallStartIdxCandidate));
-			// we need to check the serious candidates here
-			if (objectCandidate.empty() == false &&
-				methodCandidate.empty() == false &&
-				(viewIsStringLiteral(objectCandidate) == true || viewIsVariableAccess(objectCandidate) == true || viewIsCall(objectCandidate) == true)) {
-				//
-				objectStartIdx = objectStartIdxCandidate;
-				objectEndIdx = objectEndIdxCandidate;
-				memberCallStartIdx = memberCallStartIdxCandidate;
-				memberCallEndIdx = memberCallEndIdxCandidate;
-				//
-				object = objectCandidate;
-				method = methodCandidate;
-				//
-				methodStartIdx = memberCallStartIdx;
-				objectMemberAccess = true;
-				// dont break here, we can have multiple member access operators here, but we want the last one in this step
-			}
-		}
-		//
-		lc = lc == '\\' && c == '\\'?'\0':c;
-	}
-	//
-	return objectMemberAccess;
 }
 
 void MinitScript::dumpScriptState(ScriptState& scriptState, const string& message) {
@@ -4147,6 +4134,10 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 		}
 		result+= "\n";
 	}
+	//
+	result+= "\n";
+	result+= Transpiler::createSourceCode(this);
+	result+= "\n";
 	//
 	return result;
 }
@@ -5122,10 +5113,9 @@ void MinitScript::Variable::setFunctionCallStatement(const string& scriptFileNam
 	//
 	string_view methodName;
 	vector<ParserArgument> arguments;
-	string accessObjectMemberStatement;
 	SyntaxTreeNode* evaluateSyntaxTree = new SyntaxTreeNode();
 	//
-	if (minitScript->parseStatement(initializerStatement, methodName, arguments, initializerScriptStatement, accessObjectMemberStatement) == false) {
+	if (minitScript->parseStatement(initializerStatement, methodName, arguments, initializerScriptStatement) == false) {
 		//
 	} else
 	if (minitScript->createStatementSyntaxTree(scriptFileName, scriptIdx, methodName, arguments, initializerScriptStatement, *evaluateSyntaxTree) == false) {
@@ -5348,9 +5338,8 @@ inline bool MinitScript::evaluateInternal(const string& statement, const string&
 	//
 	string_view methodName;
 	vector<ParserArgument> arguments;
-	string accessObjectMemberStatement;
 	SyntaxTreeNode evaluateSyntaxTree;
-	if (parseStatement(scriptEvaluateStatement, methodName, arguments, evaluateStatement, accessObjectMemberStatement) == false) {
+	if (parseStatement(scriptEvaluateStatement, methodName, arguments, evaluateStatement) == false) {
 		return false;
 	} else
 	if (createStatementSyntaxTree("evaluate", SCRIPTIDX_NONE, methodName, arguments, evaluateStatement, evaluateSyntaxTree) == false) {
