@@ -3883,7 +3883,9 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			//
 			string arguments;
-			arguments+= "\"" + _StringTools::replace(_StringTools::replace(string(subMethodName), "\\", "\\\\"), "\"", "\\\"") + "\"";
+			// TODO: not required really, would require string operations on validation
+			// arguments+= "\"" + string(subMethodName) + "\"";
+			arguments+= string(subMethodName);
 			arguments+= ", " + to_string(encodeOperatorString(operatorString));
 			for (const auto& argument: subArguments) {
 				arguments+= ", " + string(argument.argument);
