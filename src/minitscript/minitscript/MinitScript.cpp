@@ -37,7 +37,6 @@
 #include <minitscript/minitscript/SetMethods.h>
 #include <minitscript/minitscript/StringMethods.h>
 #include <minitscript/minitscript/TimeMethods.h>
-#include <minitscript/minitscript/Transpiler.h>
 #include <minitscript/minitscript/XMLMethods.h>
 
 #include <minitscript/math/Math.h>
@@ -92,7 +91,6 @@ using minitscript::minitscript::ScriptMethods;
 using minitscript::minitscript::SetMethods;
 using minitscript::minitscript::StringMethods;
 using minitscript::minitscript::TimeMethods;
-using minitscript::minitscript::Transpiler;
 using minitscript::minitscript::XMLMethods;
 
 // TODO: we can remove the _ here again, as MinitScript.cpp is not a transpilation unit anymore
