@@ -173,7 +173,7 @@ const string Documentation::generateClassesDocumentation(const string& heading, 
 	return result;
 }
 
-const string Documentation::generateMethodsDocumentation(const string& heading, int mainHeadingIdx, MinitScript* minitScript, Properties& descriptions, const string& descriptionPrefix, const set<string>& allClassMethods, MinitScript* excludeMinitScript) {
+const string Documentation::generateFunctionsDocumentation(const string& heading, int mainHeadingIdx, MinitScript* minitScript, Properties& descriptions, const string& descriptionPrefix, const set<string>& allClassMethods, MinitScript* excludeMinitScript) {
 	auto scriptMethods = minitScript->getMethods();
 	map<string, vector<pair<string, string>>> methodMarkupByCategory;
 	for (auto scriptMethod: scriptMethods) {

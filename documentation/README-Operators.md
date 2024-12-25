@@ -16,6 +16,8 @@
 | -  | sub($a: Mixed, $b: Mixed[, $operator: Integer]): Mixed                                      |
 | -- | postfixDecrement(&$variable: Integer[, $operator: Integer]): Integer                        |
 | -- | prefixDecrement(&$variable: Integer[, $operator: Integer]): Integer                         |
+| -> | memberExecute(&$object: Mixed, $method: String, $operator: Integer, ...): Mixed             |
+| .  | memberProperty(&$object: Map, $property: String[, $operator: Integer]): Mixed               |
 | /  | div($a: Mixed, $b: Mixed[, $operator: Integer]): Mixed                                      |
 | <  | lesser($a: Mixed, $b: Mixed[, $operator: Integer]): Boolean                                 |
 | <= | lesserEquals($a: Mixed, $b: Mixed[, $operator: Integer]): Boolean                           |
@@ -23,6 +25,7 @@
 | == | equals($a: Mixed, $b: Mixed[, $operator: Integer]): Boolean                                 |
 | >  | greater($a: Mixed, $b: Mixed[, $operator: Integer]): Boolean                                |
 | >= | greaterEquals($a: Mixed, $b: Mixed[, $operator: Integer]): Boolean                          |
+| [] | subscript(&$array: Array, $index: Integer[, $operator: Integer]): Mixed                     |
 | \| | bitwiseOr($a: Integer, $b: Integer[, $operator: Integer]): Integer                          |
 | \|\|| or($a: Boolean, $b: Boolean[, $operator: Integer]): Boolean                                |
 | ^  | bitwiseXor($a: Integer, $b: Integer[, $operator: Integer]): Integer                         |

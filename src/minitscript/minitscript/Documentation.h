@@ -59,7 +59,7 @@ public:
 	);
 
 	/**
-	 * Generate methods documentation
+	 * Generate functions documentation
 	 * @param heading heading
 	 * @param mainHeadingIdx main heading index
 	 * @param minitScript MinitScript script instance
@@ -69,7 +69,7 @@ public:
 	 * @param excludeMinitScript exclude MinitScript script instance
 	 * @return documentation
 	 */
-	static const string generateMethodsDocumentation(
+	static const string generateFunctionsDocumentation(
 		const string& heading,
 		int mainHeadingIdx,
 		MinitScript* minitScript,

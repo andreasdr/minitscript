@@ -32,8 +32,6 @@
 | <sub>firstIndexOf($what: String[, $beginIndex: Integer]): Integer</sub>                          |
 | Returns first index of characters provided within given string in string                         |
 | <sub>firstIndexOfChars($what: String[, $beginIndex: Integer]): Integer</sub>                     |
-| Returns string length in number of characters                                                    |
-| <sub>getLength(): Integer</sub>                                                                  |
 | Returns string size in bytes                                                                     |
 | <sub>getSize(): Integer</sub>                                                                    |
 | Indent string                                                                                    |

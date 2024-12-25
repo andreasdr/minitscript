@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 	auto documentationType = string(argv[argIdx]);
 	array<string, 6> documentationTypes = {
 		"classes",
-		"methods",
+		"functions",
 		"variables",
 		"operators",
 		"keys",
@@ -106,9 +106,9 @@ int main(int argc, char** argv)
 		auto classesDocumentation = Documentation::generateClassesDocumentation("Classes", heading, minitScript.get(), descriptions, "minitscript.basemethod.", allClassMethods);
 		Console::printLine(classesDocumentation);
 	} else
-	if (documentationType == "methods") {
+	if (documentationType == "functions") {
 		// base methods
-		auto methodsDocumentation = Documentation::generateMethodsDocumentation("Functions", heading, minitScript.get(), descriptions, "minitscript.basemethod.", allClassMethods);
+		auto methodsDocumentation = Documentation::generateFunctionsDocumentation("Functions", heading, minitScript.get(), descriptions, "minitscript.basemethod.", allClassMethods);
 		Console::printLine(methodsDocumentation);
 	} else
 	if (documentationType == "variables") {
