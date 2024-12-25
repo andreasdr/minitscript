@@ -2294,11 +2294,11 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 	// property operator
 	{
 		//
-		class MethodProperty: public MinitScript::Method {
+		class MethodMemberProperty: public MinitScript::Method {
 		private:
 			MinitScript* minitScript { nullptr };
 		public:
-			MethodProperty(MinitScript* minitScript):
+			MethodMemberProperty(MinitScript* minitScript):
 				MinitScript::Method(
 					{
 						{ .type = MinitScript::TYPE_MAP, .name = "object", .optional = false, .reference = true, .nullable = false },
@@ -2309,7 +2309,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 				),
 				minitScript(minitScript) {}
 			const string getMethodName() override {
-				return "property";
+				return "memberProperty";
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string key;
@@ -2326,27 +2326,27 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 				return MinitScript::OPERATOR_MEMBERACCESS_PROPERTY;
 			}
 		};
-		minitScript->registerMethod(new MethodProperty(minitScript));
+		minitScript->registerMethod(new MethodMemberProperty(minitScript));
 	}
 	// execute operator
 	{
 		//
-		class MethodProperty: public MinitScript::Method {
+		class MethodMemberExecute: public MinitScript::Method {
 		private:
 			MinitScript* minitScript { nullptr };
 		public:
-			MethodProperty(MinitScript* minitScript):
+			MethodMemberExecute(MinitScript* minitScript):
 				MinitScript::Method(
 					{
 						{ .type = MinitScript::TYPE_PSEUDO_MIXED, .name = "object", .optional = false, .reference = true, .nullable = false },
 						{ .type = MinitScript::TYPE_STRING, .name = "method", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = true, .reference = false, .nullable = false }
+						{ .type = MinitScript::TYPE_INTEGER, .name = "operator", .optional = false, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_PSEUDO_MIXED
 				),
 				minitScript(minitScript) {}
 			const string getMethodName() override {
-				return "execute";
+				return "memberExecute";
 			}
 			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
 				string methodName;
@@ -2392,8 +2392,8 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							//	this
 							callArguments[0] = move(arguments[0]);
 							//
-							for (auto argumentIdx = 2; argumentIdx < arguments.size() - 1; argumentIdx++) {
-								callArguments[argumentIdx - 1] = move(arguments[argumentIdx]);
+							for (auto argumentIdx = 3; argumentIdx < arguments.size(); argumentIdx++) {
+								callArguments[argumentIdx - 2] = move(arguments[argumentIdx]);
 							}
 							//
 							span callArgumentsSpan(callArguments);
@@ -2410,8 +2410,8 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							arguments[0] = move(callArguments[0]);
 							//	additional arguments
 							{
-								for (auto argumentIdx = 2; argumentIdx < arguments.size() - 1; argumentIdx++) {
-									arguments[argumentIdx] = move(callArguments[argumentIdx - 1]);
+								for (auto argumentIdx = 3; argumentIdx < arguments.size(); argumentIdx++) {
+									arguments[argumentIdx] = move(callArguments[argumentIdx - 2]);
 								}
 							}
 						} else {
@@ -2432,6 +2432,6 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 				return MinitScript::OPERATOR_MEMBERACCESS_EXECUTE;
 			}
 		};
-		minitScript->registerMethod(new MethodProperty(minitScript));
+		minitScript->registerMethod(new MethodMemberExecute(minitScript));
 	}
 }

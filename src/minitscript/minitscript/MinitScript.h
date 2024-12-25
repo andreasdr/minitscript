@@ -3931,8 +3931,9 @@ private:
 	 * Do statement pre processing, 1) replace operators with corresponding methods
 	 * @param processedStatement statement that is currently being processed
 	 * @param statement statement
+	 * @param setVariableStatement set variable statement, where we disable subscript and property operators
 	 */
-	const string doStatementPreProcessing(const string& processedStatement, const Statement& statement);
+	const string doStatementPreProcessing(const string& processedStatement, const Statement& statement, bool setVariableStatement = false);
 
 	/**
 	 * Get access operator left and right indices

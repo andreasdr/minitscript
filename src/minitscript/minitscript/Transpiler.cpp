@@ -2787,6 +2787,16 @@ bool Transpiler::transpileStatement(
 		}
 	}
 
+    // special case: inject EVALUATEMEMBERACCESS_MEMBER
+	if (scriptMethod != nullptr && scriptMethod->getMethodName() == "memberExecute") {
+		if (allMethods.contains(syntaxTree.arguments[1].value.getValueAsString()) == true) {
+			generatedCode+= minIndentString + depthIndentString + "\t" + "const auto EVALUATEMEMBERACCESS_MEMBER = EVALUATEMEMBERACCESSARRAYIDX_" + StringTools::toUpperCase(syntaxTree.arguments[1].value.getValueAsString()) + ";\n";
+		} else {
+			generatedCode+= minIndentString + depthIndentString + "\t" + "const auto EVALUATEMEMBERACCESS_MEMBER = EVALUATEMEMBERACCESSARRAYIDX_NONE;" + "\n";
+		}
+	}
+
+	/*
 	// special case: inject EVALUATEMEMBERACCESS_MEMBER for "internal.script.evaluateMemberAccess"
 	if (scriptMethod != nullptr && scriptMethod->getMethodName() == "internal.script.evaluateMemberAccess") {
 		//
@@ -2857,6 +2867,7 @@ bool Transpiler::transpileStatement(
 			generatedCode+= minIndentString + depthIndentString + "\t" + "const auto EVALUATEMEMBERACCESS_MEMBER = EVALUATEMEMBERACCESSARRAYIDX_NONE;" + "\n";
 		}
 	}
+	*/
 
 	// do we have a variable look up or setting a variable?
 	// 	transfer to use local method and global class variables

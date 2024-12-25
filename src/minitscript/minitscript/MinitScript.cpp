@@ -837,7 +837,7 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 			value.setValue(deescape(argument.argument, statement));
 			// look up getVariable method
 			string methodName =
-				method != nullptr && method->getMethodName() == "execute" && argumentIdx >= 3?"getVariableReference":
+				method != nullptr && method->getMethodName() == "memberExecute" && argumentIdx >= 3?"getVariableReference":
 					(argumentIdx >= argumentReferences.size() || argumentReferences[argumentIdx] == false?
 							(method != nullptr?"getMethodArgumentVariable":"getVariable"):
 							"getVariableReference");
@@ -3140,7 +3140,7 @@ int MinitScript::determineNamedScriptIdxToStart() {
 	return SCRIPTIDX_NONE;
 }
 
-const string MinitScript::doStatementPreProcessing(const string& processedStatement, const Statement& statement) {
+const string MinitScript::doStatementPreProcessing(const string& processedStatement, const Statement& statement, bool setVariableStatement) {
 	auto preprocessedStatement = processedStatement;
 	//
 	struct StatementOperator {
@@ -3344,10 +3344,35 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		return trimArgument(argument, removeBrackets);
 	};
 	//
-	auto viewIsLamdaFunction = [](const string_view& candidate) -> bool {
-		if (candidate.empty() == true) return false;
+	auto viewIsLamdaFunctionWithoutArgumentsHead = [](const string_view& candidate, int& i) -> bool {
 		//
-		auto i = 0;
+		i = 0;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
+		// -
+		if (candidate[i++] != '-') return false;
+		//
+		if (i >= candidate.size()) return false;
+		// >
+		if (candidate[i++] != '>') return false;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		if (i >= candidate.size()) return false;
+		//
+		if (candidate[i] != '{') return false;
+		//
+		return true;
+	};
+	auto viewIsLamdaFunctionHead = [&](const string_view& candidate, int& i) -> bool {
+	//
+		if (viewIsLamdaFunctionWithoutArgumentsHead(candidate, i) == true) return true;
+		//
+		i = 0;
+		//
+		if (candidate.empty() == true) return false;
+		// spaces
+		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
 		// (
 		if (candidate[i++] != '(') return false;
 		// spaces
@@ -3411,19 +3436,21 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		//
-		if (candidate[i++] != '{') return false;
+		if (candidate[i] != '{') return false;
 		//
 		return true;
 	};
 	//
-	auto getNextStatementOperator = [&](const string& processedStatement, StatementOperator& nextOperator, const Statement& statement) {
-		bool lamdaFunctionDeclaration = false;
+	auto viewIsAssignment = [&](const string_view& candidate) -> int {
+		//
+		auto squareBracketCount = 0;
 		auto curlyBracketCount = 0;
 		auto bracketCount = 0;
 		auto quote = '\0';
 		auto lc = '\0';
-		for (auto i = 0; i < processedStatement.size(); i++) {
-			auto c = processedStatement[i];
+		for (auto i = 0; i < candidate.size(); i++) {
+			auto c = candidate[i];
+			auto nc = i + 1 < candidate.size()?candidate[i + 1]:'\0';
 			if ((c == '"' || c == '\'') && lc != '\\') {
 				if (quote == '\0') {
 					quote = c;
@@ -3433,14 +3460,25 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				}
 			} else
 			if (quote == '\0') {
+				auto iIncrement = 0;
+				if (c == '-' &&
+					nc == '>' &&
+					viewIsLamdaFunctionWithoutArgumentsHead(string_view(&candidate[i], candidate.size() - i), iIncrement) == true) {
+					//
+					i+= iIncrement - 1;
+					continue;
+				}
 				if (c == '(') {
 					// read ahead if inline/lambda function
-					string_view lamdaFunctionCandidate(&processedStatement[i], processedStatement.size() - i);
-					if (viewIsLamdaFunction(lamdaFunctionCandidate) == true) lamdaFunctionDeclaration = true;
-					bracketCount++;
+					string_view lamdaFunctionCandidate(&candidate[i], candidate.size() - i);
+					auto iIncrement = 0;
+					if (viewIsLamdaFunctionHead(lamdaFunctionCandidate, iIncrement) == true) {
+						i+= iIncrement - 1;
+					} else {
+						bracketCount++;
+					}
 				} else
 				if (c == ')') {
-					if (lamdaFunctionDeclaration == true) lamdaFunctionDeclaration = false;
 					bracketCount--;
 				} else
 				if (c == '{') {
@@ -3449,37 +3487,90 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				if (c == '}') {
 					curlyBracketCount--;
 				} else
-				if (curlyBracketCount == 0 && lamdaFunctionDeclaration == false) {
-					{
-						// find operator from current statement character index
+				if (c == '[') {
+					squareBracketCount++;
+				} else
+				if (c == ']') {
+					squareBracketCount--;
+				}
+				//
+				if (c == '=' &&
+					lc != '=' &&
+					nc != '=' &&
+					bracketCount == 0 &&
+					curlyBracketCount == 0 &&
+					squareBracketCount == 0) {
+					//
+					return i;
+				}
+			}
+			//
+			lc = lc == '\\' && c == '\\'?'\0':c;
+		}
+		//
+		return -1;
+	};
+	//
+	auto getNextStatementOperator = [&](const string& processedStatement, StatementOperator& nextOperator, const Statement& statement) {
+		auto curlyBracketCount = 0;
+		auto bracketCount = 0;
+		auto quote = '\0';
+		auto lc = '\0';
+		for (auto i = 0; i < processedStatement.size(); i++) {
+			auto c = processedStatement[i];
+			auto nc = i + 1 < processedStatement.size()?processedStatement[i + 1]:'\0';
+			if ((c == '"' || c == '\'') && lc != '\\') {
+				if (quote == '\0') {
+					quote = c;
+				} else
+				if (quote == c) {
+					quote = '\0';
+				}
+			} else
+			if (quote == '\0') {
+				auto iIncrement = 0;
+				if (c == '-' &&
+					nc == '>' &&
+					viewIsLamdaFunctionWithoutArgumentsHead(string_view(&processedStatement[i], processedStatement.size() - i), iIncrement) == true) {
+					//
+					i+= iIncrement - 1;
+					continue;
+				}
+				if (c == '(') {
+					// read ahead if inline/lambda function
+					string_view lamdaFunctionCandidate(&processedStatement[i], processedStatement.size() - i);
+					auto iIncrement = 0;
+					if (viewIsLamdaFunctionHead(lamdaFunctionCandidate, iIncrement) == true) {
+						i+= iIncrement - 1;
+					} else {
+						bracketCount++;
+					}
+				} else
+				if (c == ')') {
+					bracketCount--;
+				} else
+				if (c == '{') {
+					curlyBracketCount++;
+				} else
+				if (c == '}') {
+					curlyBracketCount--;
+				}
+				if (curlyBracketCount == 0 &&
+					isOperatorChar(processedStatement[i]) == true) {
+					//
+					for (int j = OPERATOR_NONE + 1; j < OPERATOR_MAX; j++) {
+						//
 						string operatorCandidate;
-						for (int j = i - 1; j >= 0; j--) {
-							if (isOperatorChar(processedStatement[j]) == false) break;
-							operatorCandidate = processedStatement[j] + operatorCandidate;
-						}
-						for (auto j = i; j < processedStatement.size(); j++) {
-							if (isOperatorChar(processedStatement[j]) == false) break;
-							operatorCandidate = operatorCandidate + processedStatement[j];
-						}
-						// skip on empty operator or invalid operators
+						operatorCandidate+= processedStatement[i];
+						if (isOperatorChar(processedStatement[i + 1]) == true) operatorCandidate+= processedStatement[i + 1];
+						//
+						auto priorizedOperator = static_cast<Operator>(j);
+						auto operatorString = getOperatorAsString(priorizedOperator);
+						if (priorizedOperator == OPERATOR_SUBSCRIPT) operatorString = _StringTools::substring(operatorString, 0, 1);
+						// valid?
 						if (operatorCandidate.empty() == true ||
 							(isOperator(operatorCandidate) == false && operatorCandidate != "[")) {
 							continue;
-						}
-					}
-					//
-					for (int j = OPERATOR_NONE + 1; j < OPERATOR_MAX; j++) {
-						auto priorizedOperator = static_cast<Operator>(j);
-						string operatorCandidate;
-						auto operatorString = getOperatorAsString(priorizedOperator);
-						if (priorizedOperator == OPERATOR_SUBSCRIPT) operatorString = _StringTools::substring(operatorString, 0, 1);
-						if (operatorString.size() == 1) {
-							operatorCandidate+= processedStatement[i];
-						}
-						if (operatorString.size() == 2 &&
-							i + 1 < processedStatement.size()) {
-							operatorCandidate+= processedStatement[i];
-							operatorCandidate+= processedStatement[i + 1];
 						}
 						//
 						if (operatorString == operatorCandidate && (nextOperator.idx == OPERATORIDX_NONE || priorizedOperator > nextOperator.operator_)) {
@@ -3517,6 +3608,9 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 								if (leftArgument.length() == 0) continue;
 							} else
 							if (priorizedOperator == OPERATOR_SUBSCRIPT) {
+								// ignore on set/= operator
+								auto assignmentIdx = viewIsAssignment(preprocessedStatement);
+								if (assignmentIdx != -1 && i < assignmentIdx) continue;
 								// find left argument
 								string leftArgumentBrackets;
 								int leftArgumentLength = 0;
@@ -3524,14 +3618,14 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 								//
 								if (leftArgument.length() == 0) continue;
 								// find idx2
-								bool _lamdaFunctionDeclaration = false;
 								auto _squareBracketCount = 0;
 								auto _curlyBracketCount = 0;
 								auto _bracketCount = 0;
 								auto _quote = '\0';
 								auto _lc = '\0';
-								for (auto k = i; k < processedStatement.size(); k++) {
-									auto _c = processedStatement[k];
+								for (auto k = i; k < preprocessedStatement.size(); k++) {
+									auto _c = preprocessedStatement[k];
+									auto _nc = k + 1 < preprocessedStatement.size()?preprocessedStatement[k + 1]:'\0';
 									if ((_c == '"' || _c == '\'') && _lc != '\\') {
 										if (_quote == '\0') {
 											_quote = _c;
@@ -3541,14 +3635,27 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 										}
 									} else
 									if (_quote == '\0') {
+										//
+										auto kIncrement = 0;
+										if (_c == '-' &&
+											_nc == '>' &&
+											viewIsLamdaFunctionWithoutArgumentsHead(string_view(&preprocessedStatement[k], preprocessedStatement.size() - k), kIncrement) == true) {
+											//
+											k+= kIncrement;
+											continue;
+										}
 										if (_c == '(') {
 											// read ahead if inline/lambda function
-											string_view lamdaFunctionCandidate(&processedStatement[k], processedStatement.size() - k);
-											if (viewIsLamdaFunction(lamdaFunctionCandidate) == true) _lamdaFunctionDeclaration = true;
-											_bracketCount++;
+											string_view lamdaFunctionCandidate(&preprocessedStatement[k], preprocessedStatement.size() - k);
+											auto kIncrement = 0;
+											if (viewIsLamdaFunctionHead(lamdaFunctionCandidate, kIncrement) == true) {
+												k+= kIncrement;
+												continue;
+											} else {
+												_bracketCount++;
+											}
 										} else
 										if (_c == ')') {
-											if (_lamdaFunctionDeclaration == true) _lamdaFunctionDeclaration = false;
 											_bracketCount--;
 										} else
 										if (_c == '{') {
@@ -3566,7 +3673,6 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 										//
 										if (_bracketCount == 0 &&
 											_curlyBracketCount == 0 &&
-											_lamdaFunctionDeclaration == false &&
 											_squareBracketCount == 0) {
 											//
 											idx2 = k;
@@ -3577,8 +3683,56 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 									//
 									_lc = _lc == '\\' && _c == '\\'?'\0':_c;
 								}
+								// disable sub script except for use with execute
+								if (setVariableStatement == true) {
+									auto viewIsMemberExecute = [](const string_view& candidate) -> bool {
+										if (candidate.size() == 0) return false;
+										//
+										auto i = 0;
+										// spaces
+										for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+										if (i >= candidate.size()) return false;
+										// -
+										if (candidate[i++] != '-') return false;
+										//
+										if (i >= candidate.size()) return false;
+										// >
+										if (candidate[i++] != '>') return false;
+										//
+										return true;
+									};
+									//
+									if (viewIsMemberExecute(string_view(&preprocessedStatement[idx2 + 1], preprocessedStatement.size() - (idx2 + 1))) == false) {
+										continue;
+									}
+								}
 							} else
 							if (priorizedOperator == OPERATOR_MEMBERACCESS_PROPERTY) {
+								if (setVariableStatement == true) {
+									auto viewIsMemberProperty = [](const string_view& candidate) -> bool {
+										if (candidate.size() == 0) return false;
+										//
+										auto i = 0;
+										// spaces
+										for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+										if (i >= candidate.size()) return false;
+										// -
+										if (candidate[i++] != '.') return false;
+										//
+										if (i >= candidate.size()) return false;
+										// >
+										// ...
+										//
+										return true;
+									};
+									//
+									if (viewIsMemberProperty(string_view(&preprocessedStatement[idx2 + 1], preprocessedStatement.size())) == false) continue;
+								}
+								// ignore on set/= operator
+								auto assignmentIdx = viewIsAssignment(preprocessedStatement);
+								if (assignmentIdx != -1 && i < assignmentIdx) {
+									continue;
+								}
 								// find left argument
 								string leftArgumentBrackets;
 								int leftArgumentLength = 0;
@@ -3637,8 +3791,6 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 	//
 	StatementOperator nextOperator;
 	while (getNextStatementOperator(preprocessedStatement, nextOperator, statement) == true) {
-		static int z = 0;
-		//_Console::printLine(to_string(z) + ": pre: Operator " + getOperatorAsString(nextOperator.operator_) + "@" + to_string(nextOperator.idx) + "..." + to_string(nextOperator.idx2));
 		//
 		Method* method { nullptr };
 		Method* prefixOperatorMethod { nullptr };
@@ -3731,8 +3883,10 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				scriptValid = false;
 				return preprocessedStatement;
 			}
+			//
 			string arguments;
 			arguments+= "\"" + _StringTools::replace(_StringTools::replace(string(subMethodName), "\\", "\\\\"), "\"", "\\\"") + "\"";
+			arguments+= ", " + to_string(encodeOperatorString(operatorString));
 			for (const auto& argument: subArguments) {
 				arguments+= ", " + string(argument.argument);
 			}
@@ -3752,7 +3906,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			preprocessedStatement =
 				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
 				_StringTools::generate("\n", leftArgumentNewLines) +
-				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + arguments + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
+				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + arguments + ")" +
 				_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
 			);
 			//
@@ -3817,7 +3971,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			//
 			if (nextOperator.operator_ == OPERATOR_SET) {
-				leftArgument = "\"" + _StringTools::replace(doStatementPreProcessing(leftArgument, statement), "\"", "\\\"") + "\"";
+				leftArgument = "\"" + _StringTools::replace(doStatementPreProcessing(leftArgument, statement, true), "\"", "\\\"") + "\"";
 			}
 			//
 			auto leftArgumentNewLines = 0;
@@ -3834,7 +3988,6 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			);
 			//
 		}
-		//_Console::printLine(to_string(z++) + ": post: Operator " + getOperatorAsString(nextOperator.operator_) + "@" + to_string(nextOperator.idx) + "..." + to_string(nextOperator.idx2));
 		//
 		nextOperator = StatementOperator();
 	}
@@ -4135,10 +4288,6 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 		}
 		result+= "\n";
 	}
-	//
-	result+= "\n";
-	result+= Transpiler::createSourceCode(this);
-	result+= "\n";
 	//
 	return result;
 }
