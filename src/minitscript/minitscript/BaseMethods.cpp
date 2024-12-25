@@ -2424,7 +2424,8 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 						}
 					}
-				}			}
+				}
+			}
 			bool isVariadic() const override {
 				return true;
 			}
