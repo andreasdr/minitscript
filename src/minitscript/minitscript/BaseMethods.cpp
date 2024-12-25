@@ -2381,7 +2381,7 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 						MinitScript::Method* method { nullptr };
 						if (functionScriptIdx == MinitScript::SCRIPTIDX_NONE) {
 							#if defined(__MINITSCRIPT_TRANSPILATION__)
-								method = evaluateMemberAccessArrays[static_cast<int>(arguments[1].getType()) - static_cast<int>(MinitScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
+								method = evaluateMemberAccessArrays[static_cast<int>(arguments[0].getType()) - static_cast<int>(MinitScript::TYPE_STRING)][EVALUATEMEMBERACCESS_MEMBER];
 							#else
 								method = minitScript->getMethod(className + "::" + methodName);
 							#endif
