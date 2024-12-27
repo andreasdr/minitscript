@@ -79,9 +79,9 @@ public:
 		// see: https://en.cppreference.com/w/cpp/language/operator_precedence
 		OPERATOR_NONE,
 		// priority 2
-		OPERATOR_SUBSCRIPT,
 		OPERATOR_MEMBERACCESS_PROPERTY,
 		OPERATOR_MEMBERACCESS_EXECUTE,
+		OPERATOR_SUBSCRIPT,
 		OPERATOR_POSTFIX_INCREMENT,
 		OPERATOR_POSTFIX_DECREMENT,
 		// priority 3

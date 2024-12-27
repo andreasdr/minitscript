@@ -20,8 +20,8 @@ on: nothing
 	console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3][0].c)
 	console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {"a": {"x": 20, "y": 21, "z": 22}, b: 2, c:3}}, 1, 2, 3][0].c.a)
 	console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {"a": {"x": 20, "y": 21, "z": 22}, b: 2, c:3}}, 1, 2, 3][0].c.a.x)
-	# test: not working yet
-	# console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3][0].b[1])
+	console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3][0].b)
+	console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3][0].b[1])
 	script.stop()
 end
 

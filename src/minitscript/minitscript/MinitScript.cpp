@@ -3855,7 +3855,6 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				auto c = leftArgument[i];
 				if (c == '\n') leftArgumentNewLines++; else break;
 			}
-
 			// substitute with method call
 			preprocessedStatement =
 				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
