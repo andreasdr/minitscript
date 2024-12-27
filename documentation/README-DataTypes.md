@@ -346,28 +346,6 @@ Checking if keys exist in set using Set::has() and given keys:
 ...
 ```
 
-
-Checking if keys exist in set using dot operator and given keys:
-```
-...
-	console.printLine("set key for test1 using set dot operator: ", $set.test1)
-	console.printLine("set key for test2 using set dot operator: ", $set.test2)
-	console.printLine("set key for test3 using set dot operator: ", $set.test3)
-	console.printLine("set key for test4 using set dot operator: ", $set.test4)
-	console.printLine("set key for test5 using set dot operator: ", $set.test5)
-...
-```
-
-Inserting/Removing set keys by using dot operator and boolean assignment:
-```
-...
-	$set.test6 = true
-	$set.test7 = true
-	$set.test8 = false
-	$set.test9 = true
-...
-```
-
 Reading all keys as array from set:
 ```
 ...
