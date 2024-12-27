@@ -3900,7 +3900,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				properties.push_back(property);
 				property.clear();
 			}
-			for (int i = properties.size() - 1; i >= 1 ; i--) {
+			for (int i = 1; i < properties.size() ; i++) {
 				const auto& property = properties[i];
 				outerLeftStatement+= method->getMethodName() + "(";
 				outerRightStatement+= ", " + property + ", " + to_string(encodeOperatorString(operatorString)) + ")";
