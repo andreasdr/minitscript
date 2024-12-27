@@ -215,6 +215,7 @@ on: nothing
 	)
 	testScript(["resources/minitscript/tests/filesystem-test.tscript"], null)
 	testScript(["resources/minitscript/tests/functions-test.tscript"], null)
+	testScript(["resources/minitscript/tests/initializeroperator-test.tscript"], null)
 	testScript(["resources/minitscript/tests/lamdafunctions-test.tscript"], null)
 	testScript(["resources/minitscript/tests/loop-test.tscript"], null)
 	testScript(

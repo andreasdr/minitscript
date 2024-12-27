@@ -3735,10 +3735,12 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 								string leftArgumentBrackets;
 								int leftArgumentLength = 0;
 								auto leftArgument = findLeftArgument(preprocessedStatement, i - 1, leftArgumentLength, leftArgumentBrackets);
-								// needs to be a variable or function/method call
+								// needs to be a variable or function/method call or a map/set initializer
 								if (leftArgument.length() == 0 ||
 									(leftArgument[0] != '$' &&
-									leftArgument[leftArgument.size() - 1] != ')')) {
+									leftArgument[leftArgument.size() - 1] != ')' &&
+									leftArgument[0] != '{' &&
+									leftArgument[leftArgument.size() - 1] != '}')) {
 									continue;
 								}
 								// no $$, $GLOBAL

@@ -1,0 +1,32 @@
+# initialize
+on: initialize
+	console.printLine("--------------------------------------")
+	console.printLine("initializeroperator-test: Initialize")
+	console.printLine("--------------------------------------")
+	console.printLine()
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.printLine("-----------------------------------")
+	console.printLine("initializeroperator-test: Nothing")
+	console.printLine("-----------------------------------")
+	console.printLine()
+	console.printLine("application.getArguments()[0]: " + application.getArguments()[0])
+	console.printLine("{\"a\":1}->contains(\"a\"): " + {"a":1}->contains("a"))
+	console.printLine("{\"a\":1}.a: " + {"a":1}.a)
+	#console.printLine("\"Hi there!!! OpenBSD!!!->getSize()\"": " + "Hi there!!! OpenBSD!!!"->getSize())
+	#console.printLine("[\"FreeBSD\", \"NetBSD\", \"OpenBSD\"]->contains($$.application::OS): " + ["FreeBSD", "NetBSD", "OpenBSD"]->contains($$.application::OS))
+	#
+	script.stop()
+end
+
+# an error has occurred
+on: error
+	console.printLine("-------------------------")
+	console.printLine("initializeroperator-test: Error")
+	console.printLine("-------------------------")
+	console.printLine("error message: " + script.error.getMessage())
+	console.printLine("error statement: " + script.error.getStatement())
+	script.stop()
+end
