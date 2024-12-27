@@ -3560,7 +3560,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 						//
 						string operatorCandidate;
 						operatorCandidate+= processedStatement[i];
-						if (isOperatorChar(processedStatement[i + 1]) == true) operatorCandidate+= processedStatement[i + 1];
+						if (i + 1 < processedStatement.size() && isOperatorChar(processedStatement[i + 1]) == true) operatorCandidate+= processedStatement[i + 1];
 						//
 						auto priorizedOperator = static_cast<Operator>(j);
 						auto operatorString = getOperatorAsString(priorizedOperator);
@@ -3587,11 +3587,6 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 								isOperatorChar(processedStatement[i + 1]) == true &&
 								(isMemberAccessOrAssignmentOperator(operatorString + processedStatement[i + 1]) == true ||
 								isOperator(operatorString + processedStatement[i + 1]) == true)) {
-								continue;
-							}
-							if (operatorString.size() == 2 &&
-								i > 0 &&
-								isOperatorChar(processedStatement[i - 1]) == true) {
 								continue;
 							}
 							if (operatorString.size() == 2 &&
@@ -3740,7 +3735,9 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 									(leftArgument[0] != '$' &&
 									leftArgument[leftArgument.size() - 1] != ')' &&
 									leftArgument[0] != '{' &&
-									leftArgument[leftArgument.size() - 1] != '}')) {
+									leftArgument[leftArgument.size() - 1] != '}' &&
+									leftArgument[0] != '[' &&
+									leftArgument[leftArgument.size() - 1] != ']')) {
 									continue;
 								}
 								// no $$, $GLOBAL

@@ -88,15 +88,15 @@ Also note the focus on easy integration into other products and easy customizabi
 - [Constants](./documentation/README-Constants.md)
 
 
-## 3. Links
+# 3. Links
 
 - MinitScript, see [README.md](./README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
 - MinitScript - How to use, see [README-Tools.md](./README-Tools.md)
 - The Mindty Kollektiv [Discord Server](https://discord.gg/Na4ACaFD)
 
-# 11. Donation 
+# 4. Donation
 - I have to pay my bills, beer and stuff, so if you have any use for this open source project, like educational, productive or fun, ..., consider a donation here [PayPal](https://www.paypal.me/andreasdrewke), here [GitHub Sponsors](https://github.com/sponsors/andreasdr) or via [Amazon Wishlist](https://www.amazon.de/hz/wishlist/ls/250IBUL4JSZVR?ref_=wl_share)
 
-# 12. Bounties
+# 5. Bounties
 - We will most likely accept MinitScript (related) tasks as kind of bounties for a customized MinitScript or default MinitScript
