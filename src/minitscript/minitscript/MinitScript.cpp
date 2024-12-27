@@ -3138,7 +3138,7 @@ int MinitScript::determineNamedScriptIdxToStart() {
 	return SCRIPTIDX_NONE;
 }
 
-const string MinitScript::doStatementPreProcessing(const string& processedStatement, const Statement& statement, bool setVariableStatement) {
+const string MinitScript::doStatementPreProcessing(const string& processedStatement, const Statement& statement, bool setVariableStatement, bool memberAccessPropertyStatement) {
 	auto preprocessedStatement = processedStatement;
 	//
 	struct StatementOperator {
@@ -3719,7 +3719,9 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 										return true;
 									};
 									//
-									if (viewIsMemberProperty(string_view(&preprocessedStatement[idx2 + 1], preprocessedStatement.size())) == false) continue;
+									if (viewIsMemberProperty(string_view(&preprocessedStatement[idx2 + 1], preprocessedStatement.size())) == false) {
+										continue;
+									}
 								}
 								// ignore on set/= operator
 								auto assignmentIdx = viewIsAssignment(preprocessedStatement);
@@ -3730,6 +3732,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 								string leftArgumentBrackets;
 								int leftArgumentLength = 0;
 								auto leftArgument = findLeftArgument(preprocessedStatement, i - 1, leftArgumentLength, leftArgumentBrackets);
+								//
 								// needs to be a variable or function/method call or a map/set initializer
 								if (leftArgument.length() == 0 ||
 									(leftArgument[0] != '$' &&
@@ -3737,7 +3740,8 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 									leftArgument[0] != '{' &&
 									leftArgument[leftArgument.size() - 1] != '}' &&
 									leftArgument[0] != '[' &&
-									leftArgument[leftArgument.size() - 1] != ']')) {
+									leftArgument[leftArgument.size() - 1] != ']' &&
+									memberAccessPropertyStatement == false)) {
 									continue;
 								}
 								// no $$, $GLOBAL
@@ -3859,6 +3863,65 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + index + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
 				_StringTools::substring(preprocessedStatement, nextOperator.idx2 + 1, preprocessedStatement.size()
 			);
+		} else
+		if (nextOperator.operator_ == OPERATOR_MEMBERACCESS_PROPERTY) {
+			//
+			auto operatorString = getOperatorAsString(nextOperator.operator_);
+			// find left argument
+			string leftArgumentBrackets;
+			int leftArgumentLength = 0;
+			auto leftArgument = findLeftArgument(preprocessedStatement, nextOperator.idx - 1, leftArgumentLength, leftArgumentBrackets);
+			// find right argument
+			string rightArgumentBrackets;
+			int rightArgumentLength = 0;
+			auto rightArgument = findRightArgument(preprocessedStatement, nextOperator.idx + operatorString.size(), rightArgumentLength, rightArgumentBrackets);
+			//
+			if (leftArgument.empty() == true || rightArgument.empty() == true) {
+				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
+				scriptValid = false;
+				return preprocessedStatement;
+			}
+			//
+			// resolve multiple properties
+			vector<string> properties;
+			string property;
+			string outerLeftStatement;
+			string outerRightStatement;
+			for (auto i = 0; i < rightArgument.size(); i++) {
+				auto c = rightArgument[i];
+				if (c == '.') {
+					properties.push_back(property);
+					property.clear();
+				} else {
+					property+= c;
+				}
+			}
+			if (property.empty() == false) {
+				properties.push_back(property);
+				property.clear();
+			}
+			for (int i = properties.size() - 1; i >= 1 ; i--) {
+				const auto& property = properties[i];
+				outerLeftStatement+= method->getMethodName() + "(";
+				outerRightStatement+= ", " + property + ", " + to_string(encodeOperatorString(operatorString)) + ")";
+			}
+			rightArgument = properties[0];
+			//
+			auto leftArgumentNewLines = 0;
+			for (auto i = 0; i < leftArgument.size(); i++) {
+				auto c = leftArgument[i];
+				if (c == '\n') leftArgumentNewLines++; else break;
+			}
+			// substitute with method call
+			preprocessedStatement =
+				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
+				_StringTools::generate("\n", leftArgumentNewLines) +
+				outerLeftStatement +
+				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + rightArgument + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
+				outerRightStatement +
+				_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
+			);
+			//
 		} else
 		if (nextOperator.operator_ == OPERATOR_MEMBERACCESS_EXECUTE) {
 			//

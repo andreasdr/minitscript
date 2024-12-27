@@ -3932,8 +3932,9 @@ private:
 	 * @param processedStatement statement that is currently being processed
 	 * @param statement statement
 	 * @param setVariableStatement set variable statement, where we disable subscript and property operators
+	 * @param memberAccessPropertyStatement member access property statement
 	 */
-	const string doStatementPreProcessing(const string& processedStatement, const Statement& statement, bool setVariableStatement = false);
+	const string doStatementPreProcessing(const string& processedStatement, const Statement& statement, bool setVariableStatement = false, bool memberAccessPropertyStatement = false);
 
 	/**
 	 * Get access operator left and right indices

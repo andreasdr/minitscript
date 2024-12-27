@@ -17,8 +17,9 @@ on: nothing
 	console.printLine("{\"a\":1}.a: " + {"a":1}.a)
 	console.printLine("\"Hi there!!! OpenBSD!!!->getSize()\": " + "Hi there!!! OpenBSD!!!"->getSize())
 	console.printLine("[\"FreeBSD\", \"NetBSD\", \"OpenBSD\"]->contains($$.application::OS): " + ["FreeBSD", "NetBSD", "OpenBSD"]->contains($$.application::OS))
+	console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3][0].c)
+	console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3][0].c.a)
 	# test: not working yet
-	# console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3][0].c)
 	# console.printLine("test: " + [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3][0].b[1])
 	script.stop()
 end
