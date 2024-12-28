@@ -2,7 +2,7 @@
 
 MinitScript supports exceptions, which are categorized as flow control.
 
-# 1. What are exception
+# 1. What are exceptions
 
 Exceptions are about 3 things. Trying to do some work, that can issue a exception, which means a failure in logic, and catching the exception. 
 Third is also how to throw exceptions.
@@ -48,7 +48,7 @@ function: module1Init()
 end
 ```
 
-## 1.3. A more complete initialization example
+## 1.3. Initialization example
 
 ```
 use: module_1.tscript
