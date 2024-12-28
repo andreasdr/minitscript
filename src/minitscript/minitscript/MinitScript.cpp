@@ -34,6 +34,7 @@
 #include <minitscript/minitscript/MathMethods.h>
 #include <minitscript/minitscript/NetworkMethods.h>
 #include <minitscript/minitscript/ScriptMethods.h>
+#include <minitscript/minitscript/Setup.h>
 #include <minitscript/minitscript/SetMethods.h>
 #include <minitscript/minitscript/StringMethods.h>
 #include <minitscript/minitscript/TimeMethods.h>
@@ -89,6 +90,7 @@ using minitscript::minitscript::MapMethods;
 using minitscript::minitscript::MathMethods;
 using minitscript::minitscript::NetworkMethods;
 using minitscript::minitscript::ScriptMethods;
+using minitscript::minitscript::Setup;
 using minitscript::minitscript::SetMethods;
 using minitscript::minitscript::StringMethods;
 using minitscript::minitscript::TimeMethods;
@@ -958,192 +960,6 @@ int MinitScript::getStackletScopeScriptIdx(int scriptIdx) {
 	}
 	//
 	return MinitScript::SCRIPTIDX_NONE;
-}
-
-
-bool MinitScript::setupFunctionAndStackletScriptIndices(int scriptIdx) {
-	//
-	auto& script = scripts[scriptIdx];
-	auto statementIdx = STATEMENTIDX_FIRST;
-	//
-	for (auto& syntaxTreeNode: script.syntaxTree) {
-		auto& statement = script.statements[statementIdx++];
-		//
-		if (setupFunctionAndStackletScriptIndices(syntaxTreeNode, statement) == false) {
-			//
-			return false;
-		}
-	}
-	//
-	return true;
-
-}
-
-bool MinitScript::setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTreeNode, const Statement& statement) {
-	switch (syntaxTreeNode.type) {
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
-			{
-				switch(syntaxTreeNode.value.getType()) {
-					case(MinitScript::TYPE_ARRAY):
-					case(MinitScript::TYPE_MAP):
-						{
-							if (setupFunctionAndStackletScriptIndices(syntaxTreeNode.value, statement, syntaxTreeNode.subLineIdx) == false) return false;
-							//
-							break;
-						}
-					case(MinitScript::TYPE_FUNCTION_ASSIGNMENT):
-						{
-							string function;
-							auto functionScriptIdx = SCRIPTIDX_NONE;
-							if (syntaxTreeNode.value.getFunctionValue(function, functionScriptIdx) == false ||
-								(functionScriptIdx = getFunctionScriptIdx(function)) == SCRIPTIDX_NONE) {
-								//
-								_Console::printLine(
-									getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-									": Function not found: " +
-									syntaxTreeNode.value.getValueAsString()
-								);
-								//
-								parseErrors.push_back(
-									getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-									": Function not found: " +
-									syntaxTreeNode.value.getValueAsString()
-								);
-								//
-								return false;
-							}
-							//
-							syntaxTreeNode.value.setFunctionAssignment(function, functionScriptIdx);
-							//
-							break;
-						}
-					case(MinitScript::TYPE_STACKLET_ASSIGNMENT):
-						{
-							string stacklet;
-							auto stackletScriptIdx = SCRIPTIDX_NONE;
-							if (syntaxTreeNode.value.getStackletValue(stacklet, stackletScriptIdx) == false ||
-								(stackletScriptIdx = getFunctionScriptIdx(stacklet)) == SCRIPTIDX_NONE) {
-								//
-								_Console::printLine(
-									getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-									": Stacklet not found" +
-									syntaxTreeNode.value.getValueAsString()
-								);
-								//
-								parseErrors.push_back(
-									getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-									": Stacklet not found: " +
-									syntaxTreeNode.value.getValueAsString()
-								);
-								//
-								return false;
-							}
-							//
-							syntaxTreeNode.value.setStackletAssignment(stacklet, stackletScriptIdx);
-							//
-							break;
-						}
-					default:
-						break;
-				}
-				//
-				break;
-			}
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
-			{
-				for (auto& argument: syntaxTreeNode.arguments) {
-					if (setupFunctionAndStackletScriptIndices(argument, statement) == false) return false;
-				}
-				//
-				break;
-			}
-		default:
-			break;
-	}
-	//
-	return true;
-}
-
-bool MinitScript::setupFunctionAndStackletScriptIndices(Variable& variable, const Statement& statement, int subLineIdx) {
-	switch (variable.getType()) {
-		case TYPE_ARRAY:
-			{
-				auto arrayPointer = variable.getArrayPointer();
-				if (arrayPointer == nullptr) break;
-				for (auto arrayEntry: *arrayPointer) {
-					if (setupFunctionAndStackletScriptIndices(*arrayEntry, statement, subLineIdx) == false) return false;
-				}
-				//
-				break;
-			}
-		case TYPE_MAP:
-			{
-				//
-				auto mapPointer = variable.getMapPointer();
-				if (mapPointer == nullptr) break;
-				for (auto& [mapKey, mapValue]: *mapPointer) {
-					if (setupFunctionAndStackletScriptIndices(*mapValue, statement, subLineIdx) == false) return false;
-				}
-				//
-				break;
-			}
-		case TYPE_FUNCTION_ASSIGNMENT:
-			{
-				string function;
-				auto functionScriptIdx = SCRIPTIDX_NONE;
-				if (variable.getFunctionValue(function, functionScriptIdx) == false ||
-					(functionScriptIdx = getFunctionScriptIdx(function)) == SCRIPTIDX_NONE) {
-					//
-					_Console::printLine(
-						getStatementInformation(statement, subLineIdx) +
-						": Function not found: " +
-						variable.getValueAsString()
-					);
-					//
-					parseErrors.push_back(
-						getStatementInformation(statement, subLineIdx) +
-						": Function not found: " +
-						variable.getValueAsString()
-					);
-					//
-					return false;
-				}
-				//
-				variable.setFunctionAssignment(function, functionScriptIdx);
-				//
-				break;
-			}
-		case TYPE_STACKLET_ASSIGNMENT:
-			{
-				string stacklet;
-				auto stackletScriptIdx = SCRIPTIDX_NONE;
-				if (variable.getStackletValue(stacklet, stackletScriptIdx) == false ||
-					(stackletScriptIdx = getFunctionScriptIdx(stacklet)) == SCRIPTIDX_NONE) {
-					//
-					_Console::printLine(
-						getStatementInformation(statement, subLineIdx) +
-						": Stacklet not found" +
-						variable.getValueAsString()
-					);
-					//
-					parseErrors.push_back(
-						getStatementInformation(statement, subLineIdx) +
-						": Stacklet not found: " +
-						variable.getValueAsString()
-					);
-					//
-					return false;
-				}
-				//
-				variable.setStackletAssignment(stacklet, stackletScriptIdx);
-				//
-				break;
-			}
-		default: break;
-	}
-	//
-	return true;
 }
 
 void MinitScript::emit(const string& condition) {
@@ -2578,7 +2394,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 	// set up stacklet and function indices
 	for (auto scriptIdx = 0; scriptIdx < scripts.size(); scriptIdx++) {
 		//
-		if (setupFunctionAndStackletScriptIndices(scriptIdx) == false) {
+		if (Setup::setupFunctionAndStackletScriptIndices(this, scriptIdx, parseErrors) == false) {
 			scriptValid = false;
 			return;
 		}

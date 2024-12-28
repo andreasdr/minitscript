@@ -49,6 +49,7 @@ SRCS = \
 	src/minitscript/minitscript/NetworkMethods.cpp \
 	src/minitscript/minitscript/ScriptMethods.cpp \
 	src/minitscript/minitscript/SetMethods.cpp \
+	src/minitscript/minitscript/Setup.cpp \
 	src/minitscript/minitscript/StringMethods.cpp \
 	src/minitscript/minitscript/TimeMethods.cpp \
 	src/minitscript/minitscript/Transpiler.cpp \

@@ -24,6 +24,7 @@ namespace minitscript {
 	class MinitScript;
 	class ScriptMethods;
 	class SetMethods;
+	class Setup;
 	class StringMethods;
 	class TimeMethods;
 	class Transpiler;

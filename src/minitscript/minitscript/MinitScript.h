@@ -72,6 +72,7 @@ class minitscript::minitscript::MinitScript {
 	friend class JSONMethods;
 	friend class MathMethods;
 	friend class ScriptMethods;
+	friend class Setup;
 	friend class Transpiler;
 	friend class Validations;
 
@@ -3860,28 +3861,6 @@ private:
 	 * @return stacklet scope script index
 	 */
 	int getStackletScopeScriptIdx(int scriptIdx);
-
-	/**
-	 * Setup function and stacket script indices
-	 * @param scriptIdx script index
-	 */
-	bool setupFunctionAndStackletScriptIndices(int scriptIdx);
-
-	/**
-	 * Setup function and stacket script indices
-	 * @param syntaxTreeNode syntax tree node
-	 * @param statement statement
-	 */
-	bool setupFunctionAndStackletScriptIndices(SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
-
-	/**
-	  * Setup function and stacket script indices
-	  * @param variable variable
-	  * @param statement statement
-	  * @param subLineIdx sub line index
-	  * @return success
-	  */
-	bool setupFunctionAndStackletScriptIndices(Variable& variable, const Statement& statement, int subLineIdx);
 
 	/**
 	 * Returns if char is operator char
