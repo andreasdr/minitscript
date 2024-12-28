@@ -4,10 +4,10 @@ MinitScript supports exceptions, which are categorized as flow control.
 
 # 1. What are exception
 
-Here exceptions are about 3 things. Trying to do some work, that can issue a exception and catching the exception.
+Exceptions are about 3 things. Trying to do some work, that can issue a exception, which means a failure in logic, and catching the exception. 
 Third is also how to throw exceptions.
- 
-Exception do not need to be catched at the level of the throw statement, it can also be catched a call level higher. 
+
+Exceptions do not need to be catched at the level of the throw statement, it can also be catched a level higher from a calling function. 
 
 ## 1.1. Trying and catching
 
@@ -24,7 +24,7 @@ function: init()
 	try
 		# reading data.txt into an array
 		$array = filesystem.getContentAsStringArray(".", "data.txt")	
-		# array would throw an exception if data.txt does not exist
+		# filesystem.getContentAsStringArray() would throw an exception if data.txt does not exist
 		# in this case the following functions would not be executed anymore
 		# the script would jump into catch block
 		# and we would not see this message
@@ -43,8 +43,8 @@ end
 module;
 
 function: module1Init()
-	# this throws an exception with a argument as string 'not implemented'
-	# the exception will be catched one level higher
+	# this throws an exception with the string argument "not implemented"
+	# the exception can be catched at a higher level
 	throw "not implemented"
 end
 ```
@@ -58,26 +58,26 @@ use: module_3.tscript
 
 # initialize
 on: initialize
-	console.printLine("----------------------------")
-	console.printLine("exception-test: Initialize")
-	console.printLine("----------------------------")
+	console.printLine("------------")
+	console.printLine("Initialize")
+	console.printLine("------------")
 	console.printLine()
 end
 
 # if no condition is met, nothing will be executed, lol :D
 on: nothing
-	console.printLine("-------------------------")
-	console.printLine("exception-test: Nothing")
-	console.printLine("-------------------------")
+	console.printLine("---------")
+	console.printLine("Nothing")
+	console.printLine("---------")
 	console.printLine()
-	# initialize modules, which can mean loading data from files or databases, or computing some values, ...
+	# initialize modules, which can load data from files or databases, or computing some values, ...
 	try
-		# if any of the init throws an unhandled exception, the exception will be handled here in catch block and stop the script
+		# if any of the init throws an unhandled exception, the exception will be handled here in catch block. then the script will stop
 		module1Init()
 		module2Init()
 		module3Init()
 	catch ($exception)
-		# ahhhhh! the initialization failed!
+		# ahhhhh! one initialization failed!
 		console.printLine("An error occurred: " + $exception)
 		# print the stack trace
 		console.printLine(stackTrace())
@@ -88,9 +88,9 @@ end
 
 # an error has occurred
 on: error
-	console.printLine("--------------------")
-	console.printLine("module-test: Error")
-	console.printLine("--------------------")
+	console.printLine("-------")
+	console.printLine("Error")
+	console.printLine("-------")
 	console.printLine("An error occurred")
 	script.stop()
 end
