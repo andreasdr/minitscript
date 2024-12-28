@@ -130,7 +130,8 @@ const string Documentation::generateClassesDocumentation(const string& heading, 
 		method+= "(";
 		method+= scriptMethod->getArgumentsInformation(_static == true?0:1);
 		method+= "): ";
-		method+= MinitScript::Variable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
+		method+= scriptMethod->getReturnTypeAsString();
+		method+= scriptMethod->getThrowsAsString();
 		method+= "</sub>";
 		while (method.size() < 99) method+= " ";
 		method+= "|";
@@ -202,7 +203,8 @@ const string Documentation::generateFunctionsDocumentation(const string& heading
 		method+= "(";
 		method+= scriptMethod->getArgumentsInformation();
 		method+= "): ";
-		method+= MinitScript::Variable::getReturnTypeAsString(scriptMethod->getReturnValueType(), scriptMethod->isReturnValueNullable());
+		method+= scriptMethod->getReturnTypeAsString();
+		method+= scriptMethod->getThrowsAsString();
 		method+= "</sub>";
 		while (method.size() < 99) method+= " ";
 		method+= "|";

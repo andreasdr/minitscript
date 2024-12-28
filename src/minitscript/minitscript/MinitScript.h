@@ -2819,15 +2819,18 @@ public:
 		 * @param argumentTypes argument types
 		 * @param returnValueType return value type
 		 * @param returnValueNullable true if return value can also be a null value
+		 * @param throwsException throws exception
 		 */
 		inline Method(
 			const vector<ArgumentType>& argumentTypes = {},
 			VariableType returnValueType = VariableType::TYPE_NULL,
-			bool returnValueNullable = false
+			bool returnValueNullable = false,
+			bool throwsException = false
 		):
 			argumentTypes(argumentTypes),
 			returnValueType(returnValueType),
-			returnValueNullable(returnValueNullable) {
+			returnValueNullable(returnValueNullable),
+			throwsException(throwsException) {
 			//
 		}
 
@@ -2889,6 +2892,14 @@ public:
 		}
 
 		/**
+		 * Returns given return value variable type string representation
+		 * @return return value variable type string representation
+		 */
+		inline const string getReturnTypeAsString() const {
+			return MinitScript::Variable::getReturnTypeAsString(returnValueType, returnValueNullable);
+		}
+
+		/**
 		 * @return return value type
 		 */
 		inline const VariableType& getReturnValueType() const {
@@ -2900,6 +2911,14 @@ public:
 		 */
 		inline bool isReturnValueNullable() const {
 			return returnValueNullable;
+		}
+
+		/**
+		 * Returns if method throws an exception
+		 * @return method throws an exception
+		 */
+		inline const string getThrowsAsString() const {
+			return throwsException == true?" - throws exception":"";
 		}
 
 		/**
@@ -2937,6 +2956,7 @@ public:
 		vector<ArgumentType> argumentTypes;
 		VariableType returnValueType;
 		bool returnValueNullable;
+		bool throwsException;
 	};
 
 	/**

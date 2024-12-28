@@ -56,13 +56,9 @@ on: nothing
 	console.printLine("test with $var5: " + $var5[0].b[1])
 	#
 	console.printLine("test with fun1(): " + fun1()[0].c)
-	$var2 = [{"a": 1, "b": [1, 2, 3], "c": {"a": {"x": 20, "y": 21, "z": 22}, b: 2, c:3}}, 1, 2, 3]
 	console.printLine("test with fun2(): " + fun2()[0].c.a)
-	$var3 = [{"a": 1, "b": [1, 2, 3], "c": {"a": {"x": 20, "y": 21, "z": 22}, b: 2, c:3}}, 1, 2, 3]
 	console.printLine("test with fun3(): " + fun3()[0].c.a.x)
-	$var4 = [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3]
 	console.printLine("test with fun4(): " + fun4()[0].b)
-	$var5 = [{"a": 1, "b": [1, 2, 3], "c": {a: 1, b: 2, c:3}}, 1, 2, 3]
 	console.printLine("test with fun5(): " + fun5()[0].b[1])
 	script.stop()
 end

@@ -36,7 +36,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
 					},
-					MinitScript::TYPE_STRING
+					MinitScript::TYPE_STRING,
+					false
 				),
 				minitScript(minitScript) {
 				//
@@ -71,6 +72,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_INTEGER,
+					false,
 					true
 				),
 				minitScript(minitScript) {
@@ -88,7 +90,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					try {
 						returnValue.setValue(static_cast<int64_t>(_FileSystem::getFileSize(pathName, fileName)));
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -110,6 +112,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_STRING,
+					false,
 					true
 				),
 				minitScript(minitScript) {
@@ -127,7 +130,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					try {
 						returnValue.setValue(_FileSystem::getContentAsString(pathName, fileName));
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -149,7 +152,9 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_STRING, .name = "content", .optional = false, .reference = false, .nullable = false },
 					},
-					MinitScript::TYPE_BOOLEAN
+					MinitScript::TYPE_NULL,
+					false,
+					true
 				),
 				minitScript(minitScript) {
 				//
@@ -167,10 +172,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					MinitScript::getStringValue(arguments, 2, content) == true) {
 					try {
 						_FileSystem::setContentFromString(pathName, fileName, content);
-						returnValue.setValue(true);
 					} catch (_Exception& exception) {
-						returnValue.setValue(false);
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -192,6 +195,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
 					},
 					MinitScript::TYPE_BYTEARRAY,
+					false,
 					true
 				),
 				minitScript(minitScript) {
@@ -211,7 +215,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						_FileSystem::getContent(pathName, fileName, content);
 						returnValue.setValue(content);
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -233,7 +237,9 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_BYTEARRAY, .name = "content", .optional = false, .reference = false, .nullable = false },
 					},
-					MinitScript::TYPE_BOOLEAN
+					MinitScript::TYPE_NULL,
+					false,
+					true
 				),
 				minitScript(minitScript) {
 				//
@@ -251,10 +257,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						auto contentPtr = arguments[2].getByteArrayPointer();
 						if (contentPtr == nullptr) throw _ExceptionBase("Empty content byte array provided");
 						_FileSystem::setContent(pathName, fileName, *contentPtr);
-						returnValue.setValue(true);
 					} catch (_Exception& exception) {
-						returnValue.setValue(false);
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -276,6 +280,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
 					},
 					MinitScript::TYPE_ARRAY,
+					false,
 					true
 				),
 				minitScript(minitScript) {
@@ -299,7 +304,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 							returnValue.pushArrayEntry(contentAsStringArrayEntry);
 						}
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -321,7 +326,9 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_ARRAY, .name = "content", .optional = false, .reference = false, .nullable = false },
 					},
-					MinitScript::TYPE_BOOLEAN
+					MinitScript::TYPE_NULL,
+					false,
+					true
 				),
 				minitScript(minitScript) {
 				//
@@ -341,10 +348,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					if (arrayPointer != nullptr) for (const auto arrayEntry: *arrayPointer) contentAsStringArray.push_back(arrayEntry->getValueAsString());
 					try {
 						_FileSystem::setContentFromStringArray(pathName, fileName, contentAsStringArray);
-						returnValue.setValue(true);
 					} catch (_Exception& exception) {
-						returnValue.setValue(false);
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -365,6 +370,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false },
 					},
 					MinitScript::TYPE_BOOLEAN,
+					false,
 					true
 				),
 				minitScript(minitScript) {
@@ -380,7 +386,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					try {
 						returnValue.setValue(_FileSystem::isPath(uri));
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -431,6 +437,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "uri", .optional = false, .reference = false, .nullable = false },
 					},
 					MinitScript::TYPE_BOOLEAN,
+					false,
 					true
 				),
 				minitScript(minitScript) {
@@ -446,7 +453,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					try {
 						returnValue.setValue(_FileSystem::exists(uri));
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -467,8 +474,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false }
 					},
-					MinitScript::TYPE_STRING,
-					true
+					MinitScript::TYPE_STRING
 				),
 				minitScript(minitScript) {
 				//
@@ -485,7 +491,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					try {
 						returnValue.setValue(_FileSystem::getCanonicalURI(pathName, fileName));
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -504,6 +510,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 				MinitScript::Method(
 					{},
 					MinitScript::TYPE_STRING,
+					false,
 					true
 				),
 				minitScript(minitScript) {
@@ -517,7 +524,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					try {
 						returnValue.setValue(_FileSystem::getCurrentWorkingPathName());
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -537,7 +544,9 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					{
 						{ .type = MinitScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 					},
-					MinitScript::TYPE_BOOLEAN
+					MinitScript::TYPE_NULL,
+					false,
+					true
 				),
 				minitScript(minitScript) {
 				//
@@ -551,10 +560,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					MinitScript::getStringValue(arguments, 0, pathName) == true) {
 					try {
 						_FileSystem::changePath(pathName);
-						returnValue.setValue(true);
 					} catch (_Exception& exception) {
-						returnValue.setValue(false);
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -668,7 +675,9 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_STRING, .name = "fileName", .optional = false, .reference = false, .nullable = false },
 					},
-					MinitScript::TYPE_BOOLEAN
+					MinitScript::TYPE_NULL,
+					false,
+					true
 				),
 				minitScript(minitScript) {
 				//
@@ -684,10 +693,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					MinitScript::getStringValue(arguments, 1, fileName) == true) {
 					try {
 						_FileSystem::removeFile(pathName, fileName);
-						returnValue.setValue(true);
 					} catch (_Exception& exception) {
-						returnValue.setValue(false);
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -707,7 +714,9 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					{
 						{ .type = MinitScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 					},
-					MinitScript::TYPE_BOOLEAN
+					MinitScript::TYPE_NULL,
+					false,
+					true
 				),
 				minitScript(minitScript) {
 				//
@@ -721,10 +730,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					MinitScript::getStringValue(arguments, 0, pathName) == true) {
 					try {
 						_FileSystem::createPath(pathName);
-						returnValue.setValue(true);
 					} catch (_Exception& exception) {
-						returnValue.setValue(false);
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -745,7 +752,9 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_STRING, .name = "recursive", .optional = false, .reference = false, .nullable = false },
 					},
-					MinitScript::TYPE_BOOLEAN
+					MinitScript::TYPE_NULL,
+					false,
+					true
 				),
 				minitScript(minitScript) {
 				//
@@ -761,10 +770,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					MinitScript::getBooleanValue(arguments, 1, recursive) == true) {
 					try {
 						_FileSystem::removePath(pathName, recursive);
-						returnValue.setValue(true);
 					} catch (_Exception& exception) {
-						returnValue.setValue(false);
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -785,7 +792,9 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "fileNameFrom", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_STRING, .name = "fileNameTo", .optional = false, .reference = false, .nullable = false },
 					},
-					MinitScript::TYPE_BOOLEAN
+					MinitScript::TYPE_NULL,
+					false,
+					true
 				),
 				minitScript(minitScript) {
 				//
@@ -801,10 +810,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					MinitScript::getStringValue(arguments, 1, fileNameTo) == true) {
 					try {
 						_FileSystem::rename(fileNameFrom, fileNameTo);
-						returnValue.setValue(true);
 					} catch (_Exception& exception) {
-						returnValue.setValue(false);
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -825,7 +832,9 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "uriFrom", .optional = false, .reference = false, .nullable = false },
 						{ .type = MinitScript::TYPE_STRING, .name = "uriTo", .optional = false, .reference = false, .nullable = false },
 					},
-					MinitScript::TYPE_BOOLEAN
+					MinitScript::TYPE_NULL,
+					false,
+					true
 				),
 				minitScript(minitScript) {
 				//
@@ -841,10 +850,8 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 					MinitScript::getStringValue(arguments, 1, fileNameTo) == true) {
 					try {
 						_FileSystem::rename(fileNameFrom, fileNameTo);
-						returnValue.setValue(true);
 					} catch (_Exception& exception) {
-						returnValue.setValue(false);
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -865,6 +872,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
 					},
 					MinitScript::TYPE_ARRAY,
+					false,
 					true
 				),
 				minitScript(minitScript) {
@@ -886,7 +894,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 							returnValue.pushArrayEntry(file);
 						}
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());

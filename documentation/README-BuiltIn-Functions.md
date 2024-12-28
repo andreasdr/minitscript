@@ -186,54 +186,57 @@
 
 ## 1.9. File System functions
 
+## 1.9. File System functions
+
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Get canonical URI                                                                                |
-| <sub>filesystem.getCanonicalURI($pathName: String, $fileName: String): ?String</sub>             |
+| <sub>filesystem.getCanonicalURI($pathName: String, $fileName: String): String</sub>              |
 | Get file content as byte array                                                                   |
-| <sub>filesystem.getContent($pathName: String, $fileName: String): ?ByteArray</sub>               |
+| <sub>filesystem.getContent($pathName: String, $fileName: String): ByteArray - throws exception</sub>|
 | Set file content from byte array                                                                 |
-| <sub>filesystem.setContent($pathName: String, $fileName: String, $content: ByteArray): Boolean</sub>|
+| <sub>filesystem.setContent($pathName: String, $fileName: String, $content: ByteArray): Null - throws exception</sub>|
 | Get file content as string                                                                       |
-| <sub>filesystem.getContentAsString($pathName: String, $fileName: String): ?String</sub>          |
+| <sub>filesystem.getContentAsString($pathName: String, $fileName: String): String - throws exception</sub>|
 | Get file content as string array                                                                 |
-| <sub>filesystem.getContentAsStringArray($pathName: String, $fileName: String): ?Array</sub>      |
+| <sub>filesystem.getContentAsStringArray($pathName: String, $fileName: String): Array - throws exception</sub>|
 | Set file content from string                                                                     |
-| <sub>filesystem.setContentFromString($pathName: String, $fileName: String, $content: String): Boolean</sub>|
+| <sub>filesystem.setContentFromString($pathName: String, $fileName: String, $content: String): Null - throws exception</sub>|
 | Set file content from string array                                                               |
-| <sub>filesystem.setContentFromStringArray($pathName: String, $fileName: String, $content: Array): Boolean</sub>|
+| <sub>filesystem.setContentFromStringArray($pathName: String, $fileName: String, $content: Array): Null - throws exception</sub>|
 | Get current working path name                                                                    |
-| <sub>filesystem.getCurrentWorkingPathName(): ?String</sub>                                       |
+| <sub>filesystem.getCurrentWorkingPathName(): String - throws exception</sub>                     |
 | Returns if given URI is a drive name(applies to Microsoft Windows only)                          |
 | <sub>filesystem.isDrive($uri: String): Boolean</sub>                                             |
 | Extracts file name from given URI                                                                |
 | <sub>filesystem.getFileName($uri: String): String</sub>                                          |
 | Returns file size from file                                                                      |
-| <sub>filesystem.getFileSize($pathName: String, $fileName: String): ?Integer</sub>                |
+| <sub>filesystem.getFileSize($pathName: String, $fileName: String): Integer - throws exception</sub>|
 | Returns if given URI is a path                                                                   |
-| <sub>filesystem.isPath($uri: String): ?Boolean</sub>                                             |
+| <sub>filesystem.isPath($uri: String): Boolean - throws exception</sub>                           |
 | Extracts path name from given URI                                                                |
 | <sub>filesystem.getPathName($uri: String): String</sub>                                          |
 | Change current working path                                                                      |
-| <sub>filesystem.changePath($pathName: String): Boolean</sub>                                     |
+| <sub>filesystem.changePath($pathName: String): Null - throws exception</sub>                     |
 | Compose URI from given path name and file name                                                   |
 | <sub>filesystem.composeURI($pathName: String, $fileName: String): String</sub>                   |
 | Create path                                                                                      |
-| <sub>filesystem.createPath($pathName: String): Boolean</sub>                                     |
+| <sub>filesystem.createPath($pathName: String): Null - throws exception</sub>                     |
 | Returns if URI does exist                                                                        |
-| <sub>filesystem.exists($uri: String): ?Boolean</sub>                                             |
+| <sub>filesystem.exists($uri: String): Boolean - throws exception</sub>                           |
 | List folder                                                                                      |
-| <sub>filesystem.list($pathName: String): ?Array</sub>                                            |
+| <sub>filesystem.list($pathName: String): Array - throws exception</sub>                          |
 | Move file/folder from a location to another location                                             |
-| <sub>filesystem.move($uriFrom: String, $uriTo: String): Boolean</sub>                            |
+| <sub>filesystem.move($uriFrom: String, $uriTo: String): Null - throws exception</sub>            |
 | Removes a file with given file name                                                              |
-| <sub>filesystem.removeFile($pathName: String, $fileName: String): Boolean</sub>                  |
+| <sub>filesystem.removeFile($pathName: String, $fileName: String): Null - throws exception</sub>  |
 | Removes a file extension from given file name                                                    |
 | <sub>filesystem.removeFileExtension($fileName: String): String</sub>                             |
 | Removes a path from file system                                                                  |
-| <sub>filesystem.removePath($pathName: String, $recursive: String): Boolean</sub>                 |
+| <sub>filesystem.removePath($pathName: String, $recursive: String): Null - throws exception</sub> |
 | Renames a file/folder                                                                            |
-| <sub>filesystem.rename($fileNameFrom: String, $fileNameTo: String): Boolean</sub>                |
+| <sub>filesystem.rename($fileNameFrom: String, $fileNameTo: String): Null - throws exception</sub>|
+
 
 ## 1.10. Float functions
 
@@ -317,18 +320,20 @@
 
 ## 1.14. HTTP/HTTPS client functions
 
+## 1.14. HTTP/HTTPS client functions
+
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Execute a HTTP/HTTPS GET request                                                                 |
-| <sub>network.httpclient.get($url: String[, $queryParameters: ?Map[, $headers: ?Map]]): ?Map</sub>|
+| <sub>network.httpclient.get($url: String[, $queryParameters: ?Map[, $headers: ?Map]]): Map - throws exception</sub>|
 | Execute a HTTP/HTTPS DELETE request                                                              |
-| <sub>network.httpclient.delete($url: String[, $queryParameters: ?Map[, $headers: ?Map]]): ?Map</sub>|
+| <sub>network.httpclient.delete($url: String[, $queryParameters: ?Map[, $headers: ?Map]]): Map - throws exception</sub>|
 | Execute a HTTP/HTTPS HEAD request                                                                |
-| <sub>network.httpclient.head($url: String[, $queryParameters: ?Map[, $headers: ?Map]]): ?Map</sub>|
+| <sub>network.httpclient.head($url: String[, $queryParameters: ?Map[, $headers: ?Map]]): Map - throws exception</sub>|
 | Execute a HTTP/HTTPS POST request                                                                |
-| <sub>network.httpclient.post($url: String, $data: Mixed[, $queryParameters: ?Map[, $headers: ?Map]]): ?Map</sub>|
+| <sub>network.httpclient.post($url: String, $data: Mixed[, $queryParameters: ?Map[, $headers: ?Map]]): Map - throws exception</sub>|
 | Execute a HTTP/HTTPS PUT request                                                                 |
-| <sub>network.httpclient.put($url: String, $data: Mixed[, $queryParameters: ?Map[, $headers: ?Map]]): ?Map</sub>|
+| <sub>network.httpclient.put($url: String, $data: Mixed[, $queryParameters: ?Map[, $headers: ?Map]]): Map - throws exception</sub>|
 
 ## 1.15. Script functions
 

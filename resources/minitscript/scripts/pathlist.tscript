@@ -47,8 +47,7 @@ on: nothing
 		console.printLine("No path given: Please pass a path to scan to pathdiff script")
 		script.stop()
 	end
-	# TODO: $path = application.getArguments()[1]
-	$path = application.getArguments()->get(1)
+	$path = application.getArguments()[1]
 	$totalSize = 0
 	$errors = 0
 	console.printLine("Scanning: " + $path)

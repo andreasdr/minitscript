@@ -104,6 +104,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_MAP, .name = "headers", .optional = true, .reference = false, .nullable = true },
 					},
 					MinitScript::TYPE_MAP,
+					false,
 					true
 				),
 				minitScript(minitScript) {}
@@ -155,7 +156,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						}
 						returnValue.setMapEntry("headers", responseHeaders);
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -178,6 +179,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_MAP, .name = "headers", .optional = true, .reference = false, .nullable = true },
 					},
 					MinitScript::TYPE_MAP,
+					false,
 					true
 				),
 				minitScript(minitScript) {}
@@ -237,7 +239,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						}
 						returnValue.setMapEntry("headers", responseHeaders);
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -261,6 +263,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_MAP, .name = "headers", .optional = true, .reference = false, .nullable = true },
 					},
 					MinitScript::TYPE_MAP,
+					false,
 					true
 				),
 				minitScript(minitScript) {}
@@ -338,7 +341,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						}
 						returnValue.setMapEntry("headers", responseHeaders);
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -362,6 +365,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_MAP, .name = "headers", .optional = true, .reference = false, .nullable = true },
 					},
 					MinitScript::TYPE_MAP,
+					false,
 					true
 				),
 				minitScript(minitScript) {}
@@ -439,7 +443,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						}
 						returnValue.setMapEntry("headers", responseHeaders);
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
@@ -462,6 +466,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						{ .type = MinitScript::TYPE_MAP, .name = "headers", .optional = true, .reference = false, .nullable = true },
 					},
 					MinitScript::TYPE_MAP,
+					false,
 					true
 				),
 				minitScript(minitScript) {}
@@ -513,7 +518,7 @@ void NetworkMethods::registerMethods(MinitScript* minitScript) {
 						}
 						returnValue.setMapEntry("headers", responseHeaders);
 					} catch (_Exception& exception) {
-						_Console::printLine("An error occurred: " + string(exception.what()));
+						minitScript->_throw(string(exception.what()));
 					}
 				} else {
 					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
