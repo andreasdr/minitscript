@@ -14,8 +14,7 @@ Exceptions do not need to be catched at the level of the throw statement, it can
 ```
 module
 
-# this function is provided by our module_1.tscript
-function: init()
+function: module1Init()
 	console.printLine("-----------------")
 	console.printLine("init")
 	console.printLine("-----------------")
@@ -49,7 +48,7 @@ function: module1Init()
 end
 ```
 
-## 1.3. A initialization example
+## 1.3. A more complete initialization example
 
 ```
 use: module_1.tscript
