@@ -71,7 +71,7 @@ on: nothing
 	console.printLine()
 	# initialize modules, which can load data from files or databases, or computing some values, ...
 	try
-		# if any of the init throws an unhandled exception, the exception will be handled here in catch block. then the script will stop
+		# if any of the module initializations throw an unhandled exception, the exception will be handled here in catch block. then the script will stop.
 		module1Init()
 		module2Init()
 		module3Init()
