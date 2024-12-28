@@ -44,7 +44,7 @@ module;
 function: module1Init()
 	# this throws an exception with the string argument "not implemented"
 	# the exception can be catched at a higher level
-	throw "not implemented"
+	throw("not implemented")
 end
 ```
 
