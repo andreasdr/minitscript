@@ -27,7 +27,7 @@ function: module1Init()
 		# in this case the following functions would not be executed anymore
 		# the script would jump into catch block
 		# and we would not see this message
-		console.printLine("data.txt: red file into memory");
+		console.printLine("data.txt: read file into memory");
 	catch ($exception)
 		console.printLine("An error occurred: " + $exception)
 		# print the stack trace
