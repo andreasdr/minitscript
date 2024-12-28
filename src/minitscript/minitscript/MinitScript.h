@@ -73,6 +73,7 @@ class minitscript::minitscript::MinitScript {
 	friend class MathMethods;
 	friend class ScriptMethods;
 	friend class Transpiler;
+	friend class Validations;
 
 public:
 	enum Operator {
@@ -3854,6 +3855,13 @@ private:
 	bool createStatementSyntaxTree(const string& scriptFileName, int scriptIdx, const string_view& methodName, const vector<ParserArgument>& arguments, const Statement& statement, SyntaxTreeNode& syntaxTree, int subLineIdx = 0);
 
 	/**
+	 * Return stacklet scope script index
+	 * @param scriptIdx stacklet script index
+	 * @return stacklet scope script index
+	 */
+	int getStackletScopeScriptIdx(int scriptIdx);
+
+	/**
 	 * Setup function and stacket script indices
 	 * @param scriptIdx script index
 	 */
@@ -3874,69 +3882,6 @@ private:
 	  * @return success
 	  */
 	bool setupFunctionAndStackletScriptIndices(Variable& variable, const Statement& statement, int subLineIdx);
-
-	/**
-	 * Return stacklet scope script index
-	 * @param scriptIdx stacklet script index
-	 * @return stacklet scope script index
-	 */
-	int getStackletScopeScriptIdx(int scriptIdx);
-
-	/**
-	 * Validate stacklets
-	 * @param scriptIdx script index
-	 * @return success
-	 */
-	bool validateStacklets(int scriptIdx);
-
-	/**
-	 * Validate stacklets
-	 * @param function function
-	 * @param scopeScriptIdx scope script index or MinitScript::SCRIPTIDX_NONE for the function itself
-	 * @return success
-	 */
-	bool validateStacklets(const string& function, int scopeScriptIdx = MinitScript::SCRIPTIDX_NONE);
-
-	/**
-	 * Validate stacklets
-	 * @param scopeScriptIdx scope script index
-	 * @param syntaxTreeNode syntax tree node
-	 * @param statement statement
-	 * @return success
-	 */
-	bool validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
-
-	/**
-	 * Validate callabe
-	 * @param function function
-	 * @return success
-	 */
-	bool validateCallable(const string& function);
-
-	/**
-	 * Validate callable
-	 * @param syntaxTreeNode syntax tree node
-	 * @param statement statement
-	 * @return success
-	 */
-	bool validateCallable(const SyntaxTreeNode& syntaxTreeNode, const Statement& statement);
-
-	/**
-	 * Validate context functions
-	 * @param function function
-	 * @param functionStack function stack
-	 * @return success
-	 */
-	bool validateContextFunctions(const string& function, vector<string>& functionStack);
-
-	/**
-	 * Validate context functions
-	 * @param syntaxTreeNode syntax tree node
-	 * @param functionStack function stack
-	 * @param statement statement
-	 * @return success
-	 */
-	bool validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode, vector<string>& functionStack, const Statement& statement);
 
 	/**
 	 * Returns if char is operator char

@@ -37,6 +37,7 @@
 #include <minitscript/minitscript/SetMethods.h>
 #include <minitscript/minitscript/StringMethods.h>
 #include <minitscript/minitscript/TimeMethods.h>
+#include <minitscript/minitscript/Validations.h>
 #include <minitscript/minitscript/XMLMethods.h>
 
 #include <minitscript/math/Math.h>
@@ -91,6 +92,7 @@ using minitscript::minitscript::ScriptMethods;
 using minitscript::minitscript::SetMethods;
 using minitscript::minitscript::StringMethods;
 using minitscript::minitscript::TimeMethods;
+using minitscript::minitscript::Validations;
 using minitscript::minitscript::XMLMethods;
 
 // TODO: we can remove the _ here again, as MinitScript.cpp is not a transpilation unit anymore
@@ -934,6 +936,31 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 	return false;
 }
 
+int MinitScript::getStackletScopeScriptIdx(int scriptIdx) {
+	if (scriptIdx < 0 || scriptIdx >= scripts.size() ||
+		scripts[scriptIdx].type != MinitScript::Script::TYPE_STACKLET) {
+		return MinitScript::SCRIPTIDX_NONE;
+	}
+	//
+	const auto& stackletScript = scripts[scriptIdx];
+	const auto& stackletScopeName = stackletScript.arguments.size() == 1?stackletScript.arguments[0].name:string();
+	if (stackletScopeName.empty() == true) {
+		return MinitScript::SCRIPTIDX_NONE;
+	}
+	//
+	for (auto i = 0; i < scripts.size(); i++) {
+		if (i == scriptIdx) continue;
+		const auto& scriptCandidate = scripts[i];
+		if (scriptCandidate.type != MinitScript::Script::TYPE_FUNCTION && scriptCandidate.type != MinitScript::Script::TYPE_STACKLET) continue;
+		if (scriptCandidate.condition == stackletScopeName) {
+			if (scriptCandidate.type == MinitScript::Script::TYPE_STACKLET) return getStackletScopeScriptIdx(i); else return i;
+		}
+	}
+	//
+	return MinitScript::SCRIPTIDX_NONE;
+}
+
+
 bool MinitScript::setupFunctionAndStackletScriptIndices(int scriptIdx) {
 	//
 	auto& script = scripts[scriptIdx];
@@ -1114,400 +1141,6 @@ bool MinitScript::setupFunctionAndStackletScriptIndices(Variable& variable, cons
 				break;
 			}
 		default: break;
-	}
-	//
-	return true;
-}
-
-int MinitScript::getStackletScopeScriptIdx(int scriptIdx) {
-	if (scriptIdx < 0 || scriptIdx >= scripts.size() ||
-		scripts[scriptIdx].type != MinitScript::Script::TYPE_STACKLET) {
-		return MinitScript::SCRIPTIDX_NONE;
-	}
-	//
-	const auto& stackletScript = scripts[scriptIdx];
-	const auto& stackletScopeName = stackletScript.arguments.size() == 1?stackletScript.arguments[0].name:string();
-	if (stackletScopeName.empty() == true) {
-		return MinitScript::SCRIPTIDX_NONE;
-	}
-	//
-	for (auto i = 0; i < scripts.size(); i++) {
-		if (i == scriptIdx) continue;
-		const auto& scriptCandidate = scripts[i];
-		if (scriptCandidate.type != MinitScript::Script::TYPE_FUNCTION && scriptCandidate.type != MinitScript::Script::TYPE_STACKLET) continue;
-		if (scriptCandidate.condition == stackletScopeName) {
-			if (scriptCandidate.type == MinitScript::Script::TYPE_STACKLET) return getStackletScopeScriptIdx(i); else return i;
-		}
-	}
-	//
-	return MinitScript::SCRIPTIDX_NONE;
-}
-
-bool MinitScript::validateStacklets(int scriptIdx) {
-	//
-	const auto& script = scripts[scriptIdx];
-	auto statementIdx = STATEMENTIDX_FIRST;
-	//
-	for (const auto& syntaxTreeNode: script.syntaxTree) {
-		const auto& statement = script.statements[statementIdx++];
-		//
-		if (validateStacklets(script.type == Script::TYPE_FUNCTION?scriptIdx:SCRIPTIDX_NONE, syntaxTreeNode, statement) == false) {
-			//
-			return false;
-		}
-	}
-	//
-	return true;
-}
-
-bool MinitScript::validateStacklets(const string& function, int scopeScriptIdx) {
-	auto functionScriptIdx = getFunctionScriptIdx(function);
-	if (functionScriptIdx == SCRIPTIDX_NONE) {
-		_Console::printLine("MinitScript::validateStacklet(): function not found: " + function);
-		return false;
-	}
-	//
-	const auto& script = scripts[functionScriptIdx];
-	auto statementIdx = STATEMENTIDX_FIRST;
-	//
-	for (const auto& syntaxTreeNode: script.syntaxTree) {
-		const auto& statement = script.statements[statementIdx++];
-		//
-		if (validateStacklets(scopeScriptIdx == MinitScript::SCRIPTIDX_NONE?functionScriptIdx:scopeScriptIdx, syntaxTreeNode, statement) == false) {
-			//
-			return false;
-		}
-	}
-	//
-	return true;
-}
-
-bool MinitScript::validateStacklets(int scopeScriptIdx, const SyntaxTreeNode& syntaxTreeNode, const Statement& statement) {
-	switch (syntaxTreeNode.type) {
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
-			{
-				// TODO: improve me! This is actually litaral only, which can be also set as variable and be reused later
-				//	basically we forbid here to create a stacklet assignment variable with wrong scope in a given scope
-				if (syntaxTreeNode.value.getType() == MinitScript::TYPE_STACKLET_ASSIGNMENT) {
-					// we only allow assignments of stacklets with a correct scope, means
-					string stackletName;
-					auto stackletScriptIdx = SCRIPTIDX_NONE;
-					if (syntaxTreeNode.value.getStackletValue(stackletName, stackletScriptIdx) == false ||
-						(stackletScriptIdx = getFunctionScriptIdx(stackletName)) == SCRIPTIDX_NONE) {
-						//
-						_Console::printLine(
-							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-							": " +
-							syntaxTreeNode.value.getValueAsString() +
-							": Stacklet not found"
-						);
-						//
-						parseErrors.push_back(
-							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-							": " +
-							syntaxTreeNode.value.getValueAsString() +
-							": Stacklet not found"
-						);
-						//
-						return false;
-					}
-					//
-					int stackletScopeScriptIdx = getStackletScopeScriptIdx(stackletScriptIdx);
-					if (stackletScopeScriptIdx != scopeScriptIdx) {
-						// construct scope error
-						string scopeErrorMessage;
-						if (stackletScopeScriptIdx == SCRIPTIDX_NONE) {
-							scopeErrorMessage = "Stacklet requires root scope";
-						} else {
-							scopeErrorMessage = "Stacklet requires scope of " + scripts[stackletScopeScriptIdx].condition + "()";
-						}
-						scopeErrorMessage+= ", but has scope of ";
-						if (scopeScriptIdx == SCRIPTIDX_NONE) {
-							scopeErrorMessage+= "root scope";
-						} else {
-							scopeErrorMessage+= scripts[scopeScriptIdx].condition + "()";
-						}
-						//
-						_Console::printLine(
-							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-							": " +
-							syntaxTreeNode.value.getValueAsString() +
-							": Stacklet scope invalid: " +
-							scopeErrorMessage
-						);
-						//
-						parseErrors.push_back(
-							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-							": " +
-							syntaxTreeNode.value.getValueAsString() +
-							": Stacklet scope invalid" +
-							scopeErrorMessage
-						);
-						//
-						return false;
-					}
-					// check stacklet itself for stacklet litarals
-					if (validateStacklets(stackletName, scopeScriptIdx) == false) return false;
-				}
-				//
-				break;
-			}
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
-			{
-				for (const auto& argument: syntaxTreeNode.arguments) {
-					if (validateStacklets(scopeScriptIdx, argument, statement) == false) return false;
-				}
-				//
-				break;
-			}
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
-			{
-				for (const auto& argument: syntaxTreeNode.arguments) {
-					if (validateStacklets(scopeScriptIdx, argument, statement) == false) return false;
-				}
-				//
-				if (getFunctionScriptIdx(syntaxTreeNode.value.getValueAsString()) == scopeScriptIdx) {
-					// recursion
-				} else {
-					validateStacklets(syntaxTreeNode.value.getValueAsString());
-				}
-				//
-				break;
-			}
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
-			{
-				//
-				string stackletName = syntaxTreeNode.value.getValueAsString();
-				auto stackletScriptIdx = syntaxTreeNode.getScriptIdx();
-				if (stackletName.empty() == true || stackletScriptIdx == SCRIPTIDX_NONE) {
-					//
-					_Console::printLine(
-						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-						": " +
-						syntaxTreeNode.value.getValueAsString() +
-						": Stacklet not found"
-					);
-					//
-					parseErrors.push_back(
-						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-						": " +
-						syntaxTreeNode.value.getValueAsString() +
-						": Stacklet not found"
-					);
-					//
-					return false;
-				}
-				//
-				int stackletScopeScriptIdx = getStackletScopeScriptIdx(stackletScriptIdx);
-				if (stackletScopeScriptIdx != scopeScriptIdx) {
-					// construct scope error
-					string scopeErrorMessage;
-					if (stackletScopeScriptIdx == SCRIPTIDX_NONE) {
-						scopeErrorMessage = "Stacklet requires root scope";
-					} else {
-						scopeErrorMessage = "Stacklet requires scope of " + scripts[stackletScopeScriptIdx].condition + "()";
-					}
-					scopeErrorMessage+= ", but has scope of ";
-					if (scopeScriptIdx == SCRIPTIDX_NONE) {
-						scopeErrorMessage+= "root scope";
-					} else {
-						scopeErrorMessage+= scripts[scopeScriptIdx].condition + "()";
-					}
-					//
-					_Console::printLine(
-						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-						": " +
-						syntaxTreeNode.value.getValueAsString() +
-						": Stacklet scope invalid: " +
-						scopeErrorMessage
-					);
-					//
-					parseErrors.push_back(
-						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-						": " +
-						syntaxTreeNode.value.getValueAsString() +
-						": Stacklet scope invalid" +
-						scopeErrorMessage
-					);
-					//
-					return false;
-				}
-				//
-				validateStacklets(syntaxTreeNode.value.getValueAsString(), scopeScriptIdx);
-				//
-				break;
-			}
-		default:
-			break;
-	}
-	//
-	return true;
-}
-
-bool MinitScript::validateCallable(const string& function) {
-	auto functionScriptIdx = getFunctionScriptIdx(function);
-	if (functionScriptIdx == SCRIPTIDX_NONE) {
-		_Console::printLine("MinitScript::validateCallable(): function not found: " + function);
-		return false;
-	}
-	//
-	const auto& script = scripts[functionScriptIdx];
-	auto statementIdx = STATEMENTIDX_FIRST;
-	//
-	for (const auto& syntaxTreeNode: script.syntaxTree) {
-		const auto& statement = script.statements[statementIdx++];
-		//
-		if (validateCallable(syntaxTreeNode, statement) == false) {
-			//
-			return false;
-		}
-	}
-	//
-	return true;
-}
-
-bool MinitScript::validateCallable(const SyntaxTreeNode& syntaxTreeNode, const Statement& statement) {
-	//
-	switch (syntaxTreeNode.type) {
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
-			{
-				break;
-			}
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
-			{
-				const auto& contextFunctions = syntaxTreeNode.getMethod()->getContextFunctions();
-				if (contextFunctions.empty() == false) {
-					//
-					_Console::printLine(
-						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-						": Method " +
-						syntaxTreeNode.getMethod()->getMethodName() + "() can not be called within a callable function"
-					);
-					//
-					parseErrors.push_back(
-						getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-						": Method " +
-						syntaxTreeNode.getMethod()->getMethodName() + "() can not be called within a callable function"
-					);
-					//
-					return false;
-				}
-			}
-			break;
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
-			{
-				for (const auto& argument: syntaxTreeNode.arguments) {
-					if (validateCallable(argument, statement) == false) return false;
-				}
-				//
-				validateCallable(syntaxTreeNode.value.getValueAsString());
-				//
-				break;
-			}
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
-			{
-				validateCallable(syntaxTreeNode.value.getValueAsString());
-				//
-				break;
-			}
-		default:
-			break;
-	}
-	//
-	return true;
-}
-
-bool MinitScript::validateContextFunctions(const string& function, vector<string>& functionStack) {
-	auto functionScriptIdx = getFunctionScriptIdx(function);
-	if (functionScriptIdx == SCRIPTIDX_NONE) {
-		_Console::printLine("MinitScript::validateContextFunctions(): Function not found: " + function);
-		return false;
-	}
-	//
-	const auto& script = scripts[functionScriptIdx];
-	auto statementIdx = STATEMENTIDX_FIRST;
-	//
-	functionStack.push_back(script.condition);
-	//
-	for (const auto& syntaxTreeNode: script.syntaxTree) {
-		const auto& statement = script.statements[statementIdx++];
-		//
-		if (validateContextFunctions(syntaxTreeNode, functionStack, statement) == false) {
-			//
-			return false;
-		}
-	}
-	//
-	functionStack.erase(functionStack.begin() + functionStack.size() - 1);
-	//
-	return true;
-}
-
-bool MinitScript::validateContextFunctions(const SyntaxTreeNode& syntaxTreeNode, vector<string>& functionStack, const Statement& statement) {
-	//
-	switch (syntaxTreeNode.type) {
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL:
-			{
-				break;
-			}
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_METHOD:
-			{
-				const auto& contextFunctions = syntaxTreeNode.getMethod()->getContextFunctions();
-				if (contextFunctions.empty() == false) {
-					//
-					string contextFunctionsString;
-					for (const auto &contextFunction: contextFunctions) {
-						if (contextFunctionsString.empty() == false) contextFunctionsString+= ", ";
-						contextFunctionsString+= contextFunction + "()";
-					}
-					//
-					const auto& functionStackFunction = functionStack[0];
-					if (find(contextFunctions.begin(), contextFunctions.end(), functionStackFunction) == contextFunctions.end()) {
-						//
-						string contextFunctionsString;
-						for (const auto &contextFunction: contextFunctions) {
-							if (contextFunctionsString.empty() == false) contextFunctionsString+= ", ";
-							contextFunctionsString+= contextFunction + "()";
-						}
-						//
-						_Console::printLine(
-							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-							": Method " +
-							syntaxTreeNode.getMethod()->getMethodName() + "() can only be called within the following functions: " +
-							contextFunctionsString +
-							", but was called from " +
-							functionStackFunction + "()"
-						);
-						//
-						parseErrors.push_back(
-							getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
-							": Method " +
-							syntaxTreeNode.getMethod()->getMethodName() + "() can only be called within the following functions: " +
-							contextFunctionsString +
-							", but was called from " +
-							functionStackFunction + "()"
-						);
-						//
-						return false;
-					}
-				}
-			}
-			break;
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION:
-		case SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_STACKLET:
-			{
-				for (const auto& argument: syntaxTreeNode.arguments) {
-					if (validateContextFunctions(argument, functionStack, statement) == false) return false;
-				}
-				//
-				if (functionStack.back() != syntaxTreeNode.value.getValueAsString()) {
-					validateContextFunctions(syntaxTreeNode.value.getValueAsString(), functionStack);
-				}
-				//
-				break;
-			}
-		default:
-			break;
 	}
 	//
 	return true;
@@ -2988,7 +2621,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 				script.type == MinitScript::Script::TYPE_ON ||
 				script.type == MinitScript::Script::TYPE_ONENABLED) {
 				//
-				if (validateStacklets(scriptIdx) == false) {
+				if (Validations::validateStacklets(this, scriptIdx, parseErrors) == false) {
 					scriptValid = false;
 					return;
 				}
@@ -2998,7 +2631,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 				//
 				if (script.callable == true) {
 					//
-					if (validateCallable(script.condition) == false) {
+					if (Validations::validateCallable(this, script.condition, parseErrors) == false) {
 						scriptValid = false;
 						return;
 					}
@@ -3006,7 +2639,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 					//
 					vector<string> functionStack;
 					//
-					if (validateContextFunctions(script.condition, functionStack) == false) {
+					if (Validations::validateContextFunctions(this, script.condition, functionStack, parseErrors) == false) {
 						scriptValid = false;
 						return;
 					}

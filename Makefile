@@ -109,8 +109,9 @@ SRCS = \
 	src/minitscript/minitscript/StringMethods.cpp \
 	src/minitscript/minitscript/TimeMethods.cpp \
 	src/minitscript/minitscript/Transpiler.cpp \
-	src/minitscript/minitscript/XMLMethods.cpp \
+	src/minitscript/minitscript/Validations.cpp \
 	src/minitscript/minitscript/Version.cpp \
+	src/minitscript/minitscript/XMLMethods.cpp \
 	src/minitscript/network/httpclient/HTTPClient.cpp \
 	src/minitscript/network/httpclient/HTTPClientException.cpp \
 	src/minitscript/network/httpclient/HTTPDownloadClient.cpp \

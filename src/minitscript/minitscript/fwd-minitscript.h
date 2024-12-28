@@ -27,7 +27,8 @@ namespace minitscript {
 	class StringMethods;
 	class TimeMethods;
 	class Transpiler;
-	class XMLMethods;
+	class Validations;
 	class Version;
+	class XMLMethods;
 }  // namespace minitscript
 }  // namespace minitscript
