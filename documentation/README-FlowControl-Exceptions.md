@@ -1,7 +1,100 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1. Exceptions
-- ...
+MinitScript supports exceptions, which are categorized as flow control.
+
+# 1. What are exception
+
+Here exceptions are about 3 things. Trying to do some work, that can issue a exception and catching the exception.
+Third is also how to throw exceptions.
+ 
+Exception do not need to be catched at the level of the throw statement, it can also be catched a call level higher. 
+
+## 1.1. Trying and catching
+
+```
+module
+
+# this function is provided by our module_1.tscript
+function: init()
+	console.printLine("-----------------")
+	console.printLine("init")
+	console.printLine("-----------------")
+	# initialize our array
+	$array = []
+	try
+		# reading data.txt into an array
+		$array = filesystem.getContentAsStringArray(".", "data.txt")	
+		# array would throw an exception if data.txt does not exist
+		# in this case the following functions would not be executed anymore
+		# the script would jump into catch block
+		# and we would not see this message
+		console.printLine("data.txt: red file into memory");
+	catch ($exception)
+		console.printLine("An error occurred: " + $exception)
+		# print the stack trace
+		console.printLine(stackTrace())
+	end
+end
+```
+
+## 1.2. Throwing an exception
+
+```
+module;
+
+function: module1Init()
+	# this throws an exception with a argument as string 'not implemented'
+	# the exception will be catched one level higher
+	throw "not implemented"
+end
+```
+
+## 1.3. A initialization example
+
+```
+use: module_1.tscript
+use: module_2.tscript
+use: module_3.tscript
+
+# initialize
+on: initialize
+	console.printLine("----------------------------")
+	console.printLine("exception-test: Initialize")
+	console.printLine("----------------------------")
+	console.printLine()
+end
+
+# if no condition is met, nothing will be executed, lol :D
+on: nothing
+	console.printLine("-------------------------")
+	console.printLine("exception-test: Nothing")
+	console.printLine("-------------------------")
+	console.printLine()
+	# initialize modules, which can mean loading data from files or databases, or computing some values, ...
+	try
+		# if any of the init throws an unhandled exception, the exception will be handled here in catch block and stop the script
+		module1Init()
+		module2Init()
+		module3Init()
+	catch ($exception)
+		# ahhhhh! the initialization failed!
+		console.printLine("An error occurred: " + $exception)
+		# print the stack trace
+		console.printLine(stackTrace())
+		# stop the script
+		script.stop()
+	end
+end
+
+# an error has occurred
+on: error
+	console.printLine("--------------------")
+	console.printLine("module-test: Error")
+	console.printLine("--------------------")
+	console.printLine("An error occurred")
+	script.stop()
+end
+```
 
 # 2. Links
 
