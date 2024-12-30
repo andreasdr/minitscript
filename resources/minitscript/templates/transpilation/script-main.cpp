@@ -66,6 +66,7 @@ int main(int argc, char *argv[]) {
 	auto scriptPtr = script.get();
 	scriptPtr->getContext()->addScript("application", script.release());
 	scriptPtr->getContext()->push(scriptPtr);
+	scriptPtr->startScript();
 	while (scriptPtr->isRunning() == true) {
 		scriptPtr->execute();
 	}

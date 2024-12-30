@@ -60,8 +60,12 @@ private:
 			case MinitScript::Script::TYPE_NONE: return "none";
 			case MinitScript::Script::TYPE_FUNCTION: return "function";
 			case MinitScript::Script::TYPE_STACKLET: return "stacklet";
-			case MinitScript::Script::TYPE_ON: return "on";
-			case MinitScript::Script::TYPE_ONENABLED: return "on-enabled";
+			//
+			#if defined(MINITSCRIPT_EVENTS)
+				// events
+				case MinitScript::Script::TYPE_ON: return "on";
+				case MinitScript::Script::TYPE_ONENABLED: return "on-enabled";
+			#endif
 		};
 		//
 		return string();
@@ -77,8 +81,12 @@ private:
 			case MinitScript::Script::TYPE_NONE: return "Script::TYPE_NONE";
 			case MinitScript::Script::TYPE_FUNCTION: return "Script::TYPE_FUNCTION";
 			case MinitScript::Script::TYPE_STACKLET: return "Script::TYPE_STACKLET";
-			case MinitScript::Script::TYPE_ON: return "Script::TYPE_ON";
-			case MinitScript::Script::TYPE_ONENABLED: return "Script::TYPE_ONENABLED";
+			//
+			#if defined(MINITSCRIPT_EVENTS)
+				// events
+				case MinitScript::Script::TYPE_ON: return "Script::TYPE_ON";
+				case MinitScript::Script::TYPE_ONENABLED: return "Script::TYPE_ONENABLED";
+			#endif
 		};
 		//
 		return string();
@@ -98,8 +106,12 @@ private:
 			case MinitScript::Script::TYPE_NONE: break;
 			case MinitScript::Script::TYPE_FUNCTION: methodType = "function"; break;
 			case MinitScript::Script::TYPE_STACKLET: methodType = "stacklet"; break;
-			case MinitScript::Script::TYPE_ON: methodType = "on"; break;
-			case MinitScript::Script::TYPE_ONENABLED: methodType = "on_enabled"; break;
+			//
+			#if defined(MINITSCRIPT_EVENTS)
+				// events
+				case MinitScript::Script::TYPE_ON: methodType = "on"; break;
+				case MinitScript::Script::TYPE_ONENABLED: methodType = "on_enabled"; break;
+			#endif
 		};
 		//
 		return

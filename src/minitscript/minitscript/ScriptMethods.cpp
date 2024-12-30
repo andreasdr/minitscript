@@ -73,131 +73,137 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 		};
 		minitScript->registerMethod(new MethodScriptWait(minitScript));
 	}
-	{
-		//
-		class MethodScriptEmit: public MinitScript::Method {
-		private:
-			MinitScript* minitScript { nullptr };
-		public:
-			MethodScriptEmit(MinitScript* minitScript):
-				MinitScript::Method(
-					{
-						{ .type = MinitScript::TYPE_STRING, .name = "condition", .optional = false, .reference = false, .nullable = false }
-					}
-				),
-				minitScript(minitScript) {}
-			const string getMethodName() override {
-				return "script.emit";
-			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
-				string condition;
-				if (arguments.size() == 1 &&
-					MinitScript::getStringValue(arguments, 0, condition) == true) {
-					minitScript->emit(condition);
-				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+	#if defined(MINITSCRIPT_EVENTS)
+		// events
+		{
+			//
+			class MethodScriptEmit: public MinitScript::Method {
+			private:
+				MinitScript* minitScript { nullptr };
+			public:
+				MethodScriptEmit(MinitScript* minitScript):
+					MinitScript::Method(
+						{
+							{ .type = MinitScript::TYPE_STRING, .name = "condition", .optional = false, .reference = false, .nullable = false }
+						}
+					),
+					minitScript(minitScript) {}
+				const string getMethodName() override {
+					return "script.emit";
 				}
-			}
-		};
-		minitScript->registerMethod(new MethodScriptEmit(minitScript));
-	}
-	{
-		//
-		class MethodScriptEnableNamedCondition: public MinitScript::Method {
-		private:
-			MinitScript* minitScript { nullptr };
-		public:
-			MethodScriptEnableNamedCondition(MinitScript* minitScript):
-				MinitScript::Method(
-					{
-						{ .type = MinitScript::TYPE_STRING, .name = "name", .optional = false, .reference = false, .nullable = false }
+				void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+					string condition;
+					if (arguments.size() == 1 &&
+						MinitScript::getStringValue(arguments, 0, condition) == true) {
+						minitScript->emit(condition);
+					} else {
+						MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
-				),
-				minitScript(minitScript) {}
-			const string getMethodName() override {
-				return "script.enableNamedCondition"; // METHOD_ENABLENAMEDCONDITION;
-			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
-				string name;
-				if (arguments.size() == 1 &&
-					MinitScript::getStringValue(arguments, 0, name) == true) {
-					minitScript->enabledNamedConditions.erase(
-						remove(
-							minitScript->enabledNamedConditions.begin(),
-							minitScript->enabledNamedConditions.end(),
-							name
-						),
-						minitScript->enabledNamedConditions.end()
-					);
-					minitScript->enabledNamedConditions.push_back(name);
-				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
-			}
-		};
-		minitScript->registerMethod(new MethodScriptEnableNamedCondition(minitScript));
-	}
-	{
-		//
-		class MethodScriptDisableNamedCondition: public MinitScript::Method {
-		private:
-			MinitScript* minitScript { nullptr };
-		public:
-			MethodScriptDisableNamedCondition(MinitScript* minitScript):
-				MinitScript::Method(
-					{
-						{ .type = MinitScript::TYPE_STRING, .name = "name", .optional = false, .reference = false, .nullable = false }
+			};
+			minitScript->registerMethod(new MethodScriptEmit(minitScript));
+		}
+	#endif
+	#if defined(MINITSCRIPT_EVENTS)
+		// events
+		{
+			//
+			class MethodScriptEnableNamedCondition: public MinitScript::Method {
+			private:
+				MinitScript* minitScript { nullptr };
+			public:
+				MethodScriptEnableNamedCondition(MinitScript* minitScript):
+					MinitScript::Method(
+						{
+							{ .type = MinitScript::TYPE_STRING, .name = "name", .optional = false, .reference = false, .nullable = false }
+						}
+					),
+					minitScript(minitScript) {}
+				const string getMethodName() override {
+					return "script.enableNamedCondition"; // METHOD_ENABLENAMEDCONDITION;
+				}
+				void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+					string name;
+					if (arguments.size() == 1 &&
+						MinitScript::getStringValue(arguments, 0, name) == true) {
+						minitScript->enabledNamedConditions.erase(
+							remove(
+								minitScript->enabledNamedConditions.begin(),
+								minitScript->enabledNamedConditions.end(),
+								name
+							),
+							minitScript->enabledNamedConditions.end()
+						);
+						minitScript->enabledNamedConditions.push_back(name);
+					} else {
+						MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
-				),
-				minitScript(minitScript) {}
-			const string getMethodName() override {
-				return "script.disableNamedCondition"; // METHOD_DISABLENAMEDCONDITION;
-			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
-				string name;
-				if (arguments.size() == 1 &&
-					MinitScript::getStringValue(arguments, 0, name) == true) {
-					minitScript->enabledNamedConditions.erase(
-						remove(
-							minitScript->enabledNamedConditions.begin(),
-							minitScript->enabledNamedConditions.end(),
-							name
-						),
-						minitScript->enabledNamedConditions.end()
-					);
-				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
-			}
-		};
-		minitScript->registerMethod(new MethodScriptDisableNamedCondition(minitScript));
-	}
-	{
-		//
-		class MethodScriptGetNamedConditions: public MinitScript::Method {
-		private:
-			MinitScript* minitScript { nullptr };
-		public:
-			MethodScriptGetNamedConditions(MinitScript* minitScript):
-				MinitScript::Method({}, MinitScript::TYPE_STRING),
-				minitScript(minitScript) {}
-			const string getMethodName() override {
-				return "script.getNamedConditions";
-			}
-			void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
-				if (arguments.size() == 0) {
-					string result;
-					for (const auto& namedCondition: minitScript->enabledNamedConditions) {
-						result+= result.empty() == false?",":namedCondition;
+			};
+			minitScript->registerMethod(new MethodScriptEnableNamedCondition(minitScript));
+		}
+		{
+			//
+			class MethodScriptDisableNamedCondition: public MinitScript::Method {
+			private:
+				MinitScript* minitScript { nullptr };
+			public:
+				MethodScriptDisableNamedCondition(MinitScript* minitScript):
+					MinitScript::Method(
+						{
+							{ .type = MinitScript::TYPE_STRING, .name = "name", .optional = false, .reference = false, .nullable = false }
+						}
+					),
+					minitScript(minitScript) {}
+				const string getMethodName() override {
+					return "script.disableNamedCondition"; // METHOD_DISABLENAMEDCONDITION;
+				}
+				void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+					string name;
+					if (arguments.size() == 1 &&
+						MinitScript::getStringValue(arguments, 0, name) == true) {
+						minitScript->enabledNamedConditions.erase(
+							remove(
+								minitScript->enabledNamedConditions.begin(),
+								minitScript->enabledNamedConditions.end(),
+								name
+							),
+							minitScript->enabledNamedConditions.end()
+						);
+					} else {
+						MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}
-					returnValue.setValue(result);
-				} else {
-					MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 				}
-			}
-		};
-		minitScript->registerMethod(new MethodScriptGetNamedConditions(minitScript));
-	}
+			};
+			minitScript->registerMethod(new MethodScriptDisableNamedCondition(minitScript));
+		}
+		{
+			//
+			class MethodScriptGetNamedConditions: public MinitScript::Method {
+			private:
+				MinitScript* minitScript { nullptr };
+			public:
+				MethodScriptGetNamedConditions(MinitScript* minitScript):
+					MinitScript::Method({}, MinitScript::TYPE_STRING),
+					minitScript(minitScript) {}
+				const string getMethodName() override {
+					return "script.getNamedConditions";
+				}
+				void executeMethod(span<MinitScript::Variable>& arguments, MinitScript::Variable& returnValue, const MinitScript::SubStatement& subStatement) override {
+					if (arguments.size() == 0) {
+						string result;
+						for (const auto& namedCondition: minitScript->enabledNamedConditions) {
+							result+= result.empty() == false?",":namedCondition;
+						}
+						returnValue.setValue(result);
+					} else {
+						MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
+					}
+				}
+			};
+			minitScript->registerMethod(new MethodScriptGetNamedConditions(minitScript));
+		}
+	#endif
 	{
 		//
 		class MethodScriptEvaluate: public MinitScript::Method {

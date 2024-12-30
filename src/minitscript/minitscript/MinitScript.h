@@ -3087,7 +3087,17 @@ public:
 			bool privateScope;
 		};
 		//
-		enum Type { TYPE_NONE, TYPE_FUNCTION, TYPE_STACKLET, TYPE_ON, TYPE_ONENABLED };
+		enum Type {
+			TYPE_NONE,
+			TYPE_FUNCTION,
+			TYPE_STACKLET
+			#if defined(MINITSCRIPT_EVENTS)
+				// events
+				,
+				TYPE_ON,
+				TYPE_ONENABLED
+			#endif
+		};
 		/**
 		 * Constructor
 		 * @param _module module name
@@ -3323,10 +3333,6 @@ protected:
 	unordered_map<string, int> nativeFunctions;
 	vector<unique_ptr<ScriptState>> scriptStateStack;
 
-	// root context variables
-	vector<string> enabledNamedConditions;
-	int64_t timeEnabledConditionsCheckLast { TIME_NONE };
-
 	vector<string> parseErrors;
 	vector<pair<int, string>> deferredInlineScriptCodes;
 
@@ -3338,8 +3344,15 @@ protected:
 	SubStatement errorSubStatement;
 	string errorMessage;
 
-	string deferredEmit;
-	bool emitted { false };
+	#if defined(MINITSCRIPT_EVENTS)
+		// events
+		// root context variables
+		vector<string> enabledNamedConditions;
+		int64_t timeEnabledConditionsCheckLast { TIME_NONE };
+		// deferred emit
+		string deferredEmit;
+		bool emitted { false };
+	#endif
 
 	int exceptionScriptIdx { STATEMENTIDX_NONE };
 	SubStatement exceptionSubStatement;
@@ -3421,13 +3434,6 @@ protected:
 		if (c2 != 0ll) result+= (char)c2;
 		//
 		return result;
-	}
-
-	/**
-	 * @return if script has emitted a condition like error
-	 */
-	inline bool hasEmitted() {
-		return emitted;
 	}
 
 	/**
@@ -3529,7 +3535,12 @@ protected:
 	 */
 	inline void resetScriptExecutationState(int scriptIdx, StateMachineStateId stateMachineState) {
 		auto& scriptState = getScriptState();
-		if (isFunctionRunning() == false) enabledNamedConditions.clear();
+		//
+		#if defined(MINITSCRIPT_EVENTS)
+			// events
+			if (isFunctionRunning() == false) enabledNamedConditions.clear();
+		#endif
+		//
 		scriptState.forTimeStarted.clear();
 		scriptState.blockStack.clear();
 		if (scriptIdx != SCRIPTIDX_NONE) {
@@ -3603,8 +3614,11 @@ protected:
 		//
 		scriptState.running = false;
 		//
-		if (isFunctionRunning() == false) timeEnabledConditionsCheckLast = TIME_NONE;
-		resetScriptExecutationState(SCRIPTIDX_NONE, STATEMACHINESTATE_NONE);
+		#if defined(MINITSCRIPT_EVENTS)
+			// events
+			if (isFunctionRunning() == false) timeEnabledConditionsCheckLast = TIME_NONE;
+			resetScriptExecutationState(SCRIPTIDX_NONE, STATEMACHINESTATE_NONE);
+		#endif
 	}
 
 	/**
@@ -3646,17 +3660,27 @@ protected:
 		scriptState.lastStateMachineState = nullptr;
 	}
 
-	/**
-	 * Determine script index to start
-	 * @return script index or SCRIPTIDX_NONE if no script to start
-	 */
-	virtual int determineScriptIdxToStart();
+	#if defined(MINITSCRIPT_EVENTS)
+		/**
+		 * @return if script has emitted a condition like error
+		 */
+		inline bool hasEmitted() {
+			return emitted;
+		}
 
-	/**
-	 * Determine named script index to start
-	 * @return script index or SCRIPTIDX_NONE if no script to start
-	 */
-	virtual int determineNamedScriptIdxToStart();
+		// events
+		/**
+	 	 * Determine script index to start
+	 	 * @return script index or SCRIPTIDX_NONE if no script to start
+	 	 */
+		virtual int determineScriptIdxToStart();
+
+		/**
+	 	 * Determine named script index to start
+	 	 * @return script index or SCRIPTIDX_NONE if no script to start
+	 	 */
+		virtual int determineNamedScriptIdxToStart();
+	#endif
 
 	/***
 	 * Create lamda function for given variable
@@ -4648,7 +4672,14 @@ public:
 	 * Start error script
 	 */
 	inline void startErrorScript() {
-		emit("error");
+		#if defined(MINITSCRIPT_EVENTS)
+			// events
+			emit("error");
+		#else
+			_Console::printLine("An error occurred");
+			//
+			_throw("An error occurred");
+		#endif
 	}
 
 	/**
@@ -5320,35 +5351,43 @@ public:
 	void parseScript(const string& pathName, const string& fileName, bool nativeOnly = false);
 
 	/**
-	 * Start script
+	 * Initialize script
+	 */
+	virtual void initializeScript();
+
+	/**
+	 * Start script by calling "main" function
 	 */
 	virtual void startScript();
 
-	/**
-	 * Check if condition with given name exists
-	 * @param condition condition
-	 * @return condition with given name exists
-	 */
-	inline bool hasCondition(const string& condition) {
-		// iterate scripts to find out if condition exists
-		for (const auto& script: scripts) {
-			if (script.type != Script::TYPE_ON) {
-				// no op
-			} else
-			if (script.emitCondition == true && script.condition == condition) {
-				// no op
-				return true;
+	#if defined(MINITSCRIPT_EVENTS)
+		// events
+		/**
+		 * Check if condition with given name exists
+		 * @param condition condition
+		 * @return condition with given name exists
+		 */
+		inline bool hasCondition(const string& condition) {
+			// iterate scripts to find out if condition exists
+			for (const auto& script: scripts) {
+				if (script.type != Script::TYPE_ON) {
+					// no op
+				} else
+				if (script.emitCondition == true && script.condition == condition) {
+					// no op
+					return true;
+				}
 			}
+			//
+			return false;
 		}
-		//
-		return false;
-	}
 
-	/**
-	 * Emit
-	 * @param condition condition
-	 */
-	virtual void emit(const string& condition);
+		/**
+		 * Emit
+		 * @param condition condition
+		 */
+		virtual void emit(const string& condition);
+	#endif
 
 	/**
 	 * Execute

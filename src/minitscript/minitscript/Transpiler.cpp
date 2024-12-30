@@ -207,9 +207,13 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		for (const auto& script: scripts) {
 			//
 			if (script._module.empty() == false ||
-				script.type == MinitScript::Script::TYPE_ON ||
-				script.type == MinitScript::Script::TYPE_ONENABLED ||
-				script.type == MinitScript::Script::TYPE_STACKLET) {
+				script.type == MinitScript::Script::TYPE_STACKLET
+				#if defined(MINITSCRIPT_EVENTS)
+					||
+					script.type == MinitScript::Script::TYPE_ON ||
+					script.type == MinitScript::Script::TYPE_ONENABLED
+				#endif
+			) {
 				scriptIdx++;
 				continue;
 			}
@@ -587,12 +591,15 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 				);
 
 			// emit code
-			if (script.type == MinitScript::Script::TYPE_ON && StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true) {
-				string emitDefinitionIndent = "\t";
-				emitDefinition+= emitDefinitionIndent + "if (condition == \"" + emitName + "\") {" + "\n";
-				emitDefinition+= emitDefinitionIndent + "\t" + "resetScriptExecutationState(" + to_string(scriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
-				emitDefinition+= emitDefinitionIndent + "} else" + "\n";
-			}
+			#if defined(MINITSCRIPT_EVENTS)
+				// events
+				if (script.type == MinitScript::Script::TYPE_ON && StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true) {
+					string emitDefinitionIndent = "\t";
+					emitDefinition+= emitDefinitionIndent + "if (condition == \"" + emitName + "\") {" + "\n";
+					emitDefinition+= emitDefinitionIndent + "\t" + "resetScriptExecutationState(" + to_string(scriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
+					emitDefinition+= emitDefinitionIndent + "} else" + "\n";
+				}
+			#endif
 
 			// declaration
 			generatedDeclarations+= declarationIndent + "/**" + "\n";
@@ -628,13 +635,17 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 						generatedDefinitions+= definitionIndent + "// local script variables" + "\n";
 						generatedDefinitions+= definitionIndent + "auto& _lv = " + scopeShortMethodName + "_Stack.top();" + "\n";
 					}
-				} else
-				// ok, reset emitted for conditions and enabled conditions
-				if (script.type == MinitScript::Script::TYPE_ON ||
-					script.type == MinitScript::Script::TYPE_ONENABLED) {
-					generatedDefinitions+= definitionIndent + "// reset emitted" + "\n";
-					generatedDefinitions+= definitionIndent + "emitted = false;" + "\n";
 				}
+				#if defined(MINITSCRIPT_EVENTS)
+					// events
+					else
+					// ok, reset emitted for conditions and enabled conditions
+					if (script.type == MinitScript::Script::TYPE_ON ||
+						script.type == MinitScript::Script::TYPE_ONENABLED) {
+						generatedDefinitions+= definitionIndent + "// reset emitted" + "\n";
+						generatedDefinitions+= definitionIndent + "emitted = false;" + "\n";
+					}
+				#endif
 				// no local variables or condition/enabled condition
 				generatedDefinitions+= definitionIndent + "// local script variables" + "\n";
 				generatedDefinitions+= definitionIndent + "#define MINITSCRIPT_METHOD_POPSTACK()" + "\n";
@@ -707,13 +718,20 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 
 			//
 			if (script.emitCondition == false) {
-				if (script.type == MinitScript::Script::TYPE_ONENABLED) {
-					generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent;
-					generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "\t" + "// next statements belong to tested enabled named condition with name \"" + script.name + "\"" + "\n";
-					generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "\t" + "if (enabledNamedCondition == \"" + script.name + "\") {" + "\n";
-				} else {
+				#if defined(MINITSCRIPT_EVENTS)
+					// events
+					if (script.type == MinitScript::Script::TYPE_ONENABLED) {
+						generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent;
+						generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "\t" + "// next statements belong to tested enabled named condition with name \"" + script.name + "\"" + "\n";
+						generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "\t" + "if (enabledNamedCondition == \"" + script.name + "\") {" + "\n";
+					} else {
+				#endif
 					generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "{" + "\n";
-				}
+				//
+				#if defined(MINITSCRIPT_EVENTS)
+					// events
+					}
+				#endif
 				//
 				string arrayMapSetInitializerDefinitions;
 				string arrayAccessMethodsDefinitions;
@@ -731,7 +749,12 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 					allMethods,
 					true,
 					{},
-					script.type == MinitScript::Script::TYPE_ONENABLED?3:2
+					#if defined(MINITSCRIPT_EVENTS)
+						// events
+						script.type == MinitScript::Script::TYPE_ONENABLED?3:2
+					#else
+						2
+					#endif
 				);
 				if (arrayMapSetInitializerDefinitions.empty() == false) arrayMapSetInitializerDefinitions+= "\n";
 				//
@@ -748,33 +771,41 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 					allMethods,
 					true,
 					{},
-					script.type == MinitScript::Script::TYPE_ONENABLED?3:2
+					#if defined(MINITSCRIPT_EVENTS)
+						// events
+						script.type == MinitScript::Script::TYPE_ONENABLED?3:2
+					#else
+						2
+					#endif
 				);
 				//
-				if (script.type == MinitScript::Script::TYPE_ON) {
-					generatedDetermineScriptIdxToStartDefinition+= arrayMapSetInitializerDefinitions;
-					generatedDetermineScriptIdxToStartDefinition+= arrayAccessMethodsDefinitions;
-				} else {
-					generatedDetermineNamedScriptIdxToStartDefinition+= arrayMapSetInitializerDefinitions;
-					generatedDetermineNamedScriptIdxToStartDefinition+= arrayAccessMethodsDefinitions;
-				}
-				//
-				transpileCondition(
-					minitScript,
-					script.type == MinitScript::Script::TYPE_ON?generatedDetermineScriptIdxToStartDefinition:generatedDetermineNamedScriptIdxToStartDefinition,
-					scriptIdx,
-					methodCodeMap,
-					allMethods,
-					"-1",
-					"bool returnValueBool; returnValue.getBooleanValue(returnValueBool); if (returnValueBool == true) return " + to_string(scriptIdx) + ";",
-					script.type == MinitScript::Script::TYPE_ONENABLED?1:0
-				);
-				//
-				if (script.type == MinitScript::Script::TYPE_ONENABLED) {
-					generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "\t" + "}" + "\n";
-				} else {
-					generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "}" + "\n";
-				}
+				#if defined(MINITSCRIPT_EVENTS)
+					// events
+					if (script.type == MinitScript::Script::TYPE_ON) {
+						generatedDetermineScriptIdxToStartDefinition+= arrayMapSetInitializerDefinitions;
+						generatedDetermineScriptIdxToStartDefinition+= arrayAccessMethodsDefinitions;
+					} else {
+						generatedDetermineNamedScriptIdxToStartDefinition+= arrayMapSetInitializerDefinitions;
+						generatedDetermineNamedScriptIdxToStartDefinition+= arrayAccessMethodsDefinitions;
+					}
+					//
+					transpileCondition(
+						minitScript,
+						script.type == MinitScript::Script::TYPE_ON?generatedDetermineScriptIdxToStartDefinition:generatedDetermineNamedScriptIdxToStartDefinition,
+						scriptIdx,
+						methodCodeMap,
+						allMethods,
+						"-1",
+						"bool returnValueBool; returnValue.getBooleanValue(returnValueBool); if (returnValueBool == true) return " + to_string(scriptIdx) + ";",
+						script.type == MinitScript::Script::TYPE_ONENABLED?1:0
+					);
+					//
+					if (script.type == MinitScript::Script::TYPE_ONENABLED) {
+						generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "\t" + "}" + "\n";
+					} else {
+						generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "}" + "\n";
+					}
+				#endif
 			}
 
 			//
@@ -824,8 +855,11 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		for (const auto& script: scripts) {
 			//
 			if (script._module.empty() == false ||
-				script.type == MinitScript::Script::TYPE_ON ||
-				script.type == MinitScript::Script::TYPE_ONENABLED ||
+				#if defined(MINITSCRIPT_EVENTS)
+					// events
+					script.type == MinitScript::Script::TYPE_ON ||
+					script.type == MinitScript::Script::TYPE_ONENABLED ||
+				#endif
 				script.type == MinitScript::Script::TYPE_STACKLET) {
 				scriptIdx++;
 				continue;
@@ -2952,7 +2986,25 @@ bool Transpiler::transpileStatement(
 				for (auto i = 0; i < indent; i++) indentString+= "\t";
 				codeLine = StringTools::trim(codeLine);
 				//
-				generatedCode+= minIndentString + depthIndentString + indentString + "\t{ " + codeLine + (script.type == MinitScript::Script::TYPE_ON || script.type == MinitScript::Script::TYPE_ONENABLED?" MINITSCRIPT_METHOD_POPSTACK(); return" + (returnValue.empty() == false?" " + returnValue:"") + ";":"") + " }\n";
+				generatedCode+=
+					minIndentString +
+					depthIndentString +
+					indentString +
+						"\t{ " + codeLine +
+							(
+								#if defined(MINITSCRIPT_EVENTS)
+									script.type == MinitScript::Script::TYPE_ON || script.type == MinitScript::Script::TYPE_ONENABLED
+								#else
+									false
+								#endif
+								?
+							" MINITSCRIPT_METHOD_POPSTACK(); return" +
+								(
+									returnValue.empty() == false?" " + returnValue:""
+								) +
+								";":""
+							) +
+						" }\n";
 			} else {
 				if (StringTools::regexMatch(codeLine, ".*[\\ \\t]*minitScript[\\ \\t]*->[\\ \\t]*setScriptStateState[\\ \\t]*\\([\\ \\t]*.+[\\ \\t]*\\);.*") == true) {
 					scriptStateChanged = true;
@@ -3204,22 +3256,25 @@ const string Transpiler::createSourceCode(MinitScript::Script::Type scriptType, 
 			result+= ")";
 			break;
 		}
-		case MinitScript::Script::TYPE_ON:
-			{
-				result+= "on: ";
-				if (condition.empty() == false) {
-					result+= condition;
+		#if defined(MINITSCRIPT_EVENTS)
+			// events
+			case MinitScript::Script::TYPE_ON:
+				{
+					result+= "on: ";
+					if (condition.empty() == false) {
+						result+= condition;
+					}
+					break;
 				}
-				break;
-			}
-		case MinitScript::Script::TYPE_ONENABLED:
-			{
-				result+= "on-enabled: ";
-				if (condition.empty() == false) {
-					result+= condition;
+			case MinitScript::Script::TYPE_ONENABLED:
+				{
+					result+= "on-enabled: ";
+					if (condition.empty() == false) {
+						result+= condition;
+					}
+					break;
 				}
-				break;
-			}
+		#endif
 		default: break;
 	}
 	if (conditionSyntaxTree.type != MinitScript::SyntaxTreeNode::SCRIPTSYNTAXTREENODE_NONE)

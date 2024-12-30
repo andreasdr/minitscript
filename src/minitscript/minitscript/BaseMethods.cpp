@@ -458,7 +458,11 @@ void BaseMethods::registerMethods(MinitScript* minitScript) {
 							}
 						}
 						blockStack.erase(blockStack.begin() + blockStack.size() - 1);
-						if (minitScript->hasEmitted() == false &&
+						//
+						if (
+							#if defined(MINITSCRIPT_EVENTS)
+								minitScript->hasEmitted() == false &&
+							#endif
 							subStatement.statement->gotoStatementIdx != MinitScript::STATEMENTIDX_NONE) {
 							minitScript->gotoStatementGoto(*subStatement.statement);
 						}

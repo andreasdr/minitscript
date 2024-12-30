@@ -346,11 +346,17 @@ void MinitScript::executeNextStatement() {
 	const auto& statement = script.statements[scriptState.statementIdx];
 	const auto& syntaxTree = script.syntaxTree[scriptState.statementIdx];
 	//
-	if (scriptState.statementIdx == STATEMENTIDX_FIRST) emitted = false;
+	#if defined(MINITSCRIPT_EVENTS)
+		// events
+		if (scriptState.statementIdx == STATEMENTIDX_FIRST) emitted = false;
+	#endif
 	//
 	executeStatement(syntaxTree, statement);
 	//
-	if (emitted == true) return;
+	#if defined(MINITSCRIPT_EVENTS)
+		// events
+		if (emitted == true) return;
+	#endif
 	//
 	scriptState.statementIdx++;
 	if (scriptState.statementIdx >= script.statements.size()) {
@@ -962,36 +968,39 @@ int MinitScript::getStackletScopeScriptIdx(int scriptIdx) {
 	return MinitScript::SCRIPTIDX_NONE;
 }
 
-void MinitScript::emit(const string& condition) {
-	// defer emit if a function/stacklet is still running
-	if (isFunctionRunning() == true) {
-		deferredEmit = condition;
-		return;
-	}
-	//
-	auto scriptIdxToStart = 0;
-	for (const auto& script: scripts) {
-		auto conditionMet = true;
-		if (script.name.empty() == false && script.name == condition) {
-			break;
-		} else
-		if (script.condition == condition) {
-			break;
-		} else {
-			scriptIdxToStart++;
+#if defined(MINITSCRIPT_EVENTS)
+	// events
+	void MinitScript::emit(const string& condition) {
+		// defer emit if a function/stacklet is still running
+		if (isFunctionRunning() == true) {
+			deferredEmit = condition;
+			return;
 		}
+		//
+		auto scriptIdxToStart = 0;
+		for (const auto& script: scripts) {
+			auto conditionMet = true;
+			if (script.name.empty() == false && script.name == condition) {
+				break;
+			} else
+			if (script.condition == condition) {
+				break;
+			} else {
+				scriptIdxToStart++;
+			}
+		}
+		if (scriptIdxToStart == scripts.size()) {
+			scriptIdxToStart = SCRIPTIDX_NONE;
+			startErrorScript();
+			return;
+		}
+		//
+		getScriptState().running = true;
+		resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);
+		//
+		emitted = true;
 	}
-	if (scriptIdxToStart == scripts.size()) {
-		scriptIdxToStart = SCRIPTIDX_NONE;
-		startErrorScript();
-		return;
-	}
-	//
-	getScriptState().running = true;
-	resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);
-	//
-	emitted = true;
-}
+#endif
 
 void MinitScript::executeStateMachine() {
 	while (true == true) {
@@ -1024,26 +1033,29 @@ void MinitScript::executeStateMachine() {
 
 		// native
 		//	also do not run enabled conditions when beeing in (user script) function
-		if (native == true && isFunctionRunning() == false) {
-			const auto& scriptState = getScriptState();
-			// check named conditions
-			auto now = _Time::getCurrentMillis();
-			if (enabledNamedConditions.empty() == false &&
-				(timeEnabledConditionsCheckLast == TIME_NONE || now >= timeEnabledConditionsCheckLast + 100LL)) {
-				auto scriptIdxToStart = determineNamedScriptIdxToStart();
-				if (scriptIdxToStart != SCRIPTIDX_NONE && scriptIdxToStart != scriptState.scriptIdx) {
-					//
-					resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);
+		#if defined(MINITSCRIPT_EVENTS)
+			// events
+			if (native == true && isFunctionRunning() == false) {
+				const auto& scriptState = getScriptState();
+				// check named conditions
+				auto now = _Time::getCurrentMillis();
+				if (enabledNamedConditions.empty() == false &&
+					(timeEnabledConditionsCheckLast == TIME_NONE || now >= timeEnabledConditionsCheckLast + 100LL)) {
+					auto scriptIdxToStart = determineNamedScriptIdxToStart();
+					if (scriptIdxToStart != SCRIPTIDX_NONE && scriptIdxToStart != scriptState.scriptIdx) {
+						//
+						resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);
+					}
+					timeEnabledConditionsCheckLast = now;
 				}
-				timeEnabledConditionsCheckLast = now;
+				// stop here
+				break;
+			} else {
+				// break if no next statement but other state machine state or not running
+				const auto& scriptState = getScriptState();
+				if (scriptState.state != STATEMACHINESTATE_NEXT_STATEMENT || scriptState.running == false) break;
 			}
-			// stop here
-			break;
-		} else {
-			// break if no next statement but other state machine state or not running
-			const auto& scriptState = getScriptState();
-			if (scriptState.state != STATEMACHINESTATE_NEXT_STATEMENT || scriptState.running == false) break;
-		}
+		#endif
 	}
 }
 
@@ -1054,17 +1066,20 @@ void MinitScript::execute() {
 	if (scriptState.running == false || scriptState.state == STATEMACHINESTATE_NONE) return;
 
 	// check named conditions
-	auto now = _Time::getCurrentMillis();
-	if (isFunctionRunning() == false &&
-		enabledNamedConditions.empty() == false &&
-		(timeEnabledConditionsCheckLast == TIME_NONE || now >= timeEnabledConditionsCheckLast + 100LL)) {
-		auto scriptIdxToStart = determineNamedScriptIdxToStart();
-		if (scriptIdxToStart != SCRIPTIDX_NONE && scriptIdxToStart != scriptState.scriptIdx) {
-			//
-			resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);
+	#if defined(MINITSCRIPT_EVENTS)
+		// events
+		auto now = _Time::getCurrentMillis();
+		if (isFunctionRunning() == false &&
+			enabledNamedConditions.empty() == false &&
+			(timeEnabledConditionsCheckLast == TIME_NONE || now >= timeEnabledConditionsCheckLast + 100LL)) {
+			auto scriptIdxToStart = determineNamedScriptIdxToStart();
+			if (scriptIdxToStart != SCRIPTIDX_NONE && scriptIdxToStart != scriptState.scriptIdx) {
+				//
+				resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);
+			}
+			timeEnabledConditionsCheckLast = now;
 		}
-		timeEnabledConditionsCheckLast = now;
-	}
+	#endif
 
 	// execute while having statements to be processed
 	executeStateMachine();
@@ -1315,9 +1330,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 			if (statementCode == "use:" ||
 				statementCode == "function:" ||
 				statementCode == "stacklet:" ||
-				statementCode == "on:" ||
-				statementCode == "on-enabled:" ||
-				statementCode == "callable:") {
+				statementCode == "callable:"
+				#if defined(MINITSCRIPT_EVENTS)
+					// events
+					||
+					statementCode == "on:" ||
+					statementCode == "on-enabled:"
+				#endif
+					) {
 				//
 				i++;
 				// we need the condition or name
@@ -1337,93 +1357,96 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 			}
 			// check if we need to parse ":= name"
 			//	applies to on: and on-enabled only
-			if (_StringTools::startsWith(statementCode, "on:") == true ||
-				_StringTools::startsWith(statementCode, "on-enabled:") == true) {
-				//
-				if (statementCode.rfind(":=") == string::npos) {
+			#if defined(MINITSCRIPT_EVENTS)
+				// events
+				if (_StringTools::startsWith(statementCode, "on:") == true ||
+					_StringTools::startsWith(statementCode, "on-enabled:") == true) {
 					//
-					auto gotName = false;
-					//
-					auto _i = i;
-					auto _lineIdx = lineIdx;
-					auto _statementCode = statementCode;
-					//
-					auto endStack = 0;
-					//
-					i++;
-					//
-					for (; i < scriptCode.size(); i++) {
-						string nextStatementCode;
-						if (getNextStatement(_scriptFileName, scriptCode, i, lineIdx, nextStatementCode) == false) {
-							//
-							scriptValid = false;
-							return false;
-						}
+					if (statementCode.rfind(":=") == string::npos) {
 						//
-						if (nextStatementCode.empty() == false) {
-							//
-							if (_StringTools::startsWith(nextStatementCode, "function:") == true ||
-								_StringTools::startsWith(nextStatementCode, "on:") == true ||
-								_StringTools::startsWith(nextStatementCode, "on-enabled:") == true ||
-								_StringTools::startsWith(nextStatementCode, "callable:") == true) break;
-							//
-							statementCode+= " " + nextStatementCode;
-							// break here if we got our := or reached next declaration
-							auto lc = '\0';
-							auto quote = '\0';
-							for (auto j = 0; j < statementCode.size(); j++) {
-								auto c = statementCode[j];
-								// handle quotes
-								if ((c == '"' || c == '\'') && lc != '\\') {
-									if (quote == '\0') {
-										quote = c;
-									} else
-									if (quote == c) {
-										quote = '\0';
-									}
-								} else
-								if (quote != '\0') {
-									// no op
-								} else
-								if (lc == ':' && c == '=') {
-									gotName = true;
-									//
-									break;
-								}
+						auto gotName = false;
+						//
+						auto _i = i;
+						auto _lineIdx = lineIdx;
+						auto _statementCode = statementCode;
+						//
+						auto endStack = 0;
+						//
+						i++;
+						//
+						for (; i < scriptCode.size(); i++) {
+							string nextStatementCode;
+							if (getNextStatement(_scriptFileName, scriptCode, i, lineIdx, nextStatementCode) == false) {
 								//
-								lc = lc == '\\' && c == '\\'?'\0':c;
+								scriptValid = false;
+								return false;
 							}
 							//
-							if (gotName == true) break;
+							if (nextStatementCode.empty() == false) {
+								//
+								if (_StringTools::startsWith(nextStatementCode, "function:") == true ||
+									_StringTools::startsWith(nextStatementCode, "on:") == true ||
+									_StringTools::startsWith(nextStatementCode, "on-enabled:") == true ||
+									_StringTools::startsWith(nextStatementCode, "callable:") == true) break;
+								//
+								statementCode+= " " + nextStatementCode;
+								// break here if we got our := or reached next declaration
+								auto lc = '\0';
+								auto quote = '\0';
+								for (auto j = 0; j < statementCode.size(); j++) {
+									auto c = statementCode[j];
+									// handle quotes
+									if ((c == '"' || c == '\'') && lc != '\\') {
+										if (quote == '\0') {
+											quote = c;
+										} else
+										if (quote == c) {
+											quote = '\0';
+										}
+									} else
+									if (quote != '\0') {
+										// no op
+									} else
+									if (lc == ':' && c == '=') {
+										gotName = true;
+										//
+										break;
+									}
+									//
+									lc = lc == '\\' && c == '\\'?'\0':c;
+								}
+								//
+								if (gotName == true) break;
+							}
+						}
+						// did we got our ":= name", nope?
+						if (gotName == false) {
+							// reset
+							i = _i;
+							lineIdx = _lineIdx;
+							statementCode = _statementCode;
 						}
 					}
-					// did we got our ":= name", nope?
-					if (gotName == false) {
-						// reset
-						i = _i;
-						lineIdx = _lineIdx;
-						statementCode = _statementCode;
+					// we still need the name
+					if (_StringTools::endsWith(statementCode, ":=") == true) {
+						//
+						i++;
+						//
+						for (; i < scriptCode.size(); i++) {
+							string nextStatementCode;
+							if (getNextStatement(_scriptFileName, scriptCode, i, lineIdx, nextStatementCode) == false) {
+								//
+								scriptValid = false;
+								return false;
+							}
+							if (nextStatementCode.empty() == false) {
+								statementCode+= " " + nextStatementCode;
+								break;
+							}
+						}
 					}
 				}
-				// we still need the name
-				if (_StringTools::endsWith(statementCode, ":=") == true) {
-					//
-					i++;
-					//
-					for (; i < scriptCode.size(); i++) {
-						string nextStatementCode;
-						if (getNextStatement(_scriptFileName, scriptCode, i, lineIdx, nextStatementCode) == false) {
-							//
-							scriptValid = false;
-							return false;
-						}
-						if (nextStatementCode.empty() == false) {
-							statementCode+= " " + nextStatementCode;
-							break;
-						}
-					}
-				}
-			}
+			#endif
 			//
 			auto moduleUseStatement = false;
 			if (statementCode == "module") {
@@ -1485,20 +1508,26 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 			auto scriptType = Script::TYPE_NONE;
 			if (_StringTools::startsWith(statementCode, "function:") == true) scriptType = Script::TYPE_FUNCTION; else
 			if (_StringTools::startsWith(statementCode, "stacklet:") == true) scriptType = Script::TYPE_STACKLET; else
-			if (_StringTools::startsWith(statementCode, "on:") == true) scriptType = Script::TYPE_ON; else
-			if (_StringTools::startsWith(statementCode, "on-enabled:") == true) scriptType = Script::TYPE_ONENABLED; else
+			#if defined(MINITSCRIPT_EVENTS)
+				if (_StringTools::startsWith(statementCode, "on:") == true) scriptType = Script::TYPE_ON; else
+				if (_StringTools::startsWith(statementCode, "on-enabled:") == true) scriptType = Script::TYPE_ONENABLED; else
+			#endif
 			if (_StringTools::startsWith(statementCode, "callable:") == true) {
 				callable = true;
 				scriptType = Script::TYPE_FUNCTION;
 			}
-			if (_module.empty() == false &&
-				(scriptType == Script::TYPE_ON ||
-				scriptType == Script::TYPE_ONENABLED)) {
-							_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": 'on:' and  'on-enabled:': Conditional execution functionality is not available in modules");
-							parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": 'on:' and  'on-enabled:': Conditional execution functionality is not available in modules");
-							scriptValid = false;
-							return false;
-			} else
+			//
+			#if defined(MINITSCRIPT_EVENTS)
+				// events
+				if (_module.empty() == false &&
+					(scriptType == Script::TYPE_ON ||
+					scriptType == Script::TYPE_ONENABLED)) {
+								_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": 'on:' and  'on-enabled:': Conditional execution functionality is not available in modules");
+								parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": 'on:' and  'on-enabled:': Conditional execution functionality is not available in modules");
+								scriptValid = false;
+								return false;
+				} else
+			#endif
 			if (moduleUseStatement == true) {
 				// no op
 			} else
@@ -1517,11 +1546,15 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				} else
 				if (scriptType == Script::TYPE_STACKLET) {
 					statement = _StringTools::trim(_StringTools::substring(statementCode, string("stacklet:").size()));
-				} else
-				if (scriptType == Script::TYPE_ON)
-					statement = _StringTools::trim(_StringTools::substring(statementCode, string("on:").size())); else
-				if (scriptType == Script::TYPE_ONENABLED)
-					statement = _StringTools::trim(_StringTools::substring(statementCode, string("on-enabled:").size()));
+				}
+				#if defined(MINITSCRIPT_EVENTS)
+					// events
+					else
+					if (scriptType == Script::TYPE_ON)
+						statement = _StringTools::trim(_StringTools::substring(statementCode, string("on:").size())); else
+					if (scriptType == Script::TYPE_ONENABLED)
+						statement = _StringTools::trim(_StringTools::substring(statementCode, string("on-enabled:").size()));
+				#endif
 				// and name
 				string name;
 				auto scriptLineNameSeparatorIdx =
@@ -1660,9 +1693,13 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 		} else {
 			if (_StringTools::startsWith(statementCode, "function:") == true ||
 				_StringTools::startsWith(statementCode, "stacklet:") == true ||
-				_StringTools::startsWith(statementCode, "on:") == true ||
-				_StringTools::startsWith(statementCode, "on-enabled:") == true ||
 				_StringTools::startsWith(statementCode, "callable:") == true
+				#if defined(MINITSCRIPT_EVENTS)
+					// events
+					||
+					_StringTools::startsWith(statementCode, "on:") == true ||
+					_StringTools::startsWith(statementCode, "on-enabled:") == true
+				#endif
 			) {
 				_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 				parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
@@ -2361,7 +2398,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 				functions = nativeFunctions;
 				registerStateMachineStates();
 				registerMethods();
-				startScript();
+				initializeScript();
 				return;
 			} else {
 				_Console::printLine(scriptPathName + "/" + scriptFileName + ": Scripts have changed. Scripts will be run in interpreted mode. Retranspile and recompile your scripts if you want to run it natively.");
@@ -2433,9 +2470,13 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 				}
 			}
 			//
-			if (script.type == MinitScript::Script::TYPE_FUNCTION ||
-				script.type == MinitScript::Script::TYPE_ON ||
-				script.type == MinitScript::Script::TYPE_ONENABLED) {
+			if (script.type == MinitScript::Script::TYPE_FUNCTION
+				#if defined(MINITSCRIPT_EVENTS)
+					||
+					script.type == MinitScript::Script::TYPE_ON ||
+					script.type == MinitScript::Script::TYPE_ONENABLED
+				#endif
+				) {
 				//
 				if (Validations::validateStacklets(this, scriptIdx, parseErrors) == false) {
 					scriptValid = false;
@@ -2465,24 +2506,48 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 	}
 
 	// check for initialize and error condition
-	auto haveErrorScript = false;
-	for (const auto& script: scripts) {
-		if (script.type == Script::TYPE_ONENABLED) {
-			// no op
-		} else
-		if (script.condition == "error") {
-			haveErrorScript = true;
+	//
+	#if defined(MINITSCRIPT_EVENTS)
+		auto haveErrorScript = false;
+		for (const auto& script: scripts) {
+				// events
+				if (script.type == Script::TYPE_ONENABLED) {
+					// no op
+				} else
+				//
+				if (script.condition == "error") {
+					haveErrorScript = true;
+				}
 		}
-	}
-	if (_module == false && haveErrorScript == false) {
-		_Console::printLine(scriptPathName + "/" + scriptFileName + ": Script needs to define an error condition");
-		parseErrors.push_back("Script needs to define an error condition");
-		scriptValid = false;
-		return;
-	}
+		if (_module == false && haveErrorScript == false) {
+			_Console::printLine(scriptPathName + "/" + scriptFileName + ": Script needs to define an error condition");
+			parseErrors.push_back("Script needs to define an error condition");
+			scriptValid = false;
+			return;
+		}
+	#endif
 
 	//
-	startScript();
+	initializeScript();
+}
+
+void MinitScript::initializeScript() {
+	if (VERBOSE == true) _Console::printLine("MinitScript::startScript(): '" + scriptFileName + ": Starting script.");
+	if (scriptValid == false) {
+		_Console::printLine(scriptFileName + ": Script not valid: not starting");
+		return;
+	}
+	//
+	registerVariables();
+	// events
+	#if defined(MINITSCRIPT_EVENTS)
+		// events
+		else
+		//
+		if (hasCondition("initialize") == true) {
+			emit("initialize");
+		}
+	#endif
 }
 
 void MinitScript::startScript() {
@@ -2491,101 +2556,103 @@ void MinitScript::startScript() {
 		_Console::printLine(scriptFileName + ": Script not valid: not starting");
 		return;
 	}
-	//
-	registerVariables();
-	//
-	auto& scriptState = getScriptState();
-	scriptState.running = true;
-	//
-	if (hasCondition("initialize") == true) emit("initialize");
-}
-
-int MinitScript::determineScriptIdxToStart() {
-	if (VERBOSE == true) _Console::printLine("MinitScript::determineScriptIdxToStart()");
-	auto nothingScriptIdx = SCRIPTIDX_NONE;
-	auto scriptIdx = 0;
-	for (const auto& script: scripts) {
-		if (script.type != Script::TYPE_ON) {
-			// no op
-		} else
-		if (script.emitCondition == true && script.condition == "nothing") {
-			nothingScriptIdx = scriptIdx;
-			// no op
-		} else
-		if (script.emitCondition == true) {
-			// emit condition
-		} else {
-			auto conditionMet = true;
-			Variable returnValue;
-			if (evaluateInternal(script.condition, script.executableCondition, returnValue) == true) {
-				auto returnValueBoolValue = false;
-				if (returnValue.getBooleanValue(returnValueBoolValue, false) == false) {
-					_Console::printLine("MinitScript::determineScriptIdxToStart(): " + script.condition + ": Expecting boolean return value, but got: " + returnValue.getAsString());
-					conditionMet = false;
-				} else
-				if (returnValueBoolValue == false) {
-					conditionMet = false;
-				}
-			} else {
-				_Console::printLine("MinitScript::determineScriptIdxToStart(): " + scriptFileName + ":" + to_string(script.line) + ": " + script.condition + ": Parse error");
-			}
-			if (conditionMet == false) {
-				if (VERBOSE == true) {
-					_Console::print("MinitScript::determineScriptIdxToStart(): " + script.condition + ": FAILED");
-				}	
-			} else {
-				if (VERBOSE == true) {
-					_Console::print("MinitScript::determineScriptIdxToStart(): " + script.condition + ": OK");
-				}
-				return scriptIdx;
-			}
-		}
-		scriptIdx++;
+	if (hasFunction("main") == true) {
+		vector<Variable> callArguments(0);
+		span callArgumentsSpan(callArguments);
+		Variable returnValue;
+		call("main", callArgumentsSpan, returnValue);
 	}
-	return nothingScriptIdx;
 }
 
-int MinitScript::determineNamedScriptIdxToStart() {
-	if (VERBOSE == true) _Console::printLine("MinitScript::determineNamedScriptIdxToStart()");
-	// TODO: we could have a hash map here to speed up enabledConditionName -> script lookup
-	const auto& scriptState = getScriptState();
-	for (const auto& enabledConditionName: enabledNamedConditions) {
+#if defined(MINITSCRIPT_EVENTS)
+	// events
+	int MinitScript::determineScriptIdxToStart() {
+		if (VERBOSE == true) _Console::printLine("MinitScript::determineScriptIdxToStart()");
+		auto nothingScriptIdx = SCRIPTIDX_NONE;
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
-			if (script.type != Script::TYPE_ONENABLED ||
-				script.name != enabledConditionName) {
+			if (script.type != Script::TYPE_ON) {
 				// no op
+			} else
+			if (script.emitCondition == true && script.condition == "nothing") {
+				nothingScriptIdx = scriptIdx;
+				// no op
+			} else
+			if (script.emitCondition == true) {
+				// emit condition
 			} else {
 				auto conditionMet = true;
 				Variable returnValue;
 				if (evaluateInternal(script.condition, script.executableCondition, returnValue) == true) {
 					auto returnValueBoolValue = false;
 					if (returnValue.getBooleanValue(returnValueBoolValue, false) == false) {
-						_Console::printLine("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": Expecting boolean return value, but got: " + returnValue.getAsString());
+						_Console::printLine("MinitScript::determineScriptIdxToStart(): " + script.condition + ": Expecting boolean return value, but got: " + returnValue.getAsString());
 						conditionMet = false;
 					} else
 					if (returnValueBoolValue == false) {
 						conditionMet = false;
 					}
 				} else {
-					_Console::printLine("MinitScript::determineNamedScriptIdxToStart(): " + scriptFileName + ":" + to_string(script.line) + ": " + script.condition + ": Parse error");
+					_Console::printLine("MinitScript::determineScriptIdxToStart(): " + scriptFileName + ":" + to_string(script.line) + ": " + script.condition + ": Parse error");
 				}
 				if (conditionMet == false) {
 					if (VERBOSE == true) {
-						_Console::print("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": FAILED");
+						_Console::print("MinitScript::determineScriptIdxToStart(): " + script.condition + ": FAILED");
 					}
 				} else {
 					if (VERBOSE == true) {
-						_Console::print("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": OK");
+						_Console::print("MinitScript::determineScriptIdxToStart(): " + script.condition + ": OK");
 					}
 					return scriptIdx;
 				}
 			}
 			scriptIdx++;
 		}
+		return nothingScriptIdx;
 	}
-	return SCRIPTIDX_NONE;
-}
+
+	int MinitScript::determineNamedScriptIdxToStart() {
+		if (VERBOSE == true) _Console::printLine("MinitScript::determineNamedScriptIdxToStart()");
+		// TODO: we could have a hash map here to speed up enabledConditionName -> script lookup
+		const auto& scriptState = getScriptState();
+		for (const auto& enabledConditionName: enabledNamedConditions) {
+			auto scriptIdx = 0;
+			for (const auto& script: scripts) {
+				if (script.type != Script::TYPE_ONENABLED ||
+					script.name != enabledConditionName) {
+					// no op
+				} else {
+					auto conditionMet = true;
+					Variable returnValue;
+					if (evaluateInternal(script.condition, script.executableCondition, returnValue) == true) {
+						auto returnValueBoolValue = false;
+						if (returnValue.getBooleanValue(returnValueBoolValue, false) == false) {
+							_Console::printLine("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": Expecting boolean return value, but got: " + returnValue.getAsString());
+							conditionMet = false;
+						} else
+						if (returnValueBoolValue == false) {
+							conditionMet = false;
+						}
+					} else {
+						_Console::printLine("MinitScript::determineNamedScriptIdxToStart(): " + scriptFileName + ":" + to_string(script.line) + ": " + script.condition + ": Parse error");
+					}
+					if (conditionMet == false) {
+						if (VERBOSE == true) {
+							_Console::print("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": FAILED");
+						}
+					} else {
+						if (VERBOSE == true) {
+							_Console::print("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": OK");
+						}
+						return scriptIdx;
+					}
+				}
+				scriptIdx++;
+			}
+		}
+		return SCRIPTIDX_NONE;
+	}
+#endif
 
 const string MinitScript::doStatementPreProcessing(const string& processedStatement, const Statement& statement, bool setVariableStatement, bool memberAccessPropertyStatement) {
 	auto preprocessedStatement = processedStatement;
@@ -3644,11 +3711,14 @@ bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& retur
 		}
 	}
 	// if function calls are worked off, we can do the deferred emit
-	if (isFunctionRunning() == false && deferredEmit.empty() == false) {
-		auto condition = deferredEmit;
-		deferredEmit.clear();
-		emit(condition);
-	}
+	#if defined(MINITSCRIPT_EVENTS)
+		// events
+		if (isFunctionRunning() == false && deferredEmit.empty() == false) {
+			auto condition = deferredEmit;
+			deferredEmit.clear();
+			emit(condition);
+		}
+	#endif
 	//
 	return true;
 }
@@ -3740,8 +3810,13 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 			if (script.type == Script::TYPE_FUNCTION) result+= "function: "; else result+= "stacklet: ";
 			break;
 		}
-		case Script::TYPE_ON: result+= "on: "; break;
-		case Script::TYPE_ONENABLED: result+= "on-enabled: "; break;
+		//
+		#if defined(MINITSCRIPT_EVENTS)
+			// events
+			case Script::TYPE_ON: result+= "on: "; break;
+			case Script::TYPE_ONENABLED: result+= "on-enabled: "; break;
+		#endif
+		//
 		default: break;
 	}
 	if (script.condition.empty() == false)
@@ -3917,9 +3992,14 @@ void MinitScript::registerStateMachineStates() {
 			}
 			virtual void execute() override {
 				if (minitScript->getScriptState().statementIdx == STATEMENTIDX_NONE) {
-					minitScript->enabledNamedConditions.clear();
-					minitScript->timeEnabledConditionsCheckLast = TIME_NONE;
-					minitScript->setScriptStateState(STATEMACHINESTATE_WAIT_FOR_CONDITION);
+					//
+					#if defined(MINITSCRIPT_EVENTS)
+						// events
+						minitScript->enabledNamedConditions.clear();
+						minitScript->timeEnabledConditionsCheckLast = TIME_NONE;
+						minitScript->setScriptStateState(STATEMACHINESTATE_WAIT_FOR_CONDITION);
+					#endif
+					//
 					return;
 				}
 				if (minitScript->native == false) minitScript->executeNextStatement();
@@ -3953,35 +4033,38 @@ void MinitScript::registerStateMachineStates() {
 		};
 		registerStateMachineState(new ScriptStateWait(this));
 	}
-	{
-		//
-		class ScriptStateWaitForCondition: public StateMachineState {
-		private:
-			MinitScript* minitScript { nullptr };
-		public:
-			ScriptStateWaitForCondition(MinitScript* minitScript): StateMachineState(), minitScript(minitScript) {}
-			virtual const string getName() override {
-				return "STATEMACHINESTATE_WAIT_FOR_CONDITION";
-			}
-			virtual int getId() override {
-				return STATEMACHINESTATE_WAIT_FOR_CONDITION;
-			}
-			virtual void execute() override {
-				auto now = _Time::getCurrentMillis();
-				if (now < minitScript->getScriptState().timeWaitStarted + minitScript->getScriptState().timeWaitTime) {
-					return;
+	#if defined(MINITSCRIPT_EVENTS)
+		{
+			//
+			class ScriptStateWaitForCondition: public StateMachineState {
+			private:
+				MinitScript* minitScript { nullptr };
+			public:
+				ScriptStateWaitForCondition(MinitScript* minitScript): StateMachineState(), minitScript(minitScript) {}
+				virtual const string getName() override {
+					return "STATEMACHINESTATE_WAIT_FOR_CONDITION";
 				}
-				auto scriptIdxToStart = minitScript->determineScriptIdxToStart();
-				if (scriptIdxToStart == SCRIPTIDX_NONE) {
-					minitScript->getScriptState().timeWaitStarted = now;
-					minitScript->getScriptState().timeWaitTime = 100LL;
-					return;
+				virtual int getId() override {
+					return STATEMACHINESTATE_WAIT_FOR_CONDITION;
 				}
-				minitScript->resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);
-			}
-		};
-		registerStateMachineState(new ScriptStateWaitForCondition(this));
-	}
+				virtual void execute() override {
+					auto now = _Time::getCurrentMillis();
+					if (now < minitScript->getScriptState().timeWaitStarted + minitScript->getScriptState().timeWaitTime) {
+						return;
+					}
+					// events
+					auto scriptIdxToStart = minitScript->determineScriptIdxToStart();
+					if (scriptIdxToStart == SCRIPTIDX_NONE) {
+						minitScript->getScriptState().timeWaitStarted = now;
+						minitScript->getScriptState().timeWaitTime = 100LL;
+						return;
+					}
+					minitScript->resetScriptExecutationState(scriptIdxToStart, STATEMACHINESTATE_NEXT_STATEMENT);
+				}
+			};
+			registerStateMachineState(new ScriptStateWaitForCondition(this));
+		}
+	#endif
 }
 
 void MinitScript::registerMethods() {
@@ -5266,8 +5349,12 @@ const string MinitScript::stackTrace(const span<Variable>& arguments, const SubS
 			case MinitScript::Script::TYPE_NONE: break;
 			case MinitScript::Script::TYPE_FUNCTION: methodType = "function: "; break;
 			case MinitScript::Script::TYPE_STACKLET: methodType = "stacklet: "; break;
-			case MinitScript::Script::TYPE_ON: methodType = "on: "; break;
-			case MinitScript::Script::TYPE_ONENABLED: methodType = "on_enabled: "; break;
+			//
+			#if defined(MINITSCRIPT_EVENTS)
+				// events
+				case MinitScript::Script::TYPE_ON: methodType = "on: "; break;
+				case MinitScript::Script::TYPE_ONENABLED: methodType = "on_enabled: "; break;
+			#endif
 		};
 		//
 		return
