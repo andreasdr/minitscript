@@ -77,6 +77,8 @@ callable: helloWorldFunction()
 end
 ```
 
+For more information see [Functions](./README-Functions.md) section.
+
 ### 1.4.2 Main function
 
 The entry point for MinitScript scripts is the main function, if events are disabled, e.g. in stock MinitScript distribution.
