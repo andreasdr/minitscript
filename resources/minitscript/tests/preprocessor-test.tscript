@@ -1,16 +1,8 @@
-# initialize
-on: initialize
-	console.printLine("-------------------------------")
-	console.printLine("preprocessor-test: Initialize")
-	console.printLine("------------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("----------------------------")
-	console.printLine("preprocessor-test: Nothing")
-	console.printLine("----------------------------")
+# main
+function: main()
+	console.printLine("-------------------")
+	console.printLine("preprocessor-test")
+	console.printLine("-------------------")
 	console.printLine()
 	$i = 0
 	# postfix, prefix operator
@@ -20,15 +12,4 @@ on: nothing
 	console.printLine("$i: " + $i)
 	# 2 argument operator with left and right arguments
 	console.printLine("10 * 10: " + 10 * 10)
-	#
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("--------------------------")
-	console.printLine("preprocessor-test: Error")
-	console.printLine("--------------------------")
-	console.printLine()
-	script.stop()
 end

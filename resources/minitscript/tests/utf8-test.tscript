@@ -1,16 +1,8 @@
-# initialize
-on: initialize
-	console.printLine("-----------------------")
-	console.printLine("utf8-test: Initialize")
-	console.printLine("-----------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("--------------------")
-	console.printLine("utf8-test: Nothing")
-	console.printLine("--------------------")
+# main
+function: main()
+	console.printLine("-----------")
+	console.printLine("utf8-test")
+	console.printLine("-----------")
 	console.printLine()
 	console.printLine("String::indexOf('äbcdüö', 'düö'): " + String::indexOf("äbcdüö", "düö"))
 	console.printLine("String::firstIndexOf('äbcdüö', 'düö'): " + String::firstIndexOf("äbcdüö", "düö"))
@@ -29,14 +21,4 @@ on: nothing
 	console.printLine("String::padLeft('äbcdüö', '_', 10): " + String::padLeft("äbcdüö", "_", 10))
 	console.printLine("String::padRight('äbcdüö', '_', 10): " + String::padRight("äbcdüö", "_", 10))
 	console.printLine("String::tokenize('äbcÄdüöÖäbcÜ123', 'ÄÖÜ'): " + String::tokenize('äbcÄdüöÖäbcÜ123', 'ÄÖÜ'))
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("------------------")
-	console.printLine("utf8-test: Error")
-	console.printLine("------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

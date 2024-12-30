@@ -1,30 +1,12 @@
-# initialize
-on: initialize
-	console.printLine("--------------------------")
-	console.printLine("console-test: Initialize")
-	console.printLine("--------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("-----------------------")
-	console.printLine("console-test: Nothing")
-	console.printLine("-----------------------")
+# main
+function: main()
+	console.printLine("--------------")
+	console.printLine("console-test")
+	console.printLine("--------------")
 	console.printLine()
 	console.print("Whats your name: ")
 	$name = console.readLine()
 	console.printLine("You have the mighty name: " + $name)
 	console.error.print("Now printing your name to error console: ")
 	console.error.printLine($name)
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("---------------------")
-	console.printLine("console-test: Error")
-	console.printLine("---------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

@@ -1,16 +1,8 @@
-# initialize
-on: initialize
-	console.printLine("-------------------------")
-	console.printLine("switch-test: Initialize")
-	console.printLine("-------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("----------------------")
-	console.printLine("switch-test: Nothing")
-	console.printLine("----------------------")
+# main
+function: main()
+	console.printLine("-------------")
+	console.printLine("switch-test")
+	console.printLine("-------------")
 	console.printLine()
 	#
 	$i = 1
@@ -40,15 +32,4 @@ on: nothing
 			console.printLine("default: $i = " + $i)
 		end
 	end
-	#
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("--------------------")
-	console.printLine("switch-test: Error")
-	console.printLine("--------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

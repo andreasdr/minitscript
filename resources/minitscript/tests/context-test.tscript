@@ -1,13 +1,5 @@
-# initialize
-on: initialize
-	console.printLine("--------------------------")
-	console.printLine("context-test: Initialize")
-	console.printLine("--------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
+# main
+function: main()
 	console.printLine("-----------------------")
 	console.printLine("context-test: Nothing")
 	console.printLine("-----------------------")
@@ -31,15 +23,4 @@ on: nothing
 	context.script.removeScript("context-test-2")
 	# show context script ids, it should show the "application" script
 	console.printLine("Context script ids: " + context.script.getScriptIds())
-	# done
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("---------------------")
-	console.printLine("context-test: Error")
-	console.printLine("---------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

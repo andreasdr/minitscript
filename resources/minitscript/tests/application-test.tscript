@@ -1,33 +1,16 @@
-# initialize
-on: initialize
-	console.printLine("------------------------------")
-	console.printLine("application-test: Initialize")
-	console.printLine("------------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("---------------------------")
-	console.printLine("application-test: Nothing")
-	console.printLine("---------------------------")
+# main
+function: main()
+	console.printLine("------------------")
+	console.printLine("application-test  ")
+	console.printLine("------------------")
 	console.printLine()
 	console.printLine("$$.application::OS = " , $$.application::OS)
 	console.printLine("$$.application::CPU = " , $$.application::CPU)
 	console.printLine("application.getArguments(): " + application.getArguments())
-	if ($application::OS == "Windows-MSC" || $application::OS == "Windows-MINGW")
+	if ($$.application::OS == "Windows-MSC" || $$.application::OS == "Windows-MINGW")
 		console.printLine("application.execute('ver'): " + application.execute('ver'))
 	else
 		console.printLine("application.execute('uname -a'): " + application.execute('uname -a'))
 	end
-	application.exit($application::EXITCODE_SUCCESS)
-end
-
-# an error has occurred
-on: error
-	console.printLine("-------------------------")
-	console.printLine("application-test: Error")
-	console.printLine("-------------------------")
-	console.printLine("An error occurred")
-	script.stop()
+	application.exit($$.application::EXITCODE_SUCCESS)
 end

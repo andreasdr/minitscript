@@ -8,23 +8,15 @@ function: sortFunctionAsc($a, $b)
 	return($a < $b)
 end
 
-# initialize
-on: initialize
-	console.printLine("---------------------------")
-	console.printLine("advanced-test: Initialize")
-	console.printLine("--------------------------")
+# main
+function: main()
+	console.printLine("---------------")
+	console.printLine("advanced-test")
+	console.printLine("---------------")
 	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("------------------------")
-	console.printLine("advanced-test: Nothing")
-	console.printLine("------------------------")
-	console.printLine()
-	console.printLine("---------")
+	console.printLine("------------")
 	console.printLine("ByteArrays")
-	console.printLine("---------")
+	console.printLine("------------")
 	$byteArray = ByteArray()
 	console.printLine("byte array initialized with: $byteArray = ByteArray(): " + $byteArray)
 	$byteArray->writeBool(true)
@@ -72,9 +64,9 @@ on: nothing
 	console.printLine("removed byte 5 until byte 15: " + $byteArray)
 	$byteArray->clear()
 	console.printLine("cleared byte array: " + $byteArray)
-	console.printLine("---------")
+	console.printLine("--------")
 	console.printLine("Arrays")
-	console.printLine("---------")
+	console.printLine("--------")
 	$array = [1, 2, 3, [1, 2, 3], {a: xxx, b: yyy, c: zzz}, {a, b, c}]
 	console.printLine("array initialized with: $array = [1, 2, 3, [1, 2, 3], {a: xxx, b: yyy, c: zzz}, {a, b, c}]: " + $array)
 	$array = Array(1, 2, 3)
@@ -134,9 +126,9 @@ on: nothing
 	console.printLine("$array->sort('sortFunctionAsc'): ", $array)
 	$array->reverse()
 	console.printLine("array reverse: ", $array)
-	console.printLine("---------")
+	console.printLine("------")
 	console.printLine("Maps")
-	console.printLine("----------")
+	console.printLine("------")
 	$map = {test1: 123, test2: 456, test3: 789, test4: [1, 2, 3], test5: {a: xxx, b: yyy, c: zzz}, test6: {a, b, c}}
 	console.printLine("map initialized with: $map = {test1: 123, test2: 456, test3: 789, test4: [1, 2, 3], test5: {a: xxx, b: yyy, c: zzz}, test6: {a, b, c}}: " + $map)
 	$map = Map()
@@ -178,9 +170,9 @@ on: nothing
 		console.printLine($mapKeys[$i] + " = " + $map->get($mapKeys[$i]))
 		++$i
 	end
-	console.printLine("---------")
+	console.printLine("------")
 	console.printLine("Sets")
-	console.printLine("----------")
+	console.printLine("------")
 	$set = {test1, test2, test3, test4, test5}
 	console.printLine("set initialized with: $set = {test1, test2, test3, test4, test5}: " + $set)
 	$set = Set()
@@ -201,14 +193,4 @@ on: nothing
 	console.printLine("set does have test4 key using $set->contains(): ", $set->contains("test4"))
 	console.printLine("set does have test5 key using $set->contains(): ", $set->contains("test5"))
 	console.printLine("set keys: ", $set->getKeys())
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("----------------------")
-	console.printLine("advanced-test: Error")
-	console.printLine("----------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

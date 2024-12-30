@@ -1,13 +1,5 @@
 use: exception-module-test.tscript
 
-# initialize
-on: initialize
-	console.printLine("----------------------------")
-	console.printLine("exception-test: Initialize")
-	console.printLine("----------------------------")
-	console.printLine()
-end
-
 function: exceptionATest1()
 	console.printLine("-------------------------")
 	console.printLine("exceptionATest1(): init")
@@ -50,8 +42,8 @@ function: exceptionBTest2()
 	console.printLine()
 end
 
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
+# main
+function: main()
 	console.printLine("-------------------------")
 	console.printLine("exception-test: Nothing")
 	console.printLine("-------------------------")
@@ -82,13 +74,4 @@ on: nothing
 	#
 	throw ("Hi, say hello to an uncought exception")
 	#
-end
-
-# an error has occurred
-on: error
-	console.printLine("-----------------------")
-	console.printLine("exception-test: Error")
-	console.printLine("-----------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

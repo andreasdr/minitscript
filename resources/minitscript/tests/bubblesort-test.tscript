@@ -1,11 +1,3 @@
-# initialize
-on: initialize
-	console.printLine("-----------------------------")
-	console.printLine("bubblesort-test: Initialize")
-	console.printLine("-----------------------------")
-	console.printLine()
-end
-
 function: bubbleSortA(&$array)
 	$startTime = time.getCurrentMillis()
 	# best code quality, but less performance
@@ -38,11 +30,11 @@ function: bubbleSortB(&$array)
 	end
 end
 
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("--------------------------")
-	console.printLine("bubblesort-test: Nothing")
-	console.printLine("--------------------------")
+# main
+function: main()
+	console.printLine("-----------------")
+	console.printLine("bubblesort-test")
+	console.printLine("-----------------")
 	console.printLine()
 	#
 	$count = 1000
@@ -73,17 +65,4 @@ on: nothing
 	console.printLine()
 	console.printLine("bubbleSortB: Time: " + ($endTime - $startTime) + ": " + $array)
 	console.printLine()
-
-	#
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("------------------------")
-	console.printLine("bubblesort-test: Error")
-	console.printLine("------------------------")
-	console.printLine("error message: " + script.error.getMessage())
-	console.printLine("error statement: " + script.error.getStatement())
-	script.stop()
 end

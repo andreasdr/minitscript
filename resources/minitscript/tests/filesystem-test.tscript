@@ -1,16 +1,8 @@
-# initialize
-on: initialize
-	console.printLine("-----------------------------")
-	console.printLine("filesystem-test: Initialize")
-	console.printLine("-----------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("--------------------------")
-	console.printLine("filesystem-test: Nothing")
-	console.printLine("--------------------------")
+# main
+function: main()
+	console.printLine("-----------------")
+	console.printLine("filesystem-test")
+	console.printLine("-----------------")
 	console.printLine()
 	# compose URI
 	console.printLine("filesystem.composeURI('filesystem-test', 'test.txt'): " + filesystem.composeURI('filesystem-test', 'test.txt'))
@@ -116,15 +108,4 @@ on: nothing
 	catch ($exception)
 		console.printLine("An exception occurred: " + $exception)
 	end
-	#
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("------------------------")
-	console.printLine("filesystem-test: Error")
-	console.printLine("-----------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

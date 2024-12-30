@@ -1,16 +1,8 @@
-# initialize
-on: initialize
-	console.printLine("-----------------------")
-	console.printLine("base-test: Initialize")
-	console.printLine("-----------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("--------------------")
-	console.printLine("base-test: Nothing")
-	console.printLine("--------------------")
+# main
+function: main()
+	console.printLine("-----------")
+	console.printLine("base-test")
+	console.printLine("-----------")
 	console.printLine()
 	console.printLine("-----------------------")
 	console.printLine("Check bool operations")
@@ -250,14 +242,4 @@ on: nothing
 	console.printLine("Test: string concatenation with brackets in string literals: " + $i + "(" + $j + ")")
 	console.printLine("-------------------------------------------------------------------------------------")
 	console.printLine("(4.0 + 2.0) / 2.0 + (20.0 / 10.0 * (2.0 + 5)): ", (4.0 + 2.0) / 2.0 + (20.0 / 10.0 * (2.0 + 5)), " = 17")
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("------------------")
-	console.printLine("base-test: Error")
-	console.printLine("------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

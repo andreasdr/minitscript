@@ -1,28 +1,9 @@
-# initialize
-on: initialize
-	console.printLine("------------------------")
-	console.printLine("error-test: Initialize")
-	console.printLine("------------------------")
+# main
+function: main()
+	console.printLine("------------")
+	console.printLine("error-test")
+	console.printLine("------------")
 	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("---------------------")
-	console.printLine("error-test: Nothing")
-	console.printLine("---------------------")
-	console.printLine()
-	console.printLine("Calling a method with wrong arguments, to emit the error script, we take default")
+	console.printLine("Calling a method with wrong arguments, to emit an error")
 	default("abc", 123)
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("------------------")
-	console.printLine("error-test: Error")
-	console.printLine("------------------")
-	console.printLine("error message: " + script.error.getMessage())
-	console.printLine("error statement: " + script.error.getStatement())
-	script.stop()
 end

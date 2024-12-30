@@ -1,19 +1,11 @@
 use: module_1.tscript
 use: module_2.tscript
 
-# initialize
-on: initialize
-	console.printLine("-------------------------")
-	console.printLine("module-test: Initialize")
-	console.printLine("-------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("-----------------------")
-	console.printLine("module-test: Nothing")
-	console.printLine("-----------------------")
+# main
+function: main()
+	console.printLine("-------------")
+	console.printLine("module-test")
+	console.printLine("-------------")
 	console.printLine()
 	$$.globalVariable = "global variable"
 	console.printLine("global variable: " + $$.globalVariable)
@@ -24,15 +16,4 @@ on: nothing
 	module1Function()
 	console.printLine("main: Calling module2Function() from module_2.tscript")
 	module2Function()
-	# done
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("--------------------")
-	console.printLine("module-test: Error")
-	console.printLine("--------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

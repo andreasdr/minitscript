@@ -1,16 +1,8 @@
-# initialize
-on: initialize
-	console.printLine("-----------------------")
-	console.printLine("sort-test: Initialize")
-	console.printLine("-----------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("---------------------")
-	console.printLine("sort-test: Nothing")
-	console.printLine("---------------------")
+# main
+function: main()
+	console.printLine("-----------")
+	console.printLine("sort-test")
+	console.printLine("-----------")
 	console.printLine()
 	# boolean array
 	$array = [true, false]
@@ -48,15 +40,4 @@ on: nothing
 	console.printLine("float $array asc sorted: " + $array)
 	$array->sortDescending()
 	console.printLine("float $array desc sorted: " + $array)
-	# done
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("------------------")
-	console.printLine("sort-test: Error")
-	console.printLine("------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

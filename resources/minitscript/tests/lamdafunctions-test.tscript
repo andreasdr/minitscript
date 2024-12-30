@@ -1,16 +1,8 @@
-# initialize
-on: initialize
-	console.printLine("---------------------------------")
-	console.printLine("lamdafunctions-test: Initialize")
-	console.printLine("---------------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("------------------------------")
-	console.printLine("lamdafunctions-test: Nothing")
-	console.printLine("------------------------------")
+# main
+function: main()
+	console.printLine("---------------------")
+	console.printLine("lamdafunctions-test")
+	console.printLine("---------------------")
 	console.printLine()
 	# log array values to console using array.forEach
 	console.printLine("array.forEach() log test: [1, 2, 3, 4, 5, 6]")
@@ -67,15 +59,4 @@ on: nothing
 		script.callFunction($f, $v)
 		$v++
 	end 
-	# done
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("----------------------------")
-	console.printLine("lamdafunctions-test: Error")
-	console.printLine("----------------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

@@ -1,11 +1,3 @@
-# initialize
-on: initialize
-	console.printLine("----------------------------")
-	console.printLine("functions-test: Initialize")
-	console.printLine("----------------------------")
-	console.printLine()
-end
-
 # user script function of recursive factorial computation 
 function: factorial($value)
 	if ($value == 0)
@@ -37,11 +29,11 @@ stacklet: stackletTest()
 	console.printLine("stackletTest(): $a = " + $a + ", $b = " + $b + ", $c = " + $c + ", $GLOBAL.globalTest = " + $GLOBAL.globalTest)
 end
 
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("-------------------------")
-	console.printLine("functions-test: Nothing")
-	console.printLine("-------------------------")
+# main
+function: main()
+	console.printLine("----------------")
+	console.printLine("functions-test")
+	console.printLine("----------------")
 	helloWorldFunction()
 	console.printLine("factorial(5) = " + factorial(5))
 	$a = "0"
@@ -55,14 +47,4 @@ on: nothing
 	globalVariableTest()
 	console.printLine("globalVariableTest(): post: $globalTest = " + $globalTest)
 	stackletTest()
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("----------------------")
-	console.printLine("functions-test: Error")
-	console.printLine("----------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

@@ -1,16 +1,8 @@
-# initialize
-on: initialize
-	console.printLine("--------------------------")
-	console.printLine("network-test: Initialize")
-	console.printLine("--------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("-----------------------")
-	console.printLine("network-test: Nothing")
-	console.printLine("-----------------------")
+# main
+function: main()
+	console.printLine("--------------")
+	console.printLine("network-test")
+	console.printLine("--------------")
 	console.printLine()
 	#
 	console.printLine("Fetch drewke.net/tdme2/ via HTTP")
@@ -60,15 +52,4 @@ on: nothing
 	if (filesystem.removeFile(".", "FreeBSD-14.0-RELEASE-amd64-bootonly.iso") == false)
 		console.printLine("Could not remove file FreeBSD-14.0-RELEASE-amd64-bootonly.iso.")
 	end
-	#
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("---------------------")
-	console.printLine("network-test: Error")
-	console.printLine("---------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end

@@ -1,16 +1,8 @@
-# initialize
-on: initialize
-	console.printLine("-------------------------")
-	console.printLine("string-test: Initialize")
-	console.printLine("-------------------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
-	console.printLine("----------------------")
-	console.printLine("string-test: Nothing")
-	console.printLine("----------------------")
+# main
+function: main()
+	console.printLine("-------------")
+	console.printLine("string-test")
+	console.printLine("-------------")
 	console.printLine()
 	console.printLine("Hi, lets produce\na newline, and\nanother one: \"yarrrrr\"")
 	console.printLine("Some Umlauts love: äöü >>> ÄÖÜ")
@@ -27,14 +19,4 @@ on: nothing
 	if (String::regexSearch("Who is this Andreas0815?", "Andreas([0-9]*)", $matches) == true)
 		console.printLine('String::regexSearch("Who is this Andreas0815?", "Andreas([0-9]*)", $matches): ' + $matches)
 	end
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("--------------------")
-	console.printLine("string-test: Error")
-	console.printLine("--------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end
