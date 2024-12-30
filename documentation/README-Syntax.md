@@ -52,65 +52,11 @@ In combination with map datatype, you can also generate classes like objects in 
 ## 1.4. Top level script syntax
 
 At top level MinitScript can take the following syntax:
-- event like approach:
-  - on: ...
-  - on-enabled: ...
-- functions
-  - function: ...
-  - callable: ...
-  - stacklet: ...
+- function: ...
+- callable: ...
+- stacklet: ...
 
-### 1.4.1. Events
-
-First see the event like approach, which we might change still. This is WIP.
-The event like approach was invented to have the ability to have a simple state machine and action graph available as feasible script interpretation.
-
-Initialization looks like:
-
-```
-on: initialize
-	...
-	console.printLine("Nothing's going on here, I need to get initialized")
-	$initialization = true
-	...
-end	
-```
-
-If there was no event matched before in script event order, "nothing" gets executed, see below
-
-```
-on: nothing
-	...
-	console.printLine("Nothing's going on here, I am bored. Am I at least initialized?")
-	if ($initialization == true)
-		console.printLine("I am initialized")
-	else
-		console.printLine("I am NOT initialized")
-	end
-	script.stop()
-	...
-end	
-```
-
-In case of error see the error event.
-
-```
-on: error
-	...
-	console.printLine("There was an error. I am excited")
-	console.printLine("Message: " + script.error.getMessage())
-	console.printLine("Statement: " + script.error.getStatement())
-	script.stop()
-	...
-end	
-```
-
-"on: initialize", "on: nothing" and "on: error" are default events. They just have a name by convention and are emitted, if required.
-Events get more interesting with conditions and a specific order to match a required state machine or graph.
-
-We might add a section for events later.
-
-### 1.4.2. Functions and callables
+### 1.4.1 Functions and callables
 
 At top level script scope we still can define functions like:
 
@@ -121,7 +67,7 @@ function: factorial($value)
 	end
 	return($value * factorial($value - 1))
 end
-``` 
+```
 
 and callables like:
 
@@ -130,6 +76,19 @@ callable: helloWorldFunction()
 	console.printLine("helloWorldFunction(): Hello world")
 end
 ```
+
+### 1.4.2 Main function
+
+The entry point for MinitScript scripts is the main function, if events are disabled, e.g. in stock MinitScript distribution.
+Means the first thing that is called in stock MinitScript is the script's main function.
+
+```
+# main
+function: main()
+	console.printLine("Hello world")
+end
+```
+
 
 ## 1.6. Additional documentation
 

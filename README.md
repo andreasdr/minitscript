@@ -55,7 +55,6 @@ Also note the focus on easy integration into other products and easy customizabi
   - some adjustments
     - have a more sophisticated parser
     - have interfaces
-    - optional: make event system optional??? what about error emits/errors in functions/stacklets??? 
     - build system: check executable output directories
   - parser
     - improve error messages even more

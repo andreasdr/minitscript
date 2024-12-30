@@ -40,8 +40,8 @@ on: initialize
 	console.printLine()
 end
 
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
+# main
+function: main()
 	console.printLine("-----------------------")
 	console.printLine("module-test: Nothing")
 	console.printLine("-----------------------")
@@ -49,17 +49,6 @@ on: nothing
 	# call module 1 functions
 	console.printLine("main: Calling module1Function() from module_1.tscript")
 	module1Function()
-	# done
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("--------------------")
-	console.printLine("module-test: Error")
-	console.printLine("--------------------")
-	console.printLine("An error occurred")
-	script.stop()
 end
 ```
 

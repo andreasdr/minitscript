@@ -70,13 +70,13 @@ Stacklets take no argument if used in root scope. It can take a single argument 
 
 ```
 ...
-stacklet: stackletTest()
+stacklet: stackletTest(main)
 	# we can read from current script scope as stacklets do not create their own script scope
 	console.printLine("stackletTest(): " + $works)
 end
 
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
+# main
+function: main()
 	$works = "Works!"
 	stackletTest()
 	script.stop()

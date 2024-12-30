@@ -55,16 +55,8 @@ use: module_1.tscript
 use: module_2.tscript
 use: module_3.tscript
 
-# initialize
-on: initialize
-	console.printLine("------------")
-	console.printLine("Initialize")
-	console.printLine("------------")
-	console.printLine()
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
+# main
+function: main()
 	console.printLine("---------")
 	console.printLine("Nothing")
 	console.printLine("---------")
@@ -80,18 +72,7 @@ on: nothing
 		console.printLine("An error occurred: " + $exception)
 		# print the stack trace
 		console.printLine(stackTrace())
-		# stop the script
-		script.stop()
 	end
-end
-
-# an error has occurred
-on: error
-	console.printLine("-------")
-	console.printLine("Error")
-	console.printLine("-------")
-	console.printLine("An error occurred")
-	script.stop()
 end
 ```
 
