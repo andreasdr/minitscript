@@ -2505,28 +2505,6 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 		}
 	}
 
-	// check for initialize and error condition
-	//
-	#if defined(MINITSCRIPT_EVENTS)
-		auto haveErrorScript = false;
-		for (const auto& script: scripts) {
-				// events
-				if (script.type == Script::TYPE_ONENABLED) {
-					// no op
-				} else
-				//
-				if (script.condition == "error") {
-					haveErrorScript = true;
-				}
-		}
-		if (_module == false && haveErrorScript == false) {
-			_Console::printLine(scriptPathName + "/" + scriptFileName + ": Script needs to define an error condition");
-			parseErrors.push_back("Script needs to define an error condition");
-			scriptValid = false;
-			return;
-		}
-	#endif
-
 	//
 	initializeScript();
 }
@@ -2539,15 +2517,6 @@ void MinitScript::initializeScript() {
 	}
 	//
 	registerVariables();
-	// events
-	#if defined(MINITSCRIPT_EVENTS)
-		// events
-		else
-		//
-		if (hasCondition("initialize") == true) {
-			emit("initialize");
-		}
-	#endif
 }
 
 void MinitScript::startScript() {
@@ -2562,6 +2531,14 @@ void MinitScript::startScript() {
 		Variable returnValue;
 		call("main", callArgumentsSpan, returnValue);
 	}
+	// events
+	#if defined(MINITSCRIPT_EVENTS)
+		//
+		else
+		if (hasCondition("initialize") == true) {
+			emit("initialize");
+		}
+	#endif
 }
 
 #if defined(MINITSCRIPT_EVENTS)

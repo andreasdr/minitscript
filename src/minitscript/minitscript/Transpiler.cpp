@@ -274,12 +274,12 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	//
 	generatedDeclarations+= declarationIndent + "void emit(const string& condition) override;" + "\n";
 	//
-	generatedDeclarations+= declarationIndent + "inline void startScript() override {" + "\n";
+	generatedDeclarations+= declarationIndent + "inline void initializeScript() override {" + "\n";
 	if (minitScript->isModule() == true) {
-		generatedDeclarations+= declarationIndent + "\t" + "_Console::printLine(\"" + minitScriptClassName + "::startScript(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "_Console::printLine(\"" + minitScriptClassName + "::initializeScript(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
 	} else {
 		generatedDeclarations+= declarationIndent + "\t" + "if (native == false) {" + "\n";
-		generatedDeclarations+= declarationIndent + "\t" + "\t" + minitScript->getBaseClass() + "::startScript();" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "\t" + minitScript->getBaseClass() + "::initializeScript();" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "\t" + "return;" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "getScriptState().running = true;" + "\n";

@@ -4673,10 +4673,14 @@ public:
 	 */
 	inline void startErrorScript() {
 		#if defined(MINITSCRIPT_EVENTS)
-			// events
-			emit("error");
+			if (hasCondition("error") == true) {
+				// events
+				emit("error");
+			} else {
+				//
+				_throw("An error occurred");
+			}
 		#else
-			_Console::printLine("An error occurred");
 			//
 			_throw("An error occurred");
 		#endif

@@ -21,3 +21,5 @@ using std::string;
 #if !defined(MINITSCRIPT_DATA)
 	#define MINITSCRIPT_DATA string(".")
 #endif
+
+#define MINITSCRIPT_EVENTS

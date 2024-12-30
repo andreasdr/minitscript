@@ -1,9 +1,5 @@
-# initialize
-on: initialize
-end
-
-# if no condition is met, nothing will be executed, lol :D
-on: nothing
+# main
+function: main()
 	console.printLine("-------")
 	console.printLine("ASCII")
 	console.printLine("-------")
@@ -26,15 +22,4 @@ on: nothing
 	end
 	console.printLine()
 	console.printLine(String::fromByteArray($asciiContent))
-	script.stop()
-end
-
-# an error has occurred
-on: error
-	console.printLine("-------")
-	console.printLine("ASCII")
-	console.printLine("-------")
-	console.printLine()
-	console.printLine("An error occurred")
-	script.stop()
 end

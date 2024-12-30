@@ -124,6 +124,7 @@ int main(int argc, char** argv)
 		context->push(scriptPtr);
 		context->addScript("application", script.release());
 		//
+		scriptPtr->startScript();
 		while (scriptPtr->isRunning() == true) {
 			scriptPtr->execute();
 		}
