@@ -20,13 +20,13 @@ end
 
 # user script function to test assign back in user functions
 function: globalVariableTest()
-	console.printLine("globalVariableTest(): $GLOBAL.globalTest = " + $GLOBAL.globalTest)
-	$GLOBAL.globalTest = "Been there, done that, got the t-shirt"
+	console.printLine("globalVariableTest(): $$.globalTest = " + $$.globalTest)
+	$$.globalTest = "Been there, done that, got the t-shirt"
 end
 
 # user script stacklet
-stacklet: stackletTest()
-	console.printLine("stackletTest(): $a = " + $a + ", $b = " + $b + ", $c = " + $c + ", $GLOBAL.globalTest = " + $GLOBAL.globalTest)
+stacklet: stackletTest(main)
+	console.printLine("stackletTest(): $a = " + $a + ", $b = " + $b + ", $c = " + $c + ", $$.globalTest = " + $$.globalTest)
 end
 
 # main
@@ -42,9 +42,9 @@ function: main()
 	console.printLine("assignTest(): pre: $a = " + $a + ", $b = " + $b + ", $c = " + $c)
 	assignTest($a, $b, $c)
 	console.printLine("assignTest(): post: $a = " + $a + ", $b = " + $b + ", $c = " + $c)
-	$globalTest = "Global Test Variable"
-	console.printLine("globalVariableTest(): pre: $globalTest = " + $globalTest)
+	$$.globalTest = "Global Test Variable"
+	console.printLine("globalVariableTest(): pre: $$.globalTest = " + $$.globalTest)
 	globalVariableTest()
-	console.printLine("globalVariableTest(): post: $globalTest = " + $globalTest)
+	console.printLine("globalVariableTest(): post: $$.globalTest = " + $$.globalTest)
 	stackletTest()
 end

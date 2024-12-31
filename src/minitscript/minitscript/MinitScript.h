@@ -3296,6 +3296,9 @@ protected:
 			SCRIPT,
 			CONDITIONTYPE_FORTIME
 		};
+		inline ScriptState(int idx): idx(idx) {
+		}
+		int idx;
 		int state { STATE_NONE };
 		int lastState { STATE_NONE };
 		StateMachineState* lastStateMachineState { nullptr };
@@ -3489,7 +3492,7 @@ protected:
 	 * Push a new script state
 	 */
 	inline void pushScriptState() {
-		rootScript->scriptStateStack.push_back(make_unique<ScriptState>());
+		rootScript->scriptStateStack.push_back(make_unique<ScriptState>(rootScript->scriptStateStack.size()));
 	}
 
 	/**

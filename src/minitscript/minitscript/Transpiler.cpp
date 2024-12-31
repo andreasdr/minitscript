@@ -282,7 +282,6 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		generatedDeclarations+= declarationIndent + "\t" + "\t" + minitScript->getBaseClass() + "::initializeScript();" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "\t" + "return;" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
-		generatedDeclarations+= declarationIndent + "\t" + "getScriptState().running = true;" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "registerVariables();" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "resetScriptExecutationState(" + to_string(initializeScriptIdx) + ", STATEMACHINESTATE_NEXT_STATEMENT);" + "\n";
 	}

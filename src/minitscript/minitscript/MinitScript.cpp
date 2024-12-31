@@ -3551,6 +3551,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 
 void MinitScript::dumpScriptState(ScriptState& scriptState, const string& message) {
 	_Console::printLine("MinitScript::dumpScriptState(): " + (message.empty() == false?message + ": ":"") + to_string(rootScript->scriptStateStack.size()) + " on stack");
+	_Console::printLine(string("\t") + "idx: " + to_string(scriptState.idx));
 	_Console::printLine(string("\t") + "state: " + to_string(scriptState.state));
 	_Console::printLine(string("\t") + "lastState: " + to_string(scriptState.lastState));
 	_Console::printLine(string("\t") + "running: " + (scriptState.running == true?"true":"false"));
