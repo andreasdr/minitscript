@@ -272,7 +272,9 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
 	generatedDeclarations+= declarationIndent + "}" + "\n";
 	//
-	generatedDeclarations+= declarationIndent + "void emit(const string& condition) override;" + "\n";
+	generatedDeclarations+= declarationIndent + "#if defined(MINITSCRIPT_EVENTS)" + "\n";
+	generatedDeclarations+= declarationIndent + "\t" + "void emit(const string& condition) override;" + "\n";
+	generatedDeclarations+= declarationIndent + "#endif" + "\n";
 	//
 	generatedDeclarations+= declarationIndent + "inline void initializeScript() override {" + "\n";
 	if (minitScript->isModule() == true) {
@@ -308,11 +310,13 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		generatedDeclarations+= generatedExecuteCode;
 		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "#if defined(MINITSCRIPT_EVENTS)" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "if (isFunctionRunning() == false && deferredEmit.empty() == false) {" + "\n";
 		generatedDeclarations+= declarationIndent + "\t\t" + "auto condition = deferredEmit;" + "\n";
 		generatedDeclarations+= declarationIndent + "\t\t" + "deferredEmit.clear();" + "\n";
 		generatedDeclarations+= declarationIndent + "\t\t" + "emit(condition);" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "}" + "\n";
+		generatedDeclarations+= declarationIndent + "\t" + "#endif" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "if (getScriptState().running == false) return;" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "executeStateMachine();" + "\n";
 		generatedDeclarations+= declarationIndent + "\t" + "// try garbage collection" + "\n";
@@ -363,8 +367,10 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	//
 	generatedDeclarations+= declarationIndent + "// overridden methods" + "\n";
 	generatedDeclarations+= declarationIndent + "void initializeNative() override;" + "\n";
-	generatedDeclarations+= declarationIndent + "int determineScriptIdxToStart() override;" + "\n";
-	generatedDeclarations+= declarationIndent + "int determineNamedScriptIdxToStart() override;" + "\n";
+	generatedDeclarations+= declarationIndent + "#if defined(MINITSCRIPT_EVENTS)" + "\n";
+	generatedDeclarations+= declarationIndent + "\t" + "int determineScriptIdxToStart() override;" + "\n";
+	generatedDeclarations+= declarationIndent + "\t" + "int determineNamedScriptIdxToStart() override;" + "\n";
+	generatedDeclarations+= declarationIndent + "#endif" + "\n";
 	generatedDeclarations+= "\n";
 
 	string registerMethodsDefinitions;
@@ -396,6 +402,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 
 	//
 	string emitDefinition;
+	emitDefinition+= string() + "#if defined(MINITSCRIPT_EVENTS)" + "\n";
 	emitDefinition+= "void " + minitScriptClassName + "::emit(const string& condition) {" + "\n";
 	if (minitScript->isModule() == true) {
 		emitDefinition+= definitionIndent + "// this MinitScript instance is a module, so forward to root script" + "\n";
@@ -546,6 +553,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 
 	//
 	string generatedDetermineScriptIdxToStartDefinition = "\n";
+	generatedDetermineScriptIdxToStartDefinition+= string() + "#if defined(MINITSCRIPT_EVENTS)" + "\n";
 	generatedDetermineScriptIdxToStartDefinition+= "int " + minitScriptClassName + "::determineScriptIdxToStart() {" + "\n";
 	if (minitScript->isModule() == true) {
 		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "_Console::printLine(\"" + minitScriptClassName + "::determineScriptIdxToStart(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
@@ -558,6 +566,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "//" + "\n";
 	}
 	string generatedDetermineNamedScriptIdxToStartDefinition = "\n";
+	generatedDetermineNamedScriptIdxToStartDefinition+= string() + "#if defined(MINITSCRIPT_EVENTS)" + "\n";
 	generatedDetermineNamedScriptIdxToStartDefinition+= "int " + minitScriptClassName + "::determineNamedScriptIdxToStart() {" + "\n";
 	if (minitScript->isModule() == true) {
 		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "_Console::printLine(\"" + minitScriptClassName + "::determineNamedScriptIdxToStart(): This MinitScript instance is a module, so this method should not be called.\");" + "\n";
@@ -820,6 +829,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		generatedDetermineScriptIdxToStartDefinition+= definitionIndent + "#undef MINITSCRIPT_METHOD_POPSTACK" + "\n";
 	}
 	generatedDetermineScriptIdxToStartDefinition+= string() + "}" + "\n";
+	generatedDetermineScriptIdxToStartDefinition+= string() + "#endif" + "\n";
 	//
 	if (minitScript->isModule() == false) {
 		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "}" + "\n";
@@ -829,6 +839,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		generatedDetermineNamedScriptIdxToStartDefinition+= definitionIndent + "#undef MINITSCRIPT_METHOD_POPSTACK" + "\n";
 	}
 	generatedDetermineNamedScriptIdxToStartDefinition+= string() + "}" + "\n";
+	generatedDetermineNamedScriptIdxToStartDefinition+= string() + "#endif" + "\n";
 
 	//
 	if (minitScript->isModule() == false) {
@@ -838,6 +849,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		emitDefinition+= emitDefinitionIndent + "}" + "\n";
 	}
 	emitDefinition+= string() + "}" + "\n";
+	emitDefinition+= string() + "#endif" + "\n";
 
 	//
 	if (globalVariables.empty() == false) {
