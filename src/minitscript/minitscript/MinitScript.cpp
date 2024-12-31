@@ -2044,8 +2044,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							"elseif (" + containerVariableType + " == \"Set\"); " +
 								containerArrayVariable + " = Set::getKeys(" + containerVariable + "); " +
 							"else; " +
-								"console.printLine(\"forEach() expects array or set as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
-								"script.emit(\"error\"); " +
+								"throw(\"forEach() expects array or set as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
 							"end; " +
 							iterationVariable + " = 0; " +
 							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +
@@ -2158,8 +2157,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							"if (" + containerVariableType + " == \"Map\"); " +
 								containerArrayVariable + " = Map::getKeys(" + containerVariable + "); " +
 							"else; " +
-								"console.printLine(\"forEach() expects map as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
-								"script.emit(\"error\"); " +
+								"throw(\"forEach() expects map as container, but got \" + String::toLowerCase(getType(" + containerVariable + "))); " +
 							"end; " +
 							iterationVariable + " = 0; " +
 							"if (" + iterationVariable + " < Array::getSize(" + containerArrayVariable + ")); " +

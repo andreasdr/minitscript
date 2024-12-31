@@ -3620,8 +3620,9 @@ protected:
 		#if defined(MINITSCRIPT_EVENTS)
 			// events
 			if (isFunctionRunning() == false) timeEnabledConditionsCheckLast = TIME_NONE;
-			resetScriptExecutationState(SCRIPTIDX_NONE, STATEMACHINESTATE_NONE);
 		#endif
+		//
+		resetScriptExecutationState(SCRIPTIDX_NONE, STATEMACHINESTATE_NONE);
 	}
 
 	/**
