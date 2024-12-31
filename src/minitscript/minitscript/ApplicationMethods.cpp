@@ -216,11 +216,7 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 					if ((arguments.size() == 0 || arguments.size() == 1) &&
 						MinitScript::getIntegerValue(arguments, 0, exitCode, true) == true) {
 						minitScript->getContext()->setExitCode(static_cast<int>(exitCode));
-						if (minitScript->isFunctionRunning() == true) {
-							// implement me!
-						}
 						minitScript->stopScriptExecution();
-						minitScript->stopRunning();
 					} else {
 						MINITSCRIPT_METHODUSAGE_COMPLAIN(getMethodName());
 					}

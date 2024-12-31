@@ -3606,13 +3606,13 @@ protected:
 	 * Stop script execution
 	 */
 	inline void stopScriptExecution() {
-		while (rootScript->scriptStateStack.size() > 1) popScriptState();
 		//
 		garbageCollection();
 		//
 		auto& scriptState = getScriptState();
-		//
-		scriptState.running = false;
+		for (auto& scriptState: rootScript->scriptStateStack) {
+			scriptState->running = false;
+		}
 		//
 		#if defined(MINITSCRIPT_EVENTS)
 			// events

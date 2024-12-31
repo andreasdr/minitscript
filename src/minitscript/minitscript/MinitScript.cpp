@@ -2510,7 +2510,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 }
 
 void MinitScript::initializeScript() {
-	if (VERBOSE == true) _Console::printLine("MinitScript::startScript(): '" + scriptFileName + ": Starting script.");
+	if (VERBOSE == true) _Console::printLine("MinitScript::initializeScript(): '" + scriptFileName + ": Starting script.");
 	if (scriptValid == false) {
 		_Console::printLine(scriptFileName + ": Script not valid: not starting");
 		return;
