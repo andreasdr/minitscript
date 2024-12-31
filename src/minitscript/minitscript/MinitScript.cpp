@@ -5354,6 +5354,7 @@ const string MinitScript::stackTrace(const span<Variable>& arguments, const SubS
 	auto j = 0;
 	for (int i = rootScript->scriptStateStack.size() - 1; i >= 0; --i) {
 		auto scriptState = rootScript->scriptStateStack[i].get();
+		if (scriptState->scriptIdx == SCRIPTIDX_NONE) continue;
 		const auto& script = rootScript->scripts[scriptState->scriptIdx];
 		const auto& statements = script.getStatements();
 		const auto& statement = statements[scriptState->statementIdx];
