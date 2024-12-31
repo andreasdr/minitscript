@@ -53,16 +53,12 @@ Also note the focus on easy integration into other products and easy customizabi
 
 - Whats left to do for 1.0 BETA release
   - some adjustments
-    - have a more sophisticated parser
-    - have interfaces
+    - have a more sophisticated parser maybe?
+    - have interfaces?
     - build system: check executable output directories
   - parser
     - improve error messages even more
   - documentation
-    - detailed documentation for specific sections and maybe methods
-    - README.md: resolve TODOs
-    - README-BuildingHowTo.md: resolve TODOs
-    - README-Syntax.md: TODO
     - README-Extension.md: TODO
     - README-Integration.md: TODO
     - ...
