@@ -3421,27 +3421,6 @@ protected:
 	}
 
 	/**
-	 * Decode operator
-	 * @param arguments arguments
-	 * @param operatorValueIdx operator value index
-	 * @param defaultOperatorString default operator string
-	 * @return operator string
-	 */
-	inline static const string decodeOperator(const span<MinitScript::Variable>& arguments, int operatorValueIdx, const string& defaultOperatorString) {
-		//
-		int64_t operatorValue;
-		if (MinitScript::getIntegerValue(arguments, operatorValueIdx, operatorValue) == false) return defaultOperatorString;
-		//
-		string result;
-		auto c1 = (operatorValue & 255);
-		auto c2 = ((operatorValue >> 8) & 255);
-		if (c1 != 0ll) result+= (char)c1;
-		if (c2 != 0ll) result+= (char)c2;
-		//
-		return result;
-	}
-
-	/**
 	 * Initialize native mini script
 	 */
 	virtual void initializeNative();
@@ -4476,6 +4455,27 @@ public:
 			if (result.empty() == false) result+= delimiter;
 			result+= to_string(argumentIdx);
 		}
+		return result;
+	}
+
+	/**
+	 * Decode operator
+	 * @param arguments arguments
+	 * @param operatorValueIdx operator value index
+	 * @param defaultOperatorString default operator string
+	 * @return operator string
+	 */
+	inline static const string decodeOperator(const span<MinitScript::Variable>& arguments, int operatorValueIdx, const string& defaultOperatorString) {
+		//
+		int64_t operatorValue;
+		if (MinitScript::getIntegerValue(arguments, operatorValueIdx, operatorValue) == false) return defaultOperatorString;
+		//
+		string result;
+		auto c1 = (operatorValue & 255);
+		auto c2 = ((operatorValue >> 8) & 255);
+		if (c1 != 0ll) result+= (char)c1;
+		if (c2 != 0ll) result+= (char)c2;
+		//
 		return result;
 	}
 
