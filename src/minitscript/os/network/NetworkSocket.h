@@ -4,11 +4,8 @@
 
 #include <minitscript/minitscript.h>
 #include <minitscript/os/network/fwd-minitscript.h>
-#include <minitscript/os/network/NetworkSocketException.h>
 
 using std::string;
-
-using minitscript::os::network::NetworkSocketException;
 
 /**
  * Base class of network sockets

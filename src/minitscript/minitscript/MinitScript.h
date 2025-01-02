@@ -44,17 +44,19 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using _Character = minitscript::utilities::Character;
-using _Console = minitscript::utilities::Console;
-using _Exception = minitscript::utilities::Exception;
-using _Float = minitscript::utilities::Float;
-using _Hex = minitscript::utilities::Hex;
-using _Integer = minitscript::utilities::Integer;
-using _StringTools = minitscript::utilities::StringTools;
-using _Time = minitscript::utilities::Time;
-using _UTF8CharacterIterator = minitscript::utilities::UTF8CharacterIterator;
-using _Context = minitscript::minitscript::Context;
-using _Library = minitscript::minitscript::Library;
+// namespaces
+namespace minitscript {
+namespace minitscript {
+	using ::minitscript::utilities::Character;
+	using ::minitscript::utilities::Console;
+	using ::minitscript::utilities::Float;
+	using ::minitscript::utilities::Hex;
+	using ::minitscript::utilities::Integer;
+	using ::minitscript::utilities::StringTools;
+	using ::minitscript::utilities::Time;
+	using ::minitscript::utilities::UTF8CharacterIterator;
+}
+}
 
 #define MINITSCRIPT_METHODUSAGE_COMPLAIN(methodName) { minitScript->complain(methodName, subStatement); minitScript->startErrorScript(); }
 #define MINITSCRIPT_METHODUSAGE_COMPLAINM(methodName, message) { minitScript->complain(methodName, subStatement, message); minitScript->startErrorScript(); }
@@ -552,7 +554,7 @@ public:
 			/**
 			 * Constructor
 			 */
-			inline StringValue(): cache(_UTF8CharacterIterator::UTF8PositionCache()) {}
+			inline StringValue(): cache(UTF8CharacterIterator::UTF8PositionCache()) {}
 
 			/**
 			 * Constructor
@@ -579,14 +581,14 @@ public:
 			/**
 			 * @return const cache
 			 */
-			inline const _UTF8CharacterIterator::UTF8PositionCache& getCache() const {
+			inline const UTF8CharacterIterator::UTF8PositionCache& getCache() const {
 				return cache;
 			}
 
 			/**
 			 * @return cache
 			 */
-			inline _UTF8CharacterIterator::UTF8PositionCache& getCache() {
+			inline UTF8CharacterIterator::UTF8PositionCache& getCache() {
 				return cache;
 			}
 
@@ -594,13 +596,13 @@ public:
 			 * Set cache
 			 * @param cache cache
 			 */
-			inline void setCache(const _UTF8CharacterIterator::UTF8PositionCache& cache) {
+			inline void setCache(const UTF8CharacterIterator::UTF8PositionCache& cache) {
 				this->cache = cache;
 			}
 
 		private:
 			string value;
-			_UTF8CharacterIterator::UTF8PositionCache cache;
+			UTF8CharacterIterator::UTF8PositionCache cache;
 		};
 
 		/**
@@ -1112,7 +1114,7 @@ public:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(from.getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MinitScript::dataTypes.size()) {
-						_Console::printLine("ScriptVariable::copyScriptVariable(): unknown data type with id " + to_string(dataTypeIdx));
+						Console::printLine("ScriptVariable::copyScriptVariable(): unknown data type with id " + to_string(dataTypeIdx));
 						return;
 					}
 					MinitScript::dataTypes[dataTypeIdx]->copyVariable(to, from);
@@ -1255,7 +1257,7 @@ public:
 					setValue(value);
 					break;
 				default:
-					_Console::printLine("Variable::Variable(VariableType, const string&): invalid type: " + getTypeAsString(type));
+					Console::printLine("Variable::Variable(VariableType, const string&): invalid type: " + getTypeAsString(type));
 			}
 		}
 
@@ -1343,7 +1345,7 @@ public:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MinitScript::dataTypes.size()) {
-						_Console::printLine("ScriptVariable::setType(): unknown data type with id " + to_string(dataTypeIdx));
+						Console::printLine("ScriptVariable::setType(): unknown data type with id " + to_string(dataTypeIdx));
 						return;
 					}
 					MinitScript::dataTypes[dataTypeIdx]->unsetVariableValue(*this);
@@ -1406,7 +1408,7 @@ public:
 					// custom data type
 					auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MinitScript::dataTypes.size()) {
-						_Console::printLine("ScriptVariable::setType(): unknown data type with id " + to_string(dataTypeIdx));
+						Console::printLine("ScriptVariable::setType(): unknown data type with id " + to_string(dataTypeIdx));
 						return;
 					}
 					MinitScript::dataTypes[dataTypeIdx]->setVariableValue(*this);
@@ -1460,7 +1462,7 @@ public:
 					return true;
 				case TYPE_STRING:
 					{
-						auto lowerCaseString = _StringTools::toLowerCase(getStringValueReference().getValue());
+						auto lowerCaseString = StringTools::toLowerCase(getStringValueReference().getValue());
 						if (lowerCaseString != "false" && lowerCaseString != "true" && lowerCaseString != "1" && lowerCaseString != "0") return optional;
 						value = lowerCaseString == "true" || lowerCaseString == "1";
 						return true;
@@ -1492,12 +1494,12 @@ public:
 				case TYPE_STRING:
 					{
 						const auto& stringValue = getStringValueReference().getValue();
-						if (_Integer::is(stringValue) == true) {
-							value = _Integer::parse(stringValue);
+						if (Integer::is(stringValue) == true) {
+							value = Integer::parse(stringValue);
 							return true;
 						} else
-						if (_Float::is(stringValue) == true) {
-							value = static_cast<int64_t>(_Float::parse(stringValue));
+						if (Float::is(stringValue) == true) {
+							value = static_cast<int64_t>(Float::parse(stringValue));
 							return true;
 						} else {
 							return optional;
@@ -1530,8 +1532,8 @@ public:
 				case TYPE_STRING:
 					{
 						const auto& stringValue = getStringValueReference().getValue();
-						if (_Float::is(stringValue) == false) return optional;
-						value = _Float::parse(stringValue);
+						if (Float::is(stringValue) == false) return optional;
+						value = Float::parse(stringValue);
 					}
 					return true;
 				default:
@@ -1624,9 +1626,9 @@ public:
 				return true;
 			} else {
 				if (statement != nullptr) {
-					_Console::printLine(minitScript->getStatementInformation(*statement) + ": Expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
+					Console::printLine(minitScript->getStatementInformation(*statement) + ": Expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
 				} else {
-					_Console::printLine(minitScript->getScriptFileName() + ": Expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
+					Console::printLine(minitScript->getScriptFileName() + ": Expected byte integer value (0 <= value <= 255), but got " + getValueAsString());
 				}
 			}
 			return false;
@@ -1636,7 +1638,7 @@ public:
 		 * Get string value UTF8 position cache from given variable
 		 * @return UTF8 position cache or nullptr if not available
 		 */
-		inline _UTF8CharacterIterator::UTF8PositionCache* getStringValueCache() {
+		inline UTF8CharacterIterator::UTF8PositionCache* getStringValueCache() {
 			switch(getType()) {
 				case TYPE_STRING:
 				case TYPE_FUNCTION_ASSIGNMENT:
@@ -1752,7 +1754,7 @@ public:
 			// custom data type
 			auto dataTypeIdx = static_cast<int>(this->getType()) - TYPE_PSEUDO_DATATYPES;
 			if (dataTypeIdx < 0 || dataTypeIdx >= MinitScript::dataTypes.size()) {
-				_Console::printLine("ScriptVariable::setValue(): unknown data type with id " + to_string(dataTypeIdx));
+				Console::printLine("ScriptVariable::setValue(): unknown data type with id " + to_string(dataTypeIdx));
 				return;
 			}
 			MinitScript::dataTypes[dataTypeIdx]->setVariableValue(*this, value);
@@ -2346,7 +2348,7 @@ public:
 				// )
 				if (candidate[i++] != ')') return false;
 				// spaces
-				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+				for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 				if (i >= candidate.size()) return false;
 				// -
 				if (candidate[i++] != '-') return false;
@@ -2355,13 +2357,13 @@ public:
 				// >
 				if (candidate[i++] != '>') return false;
 				// spaces
-				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+				for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 				if (i >= candidate.size()) return false;
 				//
 				auto functionStartIdx = i;
 				for (; i < candidate.size(); i++) {
 					auto c = candidate[i];
-					if (_Character::isAlphaNumeric(c) == false && c != '_') {
+					if (Character::isAlphaNumeric(c) == false && c != '_') {
 						return false;
 					}
 				}
@@ -2376,7 +2378,7 @@ public:
 				//
 				auto i = 0;
 				// spaces
-				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+				for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 				if (i >= candidate.size()) return false;
 				// -
 				if (candidate[i++] != '-') return false;
@@ -2385,13 +2387,13 @@ public:
 				// >
 				if (candidate[i++] != '>') return false;
 				// spaces
-				for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+				for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 				if (i >= candidate.size()) return false;
 				//
 				auto stackletStartIdx = i;
 				for (; i < candidate.size(); i++) {
 					auto c = candidate[i];
-					if (_Character::isAlphaNumeric(c) == false && c != '_') {
+					if (Character::isAlphaNumeric(c) == false && c != '_') {
 						return false;
 					}
 				}
@@ -2412,21 +2414,21 @@ public:
 			if (value == "false") {
 				setValue(false);
 			} else
-			if (_Integer::viewIs(value) == true) {
-				setValue(static_cast<int64_t>(_Integer::viewParse(value)));
+			if (Integer::viewIs(value) == true) {
+				setValue(static_cast<int64_t>(Integer::viewParse(value)));
 			} else
-			if (_Float::viewIs(value) == true) {
-				setValue(_Float::viewParse(value));
+			if (Float::viewIs(value) == true) {
+				setValue(Float::viewParse(value));
 			} else
 			if (viewIsStringLiteral(value) == true) {
 				setValue(minitScript->deescape(dequote(value), statement));
 			} else
-			if (_StringTools::viewStartsWith(value, "{") == true &&
-				_StringTools::viewEndsWith(value, "}") == true) {
+			if (StringTools::viewStartsWith(value, "{") == true &&
+				StringTools::viewEndsWith(value, "}") == true) {
 				*this = initializeMapSet(scriptFileName, value, minitScript, scriptIdx, statement);
 			} else
-			if (_StringTools::viewStartsWith(value, "[") == true &&
-				_StringTools::viewEndsWith(value, "]") == true) {
+			if (StringTools::viewStartsWith(value, "[") == true &&
+				StringTools::viewEndsWith(value, "]") == true) {
 				*this = initializeArray(scriptFileName, value, minitScript, scriptIdx, statement);
 			} else
 			if (viewIsFunctionAssignment(value, functionOrStacklet) == true) {
@@ -2552,15 +2554,15 @@ public:
 				//
 				auto result = str;
 				//
-				result = _StringTools::replace(result, "\0", "\\0");
-				result = _StringTools::replace(result, "\a", "\\a");
-				result = _StringTools::replace(result, "\b", "\\b");
-				result = _StringTools::replace(result, "\f", "\\f");
-				result = _StringTools::replace(result, "\n", "\\n");
-				result = _StringTools::replace(result, "\r", "\\r");
-				result = _StringTools::replace(result, "\t", "\\t");
-				result = _StringTools::replace(result, "\v", "\\v");
-				result = _StringTools::replace(result, "\"", "\\\"");
+				result = StringTools::replace(result, "\0", "\\0");
+				result = StringTools::replace(result, "\a", "\\a");
+				result = StringTools::replace(result, "\b", "\\b");
+				result = StringTools::replace(result, "\f", "\\f");
+				result = StringTools::replace(result, "\n", "\\n");
+				result = StringTools::replace(result, "\r", "\\r");
+				result = StringTools::replace(result, "\t", "\\t");
+				result = StringTools::replace(result, "\v", "\\v");
+				result = StringTools::replace(result, "\"", "\\\"");
 				//
 				string result2;
 				auto lc = '\0';
@@ -2660,11 +2662,11 @@ public:
 								i++;
 							}
 							for (const auto& valueString: values) {
-								result+= _StringTools::indent(valueString, "\t" , depth + 1);
+								result+= StringTools::indent(valueString, "\t" , depth + 1);
 								result+= "\n";
 							}
-							result = (depth == 0?_StringTools::indent("[", "\t", depth):"[") + "\n" + result;
-							result+= _StringTools::indent("]", "\t", depth) + (depth == 0?"\n":"");
+							result = (depth == 0?StringTools::indent("[", "\t", depth):"[") + "\n" + result;
+							result+= StringTools::indent("]", "\t", depth) + (depth == 0?"\n":"");
 						} else {
 							auto i = 0;
 							for (const auto& valueString: values) {
@@ -2700,11 +2702,11 @@ public:
 								i++;
 							}
 							for (const auto& valueString: values) {
-								result+= _StringTools::indent(valueString, "\t" , depth + 1);
+								result+= StringTools::indent(valueString, "\t" , depth + 1);
 								result+= "\n";
 							}
-							result = (depth == 0?_StringTools::indent("{", "\t", depth):"{") + "\n" + result;
-							result+= _StringTools::indent("}", "\t", depth) + (depth == 0?"\n":"");
+							result = (depth == 0?StringTools::indent("{", "\t", depth):"{") + "\n" + result;
+							result+= StringTools::indent("}", "\t", depth) + (depth == 0?"\n":"");
 						} else {
 							auto i = 0;
 							for (const auto& valueString: values) {
@@ -2736,11 +2738,11 @@ public:
 								i++;
 							}
 							for (const auto& valueString: values) {
-								result+= _StringTools::indent(valueString, "\t" , depth + 1);
+								result+= StringTools::indent(valueString, "\t" , depth + 1);
 								result+= "\n";
 							}
-							result = (depth == 0?_StringTools::indent("{", "\t", depth):"{") + "\n" + result;
-							result+= _StringTools::indent("}", "\t", depth) + (depth == 0?"\n":"");
+							result = (depth == 0?StringTools::indent("{", "\t", depth):"{") + "\n" + result;
+							result+= StringTools::indent("}", "\t", depth) + (depth == 0?"\n":"");
 						} else {
 							auto i = 0;
 							for (const auto& valueString: values) {
@@ -2756,7 +2758,7 @@ public:
 					// custom data types
 					auto dataTypeIdx = static_cast<int>(getType()) - TYPE_PSEUDO_DATATYPES;
 					if (dataTypeIdx < 0 || dataTypeIdx >= MinitScript::dataTypes.size()) {
-						_Console::printLine("ScriptVariable::getValueAsString(): unknown data type with id " + to_string(dataTypeIdx));
+						Console::printLine("ScriptVariable::getValueAsString(): unknown data type with id " + to_string(dataTypeIdx));
 						return result;
 					}
 					return MinitScript::dataTypes[dataTypeIdx]->getValueAsString(*this);
@@ -3327,8 +3329,8 @@ protected:
 
 	//
 	bool native { false };
-	_Context* context { nullptr };
-	_Library* library { nullptr };
+	Context* context { nullptr };
+	Library* library { nullptr };
 	vector<Script> scripts;
 	string nativeHash;
 	vector<string> nativeModuleHashes;
@@ -3385,18 +3387,18 @@ protected:
 		auto result = str;
 		const array<char, 11> escapeSequences = {'0', 'a', 'b', 'f', 'n', 'r', 't', 'v', 'U', '"'};
 		for (const auto c: escapeSequences) {
-			result = _StringTools::replace(result, string("\\") + c, string("\\\\") + c);
+			result = StringTools::replace(result, string("\\") + c, string("\\\\") + c);
 		}
 		//
-		result = _StringTools::replace(result, "\0", "\\0");
-		result = _StringTools::replace(result, "\a", "\\a");
-		result = _StringTools::replace(result, "\b", "\\b");
-		result = _StringTools::replace(result, "\f", "\\f");
-		result = _StringTools::replace(result, "\n", "\\n");
-		result = _StringTools::replace(result, "\r", "\\r");
-		result = _StringTools::replace(result, "\t", "\\t");
-		result = _StringTools::replace(result, "\v", "\\v");
-		result = _StringTools::replace(result, "\"", "\\\"");
+		result = StringTools::replace(result, "\0", "\\0");
+		result = StringTools::replace(result, "\a", "\\a");
+		result = StringTools::replace(result, "\b", "\\b");
+		result = StringTools::replace(result, "\f", "\\f");
+		result = StringTools::replace(result, "\n", "\\n");
+		result = StringTools::replace(result, "\r", "\\r");
+		result = StringTools::replace(result, "\t", "\\t");
+		result = StringTools::replace(result, "\v", "\\v");
+		result = StringTools::replace(result, "\"", "\\\"");
 		//
 		string result2;
 		auto lc = '\0';
@@ -3570,7 +3572,7 @@ protected:
 		scriptState.scriptIdx = scriptIdx;
 		scriptState.statementIdx = STATEMENTIDX_FIRST;
 		scriptState.gotoStatementIdx = STATEMENTIDX_NONE;
-		scriptState.timeWaitStarted = _Time::getCurrentMillis();
+		scriptState.timeWaitStarted = Time::getCurrentMillis();
 		scriptState.timeWaitTime = 0LL;
 		scriptState.returnValue.setNullValue();
 		setScriptStateState(stateMachineState);
@@ -3735,7 +3737,7 @@ protected:
 	 * Try garbage collection
 	 */
 	inline void tryGarbageCollection() {
-		auto now = _Time::getCurrentMillis();
+		auto now = Time::getCurrentMillis();
 		if (dataTypesGCTime == -1ll || now - dataTypesGCTime >= GARBAGE_COLLECTION_INTERVAL) {
 			garbageCollection();
 			dataTypesGCTime = now;
@@ -3983,7 +3985,7 @@ private:
 			}
 			if (dotIdx == string::npos) dotIdx = variableStatement.size();
 			if (squareBracketIdx == string::npos) squareBracketIdx = variableStatement.size();
-			variableName = _StringTools::substring(
+			variableName = StringTools::substring(
 				variableStatement,
 				0,
 				dotIdx < squareBracketIdx?
@@ -3997,7 +3999,7 @@ private:
 		auto variableIt = scriptState.variables.find(variableName);
 		if (variableIt == scriptState.variables.end()) {
 			if (expectVariable == true) {
-				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + " does not exist");
+				Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + " does not exist");
 			}
 			return nullptr;
 		} else {
@@ -4109,9 +4111,9 @@ private:
 					}
 					i--;
 					if (valid == false || j != 8) {
-						_Console::printLine(getStatementInformation(statement) + ": Invalid hexadecimal unicode character sequence: " + unicodeHexadecimalSequence);
+						Console::printLine(getStatementInformation(statement) + ": Invalid hexadecimal unicode character sequence: " + unicodeHexadecimalSequence);
 					} else {
-						_Character::appendToString(deescapedStr, _Hex::decodeInt(unicodeHexadecimalSequence));
+						Character::appendToString(deescapedStr, Hex::decodeInt(unicodeHexadecimalSequence));
 					}
 				} else
 					deescapedStr+= c;
@@ -4139,7 +4141,7 @@ private:
 		// (
 		if (candidate[i++] != '(') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		//
 		auto argumentStartIdx = string::npos;
@@ -4181,14 +4183,14 @@ private:
 					break;
 				}
 			} else
-			if (argumentStartIdx != string::npos && _Character::isAlphaNumeric(candidate[i]) == false && c != '_') {
+			if (argumentStartIdx != string::npos && Character::isAlphaNumeric(candidate[i]) == false && c != '_') {
 				return false;
 			}
 		}
 		//
 		if (i >= candidate.size()) return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
@@ -4197,7 +4199,7 @@ private:
 		// >
 		if (candidate[i++] != '>') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		//
 		if (candidate[i++] != '{') return false;
@@ -4214,7 +4216,7 @@ private:
 				scriptCodeEndIdx = j;
 				break;
 			} else
-			if (_Character::isSpace(candidate[j]) == false) {
+			if (Character::isSpace(candidate[j]) == false) {
 				return false;
 			}
 		}
@@ -4239,7 +4241,7 @@ private:
 		//
 		auto i = 0;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
@@ -4248,7 +4250,7 @@ private:
 		// >
 		if (candidate[i++] != '>') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		//
 		if (candidate[i++] != '{') return false;
@@ -4265,7 +4267,7 @@ private:
 				scriptCodeEndIdx = j;
 				break;
 			} else
-			if (_Character::isSpace(candidate[j]) == false) {
+			if (Character::isSpace(candidate[j]) == false) {
 				return false;
 			}
 		}
@@ -4296,7 +4298,7 @@ private:
 			if (c == ']') {
 				squareBracketCount--;
 			} else
-			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
+			if (squareBracketCount == 0 && Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
 				return false;
 			}
 		}
@@ -4356,7 +4358,7 @@ private:
 	 * @return dequoted string
 	 */
 	inline static string_view dequote(const string_view& str) {
-		return _StringTools::viewSubstring(str, 1, str.size() - 1);
+		return StringTools::viewSubstring(str, 1, str.size() - 1);
 	}
 
 	/**
@@ -4366,8 +4368,8 @@ private:
 	 */
 	inline static bool viewIsInitializer(const string_view& candidate) {
 		return
-			(_StringTools::viewStartsWith(candidate, "[") == true && _StringTools::viewEndsWith(candidate, "]") == true) ||
-			(_StringTools::viewStartsWith(candidate, "{") == true && _StringTools::viewEndsWith(candidate, "}") == true);
+			(StringTools::viewStartsWith(candidate, "[") == true && StringTools::viewEndsWith(candidate, "]") == true) ||
+			(StringTools::viewStartsWith(candidate, "{") == true && StringTools::viewEndsWith(candidate, "}") == true);
 
 	}
 
@@ -4435,7 +4437,7 @@ public:
 	/**
 	 * @return context
 	 */
-	inline _Context* getContext() {
+	inline Context* getContext() {
 		return context;
 	}
 
@@ -4443,14 +4445,14 @@ public:
 	 * Set context
 	 * @param context context
 	 */
-	inline void setContext(_Context* context) {
+	inline void setContext(Context* context) {
 		this->context = context;
 	}
 
 	/**
 	 * @return library
 	 */
-	inline _Library* getLibrary() {
+	inline Library* getLibrary() {
 		return library;
 	}
 
@@ -4458,7 +4460,7 @@ public:
 	 * Set library
 	 * @param library library
 	 */
-	inline void setLibrary(_Library* library) {
+	inline void setLibrary(Library* library) {
 		this->library = library;
 	}
 
@@ -4753,7 +4755,7 @@ public:
 		auto statementCode = statement.statement;
 		auto statementLine = statement.line;
 		if (subLineIdx != -1) {
-			auto statementCodeLines = _StringTools::tokenize(statementCode, "\n", true);
+			auto statementCodeLines = StringTools::tokenize(statementCode, "\n", true);
 			if (subLineIdx >= 0 && subLineIdx < statementCodeLines.size()) {
 				statementCode = statementCodeLines[subLineIdx];
 				statementLine+= subLineIdx;
@@ -4780,7 +4782,7 @@ public:
 	inline const string getArgumentsInformation(const string& methodName) {
 		auto scriptMethod = rootScript->getMethod(methodName);
 		if (scriptMethod == nullptr) {
-			_Console::printLine("MinitScript::getArgumentInformation(): method not found: " + methodName);
+			Console::printLine("MinitScript::getArgumentInformation(): method not found: " + methodName);
 			return "No information available";
 		}
 		return scriptMethod->getArgumentsInformation();
@@ -4967,12 +4969,12 @@ public:
 	 */
 	inline bool isVariableAccess(const string& candidate, const SubStatement* subStatement = nullptr) {
 		if (candidate.size() < 2) {
-			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": empty variable statement");
+			Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": empty variable statement");
 			return false;
 		}
 		auto i = 0;
 		if (candidate[i++] != '$') {
-			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": variable statement must begin with an $");
+			Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": variable statement must begin with an $");
 			return false;
 		}
 		if (candidate[i] == '$') i++;
@@ -4986,17 +4988,17 @@ public:
 			if (c == ']') {
 				squareBracketCount--;
 			} else
-			if (squareBracketCount == 0 && _Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
-				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": invalid character in variable statement: '" + c + "'");
+			if (squareBracketCount == 0 && Character::isAlphaNumeric(c) == false && c != '_' && c != '.' && c != ':') {
+				Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": invalid character in variable statement: '" + c + "'");
 				return false;
 			}
 		}
 		if (candidate.size() == 2 && string_view(candidate) == string_view("$$", 2)) {
-			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $$");
+			Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $$");
 			return false;
 		}
 		if (candidate.size() == 7 && string_view(candidate) == string_view("$GLOBAL", 7)) {
-			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $GLOBAL");
+			Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + candidate + ": variable statement must not be $GLOBAL");
 			return false;
 		}
 		return true;
@@ -5013,11 +5015,11 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 3);
 		} else
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 8);
 		}
 		//
 		Variable* parentVariable = nullptr;
@@ -5050,11 +5052,11 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 3);
 		} else
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 8);
 		}
 
 		//
@@ -5125,11 +5127,11 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 3);
 		} else
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 8);
 		}
 
 		//
@@ -5227,11 +5229,11 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 3);
 		} else
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 8);
 		}
 
 		//
@@ -5275,11 +5277,11 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 3);
 		} else
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 8);
 		}
 
 		//
@@ -5304,7 +5306,7 @@ public:
 						existingVariable->setValue(variable);
 					}
 				} else {
-					_Console::printLine(getSubStatementInformation(*subStatement) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+					Console::printLine(getSubStatementInformation(*subStatement) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 				}
 				return;
 			} else {
@@ -5332,11 +5334,11 @@ public:
 		string variableName;
 		// global accessor
 		string globalVariableStatement;
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 3);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$$.", 3)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 3);
 		} else
-		if (_StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
-			globalVariableStatement = "$" + _StringTools::substring(variableStatement, 8);
+		if (StringTools::viewStartsWith(string_view(variableStatement), string_view("$GLOBAL.", 8)) == true) {
+			globalVariableStatement = "$" + StringTools::substring(variableStatement, 8);
 		}
 
 		//
@@ -5474,8 +5476,8 @@ public:
 			"evaluate",
 			LINE_NONE,
 			STATEMENTIDX_FIRST,
-			"internal.script.evaluate(" + _StringTools::replace(_StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
-			"internal.script.evaluate(" + _StringTools::replace(_StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
+			"internal.script.evaluate(" + StringTools::replace(StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
+			"internal.script.evaluate(" + StringTools::replace(StringTools::replace(evaluateStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
 			STATEMENTIDX_NONE
 		);
 		return evaluateInternal(evaluateStatement, doStatementPreProcessing(evaluateStatement, evaluateScriptStatement), returnValue);

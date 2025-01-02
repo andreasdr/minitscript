@@ -18,8 +18,8 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using minitscript::minitscript::MinitScript;
-using minitscript::utilities::StringTools;
+// namespaces
+using minitscript::utilities::Console;
 
 /**
  * MinitScript transpiler
@@ -151,7 +151,7 @@ private:
 		auto result = str;
 		const array<char, 11> escapeSequences = {'0', 'a', 'b', 'f', 'n', 'r', 't', 'v', 'U', '"'};
 		for (const auto c: escapeSequences) {
-			result = _StringTools::replace(result, string("\\") + c, string("\\\\") + c);
+			result = StringTools::replace(result, string("\\") + c, string("\\\\") + c);
 		}
 		//
 		result = StringTools::replace(result, "\0", "\\0");

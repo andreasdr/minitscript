@@ -13,8 +13,15 @@
 using std::string;
 using std::vector;
 
-using minitscript::os::network::TCPSocket;
-using minitscript::os::threading::Mutex;
+// namespaces
+namespace minitscript {
+namespace os {
+namespace network {
+	using ::minitscript::os::network::TCPSocket;
+	using ::minitscript::os::threading::Mutex;
+}
+}
+}
 
 /**
  * Class representing a secure TCP socket

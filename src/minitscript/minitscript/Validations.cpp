@@ -4,12 +4,14 @@
 #include <minitscript/minitscript.h>
 #include <minitscript/minitscript/MinitScript.h>
 #include <minitscript/minitscript/Validations.h>
+#include <minitscript/utilities/Console.h>
 
 using std::string;
 using std::vector;
 
 using minitscript::minitscript::MinitScript;
 using minitscript::minitscript::Validations;
+using minitscript::utilities::Console;
 
 bool Validations::validateStacklets(MinitScript* minitScript, int scriptIdx, vector<string>& parseErrors) {
 	//
@@ -32,7 +34,7 @@ bool Validations::validateStacklets(MinitScript* minitScript, int scriptIdx, vec
 bool Validations::validateStacklets(MinitScript* minitScript, const string& function, vector<string>& parseErrors, int scopeScriptIdx) {
 	auto functionScriptIdx = minitScript->getFunctionScriptIdx(function);
 	if (functionScriptIdx == MinitScript::SCRIPTIDX_NONE) {
-		_Console::printLine("MinitScript::validateStacklet(): function not found: " + function);
+		Console::printLine("MinitScript::validateStacklet(): function not found: " + function);
 		return false;
 	}
 	//
@@ -66,7 +68,7 @@ bool Validations::validateStacklets(MinitScript* minitScript, int scopeScriptIdx
 					if (syntaxTreeNode.value.getStackletValue(stackletName, stackletScriptIdx) == false ||
 						(stackletScriptIdx = minitScript->getFunctionScriptIdx(stackletName)) == MinitScript::SCRIPTIDX_NONE) {
 						//
-						_Console::printLine(
+						Console::printLine(
 							minitScript->getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 							": " +
 							syntaxTreeNode.value.getValueAsString() +
@@ -99,7 +101,7 @@ bool Validations::validateStacklets(MinitScript* minitScript, int scopeScriptIdx
 							scopeErrorMessage+= scripts[scopeScriptIdx].condition + "()";
 						}
 						//
-						_Console::printLine(
+						Console::printLine(
 							minitScript->getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 							": " +
 							syntaxTreeNode.value.getValueAsString() +
@@ -152,7 +154,7 @@ bool Validations::validateStacklets(MinitScript* minitScript, int scopeScriptIdx
 				auto stackletScriptIdx = syntaxTreeNode.getScriptIdx();
 				if (stackletName.empty() == true || stackletScriptIdx == MinitScript::SCRIPTIDX_NONE) {
 					//
-					_Console::printLine(
+					Console::printLine(
 						minitScript->getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 						": " +
 						syntaxTreeNode.value.getValueAsString() +
@@ -185,7 +187,7 @@ bool Validations::validateStacklets(MinitScript* minitScript, int scopeScriptIdx
 						scopeErrorMessage+= scripts[scopeScriptIdx].condition + "()";
 					}
 					//
-					_Console::printLine(
+					Console::printLine(
 						minitScript->getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 						": " +
 						syntaxTreeNode.value.getValueAsString() +
@@ -218,7 +220,7 @@ bool Validations::validateStacklets(MinitScript* minitScript, int scopeScriptIdx
 bool Validations::validateCallable(MinitScript* minitScript, const string& function, vector<string>& parseErrors) {
 	auto functionScriptIdx = minitScript->getFunctionScriptIdx(function);
 	if (functionScriptIdx == MinitScript::SCRIPTIDX_NONE) {
-		_Console::printLine("MinitScript::validateCallable(): function not found: " + function);
+		Console::printLine("MinitScript::validateCallable(): function not found: " + function);
 		return false;
 	}
 	//
@@ -250,7 +252,7 @@ bool Validations::validateCallable(MinitScript* minitScript, const MinitScript::
 				const auto& contextFunctions = syntaxTreeNode.getMethod()->getContextFunctions();
 				if (contextFunctions.empty() == false) {
 					//
-					_Console::printLine(
+					Console::printLine(
 						minitScript->getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 						": Method " +
 						syntaxTreeNode.getMethod()->getMethodName() + "() can not be called within a callable function"
@@ -292,7 +294,7 @@ bool Validations::validateCallable(MinitScript* minitScript, const MinitScript::
 bool Validations::validateContextFunctions(MinitScript* minitScript, const string& function, vector<string>& functionStack, vector<string>& parseErrors) {
 	auto functionScriptIdx = minitScript->getFunctionScriptIdx(function);
 	if (functionScriptIdx == MinitScript::SCRIPTIDX_NONE) {
-		_Console::printLine("MinitScript::validateContextFunctions(): Function not found: " + function);
+		Console::printLine("MinitScript::validateContextFunctions(): Function not found: " + function);
 		return false;
 	}
 	//
@@ -343,7 +345,7 @@ bool Validations::validateContextFunctions(MinitScript* minitScript, const Minit
 							contextFunctionsString+= contextFunction + "()";
 						}
 						//
-						_Console::printLine(
+						Console::printLine(
 							minitScript->getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 							": Method " +
 							syntaxTreeNode.getMethod()->getMethodName() + "() can only be called within the following functions: " +

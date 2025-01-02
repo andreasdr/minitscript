@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 			argumentValue = FileSystem::getCanonicalURI(FileSystem::getPathName(argumentValue), FileSystem::getFileName(argumentValue));
 			//
 			if (FileSystem::exists(argumentValue) == false) {
-				_Console::printLine("Script URI invalid: File not found: " + argumentValue);
+				Console::printLine("Script URI invalid: File not found: " + argumentValue);
 				return EXIT_FAILURE;
 			}
 			//

@@ -8,7 +8,6 @@
 #include <minitscript/minitscript.h>
 #include <minitscript/network/httpclient/fwd-minitscript.h>
 #include <minitscript/network/httpclient/HTTPClientException.h>
-#include <minitscript/os/network/NetworkException.h>
 #include <minitscript/os/threading/Mutex.h>
 #include <minitscript/os/threading/Thread.h>
 
@@ -18,10 +17,15 @@ using std::unique_ptr;
 using std::unordered_map;
 using std::vector;
 
-using _HTTPClientException = minitscript::network::httpclient::HTTPClientException;
-using _NetworkException = minitscript::os::network::NetworkException;
-using _Mutex = minitscript::os::threading::Mutex;
-using _Thread = minitscript::os::threading::Thread;
+// namespaces
+namespace minitscript {
+namespace network {
+namespace httpclient {
+	using ::minitscript::os::threading::Mutex;
+	using ::minitscript::os::threading::Thread;
+}
+}
+}
 
 /**
  * HTTP download client
@@ -41,8 +45,8 @@ private:
 	int16_t statusCode { -1 };
 	unordered_map<string, string> responseHeaders;
 
-	unique_ptr<_Thread> downloadThread;
-	_Mutex downloadThreadMutex;
+	unique_ptr<Thread> downloadThread;
+	Mutex downloadThreadMutex;
 	bool haveHeaders { false };
 	bool haveContentSize { false };
 	uint64_t headerSize { 0LL };

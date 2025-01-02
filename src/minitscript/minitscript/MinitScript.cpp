@@ -47,7 +47,6 @@
 #include <minitscript/utilities/Character.h>
 #include <minitscript/utilities/Console.h>
 #include <minitscript/utilities/Integer.h>
-#include <minitscript/utilities/StringTokenizer.h>
 #include <minitscript/utilities/StringTools.h>
 #include <minitscript/utilities/SHA256.h>
 #include <minitscript/utilities/Time.h>
@@ -97,17 +96,15 @@ using minitscript::minitscript::TimeMethods;
 using minitscript::minitscript::Validations;
 using minitscript::minitscript::XMLMethods;
 
-// TODO: we can remove the _ here again, as MinitScript.cpp is not a transpilation unit anymore
-using _Math = minitscript::math::Math;
-using _FileSystem = minitscript::os::filesystem::FileSystem;
-using _Character = minitscript::utilities::Character;
-using _Console = minitscript::utilities::Console;
-using _Integer = minitscript::utilities::Integer;
-using _StringTokenizer = minitscript::utilities::StringTokenizer;
-using _StringTools = minitscript::utilities::StringTools;
-using _SHA256 = minitscript::utilities::SHA256;
-using _Time = minitscript::utilities::Time;
-using _Thread = minitscript::os::threading::Thread;
+using minitscript::math::Math;
+using minitscript::os::filesystem::FileSystem;
+using minitscript::os::threading::Thread;
+using minitscript::utilities::Character;
+using minitscript::utilities::Console;
+using minitscript::utilities::Integer;
+using minitscript::utilities::StringTools;
+using minitscript::utilities::SHA256;
+using minitscript::utilities::Time;
 
 const string MinitScript::OPERATOR_CHARS = "[].->+-!~/*%<>=&^|";
 
@@ -141,7 +138,7 @@ const vector<string> MinitScript::Method::CONTEXTFUNCTIONS_ALL = {};
 
 void MinitScript::initialize() {
 	//
-	_Console::initialize();
+	Console::initialize();
 	//
 	registerDataType(new HTTPDownloadClientClass());
 	//
@@ -206,7 +203,7 @@ MinitScript::~MinitScript() {
 void MinitScript::registerStateMachineState(StateMachineState* state) {
 	auto stateMachineStateIt = stateMachineStates.find(state->getId());
 	if (stateMachineStateIt != stateMachineStates.end()) {
-		_Console::printLine("MinitScript::registerStateMachineState(): " + scriptFileName + ": State with id + " + to_string(state->getId()) + ", name " + state->getName() + " already registered.");
+		Console::printLine("MinitScript::registerStateMachineState(): " + scriptFileName + ": State with id + " + to_string(state->getId()) + ", name " + state->getName() + " already registered.");
 		return;
 	}
 	stateMachineStates[state->getId()] = state;
@@ -250,7 +247,7 @@ void MinitScript::initializeNativeModule(MinitScript* parentScript) {
 	for (auto i = 0; i < scripts.size(); i++) {
 		auto& moduleScript = scripts[i];
 		if (moduleScript.rootScriptIdx == SCRIPTIDX_NONE) {
-			_Console::printLine("MinitScript::initializeModule()): " + scriptFileName + ": " + moduleScript.condition + ": Not available in root script");
+			Console::printLine("MinitScript::initializeModule()): " + scriptFileName + ": " + moduleScript.condition + ": Not available in root script");
 		}
 	}
 }
@@ -263,7 +260,7 @@ void MinitScript::complain(const string& methodName, const SubStatement& subStat
 	if (argumentsInformation.empty() == true) argumentsInformation = "None";
 	auto errorMessageDetails = getSubStatementInformation(subStatement) + ": " + methodName + "(...): Argument mismatch: expected arguments: " + argumentsInformation;
 	//
-	_Console::printLine(errorMessageDetails);
+	Console::printLine(errorMessageDetails);
 	//
 	errorMessage =
 		"An method usage complain has occurred: " +
@@ -275,7 +272,7 @@ void MinitScript::complain(const string& methodName, const SubStatement& subStat
 void MinitScript::complain(const string& methodName, const SubStatement& subStatement, const string& message) {
 	auto errorMessageDetails = getSubStatementInformation(subStatement) + ": " + methodName + "(...): " + message;
 	//
-	_Console::printLine(errorMessageDetails);
+	Console::printLine(errorMessageDetails);
 	//
 	errorMessage =
 		"An method usage complain has occurred: " +
@@ -289,7 +286,7 @@ void MinitScript::complainOperator(const string& methodName, const string& opera
 	if (argumentsInformation.empty() == true) argumentsInformation = "None";
 	auto errorMessageDetails = getSubStatementInformation(subStatement) + ": '" + operatorString + "': Argument mismatch: expected arguments: " + argumentsInformation;
 	//
-	_Console::printLine(errorMessageDetails);
+	Console::printLine(errorMessageDetails);
 	//
 	errorMessage =
 		(isOperator(operatorString) == true?
@@ -304,7 +301,7 @@ void MinitScript::complainOperator(const string& methodName, const string& opera
 void MinitScript::complainOperator(const string& methodName, const string& operatorString, const SubStatement& subStatement, const string& message) {
 	auto errorMessageDetails = getSubStatementInformation(subStatement) + ": '" + operatorString + "': " + message;
 	//
-	_Console::printLine(errorMessageDetails);
+	Console::printLine(errorMessageDetails);
 	//
 	errorMessage =
 		(isOperator(operatorString) == true?
@@ -319,7 +316,7 @@ void MinitScript::complainOperator(const string& methodName, const string& opera
 void MinitScript::registerMethod(Method* method) {
 	auto methodsIt = rootScript->methods.find(method->getMethodName());
 	if (methodsIt != rootScript->methods.end()) {
-		_Console::printLine("MinitScript::registerMethod(): " + scriptFileName + ": Method with name " + method->getMethodName() + " already registered.");
+		Console::printLine("MinitScript::registerMethod(): " + scriptFileName + ": Method with name " + method->getMethodName() + " already registered.");
 		return;
 	}
 	rootScript->methods[method->getMethodName()] = method;
@@ -367,7 +364,7 @@ void MinitScript::executeNextStatement() {
 }
 
 bool MinitScript::parseStatement(const string_view& executableStatement, string_view& methodName, vector<ParserArgument>& arguments, const Statement& statement) {
-	if (VERBOSE == true) _Console::printLine("MinitScript::parseStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
+	if (VERBOSE == true) Console::printLine("MinitScript::parseStatement(): " + getStatementInformation(statement) + ": '" + string(executableStatement) + "'");
 	int executableStatementStartIdx = 0;
 	auto bracketCount = 0;
 	auto squareBracketCount = 0;
@@ -391,7 +388,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		for (i++; i < executableStatement.size(); i++) {
 			auto c = executableStatement[i];
 			// do we have a non space character?
-			if (_Character::isSpace(c) == false) return c != ')';
+			if (Character::isSpace(c) == false) return c != ')';
 		}
 		//
 		return false;
@@ -401,7 +398,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		//
 		if (quotedArgumentStart != string::npos) {
 			auto argumentLength = quotedArgumentEnd - quotedArgumentStart + 1;
-			if (argumentLength > 0) arguments.emplace_back(_StringTools::viewTrim(string_view(&executableStatement[quotedArgumentStart], argumentLength)), argumentSubLineIdx);
+			if (argumentLength > 0) arguments.emplace_back(StringTools::viewTrim(string_view(&executableStatement[quotedArgumentStart], argumentLength)), argumentSubLineIdx);
 			quotedArgumentStart = string::npos;
 			quotedArgumentEnd = string::npos;
 			argumentSubLineIdx = -1;
@@ -409,7 +406,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		if (argumentStart != string::npos) {
 			if (argumentEnd == string::npos) argumentEnd = i - 1;
 			auto argumentLength = argumentEnd - argumentStart + 1;
-			if (argumentLength > 0) arguments.emplace_back(_StringTools::viewTrim(string_view(&executableStatement[argumentStart], argumentLength)), argumentSubLineIdx);
+			if (argumentLength > 0) arguments.emplace_back(StringTools::viewTrim(string_view(&executableStatement[argumentStart], argumentLength)), argumentSubLineIdx);
 			argumentStart = string::npos;
 			argumentEnd = string::npos;
 			argumentSubLineIdx = -1;
@@ -525,46 +522,46 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 		// we might have a statement without ()
 		if (methodEnd == string::npos) methodEnd = i - 1;
 		//
-		methodName = _StringTools::viewTrim(string_view(&executableStatement[methodStart], methodEnd - methodStart + 1));
+		methodName = StringTools::viewTrim(string_view(&executableStatement[methodStart], methodEnd - methodStart + 1));
 	}
 
 	//
 	if (VERBOSE == true) {
-		_Console::printLine("MinitScript::parseStatement(): " + _StringTools::replace(getStatementInformation(statement), "\n", "\\n"));
-		_Console::printLine(string("\t") + ": Method: '" + string(methodName) + "'");
-		_Console::printLine(string("\t") + ": Arguments");
+		Console::printLine("MinitScript::parseStatement(): " + StringTools::replace(getStatementInformation(statement), "\n", "\\n"));
+		Console::printLine(string("\t") + ": Method: '" + string(methodName) + "'");
+		Console::printLine(string("\t") + ": Arguments");
 		int variableIdx = 0;
 		for (const auto& argument: arguments) {
-			_Console::printLine(string("\t\t") + "@" + to_string(argument.subLineIdx) + "'" + _StringTools::replace(string(argument.argument), "\n", "\\n") + "'");
+			Console::printLine(string("\t\t") + "@" + to_string(argument.subLineIdx) + "'" + StringTools::replace(string(argument.argument), "\n", "\\n") + "'");
 			variableIdx++;
 		}
-		_Console::printLine();
+		Console::printLine();
 	}
 
 	// complain about bracket count
 	if (bracketCount != 0) {
 		// TODO: sub line index
-		_Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced bracket count: " + to_string(_Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
+		Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced bracket count: " + to_string(Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
 		//
-		parseErrors.push_back(getStatementInformation(statement) + ": " + string(executableStatement) + ": Unbalanced bracket count: " + to_string(_Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
+		parseErrors.push_back(getStatementInformation(statement) + ": " + string(executableStatement) + ": Unbalanced bracket count: " + to_string(Math::abs(bracketCount)) + " " + (bracketCount < 0?"too much closed":"still open"));
 		//
 		return false;
 	}
 	// complain about square bracket count
 	if (squareBracketCount != 0) {
 		// TODO: sub line index
-		_Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced square bracket count: " + to_string(_Math::abs(squareBracketCount)) + " " + (squareBracketCount < 0?"too much closed":"still open"));
+		Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced square bracket count: " + to_string(Math::abs(squareBracketCount)) + " " + (squareBracketCount < 0?"too much closed":"still open"));
 		//
-		parseErrors.push_back(getStatementInformation(statement) + ": " + string(executableStatement) + ": Unbalanced square bracket count: " + to_string(_Math::abs(squareBracketCount)) + " " + (squareBracketCount < 0?"too much closed":"still open"));
+		parseErrors.push_back(getStatementInformation(statement) + ": " + string(executableStatement) + ": Unbalanced square bracket count: " + to_string(Math::abs(squareBracketCount)) + " " + (squareBracketCount < 0?"too much closed":"still open"));
 		//
 		return false;
 	}
 	// complain about curly bracket count
 	if (curlyBracketCount != 0) {
 		// TODO: sub line index
-		_Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced curly bracket count: " + to_string(_Math::abs(curlyBracketCount)) + " " + (curlyBracketCount < 0?"too much closed":"still open"));
+		Console::printLine(getStatementInformation(statement) + ": " + string(executableStatement) + "': Unbalanced curly bracket count: " + to_string(Math::abs(curlyBracketCount)) + " " + (curlyBracketCount < 0?"too much closed":"still open"));
 		//
-		parseErrors.push_back(getStatementInformation(statement) + ": " + string(executableStatement) + ": Unbalanced curly bracket count: " + to_string(_Math::abs(curlyBracketCount)) + " " + (curlyBracketCount < 0?"too much closed":"still open"));
+		parseErrors.push_back(getStatementInformation(statement) + ": " + string(executableStatement) + ": Unbalanced curly bracket count: " + to_string(Math::abs(curlyBracketCount)) + " " + (curlyBracketCount < 0?"too much closed":"still open"));
 		//
 		return false;
 	}
@@ -574,7 +571,7 @@ bool MinitScript::parseStatement(const string_view& executableStatement, string_
 }
 
 MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntaxTree, const Statement& statement) {
-	if (VERBOSE == true) _Console::printLine("MinitScript::executeStatement(): " + getStatementInformation(statement) + "': " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
+	if (VERBOSE == true) Console::printLine("MinitScript::executeStatement(): " + getStatementInformation(statement) + "': " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
 	// return on literal or empty syntaxTree
 	if (syntaxTree.type == SyntaxTreeNode::SCRIPTSYNTAXTREENODE_LITERAL) {
 		return initializeVariable(syntaxTree.value);
@@ -603,7 +600,7 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 	}
 	//
 	if (VERBOSE == true) {
-		_Console::printLine("MinitScript::executeStatement(): '" + getStatementInformation(statement) + ": " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
+		Console::printLine("MinitScript::executeStatement(): '" + getStatementInformation(statement) + ": " + syntaxTree.value.getValueAsString() + "(" + getArgumentsAsString(syntaxTree.arguments) + ")");
 	}
 	// try first function
 	if (syntaxTree.type == SyntaxTreeNode::SCRIPTSYNTAXTREENODE_EXECUTE_FUNCTION) {
@@ -718,7 +715,7 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 					}
 				}
 				if (argumentOk == false) {
-					_Console::printLine(
+					Console::printLine(
 						getStatementInformation(statement, syntaxTree.subLineIdx) +
 						": Method '" + string(syntaxTree.value.getValueAsString()) + "'" +
 						": argument value @ " + to_string(argumentIdx) + ": expected " + Variable::getTypeAsString(argumentType.type) + ", but got: " + (argumentIdx < arguments.size()?arguments[argumentIdx].getAsString():"nothing"));
@@ -726,7 +723,7 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 				argumentIdx++;
 			}
 			if (method->isVariadic() == false && arguments.size() > method->getArgumentTypes().size()) {
-				_Console::printLine(
+				Console::printLine(
 					getStatementInformation(statement, syntaxTree.subLineIdx) +
 					": Method '" + string(syntaxTree.value.getValueAsString()) + "'" +
 					": too many arguments: expected: " + to_string(method->getArgumentTypes().size()) + ", got " + to_string(arguments.size()));
@@ -741,7 +738,7 @@ MinitScript::Variable MinitScript::executeStatement(const SyntaxTreeNode& syntax
 				// no op, this is a valid return value
 			} else
 			if (MinitScript::Variable::isExpectedType(returnValue.getType(), method->getReturnValueType()) == false) {
-				_Console::printLine(
+				Console::printLine(
 					getStatementInformation(statement, syntaxTree.subLineIdx) +
 					": Method '" + string(syntaxTree.value.getValueAsString()) + "'" +
 					": return value: expected " + Variable::getReturnTypeAsString(method->getReturnValueType(), method->isReturnValueNullable()) + ", but got: " + Variable::getReturnTypeAsString(returnValue.getType(), false));
@@ -763,7 +760,7 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 			return argumentsString;
 		};
 		//
-		_Console::printLine("MinitScript::createScriptStatementSyntaxTree(): " + getStatementInformation(statement) + ": " + string(methodName) + "(" + getArgumentsAsString(arguments) + ")");
+		Console::printLine("MinitScript::createScriptStatementSyntaxTree(): " + getStatementInformation(statement) + ": " + string(methodName) + "(" + getArgumentsAsString(arguments) + ")");
 	}
 	// method/function
 	auto functionScriptIdx = SCRIPTIDX_NONE;
@@ -789,7 +786,7 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 		const auto& script = scripts[functionScriptIdx];
 		if (script.type == Script::TYPE_STACKLET) {
 			if (arguments.empty() == false) {
-				_Console::printLine(getStatementInformation(statement) + ": A stacklet must not be called with any arguments: " + string(methodName));
+				Console::printLine(getStatementInformation(statement) + ": A stacklet must not be called with any arguments: " + string(methodName));
 				//
 				parseErrors.push_back(getStatementInformation(statement) + ": A stacklet must not be called with any arguments: " + string(methodName));
 				//
@@ -856,7 +853,7 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 				if (methodsIt != rootScript->methods.end()) {
 					method = methodsIt->second;
 				} else {
-					_Console::printLine(getStatementInformation(statement, subLineIdx + argument.subLineIdx) + ": Unknown method: " + methodName);
+					Console::printLine(getStatementInformation(statement, subLineIdx + argument.subLineIdx) + ": Unknown method: " + methodName);
 					//
 					parseErrors.push_back(getStatementInformation(statement, subLineIdx + argument.subLineIdx) + ": Unknown method: " + methodName);
 					//
@@ -934,7 +931,7 @@ bool MinitScript::createStatementSyntaxTree(const string& scriptFileName, int sc
 		//
 		return true;
 	} else {
-		_Console::printLine(getStatementInformation(statement, subLineIdx) + ": Unknown function/method: " + string(methodName) + "()");
+		Console::printLine(getStatementInformation(statement, subLineIdx) + ": Unknown function/method: " + string(methodName) + "()");
 		//
 		parseErrors.push_back(getStatementInformation(statement, subLineIdx) + ": Unknown function/method: " + string(methodName) + "()");
 		//
@@ -1038,7 +1035,7 @@ void MinitScript::executeStateMachine() {
 			if (native == true && isFunctionRunning() == false) {
 				const auto& scriptState = getScriptState();
 				// check named conditions
-				auto now = _Time::getCurrentMillis();
+				auto now = Time::getCurrentMillis();
 				if (enabledNamedConditions.empty() == false &&
 					(timeEnabledConditionsCheckLast == TIME_NONE || now >= timeEnabledConditionsCheckLast + 100LL)) {
 					auto scriptIdxToStart = determineNamedScriptIdxToStart();
@@ -1068,7 +1065,7 @@ void MinitScript::execute() {
 	// check named conditions
 	#if defined(MINITSCRIPT_EVENTS)
 		// events
-		auto now = _Time::getCurrentMillis();
+		auto now = Time::getCurrentMillis();
 		if (isFunctionRunning() == false &&
 			enabledNamedConditions.empty() == false &&
 			(timeEnabledConditionsCheckLast == TIME_NONE || now >= timeEnabledConditionsCheckLast + 100LL)) {
@@ -1129,7 +1126,7 @@ bool MinitScript::getNextStatement(const string& scriptFileName, const string& s
 		if (quote != '\0') {
 			// no op
 			if (c == '\n') {
-				_Console::printLine(scriptFileName + ":" + to_string(line) + ": Newline within string literal is not allowed");
+				Console::printLine(scriptFileName + ":" + to_string(line) + ": Newline within string literal is not allowed");
 				parseErrors.push_back(scriptFileName + ":" + to_string(line) + ": Newline within string literal is not allowed");
 				//
 				return false;
@@ -1261,11 +1258,11 @@ bool MinitScript::getNextStatement(const string& scriptFileName, const string& s
 			}
 		} else {
 			//
-			if (_Character::isSpace(c) == false && c != '-' && nc != '>') inlineFunctionArguments = false;
+			if (Character::isSpace(c) == false && c != '-' && nc != '>') inlineFunctionArguments = false;
 			// add char to script line
 			statementCodeLines.back() += c;
 			//
-			if (_Character::isSpace(c) == false) expectRightArgument = false;
+			if (Character::isSpace(c) == false) expectRightArgument = false;
 		}
 		//
 		lc = lc == '\\' && c == '\\'?'\0':c;
@@ -1275,7 +1272,7 @@ bool MinitScript::getNextStatement(const string& scriptFileName, const string& s
 	//
 	auto lineIdx = 0;
 	for (const auto& line: statementCodeLines) {
-		auto trimmedLine = _StringTools::trim(line);
+		auto trimmedLine = StringTools::trim(line);
 		statementCode+= trimmedLine;
 		if (statementCode.empty() == false && lineIdx != statementCodeLines.size() - 1) statementCode+= "\n";
 		lineIdx++;
@@ -1359,8 +1356,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 			//	applies to on: and on-enabled only
 			#if defined(MINITSCRIPT_EVENTS)
 				// events
-				if (_StringTools::startsWith(statementCode, "on:") == true ||
-					_StringTools::startsWith(statementCode, "on-enabled:") == true) {
+				if (StringTools::startsWith(statementCode, "on:") == true ||
+					StringTools::startsWith(statementCode, "on-enabled:") == true) {
 					//
 					if (statementCode.rfind(":=") == string::npos) {
 						//
@@ -1384,10 +1381,10 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							//
 							if (nextStatementCode.empty() == false) {
 								//
-								if (_StringTools::startsWith(nextStatementCode, "function:") == true ||
-									_StringTools::startsWith(nextStatementCode, "on:") == true ||
-									_StringTools::startsWith(nextStatementCode, "on-enabled:") == true ||
-									_StringTools::startsWith(nextStatementCode, "callable:") == true) break;
+								if (StringTools::startsWith(nextStatementCode, "function:") == true ||
+									StringTools::startsWith(nextStatementCode, "on:") == true ||
+									StringTools::startsWith(nextStatementCode, "on-enabled:") == true ||
+									StringTools::startsWith(nextStatementCode, "callable:") == true) break;
 								//
 								statementCode+= " " + nextStatementCode;
 								// break here if we got our := or reached next declaration
@@ -1428,7 +1425,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						}
 					}
 					// we still need the name
-					if (_StringTools::endsWith(statementCode, ":=") == true) {
+					if (StringTools::endsWith(statementCode, ":=") == true) {
 						//
 						i++;
 						//
@@ -1455,7 +1452,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				// only apply module for main script
 				if (_module.empty() == true) this->_module = true;
 			} else
-			if (_StringTools::startsWith(statementCode, "use:") == true) {
+			if (StringTools::startsWith(statementCode, "use:") == true) {
 				//
 				moduleUseStatement = true;
 
@@ -1470,7 +1467,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				} while (deferredInlineScriptCodes.empty() == false);
 
 				// push to modules
-				auto moduleScriptFileName = _StringTools::trim(_StringTools::substring(statementCode, string("use:").size()));
+				auto moduleScriptFileName = StringTools::trim(StringTools::substring(statementCode, string("use:").size()));
 				if (find(modules.begin(), modules.end(), moduleScriptFileName) != modules.end()) {
 					// no op
 				} else {
@@ -1480,15 +1477,15 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					// load module script code
 					string moduleScriptCode;
 					try {
-						moduleScriptCode = _FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
-					} catch (_FileSystem::FileSystemException& fse)	{
-						_Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+						moduleScriptCode = FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
+					} catch (FileSystem::FileSystemException& fse)	{
+						Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
 						parseErrors.push_back(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
 						scriptValid = false;
 						return false;
 					}
 					// hash
-					nativeModuleHashes.push_back( _SHA256::encode(moduleScriptCode));
+					nativeModuleHashes.push_back( SHA256::encode(moduleScriptCode));
 					// and parse it
 					if (parseScriptInternal(moduleScriptCode, moduleScriptFileName) == false) return false;
 					// parse module deferred function script codes,
@@ -1506,13 +1503,13 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 			// script type
 			auto callable = false;
 			auto scriptType = Script::TYPE_NONE;
-			if (_StringTools::startsWith(statementCode, "function:") == true) scriptType = Script::TYPE_FUNCTION; else
-			if (_StringTools::startsWith(statementCode, "stacklet:") == true) scriptType = Script::TYPE_STACKLET; else
+			if (StringTools::startsWith(statementCode, "function:") == true) scriptType = Script::TYPE_FUNCTION; else
+			if (StringTools::startsWith(statementCode, "stacklet:") == true) scriptType = Script::TYPE_STACKLET; else
 			#if defined(MINITSCRIPT_EVENTS)
-				if (_StringTools::startsWith(statementCode, "on:") == true) scriptType = Script::TYPE_ON; else
-				if (_StringTools::startsWith(statementCode, "on-enabled:") == true) scriptType = Script::TYPE_ONENABLED; else
+				if (StringTools::startsWith(statementCode, "on:") == true) scriptType = Script::TYPE_ON; else
+				if (StringTools::startsWith(statementCode, "on-enabled:") == true) scriptType = Script::TYPE_ONENABLED; else
 			#endif
-			if (_StringTools::startsWith(statementCode, "callable:") == true) {
+			if (StringTools::startsWith(statementCode, "callable:") == true) {
 				callable = true;
 				scriptType = Script::TYPE_FUNCTION;
 			}
@@ -1522,7 +1519,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				if (_module.empty() == false &&
 					(scriptType == Script::TYPE_ON ||
 					scriptType == Script::TYPE_ONENABLED)) {
-								_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": 'on:' and  'on-enabled:': Conditional execution functionality is not available in modules");
+								Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": 'on:' and  'on-enabled:': Conditional execution functionality is not available in modules");
 								parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": 'on:' and  'on-enabled:': Conditional execution functionality is not available in modules");
 								scriptValid = false;
 								return false;
@@ -1541,19 +1538,19 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 				string statement;
 				if (scriptType == Script::TYPE_FUNCTION) {
 					statement = callable == true?
-						_StringTools::trim(_StringTools::substring(statementCode, string("callable:").size())):
-						_StringTools::trim(_StringTools::substring(statementCode, string("function:").size()));
+						StringTools::trim(StringTools::substring(statementCode, string("callable:").size())):
+						StringTools::trim(StringTools::substring(statementCode, string("function:").size()));
 				} else
 				if (scriptType == Script::TYPE_STACKLET) {
-					statement = _StringTools::trim(_StringTools::substring(statementCode, string("stacklet:").size()));
+					statement = StringTools::trim(StringTools::substring(statementCode, string("stacklet:").size()));
 				}
 				#if defined(MINITSCRIPT_EVENTS)
 					// events
 					else
 					if (scriptType == Script::TYPE_ON)
-						statement = _StringTools::trim(_StringTools::substring(statementCode, string("on:").size())); else
+						statement = StringTools::trim(StringTools::substring(statementCode, string("on:").size())); else
 					if (scriptType == Script::TYPE_ONENABLED)
-						statement = _StringTools::trim(_StringTools::substring(statementCode, string("on-enabled:").size()));
+						statement = StringTools::trim(StringTools::substring(statementCode, string("on-enabled:").size()));
 				#endif
 				// and name
 				string name;
@@ -1566,14 +1563,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						);
 				if (scriptLineNameSeparatorIdx != string::npos) {
 					name =
-						_StringTools::trim(
-							_StringTools::substring(
+						StringTools::trim(
+							StringTools::substring(
 								statement,
 								scriptLineNameSeparatorIdx +
 									(scriptType == Script::TYPE_FUNCTION?string("function").size():(scriptType == Script::TYPE_STACKLET?string("stacklet").size():string(":=").size()))
 							)
 						);
-					statement = _StringTools::trim(_StringTools::substring(statement, 0, scriptLineNameSeparatorIdx));
+					statement = StringTools::trim(StringTools::substring(statement, 0, scriptLineNameSeparatorIdx));
 				}
 				if (scriptType == Script::TYPE_FUNCTION ||
 					scriptType == Script::TYPE_STACKLET) {
@@ -1581,42 +1578,42 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					auto rightBracketIdx = statement.find(')');
 					if (leftBracketIdx != string::npos || leftBracketIdx != string::npos) {
 						if (leftBracketIdx == string::npos) {
-							_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
+							Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
 							parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
 							scriptValid = false;
 							return false;
 						} else
 						if (rightBracketIdx == string::npos) {
-							_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
+							Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
 							parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Unbalanced bracket count");
 							scriptValid = false;
 							return false;
 						} else {
-							auto argumentNamesString = _StringTools::trim(_StringTools::substring(statement, leftBracketIdx + 1, rightBracketIdx));
-							auto argumentNamesTokenized = _StringTools::tokenize(argumentNamesString, ",");
-							statement = _StringTools::substring(statement, 0, leftBracketIdx);
+							auto argumentNamesString = StringTools::trim(StringTools::substring(statement, leftBracketIdx + 1, rightBracketIdx));
+							auto argumentNamesTokenized = StringTools::tokenize(argumentNamesString, ",");
+							statement = StringTools::substring(statement, 0, leftBracketIdx);
 							for (const auto& argumentName: argumentNamesTokenized) {
-								auto argumentNameTrimmed = _StringTools::trim(argumentName);
+								auto argumentNameTrimmed = StringTools::trim(argumentName);
 								auto reference = false;
 								auto privateScope = false;
-								if (_StringTools::startsWith(argumentNameTrimmed, "&&") == true) {
+								if (StringTools::startsWith(argumentNameTrimmed, "&&") == true) {
 									reference = true;
 									privateScope = true;
-									argumentNameTrimmed = _StringTools::trim(_StringTools::substring(argumentNameTrimmed, 2));
+									argumentNameTrimmed = StringTools::trim(StringTools::substring(argumentNameTrimmed, 2));
 								} else
-								if (_StringTools::startsWith(argumentNameTrimmed, "&") == true) {
+								if (StringTools::startsWith(argumentNameTrimmed, "&") == true) {
 									reference = true;
-									argumentNameTrimmed = _StringTools::trim(_StringTools::substring(argumentNameTrimmed, 1));
+									argumentNameTrimmed = StringTools::trim(StringTools::substring(argumentNameTrimmed, 1));
 								}
 								if (scriptType == Script::TYPE_FUNCTION) {
-									if (_StringTools::regexMatch(argumentNameTrimmed, "\\$[a-zA-Z0-9_]+") == true) {
+									if (StringTools::regexMatch(argumentNameTrimmed, "\\$[a-zA-Z0-9_]+") == true) {
 										arguments.emplace_back(
 											argumentNameTrimmed,
 											reference,
 											privateScope
 										);
 									} else {
-										_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid argument name: '" + argumentNameTrimmed + "'");
+										Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid argument name: '" + argumentNameTrimmed + "'");
 										parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid argument name: '" + argumentNameTrimmed + "'");
 										scriptValid = false;
 										return false;
@@ -1624,14 +1621,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 									}
 								} else
 								if (scriptType == Script::TYPE_STACKLET) {
-									if (_StringTools::regexMatch(argumentNameTrimmed, "[a-zA-Z0-9_]+") == true) {
+									if (StringTools::regexMatch(argumentNameTrimmed, "[a-zA-Z0-9_]+") == true) {
 										arguments.emplace_back(
 											argumentNameTrimmed,
 											reference,
 											false
 										);
 									} else {
-										_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
+										Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
 										parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": " + (scriptType == Script::TYPE_FUNCTION?"function":"stacklet") + ": Invalid stacklet parent stacklet/function: '" + argumentNameTrimmed + "'");
 										scriptValid = false;
 										return false;
@@ -1642,18 +1639,18 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 
 					}
 				}
-				auto trimmedStatement = _StringTools::trim(statement);
+				auto trimmedStatement = StringTools::trim(statement);
 				Statement evaluateStatement(
 					_scriptFileName,
 					currentLineIdx + lineIdxOffset,
 					STATEMENTIDX_FIRST,
-					"internal.script.evaluate(" + _StringTools::replace(_StringTools::replace(trimmedStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
-					"internal.script.evaluate(" + _StringTools::replace(_StringTools::replace(trimmedStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
+					"internal.script.evaluate(" + StringTools::replace(StringTools::replace(trimmedStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
+					"internal.script.evaluate(" + StringTools::replace(StringTools::replace(trimmedStatement, "\\", "\\\\"), "\"", "\\\"") + ")",
 					STATEMENTIDX_NONE
 				);
 				auto conditionOrNameExecutable = doStatementPreProcessing(trimmedStatement, evaluateStatement);
 				auto conditionOrName = trimmedStatement;
-				auto emitCondition = _StringTools::regexMatch(conditionOrName, "[a-zA-Z0-9_]+");
+				auto emitCondition = StringTools::regexMatch(conditionOrName, "[a-zA-Z0-9_]+");
 				statementIdx = STATEMENTIDX_FIRST;
 				// add to user functions
 				if (scriptType == Script::TYPE_FUNCTION || scriptType == Script::TYPE_STACKLET) {
@@ -1685,30 +1682,30 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					scripts.size()
 				);
 			} else {
-				_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
+				Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
 				parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": expecting 'on:', 'on-enabled:', 'stacklet:', 'function:', 'callable:'");
 				scriptValid = false;
 				return false;
 			}
 		} else {
-			if (_StringTools::startsWith(statementCode, "function:") == true ||
-				_StringTools::startsWith(statementCode, "stacklet:") == true ||
-				_StringTools::startsWith(statementCode, "callable:") == true
+			if (StringTools::startsWith(statementCode, "function:") == true ||
+				StringTools::startsWith(statementCode, "stacklet:") == true ||
+				StringTools::startsWith(statementCode, "callable:") == true
 				#if defined(MINITSCRIPT_EVENTS)
 					// events
 					||
-					_StringTools::startsWith(statementCode, "on:") == true ||
-					_StringTools::startsWith(statementCode, "on-enabled:") == true
+					StringTools::startsWith(statementCode, "on:") == true ||
+					StringTools::startsWith(statementCode, "on-enabled:") == true
 				#endif
 			) {
-				_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
+				Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 				parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 				scriptValid = false;
 				return false;
 			} else {
 				//
 				smatch matches;
-				auto regexStatementCode = _StringTools::replace(statementCode, "\n", " ");
+				auto regexStatementCode = StringTools::replace(statementCode, "\n", " ");
 				//
 				if (statementCode == "end") {
 					if (blockStack.empty() == false) {
@@ -1852,7 +1849,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 								}
 								break;
 							default:
-								_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if/elseif");
+								Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if/elseif");
 								parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if/elseif");
 								scriptValid = false;
 								return false;
@@ -1862,19 +1859,19 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							statementIdx
 						);
 					} else {
-						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if");
+						Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if");
 						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": else without if");
 						scriptValid = false;
 						return false;
 					}
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^elseif[\\s]*\\(.*\\)$") == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^elseif[\\s]*\\(.*\\)$") == true) {
 					Statement elseIfStatement(
 						_scriptFileName,
 						currentLineIdx + lineIdxOffset,
 						STATEMENTIDX_FIRST,
-						_StringTools::replace(_StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
-						_StringTools::replace(_StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
+						StringTools::replace(StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
+						StringTools::replace(StringTools::replace(statementCode, "\\", "\\\\"), "\"", "\\\""),
 						STATEMENTIDX_NONE
 					);
 					auto executableStatement = doStatementPreProcessing(statementCode, elseIfStatement);
@@ -1895,7 +1892,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 								}
 								break;
 							default:
-								_Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
+								Console::printLine(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
 								parseErrors.push_back(scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
 								scriptValid = false;
 								return false;
@@ -1905,13 +1902,13 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							statementIdx
 						);
 					} else {
-						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
+						Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
 						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": elseif without if");
 						scriptValid = false;
 						return false;
 					}
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^catch[\\s]*\\((.*)\\)$", &matches) == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^catch[\\s]*\\((.*)\\)$", &matches) == true) {
 					auto exceptionVariable = matches[1].str();
 					if (blockStack.empty() == false) {
 						auto block = blockStack.back();
@@ -1924,7 +1921,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 									// create initialize statement and push it
 									string initializeVariableStatement =
 										"setVariable(\"" +
-											_StringTools::replace(_StringTools::replace(exceptionVariable, "\\", "\\\\"), "\"", "\\\"") +
+											StringTools::replace(StringTools::replace(exceptionVariable, "\\", "\\\\"), "\"", "\\\"") +
 											"\", " +
 											"null"
 										")";
@@ -1945,13 +1942,13 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							statementIdx
 						);
 					} else {
-						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": catch without try");
+						Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": catch without try");
 						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": catch without try");
 						scriptValid = false;
 						return false;
 					}
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^for[\\s]*\\(.*\\)$") == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^for[\\s]*\\(.*\\)$") == true) {
 					Statement generatedStatement(
 						_scriptFileName,
 						currentLineIdx + lineIdxOffset,
@@ -1985,14 +1982,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						//
 						statementCode = "forCondition(" + string(forArguments[1].argument) + ", -> { " + string(forArguments[2].argument) + " })";
 					} else {
-						_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
+						Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
 						parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid for statement");
 						scriptValid = false;
 						return false;
 					}
 				} else
 				// array/set forEach
-				if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
 					Statement generatedStatement(
 						_scriptFileName,
 						currentLineIdx + lineIdxOffset,
@@ -2009,14 +2006,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					//
 					auto entryReference = false;
 					auto entryVariable = matches[1].str();
-					if (_StringTools::startsWith(entryVariable, "&") == true) {
+					if (StringTools::startsWith(entryVariable, "&") == true) {
 						entryReference = true;
-						entryVariable = _StringTools::substring(entryVariable, 1);
+						entryVariable = StringTools::substring(entryVariable, 1);
 					}
 					auto containerByInitializer = false;
 					auto containerVariable = matches[2].str();
 					string containerInitializer;
-					if (_StringTools::startsWith(containerVariable, "[") == true || _StringTools::startsWith(containerVariable, "{") == true) {
+					if (StringTools::startsWith(containerVariable, "[") == true || StringTools::startsWith(containerVariable, "{") == true) {
 						containerByInitializer = true;
 						containerInitializer = containerVariable;
 						containerVariable = string("$___cv_" + to_string(iterationDepth));
@@ -2104,7 +2101,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 						"})";
 				} else
 				// map forEach
-				if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*,[\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\([\\s]*(\\$[a-zA-Z0-9_]+)[\\s]*,[\\s]*(&?\\$[a-zA-Z0-9_]+)[\\s]*\\in[\\s]*((\\$[a-zA-Z0-9_]+)|(\\[.*\\])|(\\{.*\\}))[\\s]*\\)$", &matches) == true) {
 					Statement generatedStatement(
 						_scriptFileName,
 						currentLineIdx + lineIdxOffset,
@@ -2122,14 +2119,14 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 					auto entryKeyVariable = matches[1].str();
 					auto entryValueReference = false;
 					auto entryValueVariable = matches[2].str();
-					if (_StringTools::startsWith(entryValueVariable, "&") == true) {
+					if (StringTools::startsWith(entryValueVariable, "&") == true) {
 						entryValueReference = true;
-						entryValueVariable = _StringTools::substring(entryValueVariable, 1);
+						entryValueVariable = StringTools::substring(entryValueVariable, 1);
 					}
 					auto containerByInitializer = false;
 					auto containerVariable = matches[3].str();
 					string containerInitializer;
-					if (_StringTools::startsWith(containerVariable, "[") == true || _StringTools::startsWith(containerVariable, "{") == true) {
+					if (StringTools::startsWith(containerVariable, "[") == true || StringTools::startsWith(containerVariable, "{") == true) {
 						containerByInitializer = true;
 						containerInitializer = containerVariable;
 						containerVariable = string("$___cv_" + to_string(iterationDepth));
@@ -2217,45 +2214,45 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 							"end;"
 						"})";
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\(.*\\)$", &matches) == true) {
-					_Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
+				if (StringTools::regexMatch(regexStatementCode, "^forEach[\\s]*\\(.*\\)$", &matches) == true) {
+					Console::printLine(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
 					parseErrors.push_back(_scriptFileName + ":" + to_string(currentLineIdx + lineIdxOffset) + ": Invalid forEach statement");
 					scriptValid = false;
 					return false;
 				}
 				// do we need to push to block stack?
-				if (_StringTools::regexMatch(regexStatementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
-					_StringTools::regexMatch(regexStatementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^forTime[\\s]*\\(.*\\)$") == true ||
+					StringTools::regexMatch(regexStatementCode, "^forCondition[\\s]*\\(.*\\)$") == true) {
 					blockStack.emplace_back(
 						Block::TYPE_FOR,
 						statementIdx
 					);
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^if[\\s]*\\(.*\\)$") == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^if[\\s]*\\(.*\\)$") == true) {
 					blockStack.emplace_back(
 						Block::TYPE_IF,
 						statementIdx
 					);
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^switch[\\s]*\\(.*\\)$") == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^switch[\\s]*\\(.*\\)$") == true) {
 					blockStack.emplace_back(
 						Block::TYPE_SWITCH,
 						STATEMENTIDX_NONE
 					);
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^case[\\s]*\\(.*\\)$") == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^case[\\s]*\\(.*\\)$") == true) {
 					blockStack.emplace_back(
 						Block::TYPE_CASE,
 						statementIdx
 					);
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^default[\\s]*$") == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^default[\\s]*$") == true) {
 					blockStack.emplace_back(
 						Block::TYPE_DEFAULT,
 						statementIdx
 					);
 				} else
-				if (_StringTools::regexMatch(regexStatementCode, "^try[\\s]*$") == true) {
+				if (StringTools::regexMatch(regexStatementCode, "^try[\\s]*$") == true) {
 					blockStack.emplace_back(
 						Block::TYPE_TRY,
 						statementIdx
@@ -2290,7 +2287,7 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& _m
 
 	// check for unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end
 	if (scriptValid == true && blockStack.empty() == false) {
-		_Console::printLine(_scriptFileName + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
+		Console::printLine(_scriptFileName + ": Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 		parseErrors.push_back(_scriptFileName + ":" + "Unbalanced if/elseif/else/switch/case/default/forCondition/forTime/end");
 		scriptValid = false;
 		return false;
@@ -2357,9 +2354,9 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 	string scriptCode;
 	if (native == false || nativeOnly == false) {
 		try {
-			scriptCode = _FileSystem::getContentAsString(scriptPathName, scriptFileName);
-		} catch (_FileSystem::FileSystemException& fse)	{
-			_Console::printLine(scriptPathName + "/" + scriptFileName + ": An error occurred: " + fse.what());
+			scriptCode = FileSystem::getContentAsString(scriptPathName, scriptFileName);
+		} catch (FileSystem::FileSystemException& fse)	{
+			Console::printLine(scriptPathName + "/" + scriptFileName + ": An error occurred: " + fse.what());
 			parseErrors.push_back(scriptPathName + "/" + scriptFileName + ": An error occurred: " + fse.what());
 			scriptValid = true;
 			return;
@@ -2368,7 +2365,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 
 	//
 	{
-		auto scriptHash = _SHA256::encode(scriptCode);
+		auto scriptHash = SHA256::encode(scriptCode);
 		if (native == true) {
 			// check modules hashes also
 			string nativeModuleHashesConcatenated;
@@ -2380,13 +2377,13 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 					// load module script code
 					string moduleScriptCode;
 					try {
-						moduleScriptCode = _FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
-					} catch (_FileSystem::FileSystemException& fse)	{
-						_Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+						moduleScriptCode = FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
+					} catch (FileSystem::FileSystemException& fse)	{
+						Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
 						parseErrors.push_back(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
 					}
 					// hash
-					moduleHashesConcatenated+= _SHA256::encode(moduleScriptCode);
+					moduleHashesConcatenated+= SHA256::encode(moduleScriptCode);
 				}
 			}
 			//
@@ -2399,7 +2396,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 				initializeScript();
 				return;
 			} else {
-				_Console::printLine(scriptPathName + "/" + scriptFileName + ": Scripts have changed. Scripts will be run in interpreted mode. Retranspile and recompile your scripts if you want to run it natively.");
+				Console::printLine(scriptPathName + "/" + scriptFileName + ": Scripts have changed. Scripts will be run in interpreted mode. Retranspile and recompile your scripts if you want to run it natively.");
 				// unset some native related variables
 				native = false;
 				_module = false;
@@ -2445,7 +2442,7 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 				if (script.arguments.empty()) continue;
 				// invalid: more than 1 argument
 				if (script.arguments.size() != 1) {
-					_Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
+					Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
 					parseErrors.push_back(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: only none(for root scope) or one argument is allowed, which defines a function/stacklet as stacklet scope");
 					scriptValid = false;
 					return;
@@ -2454,14 +2451,14 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 				auto stackletScopeScriptIdx = getFunctionScriptIdx(script.arguments[0].name);
 				// invalid: scope function/stacklet not found
 				if (stackletScopeScriptIdx == SCRIPTIDX_NONE) {
-					_Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
+					Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
 					parseErrors.push_back(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet not found: " + script.arguments[0].name);
 					scriptValid = false;
 					return;
 				} else
 				// invalid: stacklet can not have itself as scope stacklet
 				if (stackletScopeScriptIdx == scriptIdx) {
-					_Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
+					Console::printLine(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
 					parseErrors.push_back(scriptFileName + ": Stacklet: " + script.condition + ": invalid arguments: scope function/stacklet can not be the stacklet itself");
 					scriptValid = false;
 					return;
@@ -2508,9 +2505,9 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 }
 
 void MinitScript::initializeScript() {
-	if (VERBOSE == true) _Console::printLine("MinitScript::initializeScript(): '" + scriptFileName + ": Starting script.");
+	if (VERBOSE == true) Console::printLine("MinitScript::initializeScript(): '" + scriptFileName + ": Starting script.");
 	if (scriptValid == false) {
-		_Console::printLine(scriptFileName + ": Script not valid: not starting");
+		Console::printLine(scriptFileName + ": Script not valid: not starting");
 		return;
 	}
 	//
@@ -2518,9 +2515,9 @@ void MinitScript::initializeScript() {
 }
 
 void MinitScript::startScript() {
-	if (VERBOSE == true) _Console::printLine("MinitScript::startScript(): '" + scriptFileName + ": Starting script.");
+	if (VERBOSE == true) Console::printLine("MinitScript::startScript(): '" + scriptFileName + ": Starting script.");
 	if (scriptValid == false) {
-		_Console::printLine(scriptFileName + ": Script not valid: not starting");
+		Console::printLine(scriptFileName + ": Script not valid: not starting");
 		return;
 	}
 	if (hasFunction("main") == true) {
@@ -2542,7 +2539,7 @@ void MinitScript::startScript() {
 #if defined(MINITSCRIPT_EVENTS)
 	// events
 	int MinitScript::determineScriptIdxToStart() {
-		if (VERBOSE == true) _Console::printLine("MinitScript::determineScriptIdxToStart()");
+		if (VERBOSE == true) Console::printLine("MinitScript::determineScriptIdxToStart()");
 		auto nothingScriptIdx = SCRIPTIDX_NONE;
 		auto scriptIdx = 0;
 		for (const auto& script: scripts) {
@@ -2561,22 +2558,22 @@ void MinitScript::startScript() {
 				if (evaluateInternal(script.condition, script.executableCondition, returnValue) == true) {
 					auto returnValueBoolValue = false;
 					if (returnValue.getBooleanValue(returnValueBoolValue, false) == false) {
-						_Console::printLine("MinitScript::determineScriptIdxToStart(): " + script.condition + ": Expecting boolean return value, but got: " + returnValue.getAsString());
+						Console::printLine("MinitScript::determineScriptIdxToStart(): " + script.condition + ": Expecting boolean return value, but got: " + returnValue.getAsString());
 						conditionMet = false;
 					} else
 					if (returnValueBoolValue == false) {
 						conditionMet = false;
 					}
 				} else {
-					_Console::printLine("MinitScript::determineScriptIdxToStart(): " + scriptFileName + ":" + to_string(script.line) + ": " + script.condition + ": Parse error");
+					Console::printLine("MinitScript::determineScriptIdxToStart(): " + scriptFileName + ":" + to_string(script.line) + ": " + script.condition + ": Parse error");
 				}
 				if (conditionMet == false) {
 					if (VERBOSE == true) {
-						_Console::print("MinitScript::determineScriptIdxToStart(): " + script.condition + ": FAILED");
+						Console::print("MinitScript::determineScriptIdxToStart(): " + script.condition + ": FAILED");
 					}
 				} else {
 					if (VERBOSE == true) {
-						_Console::print("MinitScript::determineScriptIdxToStart(): " + script.condition + ": OK");
+						Console::print("MinitScript::determineScriptIdxToStart(): " + script.condition + ": OK");
 					}
 					return scriptIdx;
 				}
@@ -2587,7 +2584,7 @@ void MinitScript::startScript() {
 	}
 
 	int MinitScript::determineNamedScriptIdxToStart() {
-		if (VERBOSE == true) _Console::printLine("MinitScript::determineNamedScriptIdxToStart()");
+		if (VERBOSE == true) Console::printLine("MinitScript::determineNamedScriptIdxToStart()");
 		// TODO: we could have a hash map here to speed up enabledConditionName -> script lookup
 		const auto& scriptState = getScriptState();
 		for (const auto& enabledConditionName: enabledNamedConditions) {
@@ -2602,22 +2599,22 @@ void MinitScript::startScript() {
 					if (evaluateInternal(script.condition, script.executableCondition, returnValue) == true) {
 						auto returnValueBoolValue = false;
 						if (returnValue.getBooleanValue(returnValueBoolValue, false) == false) {
-							_Console::printLine("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": Expecting boolean return value, but got: " + returnValue.getAsString());
+							Console::printLine("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": Expecting boolean return value, but got: " + returnValue.getAsString());
 							conditionMet = false;
 						} else
 						if (returnValueBoolValue == false) {
 							conditionMet = false;
 						}
 					} else {
-						_Console::printLine("MinitScript::determineNamedScriptIdxToStart(): " + scriptFileName + ":" + to_string(script.line) + ": " + script.condition + ": Parse error");
+						Console::printLine("MinitScript::determineNamedScriptIdxToStart(): " + scriptFileName + ":" + to_string(script.line) + ": " + script.condition + ": Parse error");
 					}
 					if (conditionMet == false) {
 						if (VERBOSE == true) {
-							_Console::print("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": FAILED");
+							Console::print("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": FAILED");
 						}
 					} else {
 						if (VERBOSE == true) {
-							_Console::print("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": OK");
+							Console::print("MinitScript::determineNamedScriptIdxToStart(): " + script.condition + ": OK");
 						}
 						return scriptIdx;
 					}
@@ -2645,7 +2642,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			if (c == '\n') {
 				leftNewLineCount++;
 			} else
-			if (_Character::isSpace(c) == false) {
+			if (Character::isSpace(c) == false) {
 				break;
 			}
 		}
@@ -2655,16 +2652,16 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			if (c == '\n') {
 				rightNewLineCount++;
 			} else
-			if (_Character::isSpace(c) == false) {
+			if (Character::isSpace(c) == false) {
 				break;
 			}
 		}
-		auto processedArgument = _StringTools::trim(argument);
+		auto processedArgument = StringTools::trim(argument);
 		if (removeBrackets == true &&
-			_StringTools::startsWith(processedArgument, "(") == true && _StringTools::endsWith(processedArgument, ")") == true) {
-			processedArgument = _StringTools::substring(processedArgument, 1, processedArgument.size() - 1);
+			StringTools::startsWith(processedArgument, "(") == true && StringTools::endsWith(processedArgument, ")") == true) {
+			processedArgument = StringTools::substring(processedArgument, 1, processedArgument.size() - 1);
 		}
-		return processedArgument.empty() == true?string():_StringTools::generate("\n", leftNewLineCount) + processedArgument + _StringTools::generate("\n", rightNewLineCount);
+		return processedArgument.empty() == true?string():StringTools::generate("\n", leftNewLineCount) + processedArgument + StringTools::generate("\n", rightNewLineCount);
 	};
 	//
 	auto findLeftArgument = [&](const string& statement, int position, int& length, string& brackets, bool removeBrackets = true) -> const string {
@@ -2788,7 +2785,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				if (c == ']') {
 					squareBracketCount--;
 					// array initializer?
-					if (_StringTools::startsWith(argument, "[") == false) {
+					if (StringTools::startsWith(argument, "[") == false) {
 						// no
 						if (squareBracketCount < 0) {
 							brackets = "[]";
@@ -2837,7 +2834,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		//
 		i = 0;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
@@ -2846,7 +2843,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		// >
 		if (candidate[i++] != '>') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		//
 		if (candidate[i] != '{') return false;
@@ -2861,11 +2858,11 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		//
 		if (candidate.empty() == true) return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		// (
 		if (candidate[i++] != '(') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		//
 		auto argumentStartIdx = string::npos;
@@ -2906,14 +2903,14 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 					break;
 				}
 			} else
-			if (argumentStartIdx != string::npos && _Character::isAlphaNumeric(candidate[i]) == false && c != '_') {
+			if (argumentStartIdx != string::npos && Character::isAlphaNumeric(candidate[i]) == false && c != '_') {
 				return false;
 			}
 		}
 		//
 		if (i >= candidate.size()) return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		// -
 		if (candidate[i++] != '-') return false;
@@ -2922,7 +2919,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		// >
 		if (candidate[i++] != '>') return false;
 		// spaces
-		for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+		for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 		if (i >= candidate.size()) return false;
 		//
 		if (candidate[i] != '{') return false;
@@ -3055,7 +3052,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 						//
 						auto priorizedOperator = static_cast<Operator>(j);
 						auto operatorString = getOperatorAsString(priorizedOperator);
-						if (priorizedOperator == OPERATOR_SUBSCRIPT) operatorString = _StringTools::substring(operatorString, 0, 1);
+						if (priorizedOperator == OPERATOR_SUBSCRIPT) operatorString = StringTools::substring(operatorString, 0, 1);
 						// valid?
 						if (operatorCandidate.empty() == true ||
 							(isOperator(operatorCandidate) == false && operatorCandidate != "[")) {
@@ -3174,7 +3171,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 										//
 										auto i = 0;
 										// spaces
-										for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+										for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 										if (i >= candidate.size()) return false;
 										// -
 										if (candidate[i++] != '-') return false;
@@ -3198,7 +3195,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 										//
 										auto i = 0;
 										// spaces
-										for (; i < candidate.size() && _Character::isSpace(candidate[i]) == true; i++);
+										for (; i < candidate.size() && Character::isSpace(candidate[i]) == true; i++);
 										if (i >= candidate.size()) return false;
 										// -
 										if (candidate[i++] != '.') return false;
@@ -3292,7 +3289,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			// resolve method
 			method = getOperatorMethod(nextOperator.operator_);
 			if (method == nullptr) {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": No operator method found");
+				Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": No operator method found");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3318,13 +3315,13 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				method->getOperator() == OPERATOR_PREFIX_DECREMENT) {
 				//
 				if (prefixOperatorMethod == nullptr) {
-					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": No prefix operator method found");
+					Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": No prefix operator method found");
 					scriptValid = false;
 					return preprocessedStatement;
 				}
 				//
 				if (postfixOperatorMethod == nullptr) {
-					_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": No postfix operator method found");
+					Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": No postfix operator method found");
 					scriptValid = false;
 					return preprocessedStatement;
 				}
@@ -3339,7 +3336,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			int leftArgumentLength = 0;
 			auto leftArgument = findLeftArgument(preprocessedStatement, nextOperator.idx - 1, leftArgumentLength, leftArgumentBrackets);
 			// find index
-			auto index = doStatementPreProcessing(_StringTools::substring(preprocessedStatement, nextOperator.idx + 1, nextOperator.idx2), statement);
+			auto index = doStatementPreProcessing(StringTools::substring(preprocessedStatement, nextOperator.idx + 1, nextOperator.idx2), statement);
 			//
 			auto leftArgumentNewLines = 0;
 			for (auto i = 0; i < leftArgument.size(); i++) {
@@ -3348,10 +3345,10 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			// substitute with method call
 			preprocessedStatement =
-				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
-				_StringTools::generate("\n", leftArgumentNewLines) +
-				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + index + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
-				_StringTools::substring(preprocessedStatement, nextOperator.idx2 + 1, preprocessedStatement.size()
+				StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
+				StringTools::generate("\n", leftArgumentNewLines) +
+				method->getMethodName() + "(" + StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + index + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
+				StringTools::substring(preprocessedStatement, nextOperator.idx2 + 1, preprocessedStatement.size()
 			);
 		} else
 		if (nextOperator.operator_ == OPERATOR_MEMBERACCESS_PROPERTY) {
@@ -3367,7 +3364,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			auto rightArgument = findRightArgument(preprocessedStatement, nextOperator.idx + operatorString.size(), rightArgumentLength, rightArgumentBrackets);
 			//
 			if (leftArgument.empty() == true || rightArgument.empty() == true) {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
+				Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3404,12 +3401,12 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			// substitute with method call
 			preprocessedStatement =
-				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
-				_StringTools::generate("\n", leftArgumentNewLines) +
+				StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
+				StringTools::generate("\n", leftArgumentNewLines) +
 				outerLeftStatement +
-				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + rightArgument + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
+				method->getMethodName() + "(" + StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + rightArgument + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
 				outerRightStatement +
-				_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
+				StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
 			);
 			//
 		} else
@@ -3429,7 +3426,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			vector<ParserArgument> subArguments;
 			//
 			if (parseStatement(rightArgument, subMethodName, subArguments, statement) == false) {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Could not parse statement: " + rightArgument);
+				Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Could not parse statement: " + rightArgument);
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3444,7 +3441,7 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			//
 			if (leftArgument.empty() == true || rightArgument.empty() == true) {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
+				Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3456,10 +3453,10 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			// substitute with method call
 			preprocessedStatement =
-				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
-				_StringTools::generate("\n", leftArgumentNewLines) +
-				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + arguments + ")" +
-				_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
+				StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
+				StringTools::generate("\n", leftArgumentNewLines) +
+				method->getMethodName() + "(" + StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + arguments + ")" +
+				StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
 			);
 			//
 		} else
@@ -3485,20 +3482,20 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				}
 				// substitute with method call
 				preprocessedStatement =
-					_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
-					_StringTools::generate("\n", leftArgumentNewLines) +
-					prefixOperatorMethod->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
-					_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size(), preprocessedStatement.size()
+					StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
+					StringTools::generate("\n", leftArgumentNewLines) +
+					prefixOperatorMethod->getMethodName() + "(" + StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
+					StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size(), preprocessedStatement.size()
 				);
 			} else
 			if (rightArgument.empty() == false) {
 				// substitute with method call
 				preprocessedStatement =
-					_StringTools::substring(preprocessedStatement, 0, nextOperator.idx) +
+					StringTools::substring(preprocessedStatement, 0, nextOperator.idx) +
 					postfixOperatorMethod->getMethodName() + "(" + rightArgument + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
-					_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size());
+					StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size());
 			} else {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left or right argument");
+				Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left or right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
@@ -3517,13 +3514,13 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			auto rightArgument = findRightArgument(preprocessedStatement, nextOperator.idx + operatorString.size(), rightArgumentLength, rightArgumentBrackets);
 			//
 			if (leftArgument.empty() == true || rightArgument.empty() == true) {
-				_Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
+				Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
 				scriptValid = false;
 				return preprocessedStatement;
 			}
 			//
 			if (nextOperator.operator_ == OPERATOR_SET) {
-				leftArgument = "\"" + _StringTools::replace(doStatementPreProcessing(leftArgument, statement, true), "\"", "\\\"") + "\"";
+				leftArgument = "\"" + StringTools::replace(doStatementPreProcessing(leftArgument, statement, true), "\"", "\\\"") + "\"";
 			}
 			//
 			auto leftArgumentNewLines = 0;
@@ -3533,10 +3530,10 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			}
 			// substitute with method call
 			preprocessedStatement =
-				_StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
-				_StringTools::generate("\n", leftArgumentNewLines) +
-				method->getMethodName() + "(" + _StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + rightArgument + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
-				_StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
+				StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
+				StringTools::generate("\n", leftArgumentNewLines) +
+				method->getMethodName() + "(" + StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + rightArgument + ", " + to_string(encodeOperatorString(operatorString)) + ")" +
+				StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
 			);
 			//
 		}
@@ -3548,16 +3545,16 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 }
 
 void MinitScript::dumpScriptState(ScriptState& scriptState, const string& message) {
-	_Console::printLine("MinitScript::dumpScriptState(): " + (message.empty() == false?message + ": ":"") + to_string(rootScript->scriptStateStack.size()) + " on stack");
-	_Console::printLine(string("\t") + "idx: " + to_string(scriptState.idx));
-	_Console::printLine(string("\t") + "state: " + to_string(scriptState.state));
-	_Console::printLine(string("\t") + "lastState: " + to_string(scriptState.lastState));
-	_Console::printLine(string("\t") + "running: " + (scriptState.running == true?"true":"false"));
-	_Console::printLine(string("\t") + "scriptIdx: " + to_string(scriptState.scriptIdx));
-	_Console::printLine(string("\t") + "statementIdx: " + to_string(scriptState.statementIdx));
-	_Console::printLine(string("\t") + "gotoStatementIdx: " + to_string(scriptState.gotoStatementIdx));
-	_Console::printLine(string("\t") + "variable count: " + to_string(scriptState.variables.size()));
-	_Console::printLine(string("\t") + "block stack count: " + to_string(scriptState.blockStack.size()));
+	Console::printLine("MinitScript::dumpScriptState(): " + (message.empty() == false?message + ": ":"") + to_string(rootScript->scriptStateStack.size()) + " on stack");
+	Console::printLine(string("\t") + "idx: " + to_string(scriptState.idx));
+	Console::printLine(string("\t") + "state: " + to_string(scriptState.state));
+	Console::printLine(string("\t") + "lastState: " + to_string(scriptState.lastState));
+	Console::printLine(string("\t") + "running: " + (scriptState.running == true?"true":"false"));
+	Console::printLine(string("\t") + "scriptIdx: " + to_string(scriptState.scriptIdx));
+	Console::printLine(string("\t") + "statementIdx: " + to_string(scriptState.statementIdx));
+	Console::printLine(string("\t") + "gotoStatementIdx: " + to_string(scriptState.gotoStatementIdx));
+	Console::printLine(string("\t") + "variable count: " + to_string(scriptState.variables.size()));
+	Console::printLine(string("\t") + "block stack count: " + to_string(scriptState.blockStack.size()));
 	array<string, 9> blockStackTypes {
 		"TYPE_NONE",
 		"TYPE_GLOBAL",
@@ -3570,22 +3567,22 @@ void MinitScript::dumpScriptState(ScriptState& scriptState, const string& messag
 		"TYPE_CASE"
 	};
 	for (const auto& block: scriptState.blockStack) {
-		_Console::printLine(string("\t\t") + blockStackTypes[block.type]);
+		Console::printLine(string("\t\t") + blockStackTypes[block.type]);
 	}
-	_Console::printLine(string("\t") + "returnValue: " + scriptState.returnValue.getValueAsString());
+	Console::printLine(string("\t") + "returnValue: " + scriptState.returnValue.getValueAsString());
 }
 
 bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& returnValue, bool pushScriptState) {
 	//
 	if (scriptIdx < 0 || scriptIdx >= scripts.size()) {
-		_Console::printLine("MinitScript::call(): Invalid script index: " + to_string(scriptIdx));
+		Console::printLine("MinitScript::call(): Invalid script index: " + to_string(scriptIdx));
 		return false;
 	}
 	auto& script = scripts[scriptIdx];
 	//
 	if (script.type != Script::TYPE_FUNCTION &&
 		script.type != Script::TYPE_STACKLET) {
-		_Console::printLine("MinitScript::call(): " + (script.name.empty() == false?script.name:script.condition) + ": Script is not a function/callable/stacklet.");
+		Console::printLine("MinitScript::call(): " + (script.name.empty() == false?script.name:script.condition) + ": Script is not a function/callable/stacklet.");
 		return false;
 	}
 	// copy script state
@@ -3593,7 +3590,7 @@ bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& retur
 	//
 	if (pushScriptState == true) {
 		if (script.type == Script::TYPE_STACKLET) {
-			_Console::printLine("MinitScript::call(): " + script.condition + ": Stacklets can not be called with a stack.");
+			Console::printLine("MinitScript::call(): " + script.condition + ": Stacklets can not be called with a stack.");
 			return false;
 		}
 		this->pushScriptState();
@@ -3620,7 +3617,7 @@ bool MinitScript::call(int scriptIdx, span<Variable>& arguments, Variable& retur
 	} else {
 		//
 		if (script.type != Script::TYPE_STACKLET) {
-			_Console::printLine("MinitScript::call(): " + script.condition + ": Function/Callable can not be called with no stack.");
+			Console::printLine("MinitScript::call(): " + script.condition + ": Function/Callable can not be called with no stack.");
 			return false;
 		}
 		//
@@ -3708,10 +3705,10 @@ const vector<MinitScript::Method*> MinitScript::getMethods() {
 	//
 	struct {
 		bool operator()(Method* a, Method* b) const {
-			auto aPrefix = _StringTools::substring(a->getMethodName(), 0, _StringTools::lastIndexOf(a->getMethodName(), ".") + 1);
-			auto aName = _StringTools::substring(a->getMethodName(), _StringTools::lastIndexOf(a->getMethodName(), ".") + 1);
-			auto bPrefix = _StringTools::substring(b->getMethodName(), 0, _StringTools::lastIndexOf(b->getMethodName(), ".") + 1);
-			auto bName = _StringTools::substring(b->getMethodName(), _StringTools::lastIndexOf(b->getMethodName(), ".") + 1);
+			auto aPrefix = StringTools::substring(a->getMethodName(), 0, StringTools::lastIndexOf(a->getMethodName(), ".") + 1);
+			auto aName = StringTools::substring(a->getMethodName(), StringTools::lastIndexOf(a->getMethodName(), ".") + 1);
+			auto bPrefix = StringTools::substring(b->getMethodName(), 0, StringTools::lastIndexOf(b->getMethodName(), ".") + 1);
+			auto bName = StringTools::substring(b->getMethodName(), StringTools::lastIndexOf(b->getMethodName(), ".") + 1);
 			array<string, 6> prefixes {
 				"is",
 				"has",
@@ -3730,16 +3727,16 @@ const vector<MinitScript::Method*> MinitScript::getMethods() {
 			};
 			int aPrefixIdx = 0;
 			for (const auto& prefix: prefixes) {
-				if ((aName != prefix || aPrefix.empty() == false) && _StringTools::startsWith(aName, prefix) == true) {
-					aName = _StringTools::substring(aName, prefix.size());
+				if ((aName != prefix || aPrefix.empty() == false) && StringTools::startsWith(aName, prefix) == true) {
+					aName = StringTools::substring(aName, prefix.size());
 					break;
 				}
 				aPrefixIdx++;
 			}
 			int bPrefixIdx = 0;
 			for (const auto& prefix: prefixes) {
-				if ((bName != prefix || bPrefix.empty() == false) && _StringTools::startsWith(bName, prefix) == true) {
-					bName = _StringTools::substring(bName, prefix.size());
+				if ((bName != prefix || bPrefix.empty() == false) && StringTools::startsWith(bName, prefix) == true) {
+					bName = StringTools::substring(bName, prefix.size());
 					break;
 				}
 				bPrefixIdx++;
@@ -3767,7 +3764,7 @@ const vector<MinitScript::Method*> MinitScript::getOperatorMethods() {
 
 const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatements) {
 	if (scriptIdx < 0 || scriptIdx >= scripts.size()) {
-		_Console::printLine("MinitScript::getScriptInformation(): invalid script index: " + to_string(scriptIdx));
+		Console::printLine("MinitScript::getScriptInformation(): invalid script index: " + to_string(scriptIdx));
 		return string();
 	}
 	const auto& script = scripts[scriptIdx];
@@ -3806,9 +3803,9 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 		auto indent = 1;
 		auto formatStatement = [&](const string& statement) {
 			string result;
-			auto statementMethodEndIdx = _StringTools::indexOf(statement, "(");
+			auto statementMethodEndIdx = StringTools::indexOf(statement, "(");
 			if (statementMethodEndIdx == string::npos) statementMethodEndIdx = statement.size();
-			auto statementMethod = _StringTools::trim(_StringTools::substring(statement, 0, statementMethodEndIdx));
+			auto statementMethod = StringTools::trim(StringTools::substring(statement, 0, statementMethodEndIdx));
 			if (statementMethod == "elseif") indent-= 1; else
 			if (statementMethod == "else") indent-= 1; else
 			if (statementMethod == "case") indent-= 1; else
@@ -3838,11 +3835,11 @@ const string MinitScript::getScriptInformation(int scriptIdx, bool includeStatem
 				string() +
 				"\t" +
 				"[" +
-				_StringTools::padLeft(to_string(statement.line), "0", 4) +
+				StringTools::padLeft(to_string(statement.line), "0", 4) +
 				"|" +
-				_StringTools::padLeft(to_string(statement.statementIdx), "0", 4) +
+				StringTools::padLeft(to_string(statement.statementIdx), "0", 4) +
 				"] " +
-				_StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t    :" + newLineIndent)
+				StringTools::replace(formatStatement(statement.executableStatement), "\n", "\n\t    :" + newLineIndent)
 				+
 				(statement.gotoStatementIdx != STATEMENTIDX_NONE?" [gotoStatement " + to_string(statement.gotoStatementIdx) + "]":"")
 				+ "\n";
@@ -3997,12 +3994,12 @@ void MinitScript::registerStateMachineStates() {
 				return STATEMACHINESTATE_WAIT;
 			}
 			virtual void execute() override {
-				auto now = _Time::getCurrentMillis();
+				auto now = Time::getCurrentMillis();
 				if (now > minitScript->getScriptState().timeWaitStarted + minitScript->getScriptState().timeWaitTime) {
 					minitScript->setScriptStateState(STATEMACHINESTATE_NEXT_STATEMENT);
 				} else {
 					#if !defined(MINITSCRIPT_NO_SLEEP)
-						_Thread::sleep(10);
+						Thread::sleep(10);
 					#endif
 				}
 			}
@@ -4024,7 +4021,7 @@ void MinitScript::registerStateMachineStates() {
 					return STATEMACHINESTATE_WAIT_FOR_CONDITION;
 				}
 				virtual void execute() override {
-					auto now = _Time::getCurrentMillis();
+					auto now = Time::getCurrentMillis();
 					if (now < minitScript->getScriptState().timeWaitStarted + minitScript->getScriptState().timeWaitTime) {
 						return;
 					}
@@ -4115,7 +4112,7 @@ void MinitScript::registerMethods() {
 			auto methodOperatorString = getOperatorAsString(methodOperator);
 			auto scriptOperatorIt = operators.find(static_cast<uint8_t>(methodOperator));
 			if (scriptOperatorIt != operators.end()) {
-				_Console::printLine("MinitScript::registerMethods(): Operator '" + methodOperatorString + "' already registered for method " + scriptMethod->getMethodName() + "");
+				Console::printLine("MinitScript::registerMethods(): Operator '" + methodOperatorString + "' already registered for method " + scriptMethod->getMethodName() + "");
 				continue;
 			}
 			operators[static_cast<uint8_t>(methodOperator)] = scriptMethod;
@@ -4192,7 +4189,7 @@ void MinitScript::unregisterVariables() {
 
 void MinitScript::createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement, const string& nameHint) {
 	// function declaration
-	auto functionName = string() + "lamda_function_" + (nameHint.empty() == true?"":_StringTools::toLowerCase(nameHint) + "_") + to_string(inlineFunctionIdx++);
+	auto functionName = string() + "lamda_function_" + (nameHint.empty() == true?"":StringTools::toLowerCase(nameHint) + "_") + to_string(inlineFunctionIdx++);
 	auto inlineFunctionScriptCode = "function: " + functionName + "(";
 	if (populateThis == true) inlineFunctionScriptCode+= "&&$this";
 	auto argumentIdx = 0;
@@ -4254,7 +4251,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string& scriptFil
 			arrayValueEnd = i - 1;
 			auto arrayValueLength = arrayValueEnd - arrayValueStart + 1;
 			if (arrayValueLength > 0) {
-				auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
+				auto arrayValueStringView = StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 				if (arrayValueStringView.empty() == false) {
 					Variable arrayValue;
 					arrayValue.setImplicitTypedValueFromStringView(scriptFileName, arrayValueStringView, minitScript, scriptIdx, statement);
@@ -4281,7 +4278,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string& scriptFil
 			for (auto j = i + 1; j < initializerString.size(); j++) {
 				auto _c = initializerString[j];
 				// space after newline
-				if (_Character::isSpace(_c) == true) {
+				if (Character::isSpace(_c) == true) {
 					// no op
 				} else
 				// comment start
@@ -4365,7 +4362,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string& scriptFil
 						arrayValueEnd = i;
 						auto arrayValueLength = arrayValueEnd - arrayValueStart + 1;
 						if (arrayValueLength > 0) {
-							auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
+							auto arrayValueStringView = StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 							if (arrayValueStringView.empty() == false) {
 								auto arrayValue = initializeArray(scriptFileName, arrayValueStringView, minitScript, scriptIdx, statement);
 								variable.pushArrayEntry(arrayValue);
@@ -4401,7 +4398,7 @@ const MinitScript::Variable MinitScript::initializeArray(const string& scriptFil
 						arrayValueEnd = i;
 						auto arrayValueLength = arrayValueEnd - arrayValueStart + 1;
 						if (arrayValueLength > 0) {
-							auto arrayValueStringView = _StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
+							auto arrayValueStringView = StringTools::viewTrim(string_view(&initializerString[arrayValueStart], arrayValueLength));
 							if (arrayValueStringView.empty() == false) {
 								vector<string_view> lamdaFunctionArguments;
 								string_view lamdaFunctionScriptCode;
@@ -4473,7 +4470,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 			//
 			auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
 			if (mapKeyLength > 0) {
-				mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
+				mapKey = StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
 				if (viewIsStringLiteral(mapKey) == true) {
 					mapKey = dequote(mapKey);
 					dequotedMapKey = true;
@@ -4489,7 +4486,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 			// no op
 		} else
 		if (viewIsKey(mapKey) == false) {
-			_Console::printLine(minitScript->getStatementInformation(statement, mapKeyLineIdx) + ": Invalid key name, ignoring map entry: " + string(mapKey));
+			Console::printLine(minitScript->getStatementInformation(statement, mapKeyLineIdx) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 		} else {
 			auto _private = dequotedMapKey == true?false:viewIsKeyPrivate(mapKey);
 			if (_private == true) mapKey = viewGetPrivateKey(mapKey);
@@ -4498,7 +4495,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 				auto mapValueLength = mapValueEnd - mapValueStart + 1;
 				//
 				if (mapValueLength > 0) {
-					auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
+					auto mapValueStringView = StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 					if (mapValueStringView.empty() == false) {
 						//
 						Variable mapValue;
@@ -4541,7 +4538,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 			for (auto j = i + 1; j < initializerString.size(); j++) {
 				auto _c = initializerString[j];
 				// space after newline
-				if (_Character::isSpace(_c) == true) {
+				if (Character::isSpace(_c) == true) {
 					// no op
 				} else
 				// comment start
@@ -4667,7 +4664,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 					if (mapKeyStart != string::npos) {
 						if (mapKeyEnd == string::npos) mapKeyEnd = i;
 						auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
-						if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
+						if (mapKeyLength > 0) mapKey = StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
 						if (viewIsStringLiteral(mapKey) == true) {
 							mapKey = dequote(mapKey);
 							dequotedMapKey = true;
@@ -4678,7 +4675,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 					mapKeyEnd = string::npos;
 					// validate map key
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
-						_Console::printLine(minitScript->getStatementInformation(statement, mapKeyLineIdx) + ": Invalid key name, ignoring map entry: " + string(mapKey));
+						Console::printLine(minitScript->getStatementInformation(statement, mapKeyLineIdx) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
 						auto _private = dequotedMapKey == true?false:viewIsKeyPrivate(mapKey);
 						if (_private == true) mapKey = viewGetPrivateKey(mapKey);
@@ -4690,7 +4687,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 							mapValueEnd = i;
 							auto mapValueLength = mapValueEnd - mapValueStart + 1;
 							if (mapValueLength > 0) {
-								auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
+								auto mapValueStringView = StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 								if (mapValueStringView.empty() == false) {
 									vector<string_view> lamdaFunctionArguments;
 									string_view lamdaFunctionScriptCode;
@@ -4743,7 +4740,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 					// map key
 					if (mapKeyStart != string::npos) {
 						auto mapKeyLength = mapKeyEnd - mapKeyStart + 1;
-						if (mapKeyLength > 0) mapKey = _StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
+						if (mapKeyLength > 0) mapKey = StringTools::viewTrim(string_view(&initializerString[mapKeyStart], mapKeyLength));
 						if (viewIsStringLiteral(mapKey) == true) {
 							mapKey = dequote(mapKey);
 							dequotedMapKey = true;
@@ -4754,7 +4751,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 					mapKeyEnd = string::npos;
 					// validate map key
 					if (mapKey.empty() == true || viewIsKey(mapKey) == false) {
-						_Console::printLine(minitScript->getStatementInformation(statement, mapKeyLineIdx) + ": Invalid key name, ignoring map entry: " + string(mapKey));
+						Console::printLine(minitScript->getStatementInformation(statement, mapKeyLineIdx) + ": Invalid key name, ignoring map entry: " + string(mapKey));
 					} else {
 						auto _private = dequotedMapKey == true?false:viewIsKeyPrivate(mapKey);
 						if (_private == true) mapKey = viewGetPrivateKey(mapKey);
@@ -4766,7 +4763,7 @@ const MinitScript::Variable MinitScript::initializeMapSet(const string& scriptFi
 							mapValueEnd = i;
 							auto mapValueLength = mapValueEnd - mapValueStart + 1;
 							if (mapValueLength > 0) {
-								auto mapValueStringView = _StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
+								auto mapValueStringView = StringTools::viewTrim(string_view(&initializerString[mapValueStart], mapValueLength));
 								if (mapValueStringView.empty() == false) {
 									auto mapValue = initializeArray(scriptFileName, mapValueStringView, minitScript, scriptIdx, statement);
 									variable.setMapEntry(string(mapKey), mapValue, _private);
@@ -4886,14 +4883,14 @@ MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScript::Va
 						//
 						if (variablePtr->isPrivate() == true && privateParentScope == false) {
 							//
-							_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Private variable: " + variableStatement + ": access not allowed from outside of object");
+							Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Private variable: " + variableStatement + ": access not allowed from outside of object");
 							//
 							parentVariable = nullptr;
 							return nullptr;
 						}
 					} else {
 						if (expectVariable == true) {
-							_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": key not found: '" + key + "'");
+							Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": key not found: '" + key + "'");
 						}
 						// we have our parent
 						parentVariable = variablePtr;
@@ -4920,7 +4917,7 @@ MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScript::Va
 						return nullptr;
 					}
 				} else {
-					_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": map/set access operator, but variable is not of type map/set");
+					Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": map/set access operator, but variable is not of type map/set");
 					return nullptr;
 				}
 			} else
@@ -4938,11 +4935,11 @@ MinitScript::Variable* MinitScript::evaluateVariableAccessIntern(MinitScript::Va
 					//
 					variablePtr = variablePtr->getArrayValueReference()[arrayIdx];
 				} else {
-					_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": index out of bounds: 0 <= " + to_string(arrayIdx) + " < " + to_string(variablePtr->getArrayValueReference().size()));
+					Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": index out of bounds: 0 <= " + to_string(arrayIdx) + " < " + to_string(variablePtr->getArrayValueReference().size()));
 					return nullptr;
 				}
 			} else {
-				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": access operator, expected array, but got: " + variablePtr->getValueAsString());
+				Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": access operator, expected array, but got: " + variablePtr->getValueAsString());
 				return nullptr;
 			}
 
@@ -4984,7 +4981,7 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 				variablePtr->setValue(variable);
 			}
 		} else {
-			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+			Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 		}
 		return;
 	} else
@@ -4999,7 +4996,7 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 			if (parentVariable->isConstant() == false) {
 				parentVariable->setMapEntry(key, createReference == false?Variable::createNonReferenceVariable(&variable):Variable::createReferenceVariable(&variable));
 			} else {
-				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+				Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 			}
 		} else
 		if (parentVariable->getType() == MinitScript::TYPE_SET) {
@@ -5013,20 +5010,20 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 						parentVariable->removeSetKey(key);
 					}
 				} else {
-					_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": set access operator: expected boolean variable to remove/insert key in set, but got " + variable.getTypeAsString());
+					Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": set access operator: expected boolean variable to remove/insert key in set, but got " + variable.getTypeAsString());
 				}
 			} else {
-				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+				Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 			}
 		} else {
-			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
+			Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": map/set access operator: expected map/set, but got " + parentVariable->getTypeAsString() + ": '" + key + "'");
 		}
 		//
 		return;
 	} else
 	if (arrayIdx == ARRAYIDX_ADD) {
 		if (parentVariable == nullptr) {
-			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": [] array push operator without array");
+			Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": [] array push operator without array");
 		} else
 		if (parentVariable->getType() == MinitScript::TYPE_ARRAY) {
 			// check if our parent is not a const variable
@@ -5034,10 +5031,10 @@ inline void MinitScript::setVariableInternal(const string& variableStatement, Va
 				// all checks passed, push variable to array
 				parentVariable->pushArrayEntry(createReference == false?Variable::createNonReferenceVariable(&variable):Variable::createReferenceVariable(&variable));
 			} else {
-				_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
+				Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Constant: " + variableStatement + ": assignment of constant is not allowed");
 			}
 		} else {
-			_Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": [] array push operator: expected array, but got " + parentVariable->getTypeAsString());
+			Console::printLine((subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": [] array push operator: expected array, but got " + parentVariable->getTypeAsString());
 		}
 		//
 		return;
@@ -5130,7 +5127,7 @@ inline bool MinitScript::viewIsKey(const string_view& candidate) {
 	if (candidate[i] == '-') i++;
 	for (; i < candidate.size(); i++) {
 		auto c = candidate[i];
-		if (_Character::isAlphaNumeric(c) == false && c != '_') return false;
+		if (Character::isAlphaNumeric(c) == false && c != '_') return false;
 	}
 	return true;
 }
@@ -5184,7 +5181,7 @@ inline bool MinitScript::getVariableAccessOperatorLeftRightIndices(const string&
 				return true;
 			}
 			if (c == ']') {
-				_Console::printLine("MinitScript::" + callerMethod + "(): " + (subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": unexpected char: ']'");
+				Console::printLine("MinitScript::" + callerMethod + "(): " + (subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": unexpected char: ']'");
 				return false;
 			}
 		} else
@@ -5205,7 +5202,7 @@ inline bool MinitScript::getVariableAccessOperatorLeftRightIndices(const string&
 				return true;
 			} else
 			if (squareBracketsCount < 0) {
-				_Console::printLine("MinitScript::" + callerMethod + "(): " + (subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": unexpected char: ']'");
+				Console::printLine("MinitScript::" + callerMethod + "(): " + (subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": unexpected char: ']'");
 				return false;
 			}
 		}
@@ -5221,21 +5218,21 @@ inline bool MinitScript::evaluateAccess(const string& variableStatement, const s
 	arrayIdx = ARRAYIDX_NONE;
 	// check for dot access
 	if (variableStatement.data()[arrayAccessOperatorLeftIdx] == '.') {
-		key = string(_StringTools::viewTrim(string_view(&variableStatement.data()[arrayAccessOperatorLeftIdx + 1], arrayAccessOperatorRightIdx - arrayAccessOperatorLeftIdx - 1)));
+		key = string(StringTools::viewTrim(string_view(&variableStatement.data()[arrayAccessOperatorLeftIdx + 1], arrayAccessOperatorRightIdx - arrayAccessOperatorLeftIdx - 1)));
 		return true;
 	}
 	// evaluate array index
-	auto arrayIdxExpressionStringView = _StringTools::viewTrim(string_view(&variableStatement.data()[arrayAccessOperatorLeftIdx + 1], arrayAccessOperatorRightIdx - arrayAccessOperatorLeftIdx - 2));
+	auto arrayIdxExpressionStringView = StringTools::viewTrim(string_view(&variableStatement.data()[arrayAccessOperatorLeftIdx + 1], arrayAccessOperatorRightIdx - arrayAccessOperatorLeftIdx - 2));
 	if (arrayIdxExpressionStringView.empty() == false) {
 		// integer first for performance
-		if (_Integer::viewIs(arrayIdxExpressionStringView) == true) {
-			arrayIdx = _Integer::viewParse(arrayIdxExpressionStringView);
+		if (Integer::viewIs(arrayIdxExpressionStringView) == true) {
+			arrayIdx = Integer::viewParse(arrayIdxExpressionStringView);
 		} else {
 			// TODO: as evaluate statement we also might need the expression that had not yet a preprocessor run for error messages and such
 			Variable statementReturnValue;
 			auto evaluateStatement = string(arrayIdxExpressionStringView);
 			if (evaluateInternal(evaluateStatement, evaluateStatement, statementReturnValue, false) == false || statementReturnValue.getIntegerValue(arrayIdx, false) == false) {
-				_Console::printLine("MinitScript::" + callerMethod + "(): " + (subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": failed to evaluate expression: '" + string(arrayIdxExpressionStringView) + "'");
+				Console::printLine("MinitScript::" + callerMethod + "(): " + (subStatement != nullptr?getSubStatementInformation(*subStatement):scriptFileName) + ": Variable: " + variableStatement + ": failed to evaluate expression: '" + string(arrayIdxExpressionStringView) + "'");
 				return false;
 			}
 		}
@@ -5276,7 +5273,7 @@ void MinitScript::setConstantInternal(Variable& variable) {
 
 void MinitScript::unsetConstantInternal(Variable& variable) {
 	if (variable.isReference() == true) {
-		_Console::printLine("MinitScript::unsetConstantInternal(): Can not unset constant if reference variable is given.");
+		Console::printLine("MinitScript::unsetConstantInternal(): Can not unset constant if reference variable is given.");
 		return;
 	}
 	variable.unsetConstant();
@@ -5336,7 +5333,7 @@ const string MinitScript::stackTrace(const span<Variable>& arguments, const SubS
 		return
 			methodType + "_" +
 			(script.name.empty() == false?script.name:(
-				_StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
+				StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
 					script.condition:
 					to_string(scriptIdx)
 				)

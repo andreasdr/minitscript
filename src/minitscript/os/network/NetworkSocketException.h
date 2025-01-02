@@ -5,13 +5,11 @@
 #include <minitscript/minitscript.h>
 #include <minitscript/os/network/NetworkException.h>
 
-using minitscript::os::network::NetworkException;
-
 /**
  * Socket exception class
  * @author Andreas Drewke
  */
-class minitscript::os::network::NetworkSocketException: public NetworkException {
+class minitscript::os::network::NetworkSocketException: public minitscript::os::network::NetworkException {
 public:
 	/**
 	 * Public constructor

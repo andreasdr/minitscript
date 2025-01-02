@@ -17,11 +17,11 @@ using std::string;
  * @author Andreas Drewke
  */
 class minitscript::utilities::ExceptionBase: public runtime_error {
-	public:
-		/**
-		 * @brief Public constructor
-		 * @param message message Exception message
-		 */
-		ExceptionBase(const string& message) throw();
-		~ExceptionBase() throw();
+public:
+	/**
+	 * @brief Public constructor
+	 * @param message message Exception message
+	 */
+	ExceptionBase(const string& message) throw();
+	~ExceptionBase() throw();
 };

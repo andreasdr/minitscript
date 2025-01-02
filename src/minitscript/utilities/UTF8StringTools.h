@@ -14,6 +14,13 @@ using std::string;
 using std::string_view;
 using std::vector;
 
+// namespaces
+namespace minitscript {
+namespace utilities {
+	using ::minitscript::utilities::UTF8CharacterIterator;
+}
+}
+
 /**
  * UTF8 String tools class
  * @author Andreas Drewke

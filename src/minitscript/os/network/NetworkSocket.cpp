@@ -3,6 +3,7 @@
 #include <string>
 
 #include <minitscript/minitscript.h>
+#include <minitscript/os/network/NetworkSocketException.h>
 
 #if defined(_WIN32)
 	#include <winsock2.h>
@@ -23,6 +24,7 @@ using std::string;
 using std::to_string;
 
 using minitscript::os::network::NetworkSocket;
+using minitscript::os::network::NetworkSocketException;
 
 NetworkSocket::IpVersion NetworkSocket::determineIpVersion(const string& ip) {
 	return ip.find(':') != std::string::npos?IpVersion::IPV6:IpVersion::IPV4;

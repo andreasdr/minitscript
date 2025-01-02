@@ -4,12 +4,14 @@
 #include <minitscript/minitscript.h>
 #include <minitscript/minitscript/MinitScript.h>
 #include <minitscript/minitscript/Setup.h>
+#include <minitscript/utilities/Console.h>
 
 using std::string;
 using std::vector;
 
 using minitscript::minitscript::MinitScript;
 using minitscript::minitscript::Setup;
+using minitscript::utilities::Console;
 
 bool Setup::setupFunctionAndStackletScriptIndices(MinitScript* minitScript, int scriptIdx, vector<string>& parseErrors) {
 	//
@@ -49,7 +51,7 @@ bool Setup::setupFunctionAndStackletScriptIndices(MinitScript* minitScript, Mini
 							if (syntaxTreeNode.value.getFunctionValue(function, functionScriptIdx) == false ||
 								(functionScriptIdx = minitScript->getFunctionScriptIdx(function)) == MinitScript::SCRIPTIDX_NONE) {
 								//
-								_Console::printLine(
+								Console::printLine(
 									minitScript->getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 									": Function not found: " +
 									syntaxTreeNode.value.getValueAsString()
@@ -75,7 +77,7 @@ bool Setup::setupFunctionAndStackletScriptIndices(MinitScript* minitScript, Mini
 							if (syntaxTreeNode.value.getStackletValue(stacklet, stackletScriptIdx) == false ||
 								(stackletScriptIdx = minitScript->getFunctionScriptIdx(stacklet)) == MinitScript::SCRIPTIDX_NONE) {
 								//
-								_Console::printLine(
+								Console::printLine(
 									minitScript->getStatementInformation(statement, syntaxTreeNode.subLineIdx) +
 									": Stacklet not found" +
 									syntaxTreeNode.value.getValueAsString()
@@ -146,7 +148,7 @@ bool Setup::setupFunctionAndStackletScriptIndices(MinitScript* minitScript, Mini
 				if (variable.getFunctionValue(function, functionScriptIdx) == false ||
 					(functionScriptIdx = minitScript->getFunctionScriptIdx(function)) == MinitScript::SCRIPTIDX_NONE) {
 					//
-					_Console::printLine(
+					Console::printLine(
 						minitScript->getStatementInformation(statement, subLineIdx) +
 						": Function not found: " +
 						variable.getValueAsString()
@@ -172,7 +174,7 @@ bool Setup::setupFunctionAndStackletScriptIndices(MinitScript* minitScript, Mini
 				if (variable.getStackletValue(stacklet, stackletScriptIdx) == false ||
 					(stackletScriptIdx = minitScript->getFunctionScriptIdx(stacklet)) == MinitScript::SCRIPTIDX_NONE) {
 					//
-					_Console::printLine(
+					Console::printLine(
 						minitScript->getStatementInformation(statement, subLineIdx) +
 						": Stacklet not found" +
 						variable.getValueAsString()

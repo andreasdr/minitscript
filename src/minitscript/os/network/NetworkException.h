@@ -7,13 +7,11 @@
 #include <minitscript/utilities/fwd-minitscript.h>
 #include <minitscript/utilities/ExceptionBase.h>
 
-using _ExceptionBase = minitscript::utilities::ExceptionBase;
-
 /**
  * Base exception class for network exceptions
  * @author Andreas Drewke
  */
-class minitscript::os::network::NetworkException: public _ExceptionBase {
+class minitscript::os::network::NetworkException: public minitscript::utilities::ExceptionBase {
 public:
 	/**
 	 * Constructor

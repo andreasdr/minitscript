@@ -10,14 +10,11 @@ using std::string;
 
 using minitscript::minitscript::MinitScript;
 
-using _Context = minitscript::minitscript::Context;
-using _Library = minitscript::minitscript::Library;
-
 /** 
  * Native script library
  * @author Andreas Drewke
  */
-class minitscript::minitscript::NativeLibrary: public _Library
+class minitscript::minitscript::NativeLibrary: public Library
 {
 
 public:
@@ -28,7 +25,7 @@ public:
 	 * Public constructor
 	 * @param context context or nullptr
 	 */
-	NativeLibrary(_Context* context): _Library(context) {
+	NativeLibrary(Context* context): Library(context) {
 	}
 
 	/**

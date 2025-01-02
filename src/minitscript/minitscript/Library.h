@@ -8,7 +8,6 @@
 using std::string;
 
 using minitscript::minitscript::MinitScript;
-using _Context = minitscript::minitscript::Context;
 
 /** 
  * Script library
@@ -17,7 +16,7 @@ using _Context = minitscript::minitscript::Context;
 class minitscript::minitscript::Library
 {
 protected:
-	_Context* context { nullptr };
+	Context* context { nullptr };
 
 public:
 	// forbid class copy
@@ -27,12 +26,12 @@ public:
 	 * Public constructor
 	 * @param context context or nullptr
 	 */
-	Library(_Context* context);
+	Library(Context* context);
 
 	/**
 	 * @return context
 	 */
-	inline _Context* getContext() {
+	inline Context* getContext() {
 		return context;
 	}
 
@@ -40,7 +39,7 @@ public:
 	 * Set context
 	 * @param context context
 	 */
-	inline void setContext(_Context* context) {
+	inline void setContext(Context* context) {
 		this->context = context;
 	}
 

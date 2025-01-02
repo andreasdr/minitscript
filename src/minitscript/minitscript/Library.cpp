@@ -10,19 +10,19 @@
 using std::make_unique;
 using std::string;
 
-using _Context = minitscript::minitscript::Context;
-using _Library = minitscript::minitscript::Library;
-using _Console = minitscript::utilities::Console;
+using minitscript::minitscript::Context;
+using minitscript::minitscript::Library;
+using minitscript::utilities::Console;
 
-_Library::Library(_Context* context) {
+Library::Library(Context* context) {
 	this->context = context;
 }
 
-_Library::~Library() {
+Library::~Library() {
 }
 
-MinitScript* _Library::loadScript(const string& pathName, const string& fileName, const string& basePathName) {
-	_Console::printLine("Library::loadScript(): " + pathName + "/" + fileName + (basePathName.empty() == false?"@" + basePathName:""));
+MinitScript* Library::loadScript(const string& pathName, const string& fileName, const string& basePathName) {
+	Console::printLine("Library::loadScript(): " + pathName + "/" + fileName + (basePathName.empty() == false?"@" + basePathName:""));
 	auto script = make_unique<MinitScript>();
 	script->setContext(context);
 	script->setLibrary(this);

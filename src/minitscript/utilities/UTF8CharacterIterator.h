@@ -12,6 +12,13 @@ using std::string_view;
 using std::to_string;
 using std::vector;
 
+// namespaces
+namespace minitscript {
+namespace utilities {
+	using ::minitscript::math::Math;
+}
+}
+
 /**
  * UTF8 string character iterator
  */

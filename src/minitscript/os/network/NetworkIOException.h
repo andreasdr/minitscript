@@ -7,13 +7,11 @@
 
 using std::string;
 
-using minitscript::os::network::NetworkException;
-
 /**
  * Base exception class for network IO exceptions
  * @author Andreas Drewke
  */
-class minitscript::os::network::NetworkIOException: public NetworkException {
+class minitscript::os::network::NetworkIOException: public minitscript::os::network::NetworkException {
 public:
 	/**
 	 * Public constructor

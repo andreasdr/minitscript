@@ -17,8 +17,6 @@ using std::string;
  * @author Andreas Drewke
  */
 class minitscript::os::threading::Mutex {
-	friend class Condition;
-
 public:
 	// forbid class copy
 	_FORBID_CLASS_COPY(Mutex)

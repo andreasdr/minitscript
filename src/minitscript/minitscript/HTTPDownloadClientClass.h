@@ -15,7 +15,13 @@ using std::span;
 using std::vector;
 
 using minitscript::minitscript::MinitScript;
-using _HTTPDownloadClient = minitscript::network::httpclient::HTTPDownloadClient;
+
+// namespaces
+namespace minitscript {
+namespace minitscript {
+	using ::minitscript::network::httpclient::HTTPDownloadClient;
+}
+}
 
 /**
  * HTTP download client
@@ -54,11 +60,11 @@ public:
 			/**
 			 * @return instances
 			 */
-			inline vector<shared_ptr<_HTTPDownloadClient>>& getInstances() {
+			inline vector<shared_ptr<HTTPDownloadClient>>& getInstances() {
 				return instances;
 			}
 		private:
-			vector<shared_ptr<_HTTPDownloadClient>> instances;
+			vector<shared_ptr<HTTPDownloadClient>> instances;
 	};
 
 	// forbid class copy
@@ -77,11 +83,11 @@ public:
 	 * @param optional optional
 	 * @return success
 	 */
-	static inline bool getHTTPDownloadClientValue(const span<MinitScript::Variable>& arguments, int idx, shared_ptr<_HTTPDownloadClient>& value, bool optional = false) {
+	static inline bool getHTTPDownloadClientValue(const span<MinitScript::Variable>& arguments, int idx, shared_ptr<HTTPDownloadClient>& value, bool optional = false) {
 		if (idx >= arguments.size()) return optional;
 		const auto& argument = arguments[idx];
 		if (argument.getType() == MinitScript::TYPE_HTTPDOWNLOADCLIENT) {
-			value = *static_cast<shared_ptr<_HTTPDownloadClient>*>(argument.getValuePtr());
+			value = *static_cast<shared_ptr<HTTPDownloadClient>*>(argument.getValuePtr());
 			return true;
 		}
 		return optional;

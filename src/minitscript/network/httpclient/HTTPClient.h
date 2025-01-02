@@ -7,15 +7,11 @@
 #include <minitscript/minitscript.h>
 #include <minitscript/network/httpclient/fwd-minitscript.h>
 #include <minitscript/network/httpclient/HTTPClientException.h>
-#include <minitscript/os/network/NetworkException.h>
 
 using std::string;
 using std::stringstream;
 using std::unordered_map;
 using std::vector;
-
-using _HTTPClientException = minitscript::network::httpclient::HTTPClientException;
-using _NetworkException = minitscript::os::network::NetworkException;
 
 /**
  * Basic HTTP client
