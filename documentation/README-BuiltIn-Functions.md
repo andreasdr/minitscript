@@ -115,8 +115,10 @@
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Get application command line arguments                                                           |
 | <sub>application.getArguments(): Array</sub>                                                     |
-| Execute Application                                                                              |
+| Execute application                                                                              |
 | <sub>application.execute($command: String[, &$exitCode: ?Integer[, &$error: ?String]]): String</sub>|
+| Execute multiple applications                                                                    |
+| <sub>application.executeMultiple($commands: Array[, $concurrency: Integer]): Boolean</sub>       |
 | Exit application with optional exit code                                                         |
 | <sub>application.exit([$exitCode: Integer]): Null</sub>                                          |
 
@@ -334,11 +336,11 @@
 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Table of methods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Get named conditions                                                                             |
-| <sub>script.getNamedConditions(): String</sub>                                                   |
+| Get global scope script variables                                                                |
+| <sub>script.getGlobalVariables(): Map</sub>                                                      |
 | Returns if script runs natively                                                                  |
 | <sub>script.isNative(): Boolean</sub>                                                            |
-| Get script variables                                                                             |
+| Get current scope script variables                                                               |
 | <sub>script.getVariables(): Map</sub>                                                            |
 | Call script function                                                                             |
 | <sub>script.call($function: String, ...): Mixed</sub>                                            |
@@ -346,12 +348,6 @@
 | <sub>script.callFunction($function: Function, ...): Mixed</sub>                                  |
 | Call script stacklet                                                                             |
 | <sub>script.callStacklet($stacklet: String): Mixed</sub>                                         |
-| Disable a specific named condition                                                               |
-| <sub>script.disableNamedCondition($name: String): Null</sub>                                     |
-| Emit a condition                                                                                 |
-| <sub>script.emit($condition: String): Null</sub>                                                 |
-| Enable a specific named condition                                                                |
-| <sub>script.enableNamedCondition($name: String): Null</sub>                                      |
 | Evaluate a script statement                                                                      |
 | <sub>script.evaluate($statement: String): Mixed</sub>                                            |
 | Stop script                                                                                      |

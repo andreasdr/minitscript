@@ -82,7 +82,6 @@ Also note the focus on easy integration into other products and easy customizabi
 - [Operators](./documentation/README-Operators.md)
 - [Constants](./documentation/README-Constants.md)
 
-
 # 3. Links
 
 - MinitScript, see [README.md](./README.md)
