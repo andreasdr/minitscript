@@ -25,13 +25,14 @@ using std::vector;
 using minitscript::minitscript::ApplicationMethods;
 
 using minitscript::minitscript::MinitScript;
-using minitscript::os::filesystem::FileSystem;
-using minitscript::os::threading::Mutex;
-using minitscript::os::threading::Thread;
-using minitscript::utilities::Exception;
 
 using _Console = minitscript::utilities::Console;
+using _Exception = minitscript::utilities::Exception;
+using _FileSystem = minitscript::os::filesystem::FileSystem;
+using _Mutex = minitscript::os::threading::Mutex;
 using _StringTools = minitscript::utilities::StringTools;
+using _Thread = minitscript::os::threading::Thread;
+
 
 void ApplicationMethods::registerConstants(MinitScript* minitScript) {
 	minitScript->setConstant("$application::EXITCODE_SUCCESS", MinitScript::Variable(static_cast<int64_t>(EXIT_SUCCESS)));
@@ -104,7 +105,7 @@ const string ApplicationMethods::execute(const string& command, int* exitCode, s
 		while (feof(pipe) == false) {
 			if (fgets(buffer.data(), buffer.size(), pipe) != nullptr) result += buffer.data();
 		}
-	} catch (Exception& exception) {
+	} catch (_Exception& exception) {
 		_Console::printLine("ApplicationMethods::execute(): An error occurred: " + string(exception.what()));
 	}
 	// get exit code, if we have a pipe
@@ -120,15 +121,15 @@ const string ApplicationMethods::execute(const string& command, int* exitCode, s
 	// store error to given string error pointer
 	if (error != nullptr) {
 		try {
-			*error = FileSystem::getContentAsString(
-				FileSystem::getPathName(errorFile),
-				FileSystem::getFileName(errorFile)
+			*error = _FileSystem::getContentAsString(
+				_FileSystem::getPathName(errorFile),
+				_FileSystem::getFileName(errorFile)
 			);
-			FileSystem::removeFile(
-				FileSystem::getPathName(errorFile),
-				FileSystem::getFileName(errorFile)
+			_FileSystem::removeFile(
+				_FileSystem::getPathName(errorFile),
+				_FileSystem::getFileName(errorFile)
 			);
-		} catch (Exception& exception) {
+		} catch (_Exception& exception) {
 			_Console::printLine("ApplicationMethods::execute(): An error occurred: " + string(exception.what()));
 		}
 	}
@@ -210,7 +211,7 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 					 */
 					class ExecutionCommands {
 						private:
-							Mutex mutex;
+							_Mutex mutex;
 							const vector<string>& commands;
 							int commandIdx { 0 };
 						public:
@@ -245,7 +246,7 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 					/**
 					 * Execution thread
 					 */
-					class ExecutionThread: public Thread {
+					class ExecutionThread: public _Thread {
 						private:
 							ExecutionCommands* executionCommands;
 							bool failure { false };
@@ -254,7 +255,7 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 							 * Constructor
 							 * @param commands commands
 							 */
-							ExecutionThread(ExecutionCommands* executionCommands): Thread("execution-thread"), executionCommands(executionCommands) {
+							ExecutionThread(ExecutionCommands* executionCommands): _Thread("execution-thread"), executionCommands(executionCommands) {
 							}
 							/**
 							 * @returns returns if an error has occurred
