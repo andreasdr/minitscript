@@ -1,12 +1,13 @@
-#include <span>
-
 #include <memory>
+#include <span>
+#include <utility>
 
 #include <minitscript/minitscript.h>
 #include <minitscript/minitscript/ContextMethods.h>
 #include <minitscript/minitscript/MinitScript.h>
 #include <minitscript/utilities/Console.h>
 
+using std::move;
 using std::span;
 using std::unique_ptr;
 

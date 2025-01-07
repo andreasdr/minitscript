@@ -1,6 +1,6 @@
-#include <span>
-
 #include <memory>
+#include <span>
+#include <utility>
 
 #include <minitscript/minitscript.h>
 #include <minitscript/minitscript/MinitScript.h>
@@ -8,8 +8,10 @@
 #include <minitscript/utilities/Console.h>
 #include <minitscript/utilities/Time.h>
 
-using std::span;
 using std::make_unique;
+using std::move;
+using std::span;
+
 
 using minitscript::minitscript::ScriptMethods;
 

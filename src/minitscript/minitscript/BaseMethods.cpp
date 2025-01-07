@@ -1,5 +1,6 @@
 #include <span>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <minitscript/minitscript.h>
@@ -10,6 +11,7 @@
 #include <minitscript/utilities/Hex.h>
 #include <minitscript/utilities/Time.h>
 
+using std::move;
 using std::span;
 using std::unordered_map;
 using std::vector;

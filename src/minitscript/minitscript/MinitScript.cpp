@@ -14,7 +14,6 @@
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
-#include <utility>
 #include <vector>
 
 #include <minitscript/minitscript/MinitScript.h>
@@ -57,7 +56,6 @@ using std::initializer_list;
 using std::make_pair;
 using std::make_unique;
 using std::map;
-using std::move;
 using std::remove;
 using std::reverse;
 using std::smatch;
