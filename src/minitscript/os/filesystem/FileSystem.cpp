@@ -121,9 +121,9 @@ uint64_t FileSystem::getFileSize(const string& pathName, const string& fileName)
 
 uint64_t FileSystem::getFileTimeStamp(const string& pathName, const string& fileName) {
 	try {
-		auto timeStamp = std::filesystem::last_write_time(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str()));
-		auto timeStampUnix = std::chrono::clock_cast<std::chrono::system_clock>(timeStamp);
-		return std::chrono::duration_cast<std::chrono::seconds>(timeStampUnix.time_since_epoch()).count();
+		auto fileTime = std::filesystem::last_write_time(std::filesystem::path((const char8_t*)composeURI(pathName, fileName).c_str()));
+		auto timePoint = time_point_cast<std::chrono::system_clock::duration>(fileTime - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now());
+		return std::chrono::system_clock::to_time_t(timePoint);
 	} catch (Exception& exception) {
 		throw FileSystemException("Unable to determine file size: " + fileName + ": " + string(exception.what()));
 	}
