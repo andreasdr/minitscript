@@ -9,7 +9,6 @@
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
-#include <utility>
 #include <vector>
 
 #include <minitscript/minitscript.h>
@@ -30,7 +29,6 @@ using std::array;
 using std::exchange;
 using std::find;
 using std::make_unique;
-using std::move;
 using std::pair;
 using std::remove;
 using std::sort;

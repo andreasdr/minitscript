@@ -9,7 +9,6 @@
 #include <minitscript/utilities/Time.h>
 
 using std::make_unique;
-using std::move;
 using std::span;
 
 
@@ -265,12 +264,12 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 						#if defined (__clang__)
 							// Clang currently does not support initializing span using begin and end iterators,
 							vector<MinitScript::Variable> callArguments(arguments.size() - 1);
-							for (auto i = 1; i < arguments.size(); i++) callArguments[i - 1] = move(arguments[i]);
+							for (auto i = 1; i < arguments.size(); i++) callArguments[i - 1] = std::move(arguments[i]);
 							// call
 							span callArgumentsSpan(callArguments);
 							minitScript->call(scriptIdx, callArgumentsSpan, returnValue);
 							// move back arguments
-							for (auto i = 1; i < arguments.size(); i++) arguments[i] = move(callArguments[i - 1]);
+							for (auto i = 1; i < arguments.size(); i++) arguments[i] = std::move(callArguments[i - 1]);
 						#else
 							span callArgumentsSpan(arguments.begin() + 1, arguments.end());
 							minitScript->call(scriptIdx, callArgumentsSpan, returnValue);
@@ -316,12 +315,12 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 						#if defined (__clang__)
 							// Clang currently does not support initializing span using begin and end iterators,
 							vector<MinitScript::Variable> callArguments(arguments.size() - 1);
-							for (auto i = 1; i < arguments.size(); i++) callArguments[i - 1] = move(arguments[i]);
+							for (auto i = 1; i < arguments.size(); i++) callArguments[i - 1] = std::move(arguments[i]);
 							// call
 							span callArgumentsSpan(callArguments);
 							minitScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
 							// move back arguments
-							for (auto i = 1; i < arguments.size(); i++) arguments[i] = move(callArguments[i - 1]);
+							for (auto i = 1; i < arguments.size(); i++) arguments[i] = std::move(callArguments[i - 1]);
 						#else
 							span callArgumentsSpan(arguments.begin() + 1, arguments.end());
 							minitScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
@@ -371,12 +370,12 @@ void ScriptMethods::registerMethods(MinitScript* minitScript) {
 						#if defined (__clang__)
 							// Clang currently does not support initializing span using begin and end iterators,
 							vector<MinitScript::Variable> callArguments(arguments.size() - 1);
-							for (auto i = 1; i < arguments.size(); i++) callArguments[i - 1] = move(arguments[i]);
+							for (auto i = 1; i < arguments.size(); i++) callArguments[i - 1] = std::move(arguments[i]);
 							// call
 							span callArgumentsSpan(callArguments);
 							minitScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
 							// move back arguments
-							for (auto i = 1; i < arguments.size(); i++) arguments[i] = move(callArguments[i - 1]);
+							for (auto i = 1; i < arguments.size(); i++) arguments[i] = std::move(callArguments[i - 1]);
 						#else
 							span callArgumentsSpan(arguments.begin() + 1, arguments.end());
 							minitScript->call(functionScriptIdx, callArgumentsSpan, returnValue);
