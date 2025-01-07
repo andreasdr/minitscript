@@ -210,8 +210,10 @@
 | <sub>filesystem.isDrive($uri: String): Boolean</sub>                                             |
 | Extracts file name from given URI                                                                |
 | <sub>filesystem.getFileName($uri: String): String</sub>                                          |
-| Returns file size from file                                                                      |
+| Returns file size for file                                                                       |
 | <sub>filesystem.getFileSize($pathName: String, $fileName: String): Integer - throws exception</sub>|
+| Not documented                                                                                   |
+| <sub>filesystem.getFileTimeStamp($pathName: String, $fileName: String): Integer - throws exception</sub>|
 | Returns if given URI is a path                                                                   |
 | <sub>filesystem.isPath($uri: String): Boolean - throws exception</sub>                           |
 | Extracts path name from given URI                                                                |
