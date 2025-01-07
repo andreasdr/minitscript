@@ -43,12 +43,12 @@ ifeq ($(OS), Darwin)
 else ifeq ($(OS), FreeBSD)
 	# FreeBSD
 	INCLUDES := $(INCLUDES) -I/usr/local/include
-	LIBS_LDFLAGS = -L/usr/local/lib -lssl -lcrypto
+	LIBS_LDFLAGS = -L/usr/local/lib -lexecinfo -lssl -lcrypto
 	PLATFORM = FreeBSD
 else ifeq ($(OS), NetBSD)
 	# NetBSD
 	INCLUDES := $(INCLUDES) -I/usr/pkg/include
-	LIBS_LDFLAGS = -L/usr/pkg/lib -lssl -lcrypto
+	LIBS_LDFLAGS = -L/usr/pkg/lib -lexecinfo -lssl -lcrypto
 	PLATFORM = NetBSD
 else ifeq ($(OS), OpenBSD)
 	# OpenBSD
