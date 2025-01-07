@@ -790,7 +790,7 @@ void FileSystemMethods::registerMethods(MinitScript* minitScript) {
 				MinitScript::Method(
 					{
 						{ .type = MinitScript::TYPE_STRING, .name = "pathName", .optional = false, .reference = false, .nullable = false },
-						{ .type = MinitScript::TYPE_STRING, .name = "recursive", .optional = false, .reference = false, .nullable = false },
+						{ .type = MinitScript::TYPE_BOOLEAN, .name = "recursive", .optional = false, .reference = false, .nullable = false },
 					},
 					MinitScript::TYPE_NULL,
 					false,

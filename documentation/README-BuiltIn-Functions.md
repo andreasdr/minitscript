@@ -235,7 +235,7 @@
 | Removes a file extension from given file name                                                    |
 | <sub>filesystem.removeFileExtension($fileName: String): String</sub>                             |
 | Removes a path from file system                                                                  |
-| <sub>filesystem.removePath($pathName: String, $recursive: String): Null - throws exception</sub> |
+| <sub>filesystem.removePath($pathName: String, $recursive: Boolean): Null - throws exception</sub>|
 | Renames a file/folder                                                                            |
 | <sub>filesystem.rename($fileNameFrom: String, $fileNameTo: String): Null - throws exception</sub>|
 
