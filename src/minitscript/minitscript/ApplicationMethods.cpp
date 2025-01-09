@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <memory>
 #include <span>
+#include <string>
 #include <vector>
 
 #include <minitscript/minitscript.h>
@@ -19,6 +20,8 @@ using std::array;
 using std::make_unique;
 using std::span;
 using std::shared_ptr;
+using std::string;
+using std::to_string;
 using std::unique_ptr;
 using std::vector;
 
@@ -248,14 +251,16 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 					 */
 					class ExecutionThread: public _Thread {
 						private:
+							int idx;
 							ExecutionCommands* executionCommands;
 							bool failure { false };
 						public:
 							/**
 							 * Constructor
-							 * @param commands commands
+							 * @param idx thread index
+							 * @param executionCommands excecution commands
 							 */
-							ExecutionThread(ExecutionCommands* executionCommands): _Thread("execution-thread"), executionCommands(executionCommands) {
+							ExecutionThread(int idx, ExecutionCommands* executionCommands): _Thread("execution-thread"), idx(idx), executionCommands(executionCommands) {
 							}
 							/**
 							 * @returns returns if an error has occurred
@@ -267,11 +272,12 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 							 * Run
 							 */
 							void run() {
+								_Console::printLine("ExecutionThread[" + to_string(idx) + "]: initialize");
 								string command;
 								while (executionCommands->getCommand(command) == true) {
 									int exitCode;
 									string error;
-									_Console::printLine(command);
+									_Console::printLine("[" + to_string(idx) + "]: " + command);
 									auto result = ApplicationMethods::execute(command, &exitCode, &error);
 									if (result.empty() == false)_Console::printLine(result);
 									if (exitCode != EXIT_SUCCESS) {
@@ -280,13 +286,14 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 										failure = true;
 									}
 								}
+								_Console::printLine("ExecutionThread[" + to_string(idx) + "]: shutdown");
 							}
 					};
 					// execute
 					ExecutionCommands executionCommands(commands);
 					vector<unique_ptr<ExecutionThread>> executionThreads;
 					executionThreads.resize(concurrency);
-					for (auto i = 0; i < concurrency; i++) executionThreads[i] = make_unique<ExecutionThread>(&executionCommands);
+					for (auto i = 0; i < concurrency; i++) executionThreads[i] = make_unique<ExecutionThread>(i, &executionCommands);
 					for (auto i = 0; i < concurrency; i++) executionThreads[i]->start();
 					for (auto i = 0; i < concurrency; i++) executionThreads[i]->join();
 					// failure
