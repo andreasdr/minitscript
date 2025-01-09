@@ -278,7 +278,6 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 							 * Run
 							 */
 							void run() {
-								_Console::printLine("ExecutionThread[" + to_string(idx) + "]: initialize");
 								string command;
 								while (executionCommands->getCommand(command) == true) {
 									_Console::printLine("[" + to_string(idx) + "]: " + command);
@@ -287,7 +286,7 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 										pid_t pid;
 										auto commandC = new char[command.size() + 1];
 										strcpy(commandC, command.c_str());
-										char *argv[] = {"sh", "-c", commandC, NULL};
+										char *argv[] = {"/bin/sh", "-c", commandC, NULL};
 										//
 										auto exitCode = EXIT_FAILURE;
 										auto status = posix_spawn(&pid, "/bin/sh", NULL, NULL, argv, ::environ);
@@ -298,8 +297,9 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 												} else {
 													break;
 												}
-											} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+											} while (WIFEXITED(status) == 0 && WIFSIGNALED(status) == 0);
 										}
+										delete [] commandC;
 									#else
 										int exitCode;
 										string error;
@@ -314,7 +314,6 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 										failure = true;
 									}
 								}
-								_Console::printLine("ExecutionThread[" + to_string(idx) + "]: shutdown");
 							}
 					};
 					// execute
