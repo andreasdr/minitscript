@@ -1,11 +1,14 @@
-#include <spawn.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#if defined(__FreeBSD__) || defined(__linux__) || defined(__NetBSD__) || defined(__OpenBSD__)
+	#include <spawn.h>
+	#include <sys/types.h>
+	#include <sys/wait.h>
+
+	#include <cstring>
+#endif
 
 #include <array>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <memory>
 #include <span>
 #include <string>
