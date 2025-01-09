@@ -1,6 +1,11 @@
+#include <spawn.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include <array>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <span>
 #include <string>
@@ -36,6 +41,7 @@ using _Mutex = minitscript::os::threading::Mutex;
 using _StringTools = minitscript::utilities::StringTools;
 using _Thread = minitscript::os::threading::Thread;
 
+extern char **environ;
 
 void ApplicationMethods::registerConstants(MinitScript* minitScript) {
 	minitScript->setConstant("$application::EXITCODE_SUCCESS", MinitScript::Variable(static_cast<int64_t>(EXIT_SUCCESS)));
@@ -275,14 +281,36 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 								_Console::printLine("ExecutionThread[" + to_string(idx) + "]: initialize");
 								string command;
 								while (executionCommands->getCommand(command) == true) {
-									int exitCode;
-									string error;
 									_Console::printLine("[" + to_string(idx) + "]: " + command);
-									auto result = ApplicationMethods::execute(command, &exitCode, &error);
-									if (result.empty() == false)_Console::printLine(result);
+									#if defined(__FreeBSD__) || defined(__linux__) || defined(__NetBSD__) || defined(__OpenBSD__)
+										//
+										pid_t pid;
+										auto commandC = new char[command.size() + 1];
+										strcpy(commandC, command.c_str());
+										char *argv[] = {"sh", "-c", commandC, NULL};
+										//
+										auto exitCode = EXIT_FAILURE;
+										auto status = posix_spawn(&pid, "/bin/sh", NULL, NULL, argv, ::environ);
+										if (status == 0) {
+											do {
+												if (waitpid(pid, &status, 0) != -1) {
+													exitCode = WEXITSTATUS(status);
+												} else {
+													break;
+												}
+											} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+										}
+									#else
+										int exitCode;
+										string error;
+										_Console::printLine("[" + to_string(idx) + "]: " + command);
+										auto result = ApplicationMethods::execute(command, &exitCode, &error);
+										if (result.empty() == false)_Console::printLine(result);
+										if (error.empty() == false) _Console::printLine(error);
+									#endif
+									//
 									if (exitCode != EXIT_SUCCESS) {
 										executionCommands->stop();
-										if (error.empty() == false)_Console::printLine(error);
 										failure = true;
 									}
 								}
