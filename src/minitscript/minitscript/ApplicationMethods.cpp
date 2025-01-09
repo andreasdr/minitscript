@@ -101,7 +101,11 @@ const string ApplicationMethods::execute(const string& command, int* exitCode, s
 	// error stream
 	string errorFile;
 	if (error != nullptr) {
-		errorFile = tmpnam(nullptr);
+		#if defined(__MINGW32__) || defined(__MINGW64__)
+			errorFile = "." + tmpnam(nullptr);
+		#else
+			errorFile = tmpnam(nullptr);
+		#endif
 		_command+= " 2>" + errorFile;
 	}
 	// execute command
