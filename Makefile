@@ -48,7 +48,7 @@ else ifeq ($(OS), FreeBSD)
 else ifeq ($(OS), NetBSD)
 	# NetBSD
 	INCLUDES := $(INCLUDES) -I/usr/pkg/include
-	LIBS_LDFLAGS = -L/usr/pkg/lib -lexecinfo -lssl -lcrypto
+	LIBS_LDFLAGS = -Wl,-rpath /usr/pkg/lib -L/usr/pkg/lib -lexecinfo -lssl -lcrypto
 	PLATFORM = NetBSD
 else ifeq ($(OS), OpenBSD)
 	# OpenBSD
