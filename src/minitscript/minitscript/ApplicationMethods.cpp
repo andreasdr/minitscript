@@ -286,10 +286,10 @@ void ApplicationMethods::registerMethods(MinitScript* minitScript) {
 										pid_t pid;
 										auto commandC = new char[command.size() + 1];
 										strcpy(commandC, command.c_str());
-										char *argv[] = {"/bin/sh", "-c", commandC, NULL};
+										char *argv[] = {"/bin/sh", "-c", commandC, nullptr};
 										//
 										auto exitCode = EXIT_FAILURE;
-										auto status = posix_spawn(&pid, "/bin/sh", NULL, NULL, argv, ::environ);
+										auto status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, ::environ);
 										if (status == 0) {
 											do {
 												if (waitpid(pid, &status, 0) != -1) {
