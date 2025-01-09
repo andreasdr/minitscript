@@ -98,14 +98,16 @@ const string ApplicationMethods::execute(const string& command, int* exitCode, s
 	// execute command
 	FILE* pipe = nullptr;
 	try {
+		array<char, 128> buffer;
 		#if defined(_MSC_VER)
 			pipe = _popen(_command.c_str(), "r");
 		#else
 			pipe = popen(_command.c_str(), "r");
 		#endif
 		if (pipe == nullptr) throw std::runtime_error("popen() failed!");
-		auto c = 0;
-		while ((c = fgetc(pipe)) != EOF) result+= (char)c;
+		while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+			result += buffer.data();
+		}
 	} catch (_Exception& exception) {
 		_Console::printLine("ApplicationMethods::execute(): An error occurred: " + string(exception.what()));
 	}
