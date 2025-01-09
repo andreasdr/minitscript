@@ -105,8 +105,8 @@ const string ApplicationMethods::execute(const string& command, int* exitCode, s
 			pipe = popen(_command.c_str(), "r");
 		#endif
 		if (pipe == nullptr) throw std::runtime_error("popen() failed!");
-		while (feof(pipe) == false) {
-			if (fgets(buffer.data(), buffer.size(), pipe) != nullptr) result += buffer.data();
+		while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+			result += buffer.data();
 		}
 	} catch (_Exception& exception) {
 		_Console::printLine("ApplicationMethods::execute(): An error occurred: " + string(exception.what()));
