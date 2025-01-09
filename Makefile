@@ -54,7 +54,6 @@ else ifeq ($(OS), OpenBSD)
 	# OpenBSD
 	INCLUDES := $(INCLUDES) -I/usr/local/include
 	LIBS_LDFLAGS = -L/usr/local/lib -lssl -lcrypto
-	STACKFLAGS = -Wl,-stack_size -Wl,10485760
 	PLATFORM = OpenBSD
 else ifeq ($(OS), Haiku)
 	# Haiku
