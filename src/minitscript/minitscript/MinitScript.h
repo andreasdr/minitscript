@@ -3592,7 +3592,6 @@ protected:
 		//
 		garbageCollection();
 		//
-		auto& scriptState = getScriptState();
 		for (auto& scriptState: rootScript->scriptStateStack) {
 			scriptState->running = false;
 		}

@@ -1001,7 +1001,7 @@ void MinitScript::executeStateMachine() {
 	while (true == true) {
 		{
 			auto& scriptState = getScriptState();
-			// determine state machine state if it did change
+			// determine state machine state
 			{
 				if (scriptState.lastStateMachineState == nullptr || scriptState.state != scriptState.lastState) {
 					scriptState.lastState = scriptState.state;
@@ -1015,8 +1015,11 @@ void MinitScript::executeStateMachine() {
 
 			// execute state machine
 			if (scriptState.lastStateMachineState != nullptr) {
-				if (native == true && scriptState.state == STATEMACHINESTATE_NEXT_STATEMENT) {
+				if (scriptState.state == STATEMACHINESTATE_NEXT_STATEMENT &&
+					(native == true || scriptState.running == false)) {
 					// ignore STATEMACHINESTATE_NEXT_STATEMENT on native
+					// break if not running anymore
+					if (scriptState.running == false) break;
 				} else {
 					scriptState.lastStateMachineState->execute();
 				}
