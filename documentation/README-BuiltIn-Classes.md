@@ -148,6 +148,8 @@
 | <b>NON STATIC METHODS</b>                 |
 | Clear array                                                                                      |
 | <sub>clear(): Null</sub>                                                                         |
+| Contatenate array to a string                                                                    |
+| <sub>concatenate($separator: String): String</sub>                                               |
 | Returns if array contains a specific value                                                       |
 | <sub>contains($value: Mixed): Boolean</sub>                                                      |
 | Iterate array values, by using a (Lamda) function                                                |
@@ -191,6 +193,8 @@
 | <b>NON STATIC METHODS</b>                 |
 | Clear map                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
+| Contatenate map to a string                                                                      |
+| <sub>concatenate($assignmentSeparator: String, $separator: String): String</sub>                 |
 | Returns if map contains specific key                                                             |
 | <sub>contains($key: String): Boolean</sub>                                                       |
 | Iterate map key and value pairs, by using a (Lamda) function                                     |
@@ -222,6 +226,8 @@
 | <b>NON STATIC METHODS</b>                 |
 | Clear set                                                                                        |
 | <sub>clear(): Null</sub>                                                                         |
+| Contatenate set to a string                                                                      |
+| <sub>concatenate($separator: String): String</sub>                                               |
 | Returns if set contains specific key                                                             |
 | <sub>contains($key: String): Boolean</sub>                                                       |
 | Iterate set keys, by using a (Lamda) function                                                    |

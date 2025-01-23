@@ -1,6 +1,7 @@
 #!/bin/bash
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/advanced-test.tscript
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/application-test.tscript
+./bin/minitscript/tools/minitscript resources/minitscript/tests/arraymapset-plus.tscript
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/base-test.tscript
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/benchmark-test.tscript
 ./bin/minitscript/tools/minitscript resources/minitscript/tests/class-test.tscript
