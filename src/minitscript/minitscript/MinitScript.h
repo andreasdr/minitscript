@@ -3120,9 +3120,12 @@ public:
 			const string& _module,
 			Type type,
 			int line,
-			// applies only for on and on-enabled
+			// applies only for on and on-enabled, functions and stacklets
+			// 	stacklet, functions name or condition for on and on-enabled
 			const string& condition,
 			const string& executableCondition,
+			// 	stacklet, functions name in script scope
+			const string& scriptScopeName,
 			Statement conditionStatement,
 			SyntaxTreeNode conditionSyntaxTree,
 			// applies only for on-enabled
@@ -3140,6 +3143,7 @@ public:
 			line(line),
 			condition(condition),
 			executableCondition(executableCondition),
+			moduleScopeName(scriptScopeName),
 			conditionStatement(conditionStatement),
 			conditionSyntaxTree(conditionSyntaxTree),
 			name(name),
@@ -3165,6 +3169,7 @@ public:
 		// condition, condition name or function/stacklet/callable name
 		string condition;
 		string executableCondition;
+		string moduleScopeName;
 		Statement conditionStatement;
 		SyntaxTreeNode conditionSyntaxTree;
 		// if condition holds a condition, name is the additional condition name if given
@@ -3338,10 +3343,38 @@ protected:
 	vector<unique_ptr<ScriptState>> scriptStateStack;
 
 	vector<string> parseErrors;
-	vector<pair<int, string>> deferredInlineScriptCodes;
+
+	/**
+	 * Deferred inline script code
+	 */
+	struct DeferredInlineScriptCode {
+		/**
+		 * Deferred inline script code
+		 * @param scriptCode script code
+		 * @param module module
+		 * @param lineIdxOffset line index offset
+		 */
+		DeferredInlineScriptCode(
+			const string& scriptCode,
+			const string& module,
+			const int lineIdxOffset
+		):
+			scriptCode(scriptCode),
+			module(module),
+			lineIdxOffset(lineIdxOffset) {
+			//
+		}
+		const string scriptCode;
+		const string module;
+		const int lineIdxOffset;
+	};
+	vector<DeferredInlineScriptCode> deferredInlineScriptCodes;
 
 	int inlineFunctionIdx { 0 };
 	int inlineStackletIdx { 0 };
+
+	unordered_map<string, int> moduleInlineFunctionIdx;
+	unordered_map<string, int> moduleInlineStackletIdx;
 
 	unique_ptr<MathMethods> minitScriptMath;
 
@@ -3667,6 +3700,7 @@ protected:
 
 	/***
 	 * Create lamda function for given variable
+	 * @param module module
 	 * @param variable variable
 	 * @param arguments arguments
 	 * @param functionScriptCode function script code
@@ -3675,10 +3709,11 @@ protected:
 	 * @param statement statement
 	 * @param nameHint name hint
 	 */
-	void createLamdaFunction(Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement, const string& nameHint = string());
+	void createLamdaFunction(const string& module, Variable& variable, const vector<string_view>& arguments, const string_view& functionScriptCode, int lineIdx, bool populateThis, const Statement& statement, const string& nameHint = string());
 
 	/***
 	 * Create stacklet for given variable
+	 * @param module module
 	 * @param variable variable
 	 * @param scopeName scope name
 	 * @param arguments arguments
@@ -3686,7 +3721,7 @@ protected:
 	 * @param lineIdx start line index of lamda function
 	 * @param statement statement
 	 */
-	void createStacklet(Variable& variable, const string& scopeName, const vector<string_view>& arguments, const string_view& stackletScriptCode, int lineIdx, const Statement& statement);
+	void createStacklet(const string& module, Variable& variable, const string& scopeName, const vector<string_view>& arguments, const string_view& stackletScriptCode, int lineIdx, const Statement& statement);
 
 	/**
 	 * Initialize array by initializer string
@@ -3808,11 +3843,11 @@ private:
 	/**
 	 * Parse script code into this MinitScript instance
 	 * @param scriptCode script code
-	 * @param _module module name
+	 * @param module module name
 	 * @param lineIdxOffset line index offset
 	 * @return success
 	 */
-	bool parseScriptInternal(const string& scriptCode, const string& _module = string(), int lineIdxOffset = 0);
+	bool parseScriptInternal(const string& scriptCode, const string& module = string(), int lineIdxOffset = 0);
 
 
 	/**

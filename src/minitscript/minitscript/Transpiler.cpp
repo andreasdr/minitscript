@@ -128,9 +128,6 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	transpilationUnitUsings.erase(unique(transpilationUnitUsings.begin(), transpilationUnitUsings.end()), transpilationUnitUsings.end());
 
 	//
-	Console::printLine(minitScript->getInformation());
-
-	//
 	const auto& scripts = minitScript->getScripts();
 
 	// determine variables
@@ -147,7 +144,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		for (const auto& script: scripts) {
 			auto methodName = createMethodName(minitScript, scriptIdx);
 			if (script._module.empty() == false) {
-				const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(script._module, "[^0-9a-zA-Z]", "_");
+				const auto moduleObjectName = string() + "__" + UTF8StringTools::regexReplace(script._module, "[^0-9a-zA-Z]", "_");
 				generatedExecuteCode+= declarationIndent + "\t\t" + "if (getScriptState().scriptIdx == " + to_string(scriptIdx) + ") " + moduleObjectName + "->export_" + methodName + "(scriptState.statementIdx); else\n";
 			} else {
 				generatedExecuteCode+= declarationIndent + "\t\t" + "if (getScriptState().scriptIdx == " + to_string(scriptIdx) + ") " + methodName + "(scriptState.statementIdx); else\n";
@@ -182,11 +179,9 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	vector<string> moduleClassesDeclarations;
 	if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
 		moduleClassesDeclarations.push_back(string() + "// module classes declarations");
-		for (const auto& _module: minitScript->getModules()) {
-			const auto includePathName = minitScript->getScriptPathName();
-			const auto includeFileName = _module;
-			const auto moduleClassName = string() + "_" + UTF8StringTools::regexReplace((includePathName.empty() == false?includePathName + "/":"") + includeFileName, "[^0-9a-zA-Z]", "_");
-			const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(includeFileName, "[^0-9a-zA-Z]", "_");
+		for (const auto& module: minitScript->getModules()) {
+			const auto moduleClassName = string() + "_" + UTF8StringTools::regexReplace(module, "[^0-9a-zA-Z]", "_");
+			const auto moduleObjectName = string() + "__" + UTF8StringTools::regexReplace(module, "[^0-9a-zA-Z]", "_");
 			moduleClassesDeclarations.push_back("unique_ptr<" + moduleClassName + "> " + moduleObjectName + ";");
 		}
 		moduleClassesDeclarations.push_back(string());
@@ -247,7 +242,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
 		generatedDeclarations+= declarationIndent + "\t\t" + "// modules" + "\n";
 		for (const auto& _module: minitScript->getModules()) {
-			const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
+			const auto moduleObjectName = string() + "__" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
 			generatedDeclarations+= declarationIndent + "\t\t" + moduleObjectName + "->registerVariables();" + "\n";
 		}
 	}
@@ -264,8 +259,8 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	}
 	if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
 		generatedDeclarations+= declarationIndent + "\t\t" + "// modules" + "\n";
-		for (const auto& _module: minitScript->getModules()) {
-			const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
+		for (const auto& module: minitScript->getModules()) {
+			const auto moduleObjectName = string() + "__" + UTF8StringTools::regexReplace(module, "[^0-9a-zA-Z]", "_");
 			generatedDeclarations+= declarationIndent + "\t\t" + moduleObjectName + "->unregisterVariables();" + "\n";
 		}
 	}
@@ -338,7 +333,6 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			}
 			// method name
 			auto methodName = createMethodName(minitScript, scriptIdx);
-			auto shortMethodName = createShortMethodName(minitScript, scriptIdx);
 
 			// declaration
 			generatedDeclarations+= declarationIndent + "/**" + "\n";
@@ -392,7 +386,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 		if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
 			registerMethodsDefinitions+= definitionIndent + "// modules" + "\n";
 			for (const auto& _module: minitScript->getModules()) {
-				const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
+				const auto moduleObjectName = string() + "__" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
 				registerMethodsDefinitions+= definitionIndent + moduleObjectName + "->registerMethods();" + "\n";
 			}
 			registerMethodsDefinitions += "\n";
@@ -459,6 +453,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + to_string(script.line) + "," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + escapeString(script.condition) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + escapeString(script.executableCondition) + "\"," + "\n";
+			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + escapeString(script.moduleScopeName) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "Statement(" + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + "\"" + escapeString(script.conditionStatement.fileName) + "\"," + "\n";
 			initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\t" + to_string(script.conditionStatement.line) + "," + "\n";
@@ -514,12 +509,6 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	initializeNativeDefinition+= definitionIndent + "\t" + "{" + "\n";
 	auto functionItIdx = 0;
 	for (const auto& [functionName, functionScriptIdx]: minitScript->functions) {
-		//
-		if (scripts[functionScriptIdx]._module.empty() == false) {
-			functionItIdx++;
-			continue;
-		}
-		//
 		initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "{" + "\n";
 		initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + "\"" + functionName + "\"," + "\n";
 		initializeNativeDefinition+= definitionIndent + "\t" + "\t" + "\t" + to_string(functionScriptIdx) + "\n";
@@ -531,11 +520,9 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 	//
 	if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
 		initializeNativeDefinition+= definitionIndent + "// initialize modules" + "\n";
-		for (const auto& _module: minitScript->getModules()) {
-			const auto includePathName = minitScript->getScriptPathName();
-			const auto includeFileName = _module;
-			const auto moduleClassName = string() + "_" + UTF8StringTools::regexReplace((includePathName.empty() == false?includePathName + "/":"") + includeFileName, "[^0-9a-zA-Z]", "_");
-			const auto moduleObjectName = string() + "_" + UTF8StringTools::regexReplace(_module, "[^0-9a-zA-Z]", "_");
+		for (const auto& module: minitScript->getModules()) {
+			const auto moduleClassName = string() + "_" + UTF8StringTools::regexReplace(module, "[^0-9a-zA-Z]", "_");
+			const auto moduleObjectName = string() + "__" + UTF8StringTools::regexReplace(module, "[^0-9a-zA-Z]", "_");
 			initializeNativeDefinition+= definitionIndent + moduleObjectName + " = make_unique<" + moduleClassName + ">();" + "\n";
 			initializeNativeDefinition+= definitionIndent + moduleObjectName + "->initializeNativeModule(this);" + "\n";
 		}
@@ -612,6 +599,7 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			// declaration
 			generatedDeclarations+= declarationIndent + "/**" + "\n";
 			generatedDeclarations+= declarationIndent + " * MinitScript transpilation of: " + getScriptTypeReadableName(script.type) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
+			generatedDeclarations+= declarationIndent + " * " + (script.arguments.empty() == false?script.arguments[0].name:"xxx") + "\n";
 			generatedDeclarations+= declarationIndent + " * @param minitScriptGotoStatementIdx MinitScript goto statement index" + "\n";
 			generatedDeclarations+= declarationIndent + " */" + "\n";
 			generatedDeclarations+= declarationIndent + "void " + methodName + "(int minitScriptGotoStatementIdx);" + "\n";
@@ -933,10 +921,8 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
 				includes+= "\n";
 				includes+= string() + "// module includes" + "\n";
-				for (const auto& _module: minitScript->getModules()) {
-					const auto includePathName = minitScript->getScriptPathName();
-					const auto includeFileName = _module;
-					includes+= string() + "#include " + "\"" + "_" + UTF8StringTools::regexReplace((includePathName.empty() == false?includePathName + "/":"") + includeFileName, "[^0-9a-zA-Z]", "_") + ".h" + "\"" + "\n";
+				for (const auto& module: minitScript->getModules()) {
+					includes+= string() + "#include " + "\"" + "_" + UTF8StringTools::regexReplace(module, "[^0-9a-zA-Z]", "_") + ".h" + "\"" + "\n";
 				}
 			}
 			//
@@ -1040,10 +1026,9 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			if (minitScript->isModule() == false && minitScript->getModules().empty() == false) {
 				includes+= "\n";
 				includes+= string() + "// module includes" + "\n";
-				for (const auto& _module: minitScript->getModules()) {
-					const auto includePathName = minitScript->getScriptPathName();
-					const auto includeFileName = _module;
-					includes+= string() + "#include " + "\"" + "_" + UTF8StringTools::regexReplace((includePathName.empty() == false?includePathName + "/":"") + includeFileName, "[^0-9a-zA-Z]", "_") + ".h" + "\"" + "\n";
+				for (const auto& module: minitScript->getModules()) {
+					includes+= string() + "#include " + "\"" + "_" + UTF8StringTools::regexReplace(module, "[^0-9a-zA-Z]", "_") + ".h" + "\"" + "\n";
+
 				}
 			}
 			//
@@ -1518,7 +1503,7 @@ void Transpiler::gatherMethodCode(
 	}
 
 	//
-	Console::printLine("Transpiler::gatherMethodCode(): registering method with methodName: '" + methodName + "'");
+	// Console::printLine("Transpiler::gatherMethodCode(): registering method with methodName: '" + methodName + "'");
 
 	//
 	methodCodeMap[methodName] = executeMethodCode;
@@ -3053,7 +3038,7 @@ bool Transpiler::transpile(MinitScript* minitScript, const string& className, st
 	const auto& script = minitScript->getScripts()[scriptIdx];
 
 	//
-	Console::printLine("Transpiler::transpile(): transpiling code for " + getScriptTypeReadableName(script.type) + " = '" + script.condition + "', with name '" + script.name + "'");
+	// Console::printLine("Transpiler::transpile(): transpiling code for " + getScriptTypeReadableName(script.type) + " = '" + script.condition + "', with name '" + script.name + "'");
 
 	//
 	string methodIndent = "\t";

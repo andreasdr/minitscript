@@ -114,8 +114,8 @@ private:
 		return
 			methodType + "_" +
 			(script.name.empty() == false?script.name:(
-				StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
-					script.condition:
+				StringTools::regexMatch(script.moduleScopeName, "[a-zA-Z0-9_]+") == true?
+					script.moduleScopeName:
 					to_string(scriptIdx)
 				)
 			);
@@ -131,8 +131,8 @@ private:
 		const auto& script = minitScript->getScripts()[scriptIdx];
 		return
 			(script.name.empty() == false?script.name:(
-				StringTools::regexMatch(script.condition, "[a-zA-Z0-9_]+") == true?
-					script.condition:
+				StringTools::regexMatch(script.moduleScopeName, "[a-zA-Z0-9_]+") == true?
+					script.moduleScopeName:
 					to_string(scriptIdx)
 				)
 			);
