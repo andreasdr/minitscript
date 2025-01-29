@@ -2865,6 +2865,76 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		return trimArgument(argument, removeBrackets);
 	};
 	//
+	auto findNextMemberExecutionStatement = [&](const string& statement, int position, int& length) -> const string {
+		//
+		auto bracketCount = 0;
+		auto squareBracketCount = 0;
+		auto curlyBracketCount = 0;
+		auto quote = '\0';
+		auto lc = '\0';
+		string executionStatement;
+		length = 0;
+		for (auto i = position; i < statement.size(); i++) {
+			auto c = statement[i];
+			auto nc = i + 1 < statement.size()?statement[i + 1]:'\0';
+			// quote?
+			if ((c == '"' || c == '\'') && lc != '\\') {
+				if (quote == '\0') {
+					quote = c;
+				} else
+				if (quote == c) {
+					quote = '\0';
+				}
+				executionStatement+= c;
+			} else
+			// no quote
+			if (quote == '\0') {
+				if (c == '(') {
+					bracketCount++;
+					executionStatement+= c;
+				} else
+				if (c == '[') {
+					squareBracketCount++;
+					executionStatement+= c;
+				} else
+				if (c == '{') {
+					curlyBracketCount++;
+					executionStatement+= c;
+				} else
+				if (c == ')') {
+					bracketCount--;
+					executionStatement+= c;
+				} else
+				if (c == ']') {
+					squareBracketCount--;
+					executionStatement+= c;
+				} else
+				if (c == '}') {
+					curlyBracketCount--;
+					executionStatement+= c;
+				} else
+				if (squareBracketCount == 0 && curlyBracketCount == 0 && bracketCount == 0 && lc == '-' && c == '>') {
+					length++;
+					return trimArgument(executionStatement);
+				} else {
+					if (squareBracketCount == 0 && curlyBracketCount == 0 && bracketCount == 0 && c == '-' && nc == '>') {
+						// no op
+					} else {
+						executionStatement+= c;
+					}
+				}
+			} else
+			if (quote != '\0') {
+				executionStatement+= c;
+			}
+			length++;
+			//
+			lc = lc == '\\' && c == '\\'?'\0':c;
+		}
+		//
+		return trimArgument(executionStatement);
+	};
+	//
 	auto viewIsLamdaFunctionWithoutArgumentsHead = [](const string_view& candidate, int& i) -> bool {
 		//
 		i = 0;
@@ -3456,41 +3526,55 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 			string rightArgumentBrackets;
 			int rightArgumentLength = 0;
 			auto rightArgument = findRightArgument(preprocessedStatement, nextOperator.idx + operatorString.size(), rightArgumentLength, rightArgumentBrackets);
-			// object member access
-			string_view subMethodName;
-			vector<ParserArgument> subArguments;
-			//
-			if (parseStatement(rightArgument, subMethodName, subArguments, statement) == false) {
-				Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Could not parse statement: " + rightArgument);
-				scriptValid = false;
-				return preprocessedStatement;
-			}
-			//
-			string arguments;
-			// TODO: not required really, would require string operations on validation
-			// arguments+= "\"" + string(subMethodName) + "\"";
-			arguments+= string(subMethodName);
-			arguments+= ", " + to_string(encodeOperatorString(operatorString));
-			for (const auto& argument: subArguments) {
-				arguments+= ", " + string(argument.argument);
-			}
-			//
-			if (leftArgument.empty() == true || rightArgument.empty() == true) {
-				Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
-				scriptValid = false;
-				return preprocessedStatement;
-			}
 			//
 			auto leftArgumentNewLines = 0;
 			for (auto i = 0; i < leftArgument.size(); i++) {
 				auto c = leftArgument[i];
 				if (c == '\n') leftArgumentNewLines++; else break;
 			}
+			// find member execution statements
+			string memberExecutionStatementMethodCall;
+			string memberExecutionStatement;
+			auto memberExecutionStatementPosition = 0;
+			auto memberExecutionStatementLength= 0;
+			while(true == true) {
+				// extract member execution statement
+				memberExecutionStatement = findNextMemberExecutionStatement(
+					rightArgument,
+					memberExecutionStatementPosition,
+					memberExecutionStatementLength
+				);
+				memberExecutionStatementPosition+= memberExecutionStatementLength;
+				if (memberExecutionStatement.empty() == true) break;
+				// extract method name and arguments
+				string_view subMethodName;
+				vector<ParserArgument> subArguments;
+				if (parseStatement(memberExecutionStatement, subMethodName, subArguments, statement) == false) {
+					Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Could not parse statement: " + rightArgument);
+					scriptValid = false;
+					return preprocessedStatement;
+				}
+				// generate method call
+				string arguments;
+				arguments+= string(subMethodName);
+				arguments+= ", " + to_string(encodeOperatorString(operatorString));
+				for (const auto& argument: subArguments) {
+					arguments+= ", " + string(argument.argument);
+				}
+				memberExecutionStatementMethodCall = method->getMethodName() + "(" + leftArgument + ", " + arguments + ")";
+				// next left argument is our generated method call
+				leftArgument = memberExecutionStatementMethodCall;
+			};
+			//
+			if (leftArgument.empty() == true || rightArgument.empty() == true) {
+				Console::printLine(getStatementInformation(statement, getStatementSubLineIdx(preprocessedStatement, nextOperator.idx)) + ": " + method->getMethodName() + ": Requires left and right argument");
+				scriptValid = false;
+				return preprocessedStatement;
+			}
 			// substitute with method call
 			preprocessedStatement =
 				StringTools::substring(preprocessedStatement, 0, nextOperator.idx - leftArgumentLength) +
-				StringTools::generate("\n", leftArgumentNewLines) +
-				method->getMethodName() + "(" + StringTools::substring(leftArgument, leftArgumentNewLines) + ", " + arguments + ")" +
+				StringTools::generate("\n", leftArgumentNewLines) + memberExecutionStatementMethodCall +
 				StringTools::substring(preprocessedStatement, nextOperator.idx + operatorString.size() + rightArgumentLength, preprocessedStatement.size()
 			);
 			//

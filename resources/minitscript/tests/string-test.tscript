@@ -19,4 +19,5 @@ function: main()
 	if (String::regexSearch("Who is this Andreas0815?", "Andreas([0-9]*)", $matches) == true)
 		console.printLine('String::regexSearch("Who is this Andreas0815?", "Andreas([0-9]*)", $matches): ' + $matches)
 	end
+	console.printLine("\"  ABCDEF  \"->toLowerCase()->trim(): " + "  ABCDEF  "->toLowerCase()->trim());
 end
