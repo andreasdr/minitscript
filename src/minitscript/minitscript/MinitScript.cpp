@@ -1489,8 +1489,8 @@ bool MinitScript::parseScriptInternal(const string& scriptCode, const string& mo
 							FileSystem::getFileName(moduleScriptFileName)
 						);
 					} catch (FileSystem::FileSystemException& fse)	{
-						Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
-						parseErrors.push_back(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+						Console::printLine(moduleScriptFileName + ": An error occurred: " + fse.what());
+						parseErrors.push_back(moduleScriptFileName + ": An error occurred: " + fse.what());
 						scriptValid = false;
 						return false;
 					}
@@ -2405,10 +2405,13 @@ void MinitScript::parseScript(const string& pathName, const string& fileName, bo
 					// load module script code
 					string moduleScriptCode;
 					try {
-						moduleScriptCode = FileSystem::getContentAsString(scriptPathName, moduleScriptFileName);
+						moduleScriptCode = FileSystem::getContentAsString(
+							FileSystem::getPathName(moduleScriptFileName),
+							FileSystem::getFileName(moduleScriptFileName)
+						);
 					} catch (FileSystem::FileSystemException& fse)	{
-						Console::printLine(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
-						parseErrors.push_back(scriptPathName + "/" + moduleScriptFileName + ": An error occurred: " + fse.what());
+						Console::printLine(moduleScriptFileName + ": An error occurred: " + fse.what());
+						parseErrors.push_back(moduleScriptFileName + ": An error occurred: " + fse.what());
 					}
 					// hash
 					moduleHashesConcatenated+= SHA256::encode(moduleScriptCode);

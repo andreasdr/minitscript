@@ -599,7 +599,6 @@ void Transpiler::transpile(MinitScript* minitScript, const string& transpilation
 			// declaration
 			generatedDeclarations+= declarationIndent + "/**" + "\n";
 			generatedDeclarations+= declarationIndent + " * MinitScript transpilation of: " + getScriptTypeReadableName(script.type) + ": " + script.condition + (script.name.empty() == false?" (" + script.name + ")":"") + "\n";
-			generatedDeclarations+= declarationIndent + " * " + (script.arguments.empty() == false?script.arguments[0].name:"xxx") + "\n";
 			generatedDeclarations+= declarationIndent + " * @param minitScriptGotoStatementIdx MinitScript goto statement index" + "\n";
 			generatedDeclarations+= declarationIndent + " */" + "\n";
 			generatedDeclarations+= declarationIndent + "void " + methodName + "(int minitScriptGotoStatementIdx);" + "\n";
