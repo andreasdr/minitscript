@@ -144,13 +144,9 @@ private:
 	 * @return escaped string
 	 */
 	inline static const string escapeString(const string& str) {
-		//
-		auto result = str;
-		const array<char, 11> escapeSequences = {'0', 'a', 'b', 'f', 'n', 'r', 't', 'v', 'U', '"'};
-		for (const auto c: escapeSequences) {
-			result = StringTools::replace(result, string("\\") + c, string("\\\\") + c);
-		}
-		//
+		// escape control chars with backslash
+		string result;
+		result = StringTools::replace(str, "\\", "\\\\");
 		result = StringTools::replace(result, "\0", "\\0");
 		result = StringTools::replace(result, "\a", "\\a");
 		result = StringTools::replace(result, "\b", "\\b");
@@ -160,25 +156,7 @@ private:
 		result = StringTools::replace(result, "\t", "\\t");
 		result = StringTools::replace(result, "\v", "\\v");
 		result = StringTools::replace(result, "\"", "\\\"");
-		//
-		string result2;
-		auto lc = '\0';
-		auto llc = '\0';
-		for (auto i = 0; i < result.size(); i++) {
-			//
-			auto c = result[i];
-			auto nc = i < result.size() - 1?result[i + 1]:'\0';
-			if (c == '\\' && lc != '\\' && nc != '\\' && find(escapeSequences.begin(), escapeSequences.end(), nc) == escapeSequences.end()) {
-				result2+= "\\\\";
-			} else {
-				result2+= c;
-			}
-			//
-			auto lc = c;
-			auto llc = lc;
-		}
-		//
-		return result2;
+		return result;
 	}
 
 	/**

@@ -20,4 +20,5 @@ function: main()
 		console.printLine('String::regexSearch("Who is this Andreas0815?", "Andreas([0-9]*)", $matches): ' + $matches)
 	end
 	console.printLine("\"  ABCDEF  \"->toLowerCase()->trim(): " + "  ABCDEF  "->toLowerCase()->trim());
+	console.printLine("C:\\msys64\\usr\\bin\\bash -c \"export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:/mingw64/share/pkgconfig && ")
 end
