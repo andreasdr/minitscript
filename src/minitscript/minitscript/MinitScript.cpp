@@ -2711,9 +2711,9 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		for (int i = position; i >= 0; i--) {
 			auto c = statement[i];
 			auto lc = i > 0?statement[i - 1]:'\0';
-			if (lc == '\\' && c == '\\') lc = '\0';
+			auto llc = i > 1?statement[i - 2]:'\0';
 			//
-			if ((c == '"' || c == '\'') && lc != '\\') {
+			if ((c == '"' || c == '\'') && (lc != '\\' || llc == '\\')) {
 				if (quote == '\0') {
 					quote = c;
 				} else
@@ -2780,13 +2780,14 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 		auto squareBracketCount = 0;
 		auto curlyBracketCount = 0;
 		auto quote = '\0';
-		auto lc = '\0';
 		string argument;
 		length = 0;
 		for (auto i = position; i < statement.size(); i++) {
 			auto c = statement[i];
+			auto lc = i > 0?statement[i - 1]:'\0';
+			auto llc = i > 1?statement[i - 2]:'\0';
 			// quote?
-			if ((c == '"' || c == '\'') && lc != '\\') {
+			if ((c == '"' || c == '\'') && (lc != '\\' || llc == '\\')) {
 				if (quote == '\0') {
 					quote = c;
 				} else
@@ -2858,8 +2859,6 @@ const string MinitScript::doStatementPreProcessing(const string& processedStatem
 				argument+= c;
 			}
 			length++;
-			//
-			lc = lc == '\\' && c == '\\'?'\0':c;
 		}
 		//
 		return trimArgument(argument, removeBrackets);
