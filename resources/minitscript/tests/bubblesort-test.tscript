@@ -40,7 +40,7 @@ function: main()
 	console.print("Creating array of integers with " + $count + " entries") 
 	$startTime = time.getCurrentMillis()
 	#
-	$array = [];
+	$array = []
 	for ($i = 0, $i < $count, ++$i)
 		$array[] = $count - $i
 	end
