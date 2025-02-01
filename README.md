@@ -52,6 +52,7 @@ Also note the focus on easy integration into other products and easy customizabi
 ## 1.3. 1.0 BETA release TODO list
 
 - Whats left to do for 1.0 BETA release
+  - performance improvements
   - some adjustments
     - have a more sophisticated parser maybe?
     - have interfaces?
