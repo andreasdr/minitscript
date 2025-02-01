@@ -1,5 +1,4 @@
 function: bubbleSortA(&$array)
-	$startTime = time.getCurrentMillis()
 	# best code quality, but less performance
 	for ($i = 1, $i < $array->getSize(), ++$i)
 		for ($j = 0, $j < $array->getSize() - $i, ++$j)
