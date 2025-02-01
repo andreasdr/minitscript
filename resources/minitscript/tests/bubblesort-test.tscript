@@ -37,13 +37,15 @@ function: main()
 	console.printLine()
 	#
 	$count = 1000
-	console.print("Creating array of integers with " + $count + " entries") 
 	$startTime = time.getCurrentMillis()
-	#
 	$array = []
 	for ($i = 0, $i < $count, ++$i)
 		$array[] = $count - $i
 	end
+	$endTime = time.getCurrentMillis()
+	console.printLine()
+	console.printLine("Creating array of integers: Time: " + ($endTime - $startTime) + ": " + $array)
+	console.printLine()
 
 	$arrayA = $array
 	$arrayB = $array
@@ -51,17 +53,15 @@ function: main()
 	$startTime = time.getCurrentMillis()
 	bubbleSortA($arrayA)
 	$endTime = time.getCurrentMillis()
-	console.printLine($arrayA)
 	console.printLine()
-	console.printLine("bubbleSortA: Time: " + ($endTime - $startTime) + ": " + $array)
+	console.printLine("bubbleSortA: Time: " + ($endTime - $startTime) + ": " + $arrayA)
 	console.printLine()
 
 	# test bubble sort B
 	$startTime = time.getCurrentMillis()
 	bubbleSortB($arrayB)
 	$endTime = time.getCurrentMillis()
-	console.printLine($arrayB)
 	console.printLine()
-	console.printLine("bubbleSortB: Time: " + ($endTime - $startTime) + ": " + $array)
+	console.printLine("bubbleSortB: Time: " + ($endTime - $startTime) + ": " + $arrayB)
 	console.printLine()
 end
