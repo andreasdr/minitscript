@@ -59,7 +59,7 @@
 
 ```
     # maybe, but looks good already
-    data Car validated-by CarData
+    data Car [validated-by CarData]
         private $tireCount  = 4
         private $color      = "red"
     end
