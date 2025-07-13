@@ -6,7 +6,6 @@
 
 ```
     function: bubbleSortA(&$array)
-    	# best code quality, but less performance
     	for ($i = 1, $i < $array->getSize()#-+ 1-#, ++$i)
     		for ($j = 0, $j < $array->getSize() - $i, ++$j)
                 #-
