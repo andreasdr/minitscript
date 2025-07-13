@@ -46,7 +46,7 @@
     end
 ```
 
-## 1.3. Structures, which are data only
+## 1.3. Structures, which are compound data type definitions including data types, used for data validation
 
 ```
     # maybe, not sure if required 100%
@@ -56,7 +56,7 @@
     end
 ```
 
-## 1.4. Structure data validations, which are type hinted interfaces alike
+## 1.4. Data objects, which can optionally be validated
 
 ```
     # maybe, but looks good already
@@ -66,13 +66,10 @@
     end
 ```
 
-## 1.5. Interfaces for class methods
+## 1.5. Class interfaces
 
 ```
     interface CarInterface
-        private $tireCount
-        private $color
-
         constructor($tireCount, $color)
 
         destructor()
