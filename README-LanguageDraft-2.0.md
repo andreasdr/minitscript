@@ -84,7 +84,7 @@
 ## 1.6. Classes with optional interface and data validation
 
 ```
-    class Car[ implements CarInterface] [validated-by CarData]
+    class Car [implements CarInterface] [validated-by CarData]
         private $tireCount  = 4
         private $color      = "red"
 
