@@ -66,7 +66,7 @@ Also note the focus on easy integration into other products and easy customizabi
 
 ## 1.4. Additional language draft for MinitScript 2.0
 
-- [Additional Language draft for MinitScript 2.0](./README-LanguageDraft-2.0.md).
+- [Additional Language draft for MinitScript 2.0](./README-LanguageDraft-2.0.md)
 
 # 2. Language documentation
 
