@@ -1,8 +1,8 @@
 ![LOGO](https://raw.githubusercontent.com/andreasdr/minitscript/master/resources/github/minitscript-logo.png)
 
-# 1 MinitScript 2.0: new language features draft
+# 1. MinitScript 2.0: new language features draft
 
-- inline comments with #- $x = 1 -#
+## 1.1. Inline comments with #- $x = 1 -#
 
 ```
     function: bubbleSortA(&$array)
@@ -19,7 +19,7 @@
     end
 ```
 
-- enums
+## 1.2. Enums
 
 ```
     enum Colors
@@ -51,7 +51,7 @@
     end
 ```
 
-- structures, which are data only
+## 1.3. Structures, which are data only
 
 ```
     # maybe, not sure if required 100%
@@ -61,7 +61,7 @@
     end
 ```
 
-- structure data validations, which are type hinted interfaces alike
+## 1.4. Structure data validations, which are type hinted interfaces alike
 
 ```
     # maybe, but looks good already
@@ -71,7 +71,7 @@
     end
 ```
 
-- interfaces for class methods
+## 1.5. Interfaces for class methods
 
 ```
     interface CarInterface
@@ -90,7 +90,7 @@
     end
 ```
 
-- classes with optional interface and data validation
+## 1.6. Classes with optional interface and data validation
 
 ```
     class Car[ implements CarInterface [validated-by CarData]
@@ -135,7 +135,7 @@
     $car = Car(4, Colors.$RED) + Car(4, Colors.$BLUE)
 ```
 
-- Static member variables
+## 1.7. Static member variables
     - maybe by mapping to global variables
     - Class::$classProperty would map to $$.___Class_classProperty
 
@@ -145,7 +145,7 @@
     end
 ```
 
-- Static member methods
+## 1.8. Static member methods
 
 ```
     class Class
@@ -154,3 +154,10 @@
         end
     end
 ```
+
+# 2. Links
+
+- MinitScript, see [README.md](./README.md)
+- MinitScript - How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
+- MinitScript - How to use, see [README-Tools.md](./README-Tools.md)
+- The Mindty Kollektiv [Discord Server](https://discord.gg/Na4ACaFD)
