@@ -48,7 +48,6 @@
 ## 1.3. Structures, which are compound data types, including sub data type definitions, used for data validation
 
 ```
-    # maybe, not sure if required 100%
     structure CarData
         $tireCount: Integer
         $color: Integer
@@ -58,7 +57,6 @@
 ## 1.4. Data objects, which can optionally be validated
 
 ```
-    # maybe, but looks good already
     data Car [validated-by CarData]
         private $tireCount  = 4
         private $color      = "red"
