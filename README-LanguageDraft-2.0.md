@@ -45,7 +45,7 @@
     end
 ```
 
-## 1.3. Structures, which are compound data type definitions including data types, used for data validation
+## 1.3. Structures, which are compound data type definitions including data type definitions, used for data validation
 
 ```
     # maybe, not sure if required 100%
