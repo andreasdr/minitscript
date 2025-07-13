@@ -52,10 +52,8 @@ Also note the focus on easy integration into other products and easy customizabi
 ## 1.3. 1.0 BETA release TODO list
 
 - Whats left to do for 1.0 BETA release
-  - performance improvements
+  - bug fixes
   - some adjustments
-    - have a more sophisticated parser maybe?
-    - have interfaces?
     - build system: check executable output directories
   - parser
     - improve error messages even more
@@ -65,6 +63,10 @@ Also note the focus on easy integration into other products and easy customizabi
     - ...
   - installer for Windows
   - installer for MacOSX
+
+## 1.4. Additional language draft for MinitScript 2.0
+
+[Additional Language draft for MinitScript 2.0](./README-LanguageDraft-2.0.md).
 
 # 2. Language documentation
 
