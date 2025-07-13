@@ -9,8 +9,8 @@
 
 This is the home of MinitScript - The mini C++ transpileable scripting language.
 
-This document and repository is WIP. Expect a BETA release around 2025-03-01.\
-See section 1.3. for 1.0 BETA release TODO list.
+This document and repository is WIP. Expect the 1.0 release around 2026-01-01.\
+See section 1.3. for 1.0 release TODO list.
 
 # 1. Introduction
 
