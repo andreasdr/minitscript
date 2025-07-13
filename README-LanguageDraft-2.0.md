@@ -40,11 +40,6 @@
         case(Colors.$BLUE)
             console.printLine("BLUE")
         end
-        #-
-        case(Colors.$YELLOW)
-            console.printLine("YELLOW")
-        end
-        -#
         default
             console.printLine("No specific color selected")
         end
