@@ -49,9 +49,9 @@ Also note the focus on easy integration into other products and easy customizabi
   - unicode support via UTF8
   - can be transpiled to C++
 
-## 1.3. 1.0 BETA release TODO list
+## 1.3. 1.0 release TODO list
 
-- Whats left to do for 1.0 BETA release
+- Whats left to do for 1.0 release
   - bug fixes
   - some adjustments
     - build system: check executable output directories
