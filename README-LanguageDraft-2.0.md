@@ -124,8 +124,8 @@
     $car = Car(4, Colors.$RED) + Car(4, Colors.$BLUE)
 ```
 
-## 1.7. Static member variables
-    - maybe by mapping to global variables
+## 1.7. Static member variables and methods
+    - by mapping to global variables and functions
     - Class::$classProperty would map to $$.___Class_classProperty
 
 ```
@@ -138,16 +138,6 @@
     end
     ...
     console.printLine("Class::$classProperty = " + Class::$classProperty)
-```
-
-## 1.8. Static member methods
-
-```
-    class Class
-        static method: classMethod($a, $b)
-            console.printLine($a + " / " + $b)
-        end
-    end
 ```
 
 # 2. Links
