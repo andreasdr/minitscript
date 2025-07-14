@@ -52,6 +52,15 @@ Also note the focus on easy integration into other products and easy customizabi
 
 - Whats left to do for 1.0 release
   - bug fixes
+  - new base functions
+    - select($first, $a, $b)
+    - returnReference($value)
+  - more MinitScript example/test scripts  
+    - about 3 computer science examples
+      - binary tree
+      - quick sort
+      - linked list
+    - maybe 2 examples with classes/objects and modules
   - some adjustments
     - build system: check executable output directories
   - parser
