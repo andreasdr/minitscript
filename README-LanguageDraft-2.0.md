@@ -5,7 +5,7 @@
 ## 1.1. Inline comments with #- $x = 1 -#
 
 ```
-    function: bubbleSortA(&$array)
+    function: bubbleSort(&$array)
     	for ($i = 1, $i < $array->getSize()#-+ 1-#, ++$i)
     		for ($j = 0, $j < $array->getSize() - $i, ++$j)
                 #-
