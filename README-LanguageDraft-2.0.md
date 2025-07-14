@@ -125,8 +125,8 @@
 ```
 
 ## 1.7. Static member variables and methods
-    - by mapping to global variables and functions
-    - Class::$classProperty would map to $$.___Class_classProperty
+  - by mapping to global variables and functions
+  - Class::$classProperty would map to $$.___Class_classProperty
 
 ```
     class Class
