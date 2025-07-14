@@ -130,7 +130,7 @@
 
 ```
     class Class
-        static private $classProperty  = 4
+        static public $classProperty  = 4
 
         static method: classMethod()
             console.printLine("Class::$classProperty = " + self::$classProperty) 
