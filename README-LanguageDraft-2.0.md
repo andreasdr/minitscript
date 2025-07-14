@@ -131,7 +131,13 @@
 ```
     class Class
         static private $classProperty  = 4
+
+        static method: classMethod()
+            console.printLine("Class::$classProperty = " + self::$classProperty) 
+        end
     end
+    ...
+    console.printLine("Class::$classProperty = " + Class::$classProperty)
 ```
 
 ## 1.8. Static member methods
