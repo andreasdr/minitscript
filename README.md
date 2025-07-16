@@ -55,6 +55,8 @@ Also note the focus on easy integration into other products and easy customizabi
   - new base functions
     - select($first, $a, $b)
     - returnReference($value)
+  - new Array method
+    - Array::insert($index, $value) 
   - more MinitScript example/test scripts  
     - about 3 computer science examples
       - binary tree
