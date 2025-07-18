@@ -95,7 +95,18 @@ Also note the focus on easy integration into other products and easy customizabi
 - [Operators](./documentation/README-Operators.md)
 - [Constants](./documentation/README-Constants.md)
 
-# 3. Links
+# 3. Technology
+- targeted platforms and its current state
+    - Windows/MINGW(port completed)
+    - Windows/MSC(port completed)
+    - Linux(port completed)
+    - MacOSX(port completed)
+    - FreeBSD(port completed)
+    - NetBSD(port completed)
+    - OpenBSD(port completed)
+    - Haiku(port completed)
+
+# 4. Links
 
 - MinitScript, see [README.md](./README.md)
 - MinitScript - How to build, see [README-BuildingHowTo.md](./README-BuildingHowTo.md)
